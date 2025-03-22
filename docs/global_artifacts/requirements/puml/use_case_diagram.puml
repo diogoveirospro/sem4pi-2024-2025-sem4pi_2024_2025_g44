@@ -1,0 +1,50 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+"Admin" as admin
+"CRM Manager" as manager
+"CRM Collaborator" as collaborator
+"Show Designer" as designer
+"Drone Tech" as drone
+"Customer" as customer
+package "Backoffice"{
+    admin --> (Manage users)
+    manager --> (Manage proposal templates)
+    manager --> (Change client status)
+    manager --> (Manage clients)
+    collaborator --> (Manage clients)
+    package "Show Management"{
+        collaborator --> (Schedule show)
+        collaborator --> (Generate show proposal and send to client)
+        collaborator --> (Configure show's drone list)
+        collaborator --> (Submit show request)
+        designer -up-> (Create Figure)
+    }
+    package "Drone Management"{
+        collaborator --> (List drone inventory)
+        drone --> (List drone inventory)
+        drone --> (List drone's maintenance history)
+        drone --> (Receive drone from maintenance)
+        drone --> (Send drone for maintenance)
+        drone --> (Remove drone from inventory)
+        drone --> (Add drone to inventory)
+    }
+    package "Drone Configuration"{
+        drone --> (Create drone Model)
+        drone --> (Create drone language)
+    }
+}
+
+package Testing{
+    drone -up-> (Test show)
+    drone -up-> (Test Figure)
+    drone -up-> (Generate show code)
+    drone -up-> (Generate figure code)
+}
+
+package "Customer App"{
+    customer --> (Consult my shows agenda)
+    customer --> (Approve/Reject proposal)
+    customer --> (Analyse proposal)
+}
+@enduml

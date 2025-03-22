@@ -6,7 +6,7 @@
 
 ## 2. Planning and Technical Documentation
 
-[Planning and Technical Documentation](docs/us101/readme.md)
+[Planning and Technical Documentation](docs/usxxx/readme.md)
 
 ## 3. How to Build
 
