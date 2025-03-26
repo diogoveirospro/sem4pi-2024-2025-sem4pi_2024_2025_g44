@@ -8,7 +8,7 @@ i=0
 
 while [ $i -lt $len ]
 do
-	echo -e "${names[$i]}\tcommits: `git log | grep "${emails[$i]}" | wc -l`"
+	echo "${names[$i]}\tcommits: `git log | grep "${emails[$i]}" | wc -l`" | column -ct
 	i=$(( $i + 1 ))
 done
 
