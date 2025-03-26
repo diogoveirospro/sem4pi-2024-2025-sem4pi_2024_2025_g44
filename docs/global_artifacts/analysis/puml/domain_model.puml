@@ -1,0 +1,87 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+'left to right direction
+
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+'title Domain Model
+
+class BackOfficeOpt{
+
+}
+
+class Client {
+    EuropeanVatNumber
+    adress
+    publcEntity
+}
+
+class Library {
+}
+
+class Admin {
+}
+
+class CrmManager {
+
+}
+
+class CrmCollaborator {
+}
+
+class ShowDesigner {
+}
+
+class DroneTech {
+}
+
+class Drone {
+    routine
+}
+
+class Figures {
+    code
+    description
+    version
+    clients
+}
+
+class CreativeDepartment {
+}
+
+class ClientStatus {
+    Deleted
+    Infrigement
+    Created
+    Regular
+    Vip
+}
+
+class User {
+    name
+    phone number
+    system role
+}
+
+
+
+class Representatives {
+    email
+    name
+    position
+}
+
+class Show {
+    description
+}
+
+
+Client "1" --- "1.*" Representatives :> interact with
+Client "1" --- "1" ClientStatus :> has
+@enduml
