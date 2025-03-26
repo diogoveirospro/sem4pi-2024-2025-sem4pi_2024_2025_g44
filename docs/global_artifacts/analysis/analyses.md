@@ -66,7 +66,8 @@ it gets reevaluated by the system.
 
 ### Questions
 
-1. When the client reject the proposal, does the status of the request change to "denied"?
-2. Who schedules the shows, CRM Collaborator or CRM Manager, because in the assignment says CRM Team?
-3. The company already has some drones and buys as needed?
-4. What happens if the client refuses the offer after discuss to the CRM Manager?
+1. When the client reject's the proposal, does the status of the request change to "denied"?
+2. Who schedules the show, the CRM Collaborator or the CRM Manager, because in the assignment says CRM Team but in the use case it says?
+3. Does the company already has some drones and buys as needed?
+4. What happens if the client refuses the offer after discussing with the CRM Manager?
+5. In the document there is a use case, Customer, but there is also a reference to the client, are they the same thing?
