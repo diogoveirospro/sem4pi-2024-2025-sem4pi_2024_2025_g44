@@ -1,85 +1,104 @@
 @startuml
-skinparam monochrome true
-skinparam packageStyle rectangle
-skinparam shadowing false
 
-'left to right direction
-
-skinparam classAttributeIconSize 0
-
-hide circle
-hide methods
-
-'title Domain Model
-
-class BackOfficeOpt{
+class BackOfficeOpt <<Entity>>{
 
 }
 
-class Client {
-    EuropeanVatNumber
-    adress
-    publcEntity
-}
-
-class Library {
-}
-
-class Admin {
-}
-
-class CrmManager {
+class Client <<Entity>>{
 
 }
 
-class CrmCollaborator {
+class PublicEntity <<value object>>{
 }
 
-class ShowDesigner {
+class Address <<value object>>{
+    street
+    number
+    city
+    country
+    postal code
 }
 
-class DroneTech {
+class EuropeanVatNumber <<value object>>{
 }
 
-class Drone {
+class Library <<Entity>>{
+}
+
+class Drone <<Entity>>{
     routine
 }
 
-class Figures {
+class Figures <<Entity>>{
     code
     description
     version
     clients
 }
 
-class CreativeDepartment {
+class CreativeDepartment <<Entity>>{
 }
 
-class ClientStatus {
-    Deleted
-    Infrigement
-    Created
-    Regular
-    Vip
+Enum ClientStatus <<value object>>{
+
 }
 
-class User {
-    name
-    phone number
-    system role
+note left of ClientStatus
+  Deleted, Infringement,
+  Created, Regular, Vip
+end note
+
+class User <<Entity>>{
 }
 
+class PhoneNumber <<value object>>{
+}
 
+class Name <<value object>>{
+}
 
-class Representatives {
+class Email <<value object>>{
+}
+
+class Admin <<Entity>>{
+}
+
+class CRMManager <<Entity>>{
+
+}
+
+class CRMCollaborator <<Entity>>{
+}
+
+class ShowDesigner <<Entity>>{
+}
+
+class DroneTech <<Entity>>{
+}
+
+class Representatives <<Entity>>{
     email
     name
     position
 }
 
-class Show {
+class Show <<Entity>>{
     description
 }
+
+Client --> EuropeanVatNumber
+Client --> Address
+
+Client --|> User
+CRMCollaborator --|> User
+CRMManager --|> User
+Admin --|> User
+ShowDesigner --|> User
+DroneTech --|> User
+
+User --> PhoneNumber
+User --> Name
+User --> Email
 
 
 Client "1" --- "1.*" Representatives :> interact with
