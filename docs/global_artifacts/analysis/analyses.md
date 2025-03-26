@@ -64,3 +64,9 @@ it gets reevaluated by the system.
 
 9 - The Drone Tech can list the drones maintenance history.
 
+### Questions
+
+1. When the client reject the proposal, does the status of the request change to "denied"?
+2. Who schedules the shows, CRM Collaborator or CRM Manager, because in the assignment says CRM Team?
+3. The company already has some drones and buys as needed?
+4. What happens if the client refuses the offer after discuss to the CRM Manager?
