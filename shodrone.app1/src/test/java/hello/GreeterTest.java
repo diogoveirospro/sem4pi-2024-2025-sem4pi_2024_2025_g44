@@ -1,20 +1,18 @@
 package hello;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
-	A comment
-*/
+ A comment
+ */
 public class GreeterTest {
-	
+
 	private Greeter greeter = new Greeter();
 
 	@Test
 	public void greeterSaysHello() {
-		assertThat(greeter.sayHello(), containsString("Hello world!"));
+		assertTrue(greeter.sayHello().contains("Hello world!"));
 	}
 
 }
