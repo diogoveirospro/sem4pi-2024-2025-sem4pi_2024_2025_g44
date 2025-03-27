@@ -67,3 +67,4 @@ it gets reevaluated by the system.
 3. Does the company already has some drones and creates more as needed?
 4. What happens if the client refuses the offer after discussing with the CRM Manager?
 5. In the document there is a use case, Customer, but there is also a reference to the client, are they the same thing?
+6. On the section 3.1.2, there is a reference where the client can have several representatives, so I would like to know if the client can have no representatives.

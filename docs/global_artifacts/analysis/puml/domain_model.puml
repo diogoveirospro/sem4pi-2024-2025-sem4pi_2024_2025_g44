@@ -1,42 +1,30 @@
 @startuml
 
-class BackOfficeOpt <<Entity>>{
-
-}
-
 class Client <<Entity>>{
 
 }
 
 class PublicEntity <<value object>>{
+
 }
 
 class Address <<value object>>{
-    street
-    number
-    city
-    country
-    postal code
+    street: String
+    number: Integer
+    city: String
+    country: String
 }
 
 class EuropeanVatNumber <<value object>>{
 }
 
-class Library <<Entity>>{
-}
 
 class Drone <<Entity>>{
     routine
 }
 
-class Figures <<Entity>>{
-    code
-    description
-    version
-    clients
-}
+class Figure <<Entity>>{
 
-class CreativeDepartment <<Entity>>{
 }
 
 Enum ClientStatus <<value object>>{
@@ -45,7 +33,7 @@ Enum ClientStatus <<value object>>{
 
 note left of ClientStatus
   Deleted, Infringement,
-  Created, Regular, Vip
+  Created, Regular, VIP
 end note
 
 class User <<Entity>>{
@@ -76,53 +64,73 @@ class ShowDesigner <<Entity>>{
 class DroneTech <<Entity>>{
 }
 
-class Representatives <<Entity>>{
-    email
-    name
-    position
+class Representative <<Entity>>{
+    name: String
+    position: String
 }
 
 class Show <<Entity>>{
-    description
+    description: String
 }
 
-Client --> EuropeanVatNumber
-Client --> Address
+class Time <<value object>>{
 
-Client --|> User
-CRMCollaborator --|> User
-CRMManager --|> User
-Admin --|> User
-ShowDesigner --|> User
-DroneTech --|> User
+}
 
-User --> PhoneNumber
-User --> Name
-User --> Email
-
-Client "1" --- "1.*" Representatives :> interact with
-Client "1" --- "1" ClientStatus :> has
-
-
-class ShowRequest {
+class ShowRequest <<Entity>>{
     place
-    time
-    number of drones
+    qnt_drones
     duration
 
 }
 
-class Proposal {
+class Proposal <<Entity>>{
 
 }
 
-Client "1" --- "1" CRMCollaborator :> contacts to submmit
-ShowRequest "1" --- "1" Client
-ShowRequest "1" --- "1" Show : has
-ShowRequest "1" --- "1" CRMCollaborator
-CRMManager "1" --- "1" ShowDesigner
-ShowDesigner "1" --- "1" ShowRequest
-CRMCollaborator "1" --- "1" Proposal
-CRMCollaborator "1" --- "1" Client
+
+'Client -> x
+Client --> EuropeanVatNumber
+Client --> Address
+Client --|> User
+CRMCollaborator  --> "1" Client :> contacts to submmit
+Client "1" -- "1.*" Representative :> represented by
+'Duvida:
+Client "1" -- "1" ClientStatus : status
+
+'ShowRequest -> x
+ShowRequest "1" -- "1" Client : requested by
+ShowRequest "1" -- "1" Show : contains
+ShowRequest --> Time
+
+'CRMManager -> x
+CRMManager -|> User
+CRMManager --> "1..*" Client: register
+CRMManager --> "1..*" Client: change status
+
+'ShowDesigner -> x
+ShowDesigner --> "1..*" Figure: creates
+ShowDesigner --|> User
+
+'CRMCollaborator -> x
+CRMCollaborator "1" -- "1" Proposal
+CRMCollaborator --|> User
+CRMCollaborator "1" --> "1" ShowRequest: submits
+
+'Admin -> x
+Admin --|> User
+Admin --> "1..*" User: Manages
+
+'DroneTech -> x
+DroneTech -left|> User
+
+'User -> x
+User --> PhoneNumber
+User --> Name
+User --> Email
+
+'Representative -> x
+Representative  -->  Email
+
 
 @enduml
