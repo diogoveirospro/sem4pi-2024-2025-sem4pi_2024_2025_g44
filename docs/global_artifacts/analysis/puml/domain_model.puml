@@ -100,7 +100,29 @@ User --> PhoneNumber
 User --> Name
 User --> Email
 
-
 Client "1" --- "1.*" Representatives :> interact with
 Client "1" --- "1" ClientStatus :> has
+
+
+class ShowRequest {
+    place
+    time
+    number of drones
+    duration
+
+}
+
+class Proposal {
+
+}
+
+Client "1" --- "1" CRMCollaborator :> contacts to submmit
+ShowRequest "1" --- "1" Client
+ShowRequest "1" --- "1" Show : has
+ShowRequest "1" --- "1" CRMCollaborator
+CRMManager "1" --- "1" ShowDesigner
+ShowDesigner "1" --- "1" ShowRequest
+CRMCollaborator "1" --- "1" Proposal
+CRMCollaborator "1" --- "1" Client
+
 @enduml
