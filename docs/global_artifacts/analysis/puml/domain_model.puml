@@ -1,18 +1,14 @@
 @startuml
 
-class Client <<Entity>>{
-
-}
-
-class PublicEntity <<value object>>{
-
+class Customer <<Entity>>{
+    publicEntity
 }
 
 class Address <<value object>>{
-    street: String
-    number: Integer
-    city: String
-    country: String
+    street
+    number
+    city
+    country
 }
 
 class EuropeanVatNumber <<value object>>{
@@ -20,23 +16,36 @@ class EuropeanVatNumber <<value object>>{
 
 
 class Drone <<Entity>>{
-    routine
+
 }
 
 class Figure <<Entity>>{
 
 }
 
-Enum ClientStatus <<value object>>{
+class Routine <<value object>>{
+    positions
+}
+
+class Position <<value object>>{
+    x: Integer
+    y: Integer
+    z: Integer
+}
+
+Enum CustomerStatus <<value object>>{
 
 }
 
-note left of ClientStatus
+note left of CustomerStatus
   Deleted, Infringement,
   Created, Regular, VIP
 end note
 
 class User <<Entity>>{
+    name
+    email
+    phoneNumber
 }
 
 class PhoneNumber <<value object>>{
@@ -65,12 +74,13 @@ class DroneTech <<Entity>>{
 }
 
 class Representative <<Entity>>{
-    name: String
-    position: String
+    position
+    email
+    name
 }
 
 class Show <<Entity>>{
-    description: String
+    description
 }
 
 class Time <<value object>>{
@@ -81,7 +91,6 @@ class ShowRequest <<Entity>>{
     place
     qnt_drones
     duration
-
 }
 
 class Proposal <<Entity>>{
@@ -89,33 +98,32 @@ class Proposal <<Entity>>{
 }
 
 
-'Client -> x
-Client --> EuropeanVatNumber
-Client --> Address
-Client --|> User
-CRMCollaborator  --> "1" Client :> contacts to submmit
-Client "1" -- "1.*" Representative :> represented by
-'Duvida:
-Client "1" -- "1" ClientStatus : status
+'Customer -> x
+Customer --> "1" EuropeanVatNumber: vatNumber
+Customer --> "1" Address: address
+Customer --|> User
+Customer  --> "1" CRMCollaborator : contacts to submit
+Customer  --> "1..*" Representative : represented by
+Customer  --> "1" CustomerStatus : status
 
 'ShowRequest -> x
-ShowRequest "1" -- "1" Client : requested by
-ShowRequest "1" -- "1" Show : contains
-ShowRequest --> Time
+ShowRequest  --> "1" Customer : requested by
+ShowRequest  --> "1" Show : contains
+ShowRequest --> "1" Time : startTime
 
 'CRMManager -> x
 CRMManager -|> User
-CRMManager --> "1..*" Client: register
-CRMManager --> "1..*" Client: change status
+CRMManager --> "1..*" Customer: register
+CRMManager --> "1..*" Customer: change status
 
 'ShowDesigner -> x
 ShowDesigner --> "1..*" Figure: creates
 ShowDesigner --|> User
 
 'CRMCollaborator -> x
-CRMCollaborator "1" -- "1" Proposal
+CRMCollaborator  --> "1" Proposal: generates
 CRMCollaborator --|> User
-CRMCollaborator "1" --> "1" ShowRequest: submits
+CRMCollaborator  --> "1" ShowRequest: submits
 
 'Admin -> x
 Admin --|> User
@@ -123,14 +131,30 @@ Admin --> "1..*" User: Manages
 
 'DroneTech -> x
 DroneTech -left|> User
+DroneTech --> "1..*" Figure: tests
+DroneTech --> "1..*" Show: tests
 
 'User -> x
-User --> PhoneNumber
-User --> Name
-User --> Email
+User --> "1" PhoneNumber: phoneNumber
+User --> "1" Name: name
+User --> "1" Email: email
 
 'Representative -> x
-Representative  -->  Email
+Representative  --> "1" Email: email
+Representative --> "1" Name: name
+
+'Figure -> x
+Figure --> "1..*" Drone: composition of
+
+'Show -> x
+Show --> "1..*" Figure: sequence of
+
+'Drone -> x
+Drone --> "1" Routine: routine
+
+'Routine -> x
+Routine --> "1..*" Position: positions
+
 
 
 @enduml
