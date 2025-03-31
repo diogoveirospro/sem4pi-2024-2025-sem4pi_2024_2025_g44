@@ -7,49 +7,51 @@ class Customer <<Entity>>{
 }
 
 class Library <<Entity>>{
-
 }
 
 class Inventory <<Entity>>{
-
 }
 
 class Drone <<Entity>>{
-
+    model
+    serialNumber
+    status
 }
 
 class Routine <<Entity>>{
     positions
 }
 
-class Figure <<Entity>>{
-    exclusivity
+class DSLValidate <<Service>>{
+
 }
 
-class User <<Entity>>{
+class Figure <<Entity>>{
+
+}
+
+class CRMCollaborator <<Entity>>{
+    email
+    name
+    phoneNumber
+}
+
+class ShowDesigner <<Entity>>{
     name
     email
     phoneNumber
 }
 
-class Admin <<Entity>>{
-}
-
-class CRMManager <<Entity>>{
-
-}
-
-class CRMCollaborator <<Entity>>{
-}
-
-class ShowDesigner <<Entity>>{
-}
-
 class DroneTech <<Entity>>{
+    name
+    email
+    phoneNumber
 }
 
 class Representative <<Entity>>{
     position
+    email
+    name
 }
 
 class Show <<Entity>>{
@@ -65,7 +67,7 @@ class ShowRequest <<Entity>>{
     qnt_drones
     duration
     startTime
-    customer
+    description
 }
 
 class ShowProposal <<Entity>>{
@@ -81,40 +83,29 @@ Customer --> "1..*" ShowProposal : analyzes
 'ShowRequest -> x
 ShowRequest --> "0..*" Figure : requests new
 
-'CRMManager -> x
-CRMManager -|> User
-CRMManager --> "1..*" Customer: manages
 
 'ShowDesigner -> x
 ShowDesigner --> "1..*" Figure: creates
-ShowDesigner --|> User
 
 
 'CRMCollaborator -> x
 CRMCollaborator  --> "1" ShowProposal: generates
-CRMCollaborator --|> User
 CRMCollaborator  --> "1" ShowRequest: submits
 CRMCollaborator --> "1" Show : schedules
-CRMCollaborator --> "1..*" Customer: manages
 
 'Admin -> x
-Admin --|> User
-Admin --> "1..*" User: Manages
 
 'DroneTech -> x
-DroneTech -|> User
 DroneTech --> "1..*" Figure: tests
 DroneTech --> "1..*" Show: tests
-DroneTech --> "1" Inventory: manages
 DroneTech --> "1..*" Drone: configures
 
-'User -> x
-
 'Representative -> x
-Representative -|> User
+
 
 'Figure -> x
 Figure --> "1..*" Drone: composed by
+Figure ..> "1" DSLValidate: validates
 
 'Show -> x
 Show --> "1..*" Figure: sequence of
