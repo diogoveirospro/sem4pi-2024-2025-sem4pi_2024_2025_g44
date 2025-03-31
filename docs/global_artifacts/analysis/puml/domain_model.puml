@@ -2,59 +2,34 @@
 
 class Customer <<Entity>>{
     publicEntity
+    vatNumber
+    address
 }
 
-class Address <<value object>>{
-    street
-    number
-    city
-    country
+class Library <<Entity>>{
+
 }
 
-class EuropeanVatNumber <<value object>>{
-}
+class Inventory <<Entity>>{
 
+}
 
 class Drone <<Entity>>{
 
 }
 
-class Figure <<Entity>>{
-
-}
-
-class Routine <<value object>>{
+class Routine <<Entity>>{
     positions
 }
 
-class Position <<value object>>{
-    x: Integer
-    y: Integer
-    z: Integer
+class Figure <<Entity>>{
+    exclusivity
 }
-
-Enum CustomerStatus <<value object>>{
-
-}
-
-note left of CustomerStatus
-  Deleted, Infringement,
-  Created, Regular, VIP
-end note
 
 class User <<Entity>>{
     name
     email
     phoneNumber
-}
-
-class PhoneNumber <<value object>>{
-}
-
-class Name <<value object>>{
-}
-
-class Email <<value object>>{
 }
 
 class Admin <<Entity>>{
@@ -75,15 +50,13 @@ class DroneTech <<Entity>>{
 
 class Representative <<Entity>>{
     position
-    email
-    name
 }
 
 class Show <<Entity>>{
     description
 }
 
-class Time <<value object>>{
+class Maintenance <<Entity>>{
 
 }
 
@@ -91,69 +64,76 @@ class ShowRequest <<Entity>>{
     place
     qnt_drones
     duration
+    startTime
+    customer
 }
 
-class Proposal <<Entity>>{
+class ShowProposal <<Entity>>{
 
 }
 
 
 'Customer -> x
-Customer --> "1" EuropeanVatNumber: vatNumber
-Customer --> "1" Address: address
-Customer --|> User
-Customer  --> "1" CRMCollaborator : contacts to submit
+Customer  --> "1" ShowRequest : requests
 Customer  --> "1..*" Representative : represented by
-Customer  --> "1" CustomerStatus : status
+Customer --> "1..*" ShowProposal : analyzes
 
 'ShowRequest -> x
-ShowRequest  --> "1" Customer : requested by
-ShowRequest  --> "1" Show : contains
-ShowRequest --> "1" Time : startTime
+ShowRequest --> "0..*" Figure : requests new
 
 'CRMManager -> x
 CRMManager -|> User
-CRMManager --> "1..*" Customer: register
-CRMManager --> "1..*" Customer: change status
+CRMManager --> "1..*" Customer: manages
 
 'ShowDesigner -> x
 ShowDesigner --> "1..*" Figure: creates
 ShowDesigner --|> User
 
+
 'CRMCollaborator -> x
-CRMCollaborator  --> "1" Proposal: generates
+CRMCollaborator  --> "1" ShowProposal: generates
 CRMCollaborator --|> User
 CRMCollaborator  --> "1" ShowRequest: submits
+CRMCollaborator --> "1" Show : schedules
+CRMCollaborator --> "1..*" Customer: manages
 
 'Admin -> x
 Admin --|> User
 Admin --> "1..*" User: Manages
 
 'DroneTech -> x
-DroneTech -left|> User
+DroneTech -|> User
 DroneTech --> "1..*" Figure: tests
 DroneTech --> "1..*" Show: tests
+DroneTech --> "1" Inventory: manages
+DroneTech --> "1..*" Drone: configures
 
 'User -> x
-User --> "1" PhoneNumber: phoneNumber
-User --> "1" Name: name
-User --> "1" Email: email
 
 'Representative -> x
-Representative  --> "1" Email: email
-Representative --> "1" Name: name
+Representative -|> User
 
 'Figure -> x
-Figure --> "1..*" Drone: composition of
+Figure --> "1..*" Drone: composed by
 
 'Show -> x
 Show --> "1..*" Figure: sequence of
 
 'Drone -> x
-Drone --> "1" Routine: routine
+Drone --> "1" Routine: performs
+Drone --> "0..*" Maintenance: sent for
 
-'Routine -> x
-Routine --> "1..*" Position: positions
+'Library -> x
+Library --> "0..*" Figure: contains
+
+'Inventory -> x
+Inventory --> "0..*" Drone: contains
+
+'ShowProposal -> x
+
+
+'Maintenance -> x
+
 
 
 
