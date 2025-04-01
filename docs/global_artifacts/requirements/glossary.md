@@ -33,6 +33,7 @@
 | Show             |                        |
 | Show Designer    |                        |
 | Show Request     |                        |
+| Show Proposal    |                        |
 | Status           |                        |
 | Test             |                        |
 | Time             |                        |
@@ -42,4 +43,10 @@
 | Version          |                        |
 | VIP              |                        |
 | VIP Client       |                        |
+| Library          |                        |
+| Catalog          |                        |
+| Iventory         |                        |
+| Routine          |                        |
+| Maintenance      |                        |
+| DSL Validate     |                        |
 |                  |                        |
