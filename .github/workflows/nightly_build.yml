@@ -1,0 +1,61 @@
+name: Deploy Nightly
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Runs every night at 2 AM UTC
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  nightly:
+    name: Deploy Nightly
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 23
+      uses: actions/setup-java@v4
+      with:
+        java-version: '23'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn --batch-mode --update-snapshots package
+
+    - name: Archive Build Artifacts
+      run: zip -r myapp.zip target/
+
+    - name: Create GitHub Release
+      id: create_release
+      run: |
+        response=$(curl -X POST -H "Authorization: token ${{ github.token }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/releases \
+          -d '{
+            "tag_name": "nightly-'$(date +%Y%m%d)'",
+            "target_commitish": "'${{ github.sha }}'",
+            "name": "Nightly Build '$(date +%Y-%m-%d)'",
+            "body": "Automated nightly build.",
+            "draft": false,
+            "prerelease": true
+          }')
+        echo "UPLOAD_URL=$(echo $response | jq -r '.upload_url' | sed 's/{?name,label}//')" >> $GITHUB_ENV
+        echo "RELEASE_ID=$(echo $response | jq -r '.id')" >> $GITHUB_ENV
+
+    - name: Deploy Windows Release
+      if: matrix.os == 'windows-latest'
+      uses: WebFreak001/deploy-nightly@v3.1.0
+      with:
+        upload_url: ${{ env.UPLOAD_URL }}
+        release_id: ${{ env.RELEASE_ID }}
+        asset_path: ./myapp.zip
+        asset_name: myapp_windows-nightly-$$.zip
+        asset_content_type: application/zip
+        max_releases: 7
+        ignore_hash: true
