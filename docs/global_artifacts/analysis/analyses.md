@@ -62,7 +62,7 @@ it gets reevaluated by the system.
 
 ### Questions to Clarify Requirements
 
-> 1. When the client reject's the proposal, does the status of the request change to "denied"?
+> 1. When the client reject's the proposal, does the status of the proposal change to "denied"?
 
 > 2. Who schedules the show, the CRM Collaborator or the CRM Manager, because in the assignment says CRM Team but in the use case says CRM Collaborator?
 
