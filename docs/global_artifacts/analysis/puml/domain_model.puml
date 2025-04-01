@@ -1,12 +1,70 @@
 @startuml
 
+class Name <<Value Object>>{
+
+}
+
+
+
+class Email <<Value Object>>{
+
+}
+
+class PhoneNumber <<Value Object>>{
+
+}
+
+class Address <<Value Object>>{
+
+}
+
+class PublicEntity <<Value Object>>{
+
+}
+
+class VatNumber <<Value Object>>{
+
+}
+
+class Time <<Value Object>>{
+
+}
+
+class Date <<Value Object>>{
+
+}
+
+class Position <<Value Object>>{
+
+}
+
+class CustomerStatus <<Value Object>>{
+
+}
+
+class DroneStatus <<Value Object>>{
+
+}
+
+class ShowStatus <<Value Object>>{
+
+}
+
+class Coordinates <<Value Object>>{
+
+}
+
+class Position <<Value Object>>{
+    latitude
+    longitude
+}
+
 class Customer <<Entity>>{
-    publicEntity
     vatNumber
     address
 }
 
-class Library <<Entity>>{
+class Catalogue <<Entity>>{
 }
 
 class Inventory <<Entity>>{
@@ -19,7 +77,7 @@ class Drone <<Entity>>{
 }
 
 class Routine <<Entity>>{
-    positions
+    coordinates
 }
 
 class DSLValidate <<Service>>{
@@ -42,11 +100,7 @@ class ShowDesigner <<Entity>>{
     phoneNumber
 }
 
-class DroneTech <<Entity>>{
-    name
-    email
-    phoneNumber
-}
+
 
 class Representative <<Entity>>{
     position
@@ -95,10 +149,7 @@ CRMCollaborator --> "1" Show : schedules
 
 'Admin -> x
 
-'DroneTech -> x
-DroneTech --> "1..*" Figure: tests
-DroneTech --> "1..*" Show: tests
-DroneTech --> "1..*" Drone: configures
+
 
 'Representative -> x
 
@@ -114,11 +165,11 @@ Show --> "1..*" Figure: sequence of
 Drone --> "1" Routine: performs
 Drone --> "0..*" Maintenance: sent for
 
-'Library -> x
-Library --> "0..*" Figure: contains
+'Catalogue -> x
+Catalogue o-- Figure
 
 'Inventory -> x
-Inventory --> "0..*" Drone: contains
+Inventory o-- Drone
 
 'ShowProposal -> x
 
