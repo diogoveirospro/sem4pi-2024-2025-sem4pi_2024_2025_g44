@@ -22,6 +22,9 @@ package "Customer " <<aggregate>> {
     enum CustomerStatus <<Value Object>>{
     }
 
+    class Position <<Value Object>>{
+    }
+
     'Customer -> x
     Customer  --> "1..*" Representative : represented by
     Customer --> "1" VatNumber : vat
@@ -110,16 +113,18 @@ package "Figure " <<aggregate>> {
 
     'Catalogue -> x
     Catalogue o-- Figure
+
+    'Exclusivity -> x
+    Exclusivity --> "1" Time: duration
+    Exclusivity --> "1" Customer: exclusive to
 }
 
 package "Show " <<aggregate>>{
 
     class PhoneNumber <<Value Object>>{
     }
-    class Date <<Value Object>>{
-    }
 
-    class Position <<Value Object>>{
+    class Date <<Value Object>>{
     }
 
     class Description <<Value Object>>{
@@ -179,10 +184,6 @@ package "Show " <<aggregate>>{
     CRMCollaborator --> "1" Name: name
     CRMCollaborator --> "1" Email: email
     CRMCollaborator --> "1" PhoneNumber: phoneNumber
-
-    'Exclusivity -> x
-    Exclusivity --> "1" Time: duration
-    Exclusivity --> "1" Customer: exclusive to
 
 }
 

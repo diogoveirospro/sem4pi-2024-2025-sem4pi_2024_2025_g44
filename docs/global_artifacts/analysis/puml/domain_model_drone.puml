@@ -1,0 +1,36 @@
+@startuml
+
+package "Drone " <<aggregate>> {
+
+    class Inventory <<Entity>>{
+    }
+
+    class Drone <<Entity>> <<root>>{
+    }
+
+    class Model <<Value Object>>{
+    }
+
+    class SerialNumber <<Value Object>>{
+    }
+
+    enum DroneStatus <<Value Object>>{
+    }
+
+    class Maintenance <<Value Object>>{
+    }
+
+    class Routine <<Value Object>>{
+    }
+
+    'Drone -> x
+    Drone --> "1" Routine: performs
+    Drone --> "1" DroneStatus: status
+    Drone --> "1" Model: model
+    Drone --> "1" SerialNumber: serialNumber
+    Drone --> "1" Maintenance: maintenanceHistory
+
+    'Inventory -> x
+    Inventory o-- Drone
+}
+@enduml

@@ -1,0 +1,62 @@
+@startuml
+
+package "Customer " <<aggregate>> {
+    class Customer <<Entity>> <<root>>{
+    }
+
+}
+
+package "Drone " <<aggregate>> {
+
+    class Drone <<Entity>> <<root>>{
+    }
+
+}
+
+package "Figure " <<aggregate>> {
+
+    class Figure <<Entity>> <<root>>{
+        + code: Integer
+        + version: Double
+    }
+
+    class DSLDescription <<Value Object>>{
+    }
+
+    enum Category <<Value Object>>{
+    }
+
+    class SetOfKeywords <<Value Object>>{
+    }
+
+    class Exclusivity <<Entity>>{
+    }
+
+    class Catalogue <<Entity>>{
+    }
+
+    class DSLValidate <<Service>>{
+    }
+
+    class Time <<Value Object>>{
+    }
+
+
+    'Figure -> x
+    Figure --> "1..*" Drone: composed by
+    Figure --> "1" DSLDescription: description
+    Figure --> "1" Category: category
+    Figure --> "1" SetOfKeywords: keywords
+    Figure --> "1" Exclusivity: exclusivity
+
+    'DSLDescription -> x
+    DSLDescription ..> "1" DSLValidate: validates
+
+    'Catalogue -> x
+    Catalogue o-- Figure
+
+    'Exclusivity -> x
+    Exclusivity --> "1" Time: duration
+    Exclusivity --> "1" Customer: exclusive to
+}
+@enduml
