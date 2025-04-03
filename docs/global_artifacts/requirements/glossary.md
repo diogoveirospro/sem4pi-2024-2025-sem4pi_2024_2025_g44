@@ -7,11 +7,11 @@
 | 3D Matrix        |                        |
 | Address          |                        |
 | Admin            |                        |
-| Client           |                        |
 | Code             |                        |
 | CRM              |                        |
 | CRM Collaborator |                        |
 | CRM Manager      |                        |
+| Customer         |                        |
 | Description      |                        |
 | Drone            |                        |
 | Drone Tech       |                        |
