@@ -13,12 +13,6 @@ package "Customer " <<aggregate>> {
     class VatNumber <<Value Object>>{
     }
 
-    class Name <<Value Object>>{
-    }
-
-    class Email <<Value Object>>{
-    }
-
     enum CustomerStatus <<Value Object>>{
     }
 
@@ -32,9 +26,21 @@ package "Customer " <<aggregate>> {
     Customer --> "1" CustomerStatus : status
 
     'Representative -> x
+    Representative --> "1" Position : position
+
+}
+
+package Shared {
+
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    'Representative -> x
     Representative --> "1" Name : name
     Representative --> "1" Email : email
-    Representative --> "1" Position : position
 
 }
 

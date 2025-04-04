@@ -50,7 +50,7 @@
 | VIP Client       |                                                                                                 |
 | Library          |                                                                                                 |
 | Catalog          |                                                                                                 |
-| Iventory         | The collection of drones available for use in shows                                             |
+| Inventory        | The collection of drones available for use in shows                                             |
 | Routine          | A set of predefined movements or actions for a drone in a show                                  |
 | Maintenance      | The maintenance history of a drone                                                              |
 | Model            | The specific type or model of a drone                                                           |

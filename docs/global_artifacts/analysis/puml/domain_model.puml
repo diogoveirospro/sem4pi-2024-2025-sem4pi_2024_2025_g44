@@ -13,12 +13,6 @@ package "Customer " <<aggregate>> {
     class VatNumber <<Value Object>>{
     }
 
-    class Name <<Value Object>>{
-    }
-
-    class Email <<Value Object>>{
-    }
-
     enum CustomerStatus <<Value Object>>{
     }
 
@@ -32,8 +26,6 @@ package "Customer " <<aggregate>> {
     Customer --> "1" CustomerStatus : status
 
     'Representative -> x
-    Representative --> "1" Name : name
-    Representative --> "1" Email : email
     Representative --> "1" Position : position
 
 }
@@ -77,6 +69,7 @@ package "Figure " <<aggregate>> {
     class Figure <<Entity>> <<root>>{
         + code: Integer
         + version: Double
+        + description : String
     }
 
     class DSLDescription <<Value Object>>{
@@ -97,9 +90,6 @@ package "Figure " <<aggregate>> {
     class DSLValidate <<Service>>{
     }
 
-    class Time <<Value Object>>{
-    }
-
 
     'Figure -> x
     Figure --> "1..*" Drone: composed by
@@ -115,17 +105,10 @@ package "Figure " <<aggregate>> {
     Catalogue o-- Figure
 
     'Exclusivity -> x
-    Exclusivity --> "1" Time: duration
     Exclusivity --> "1" Customer: exclusive to
 }
 
 package "Show " <<aggregate>>{
-
-    class PhoneNumber <<Value Object>>{
-    }
-
-    class Date <<Value Object>>{
-    }
 
     class Description <<Value Object>>{
     }
@@ -158,10 +141,15 @@ package "Show " <<aggregate>>{
     class ShowProposal <<Entity>>{
     }
 
+    class PhoneNumber <<Value Object>>{
+    }
+
+    class Date <<Value Object>>{
+    }
+
     'ShowRequest -> x
     ShowRequest --> "0..*" Figure : requests new
     ShowRequest --> "1" Date : startTime
-    ShowRequest --> "1" Time : duration
     ShowRequest --> "1" Description : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
@@ -181,10 +169,34 @@ package "Show " <<aggregate>>{
     ShowProposal --> "1" Status: status
 
     'CRM Collaborator -> x
-    CRMCollaborator --> "1" Name: name
-    CRMCollaborator --> "1" Email: email
     CRMCollaborator --> "1" PhoneNumber: phoneNumber
 
+}
+
+package Shared {
+
+    class Time <<Value Object>>{
+    }
+
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    'CRM Collaborator -> x
+    CRMCollaborator --> "1" Name: name
+    CRMCollaborator --> "1" Email: email
+
+    'Exclusivity -> x
+    Exclusivity --> "1" Time: duration
+
+    'Representative -> x
+    Representative --> "1" Name : name
+    Representative --> "1" Email : email
+
+    'ShowRequest -> x
+    ShowRequest --> "1" Time : duration
 }
 
 @enduml

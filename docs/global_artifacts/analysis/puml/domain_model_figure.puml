@@ -18,6 +18,7 @@ package "Figure " <<aggregate>> {
     class Figure <<Entity>> <<root>>{
         + code: Integer
         + version: Double
+        + description : String
     }
 
     class DSLDescription <<Value Object>>{
@@ -59,4 +60,14 @@ package "Figure " <<aggregate>> {
     Exclusivity --> "1" Time: duration
     Exclusivity --> "1" Customer: exclusive to
 }
+
+package Shared {
+
+    class Time <<Value Object>>{
+    }
+
+    'Exclusivity -> x
+    Exclusivity --> "1" Time: duration
+}
+
 @enduml
