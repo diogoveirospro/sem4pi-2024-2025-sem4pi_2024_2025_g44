@@ -2,23 +2,52 @@
 
 ## 1. Description of the Project
 
-*To Do*
+This project is dedicated to producing an app for the company **Shodrone** that will allow a user to schedule a drone show.
+The app will be a console based application that will allow the user to schedule a drone show by requesting a show to a CRM Collaborator.
+The CRM Collaborator will submit the request to the Show Designer, who will design new figures for the show.
+The Show Designer will then submit the figures to the Drone Tech, who will test those figures on a simulator checking if the drones are able to perform the figure without crashing with each other.
+After the testing, the Drone Tech will submit the figures to the CRM Collaborator, who will create one or more show proposals in according to the show request.
+In case of a show proposal being accepted, by following all the requirements, the CRM Collaborator will send the show proposal to the customer.
+The Customer will then accept or reject the show proposal sent by the CRM Collaborator.
+In case of rejection, the CRM Team will have to discuss a new date with the customer, but in case of acceptance then the show will be marked as scheduled.
 
 ## 2. Planning and Technical Documentation
 
-[Planning and Technical Documentation](docs/usxxx/readme.md)
+[Planning and Technical Documentation](docs/global_artifacts/requirements/requirements.md)
 
 ## 3. How to Build
 
-*To Do*
+This is only if you want to build the project. If you want to run the project, you can just run the jar file that is already built and located in the `target` folder.
+If you want to build the project, you need to have the following tools installed:
+- Java 21
+- Maven 3.8.1
+
+Make sure `JAVA_HOME` is set to the JDK folder and Maven is on the system `PATH`.
+
+To build the project, run the following script:
+- Linux/Unix/MacOS: ./build-all.sh
+- Windows: build-all.bat
 
 ## 4. How to Execute Tests
 
-*To Do*
+To run and compile the project, you need to have the programs said in the previous section *How to Build* and then run the following script:
+
+To run the tests, run the following script:
+- Linux/Unix/MacOS: ./run-tests.sh
+- Windows: run-tests.bat
 
 ## 5. How to Run
 
-*To Do*
+To run and compile the project, you need to have the programs said in the previous section *How to Build* and then run the following script:
+
+Shodrone1:
+- Linux/Unix/MacOS: ./shodrone1.sh
+- Windows: shodrone1.bat
+
+Shodrone2:
+- Linux/Unix/MacOS: ./shodrone2.sh
+- Windows: shodrone2.bat
+
 
 ## 6. How to Install/Deploy into Another Machine (or Virtual Machine)
 

@@ -5,8 +5,8 @@ ECHO Checking if build is necessary...
 
 :: Define paths
 SET "PROJECT_DIR=%~dp0"
-SET "TARGET_DIR=%PROJECT_DIR%shodrone.app1\target"
-SET "JAR_FILE=%TARGET_DIR%\shodrone.app1-0.1.0.jar"
+SET "TARGET_DIR=%PROJECT_DIR%shodrone.app2\target"
+SET "JAR_FILE=%TARGET_DIR%\shodrone.app2-0.1.0.jar"
 SET "HASH_FILE=%PROJECT_DIR%\hash_builds\.build_hash"
 
 :: Initialize empty hash string

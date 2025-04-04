@@ -5,8 +5,8 @@ echo "Checking if build is necessary..."
 
 # Define paths
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TARGET_DIR="$PROJECT_DIR/shodrone.app1/target"
-JAR_FILE="$TARGET_DIR/shodrone.app1-0.1.0.jar"
+TARGET_DIR="$PROJECT_DIR/shodrone.app2/target"
+JAR_FILE="$TARGET_DIR/shodrone.app2-0.1.0.jar"
 HASH_FILE="$PROJECT_DIR/hash_builds/.build_hash"
 
 # Compute the current source hash (excluding target directory!)
