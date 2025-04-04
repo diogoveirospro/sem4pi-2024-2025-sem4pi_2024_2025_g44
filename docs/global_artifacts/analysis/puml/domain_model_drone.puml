@@ -8,6 +8,15 @@ package "Drone " <<aggregate>> {
     class Drone <<Entity>> <<root>>{
     }
 
+    class Maintenance <<Entity>>{
+    }
+
+    class MaintenanceDescription <<Value Object>>{
+    }
+
+    enum MaintenanceType <<Value Object>>{
+    }
+
     class Model <<Value Object>>{
     }
 
@@ -15,9 +24,6 @@ package "Drone " <<aggregate>> {
     }
 
     enum DroneStatus <<Value Object>>{
-    }
-
-    class Maintenance <<Value Object>>{
     }
 
     class Routine <<Value Object>>{
@@ -28,9 +34,23 @@ package "Drone " <<aggregate>> {
     Drone --> "1" DroneStatus: status
     Drone --> "1" Model: model
     Drone --> "1" SerialNumber: serialNumber
-    Drone --> "1" Maintenance: maintenanceHistory
+    Drone --> "1" Maintenance: undergoes
 
     'Inventory -> x
     Inventory o-- Drone
+
+    'Maintenance -> x
+    Maintenance --> "1" MaintenanceDescription: description
+    Maintenance --> "1" MaintenanceType: type
 }
+
+package Shared {
+
+    class Date <<Value Object>>{
+    }
+
+    'Maintenance -> x
+    Maintenance --> "1" Date: date
+}
+
 @enduml

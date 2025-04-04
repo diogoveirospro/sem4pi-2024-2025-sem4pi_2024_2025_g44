@@ -38,9 +38,13 @@ package Shared {
     class Email <<Value Object>>{
     }
 
+    class PhoneNumber <<Value Object>>{
+    }
+
     'Representative -> x
     Representative --> "1" Name : name
     Representative --> "1" Email : email
+    Representative --> "1" PhoneNumber : phoneNumber
 
 }
 

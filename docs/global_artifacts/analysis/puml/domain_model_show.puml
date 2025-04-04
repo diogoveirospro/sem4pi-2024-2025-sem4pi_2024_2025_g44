@@ -17,12 +17,6 @@ package "Figure " <<aggregate>> {
 
 package "Show " <<aggregate>>{
 
-    class PhoneNumber <<Value Object>>{
-    }
-
-    class Date <<Value Object>>{
-    }
-
     class Description <<Value Object>>{
     }
 
@@ -56,7 +50,6 @@ package "Show " <<aggregate>>{
 
     'ShowRequest -> x
     ShowRequest --> "0..*" Figure : requests new
-    ShowRequest --> "1" Date : startTime
     ShowRequest --> "1" Description : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
@@ -75,8 +68,6 @@ package "Show " <<aggregate>>{
     ShowProposal --> "1" ShowRequest: generated with
     ShowProposal --> "1" Status: status
 
-    'CRM Collaborator -> x
-    CRMCollaborator --> "1" PhoneNumber: phoneNumber
 
 }
 
@@ -91,12 +82,24 @@ package Shared {
     class Email <<Value Object>>{
     }
 
+    class PhoneNumber <<Value Object>>{
+    }
+
+    class Date <<Value Object>>{
+    }
+
     'CRM Collaborator -> x
     CRMCollaborator --> "1" Name: name
     CRMCollaborator --> "1" Email: email
+    CRMCollaborator --> "1" PhoneNumber: phoneNumber
 
-    'ShowRequest -> x
-    ShowRequest --> "1" Time : duration
+   'ShowRequest -> x
+   ShowRequest --> "1" Time : duration
+   ShowRequest --> "1" Date : startTime
+
+   'Show -> x
+   Show --> "1" Date : date
+   Show --> "1" Time : time
 }
 
 @enduml

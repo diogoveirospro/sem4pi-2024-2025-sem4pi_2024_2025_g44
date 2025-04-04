@@ -38,6 +38,15 @@ package "Drone " <<aggregate>> {
     class Drone <<Entity>> <<root>>{
     }
 
+    class Maintenance <<Entity>>{
+    }
+
+    class MaintenanceDescription <<Value Object>>{
+    }
+
+    enum MaintenanceType <<Value Object>>{
+    }
+
     class Model <<Value Object>>{
     }
 
@@ -45,9 +54,6 @@ package "Drone " <<aggregate>> {
     }
 
     enum DroneStatus <<Value Object>>{
-    }
-
-    class Maintenance <<Value Object>>{
     }
 
     class Routine <<Value Object>>{
@@ -58,10 +64,14 @@ package "Drone " <<aggregate>> {
     Drone --> "1" DroneStatus: status
     Drone --> "1" Model: model
     Drone --> "1" SerialNumber: serialNumber
-    Drone --> "1" Maintenance: maintenanceHistory
+    Drone --> "1" Maintenance: undergoes
 
     'Inventory -> x
     Inventory o-- Drone
+
+    'Maintenance -> x
+    Maintenance --> "1" MaintenanceDescription: description
+    Maintenance --> "1" MaintenanceType: type
 }
 
 package "Figure " <<aggregate>> {
@@ -141,15 +151,8 @@ package "Show " <<aggregate>>{
     class ShowProposal <<Entity>>{
     }
 
-    class PhoneNumber <<Value Object>>{
-    }
-
-    class Date <<Value Object>>{
-    }
-
     'ShowRequest -> x
     ShowRequest --> "0..*" Figure : requests new
-    ShowRequest --> "1" Date : startTime
     ShowRequest --> "1" Description : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
@@ -168,9 +171,6 @@ package "Show " <<aggregate>>{
     ShowProposal --> "1" ShowRequest: generated with
     ShowProposal --> "1" Status: status
 
-    'CRM Collaborator -> x
-    CRMCollaborator --> "1" PhoneNumber: phoneNumber
-
 }
 
 package Shared {
@@ -184,9 +184,16 @@ package Shared {
     class Email <<Value Object>>{
     }
 
+    class PhoneNumber <<Value Object>>{
+    }
+
+    class Date <<Value Object>>{
+    }
+
     'CRM Collaborator -> x
     CRMCollaborator --> "1" Name: name
     CRMCollaborator --> "1" Email: email
+    CRMCollaborator --> "1" PhoneNumber: phoneNumber
 
     'Exclusivity -> x
     Exclusivity --> "1" Time: duration
@@ -194,9 +201,18 @@ package Shared {
     'Representative -> x
     Representative --> "1" Name : name
     Representative --> "1" Email : email
+    Representative --> "1" PhoneNumber : phoneNumber
 
     'ShowRequest -> x
     ShowRequest --> "1" Time : duration
+    ShowRequest --> "1" Date : startTime
+
+    'Show -> x
+    Show --> "1" Date : date
+    Show --> "1" Time : time
+
+    'Maintenance -> x
+    Maintenance --> "1" Date: date
 }
 
 @enduml
