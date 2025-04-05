@@ -7,14 +7,22 @@ User stories can have multiple use cases.
 
 ![Use Case Diagram](images/use_case_diagram.svg)
 
-| Main Use Cases   | Description                    |
-|:-----------------|:-------------------------------|
-| Admin            | Manages users                  |
-| CRM Manager      | Manages clients and proposals  |
-| CRM Collaborator | Schedules and configures shows |
-| Show Designer    | Creates figures for shows      |
-| Drone Tech       | Manages drones                 |
-| Customer         | Requests and views shows       |
+| Main Use Cases                     | Description                    |
+|:-----------------------------------|:-------------------------------|
+| Admin                              | Manages users                  |
+| CRM Manager                        | Manages clients and proposals  |
+| CRM Collaborator                   | Schedules and configures shows |
+| Show Designer                      | Creates figures for shows      |
+| Drone Tech                         | Manages drones                 |
+| Customer (Customer Representative) | Requests and views shows       |
+
+## Domain Model
+
+![Domain Model](/docs/global_artifacts/analysis/images/domain_model.svg)
+
+## Glossary
+
+[Glossary](glossary.md)
 
 ### Use Cases / User Stories
 

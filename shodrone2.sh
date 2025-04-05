@@ -48,4 +48,4 @@ fi
 # Run the application
 echo "Running the application..."
 cd "$TARGET_DIR" || exit
-java -jar shodrone.app1-0.1.0.jar
+java -jar shodrone.app2-0.1.0.jar

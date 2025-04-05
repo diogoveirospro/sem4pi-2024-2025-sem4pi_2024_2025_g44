@@ -71,7 +71,7 @@ ECHO Build completed successfully. Updated hash saved.
 :RUN
 ECHO Running the application...
 CD /D "%TARGET_DIR%"
-java -jar shodrone.app1-0.1.0.jar
+java -jar shodrone.app2-0.1.0.jar
 
 :: RemoveSpaces function to remove all spaces
 :RemoveSpaces
