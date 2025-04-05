@@ -103,7 +103,7 @@ package "Figure " <<aggregate>> {
 
     'Figure -> x
     Figure --> "1..*" Drone: composed by
-    Figure --> "1" DSLDescription: description
+    Figure --> "1" DSLDescription: DSLDescription
     Figure --> "1" Category: category
     Figure --> "1" SetOfKeywords: keywords
     Figure --> "1" Exclusivity: exclusivity
