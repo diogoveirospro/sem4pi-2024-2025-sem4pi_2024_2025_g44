@@ -2,14 +2,12 @@
 
 ## 1. Description of the Project
 
-This project is dedicated to producing an app for the company **Shodrone** that will allow a user to schedule a drone show.
-The app will be a console based application that will allow the user to schedule a drone show by requesting a show to a CRM Collaborator.
-The CRM Collaborator will submit the request to the Show Designer, who will design new figures for the show.
-The Show Designer will then submit the figures to the Drone Tech, who will test those figures on a simulator checking if the drones are able to perform the figure without crashing with each other.
-After the testing, the Drone Tech will submit the figures to the CRM Collaborator, who will create one or more show proposals in according to the show request.
-In case of a show proposal being accepted, by following all the requirements, the CRM Collaborator will send the show proposal to the customer.
-The Customer will then accept or reject the show proposal sent by the CRM Collaborator.
-In case of rejection, the CRM Team will have to discuss a new date with the customer, but in case of acceptance then the show will be marked as scheduled.
+This project is an app for the company **Shodrone**. \
+The application has a console line interface. \
+It allows the client to request and schedule a show. \
+The show consists in a sequence of figures represented by drones. \
+This project also includes a simulator to test the different figures and the shows.
+
 
 ## 2. Planning and Technical Documentation
 
@@ -51,7 +49,12 @@ To run and compile the project, you need to have the programs said in the previo
 
 ## 6. How to Install/Deploy into Another Machine (or Virtual Machine)
 
-*To Do*
+Go to GitHub and download or clone the repository. \
+Verify if `JDK` is installed and added to the `Path`. 
+[JDK Installation Guide](https://docs.oracle.com/en/java/javase/22/install/installation-jdk-microsoft-windows-platforms.html#GUID-A7E27B90-A28D-4237-9383-A58B416071CA) \
+Run the build scripts and then the running scripts.
+
+
 
 ## 7. How to Generate PlantUML Diagrams
 
