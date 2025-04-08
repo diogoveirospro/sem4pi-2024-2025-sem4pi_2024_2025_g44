@@ -38,10 +38,6 @@ package "Figure " <<aggregate>> {
     class DSLValidate <<Service>>{
     }
 
-    class Time <<Value Object>>{
-    }
-
-
     'Figure -> x
     Figure --> "1..*" Drone: composed by
     Figure --> "1" DSLDescription: DSLDescription
@@ -55,7 +51,6 @@ package "Figure " <<aggregate>> {
     DSLDescription ..> "1" DSLValidate: validates
 
     'Exclusivity -> x
-    Exclusivity --> "1" Time: duration
     Exclusivity --> "1" Customer: exclusive to
 }
 
