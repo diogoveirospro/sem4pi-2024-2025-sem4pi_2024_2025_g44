@@ -17,8 +17,10 @@ package "Figure " <<aggregate>> {
 
     class Figure <<Entity>> <<root>>{
         + code: Integer
-        + version: Double
         + description : String
+    }
+
+    class Version <<Value Object>>{
     }
 
     class DSLDescription <<Value Object>>{
@@ -31,9 +33,6 @@ package "Figure " <<aggregate>> {
     }
 
     class Exclusivity <<Entity>>{
-    }
-
-    class Catalogue <<Entity>>{
     }
 
     class DSLValidate <<Service>>{
@@ -49,12 +48,11 @@ package "Figure " <<aggregate>> {
     Figure --> "1" Category: category
     Figure --> "1" SetOfKeywords: keywords
     Figure --> "1" Exclusivity: exclusivity
+    Figure --> "1" Version: version
+
 
     'DSLDescription -> x
     DSLDescription ..> "1" DSLValidate: validates
-
-    'Catalogue -> x
-    Catalogue o-- Figure
 
     'Exclusivity -> x
     Exclusivity --> "1" Time: duration

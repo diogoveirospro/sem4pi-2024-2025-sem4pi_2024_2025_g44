@@ -2,9 +2,6 @@
 
 package "Drone " <<aggregate>> {
 
-    class Inventory <<Entity>>{
-    }
-
     class Drone <<Entity>> <<root>>{
     }
 
@@ -26,18 +23,11 @@ package "Drone " <<aggregate>> {
     enum DroneStatus <<Value Object>>{
     }
 
-    class Routine <<Value Object>>{
-    }
-
     'Drone -> x
-    Drone --> "1" Routine: performs
     Drone --> "1" DroneStatus: status
     Drone --> "1" Model: model
     Drone --> "1" SerialNumber: serialNumber
     Drone --> "1" Maintenance: undergoes
-
-    'Inventory -> x
-    Inventory o-- Drone
 
     'Maintenance -> x
     Maintenance --> "1" MaintenanceDescription: description
