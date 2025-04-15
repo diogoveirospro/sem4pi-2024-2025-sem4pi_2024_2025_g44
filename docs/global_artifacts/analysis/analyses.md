@@ -77,3 +77,5 @@ it gets reevaluated by the system.
 > 7. Can a customer with "Created" status submit a Show Request, or do only customers with "Regular" or "VIP" status have this permission? If not, what are the steps required for a "Created" customer to become "Regular" or "VIP"?
 
 > 8. In the third paragraph of section 3.1.4, it states that "the CRM Manager assigns each request to a Show Designer", but isn't the CRM Collaborator responsible for this assignment? It's not clear which of the two has this responsibility and what the specific role of the CRM Manager is in this process.
+
+> 9. How do you want the simulation to be demonstrated?
