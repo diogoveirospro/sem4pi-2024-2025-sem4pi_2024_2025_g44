@@ -1,0 +1,55 @@
+@startuml
+
+package "ShowRequest " <<aggregate>>{
+
+    class Location <<Value Object>>{
+    }
+
+    enum ShowRequestStatus <<Value Object>>{
+    }
+
+    class ShowDescription <<Value Object>>{
+    }
+
+    class ShowRequest <<Entity>> <<root>>{
+    }
+
+    class IDShowRequest<<Value Object>>{
+    }
+
+    'ShowRequest -> x
+    ShowRequest --> "1" ShowDescription : description
+    ShowRequest --> "1" Location: place
+    ShowRequest --> "1" ShowRequestStatus: requestStatus
+    ShowRequest --> "1"IDShowRequest: id
+}
+
+package "Figure " <<aggregate>> {
+
+    class Figure <<Entity>> <<root>>{
+    }
+
+    'ShowRequest -> x
+    ShowRequest --> "0..*" Figure : requests new
+}
+
+package "Customer " <<aggregate>> {
+    class Customer <<Entity>> <<root>>{
+    }
+
+    'ShowRequest -> x
+    ShowRequest --> "1" Customer: requested by
+
+}
+
+package "CRMCollaborator " <<aggregate>> {
+
+    class CRMCollaborator <<Entity>> <<root>>{
+    }
+
+    'ShowRequest -> x
+    ShowRequest --> "1" CRMCollaborator : submitted by
+}
+
+
+@enduml

@@ -1,66 +1,74 @@
 @startuml
 
-package "Customer " <<aggregate>> {
-    class Customer <<Entity>> <<root>>{
-    }
-
-}
-
-package "Drone " <<aggregate>> {
-
-    class Drone <<Entity>> <<root>>{
-    }
-
-}
-
 package "Figure " <<aggregate>> {
 
     class Figure <<Entity>> <<root>>{
-        + code: Integer
-        + description : String
+    }
+
+    class Code <<Value Object>>{
     }
 
     class Version <<Value Object>>{
     }
 
+    class Description <<Value Object>>{
+    }
+
     class DSLDescription <<Value Object>>{
     }
 
-    enum Category <<Value Object>>{
+    class Category <<Entity>>{
     }
 
-    class SetOfKeywords <<Value Object>>{
+    class idCategory <<Value Object>>{
+    }
+
+    class CategoryStatus <<Value Object>>{
+    }
+
+    class FigureStatus <<Value Object>>{
+    }
+
+    class Keyword <<Value Object>>{
     }
 
     class Exclusivity <<Entity>>{
     }
 
+    class idExclusivity <<Value Object>>{
+    }
+
     class DSLValidate <<Service>>{
     }
 
+
     'Figure -> x
-    Figure --> "1..*" Drone: composed by
     Figure --> "1" DSLDescription: DSLDescription
     Figure --> "1" Category: category
-    Figure --> "1" SetOfKeywords: keywords
+    Figure --> "1..*" Keyword: keywords
     Figure --> "1" Exclusivity: exclusivity
+    Figure --> "1" Code: code
     Figure --> "1" Version: version
+    Figure --> "1" Description: description
+    Figure --> "1" FigureStatus: figureStatus
 
-
-    'DSLDescription -> x
-    DSLDescription ..> "1" DSLValidate: validates
+    'DSLValidate -> x
+    DSLValidate ..> "1" DSLDescription: validates
 
     'Exclusivity -> x
-    Exclusivity --> "1" Customer: exclusive to
+    Exclusivity --> "1" idExclusivity: id
+
+    'Category -> x
+    Category --> "1" idCategory: id
+    Category --> "1" CategoryStatus: categoryStatus
 }
 
-package Shared {
-
-    class Time <<Value Object>>{
+package "Customer " <<aggregate>> {
+    class Customer <<Entity>> <<root>>{
     }
 
     'Exclusivity -> x
-    Exclusivity --> "1" Time: duration
+    Exclusivity --> "1" Customer: exclusive to
 }
 
 @enduml

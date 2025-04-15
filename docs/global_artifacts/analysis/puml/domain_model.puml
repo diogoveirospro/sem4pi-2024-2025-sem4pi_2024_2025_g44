@@ -30,6 +30,18 @@ package "Customer " <<aggregate>> {
 
 }
 
+package "CRMCollaborator " <<aggregate>> {
+
+    class CRMCollaborator <<Entity>> <<root>>{
+    }
+
+    class IDCRMCollaborator <<Value Object>>{
+    }
+
+    'CRMCollaborator -> x
+    CRMCollaborator --> "1" IDCRMCollaborator: id
+}
+
 package "Drone " <<aggregate>> {
 
     class Drone <<Entity>> <<root>>{
@@ -147,12 +159,6 @@ package "ShowRequest " <<aggregate>>{
     class ShowDescription <<Value Object>>{
     }
 
-    class CRMCollaborator <<Entity>>{
-    }
-
-    class IDCRMCollaborator <<Value Object>>{
-    }
-
     class ShowRequest <<Entity>> <<root>>{
     }
 
@@ -167,12 +173,9 @@ package "ShowRequest " <<aggregate>>{
     ShowRequest --> "1" Location: place
     ShowRequest --> "1" ShowRequestStatus: requestStatus
     ShowRequest --> "1"IDShowRequest: id
-
-    'CRMCollaborator -> x
-    CRMCollaborator --> "1" IDCRMCollaborator: id
 }
 
-package "ShowProposal "{
+package "ShowProposal " <<aggregate>>{
 
     enum ShowProposalStatus <<Value Object>>{
     }
@@ -228,10 +231,10 @@ package Shared {
     CRMCollaborator --> "1" PhoneNumber: phoneNumber
 
     'Exclusivity -> x
-    Exclusivity --> "1" Time: duration
+    Exclusivity ----> "1" Time: duration
 
     'Customer -> x
-    Customer --> "1" Name : name
+    Customer ----> "1" Name : name
 
     'Representative -> x
     Representative --> "1" Name : name
@@ -239,18 +242,18 @@ package Shared {
     Representative --> "1" PhoneNumber : phoneNumber
 
     'ShowRequest -> x
-    ShowRequest --> "1" Time : duration
-    ShowRequest --> "1" Date : startTime
-    ShowRequest --> "1" QuantityOfDrones: qnt_drones
+    ShowRequest ----> "1" Time : duration
+    ShowRequest ----> "1" Date : startTime
+    ShowRequest ----> "1" QuantityOfDrones: qnt_drones
 
     'Maintenance -> x
-    Maintenance --> "1" Date: date
+    Maintenance ----> "1" Date: date
 
     'Category -> x
-    Category --> "1" Name: name
+    Category ----> "1" Name: name
 
     'ShowProposal -> x
-    ShowProposal --> "1" QuantityOfDrones: qnt_drones
+    ShowProposal ----> "1" QuantityOfDrones: qnt_drones
 }
 
 @enduml

@@ -30,6 +30,7 @@ package "Customer " <<aggregate>> {
 
 }
 
+
 package Shared {
 
     class Name <<Value Object>>{
@@ -41,12 +42,14 @@ package Shared {
     class PhoneNumber <<Value Object>>{
     }
 
+    'Customer -> x
+    Customer ----> "1" Name : name
+
     'Representative -> x
     Representative --> "1" Name : name
     Representative --> "1" Email : email
     Representative --> "1" PhoneNumber : phoneNumber
 
 }
-
 
 @enduml

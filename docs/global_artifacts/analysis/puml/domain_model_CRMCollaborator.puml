@@ -1,0 +1,34 @@
+@startuml
+
+package "CRMCollaborator " <<aggregate>> {
+
+    class CRMCollaborator <<Entity>> <<root>>{
+    }
+
+    class IDCRMCollaborator <<Value Object>>{
+    }
+
+    'CRMCollaborator -> x
+    CRMCollaborator --> "1" IDCRMCollaborator: id
+}
+
+package Shared {
+
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    class PhoneNumber <<Value Object>>{
+    }
+
+    'CRM Collaborator -> x
+    CRMCollaborator --> "1" Name: name
+    CRMCollaborator --> "1" Email: email
+    CRMCollaborator --> "1" PhoneNumber: phoneNumber
+}
+
+
+
+@enduml
