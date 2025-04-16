@@ -16,6 +16,9 @@ package "Customer " <<aggregate>> {
     enum CustomerStatus <<Value Object>>{
     }
 
+    enum CustomerType <<Value Object>>{
+    }
+
     class Position <<Value Object>>{
     }
 
@@ -24,6 +27,7 @@ package "Customer " <<aggregate>> {
     Customer --> "1" VatNumber : vat
     Customer --> "1" Address : address
     Customer --> "1" CustomerStatus : status
+    Customer --> "1" CustomerType : type
 
     'Representative -> x
     Representative --> "1" Position : position
