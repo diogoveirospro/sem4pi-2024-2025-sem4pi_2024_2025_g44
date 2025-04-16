@@ -1,5 +1,36 @@
+# Analyses
 
-### Story Board
+## Domain Model
+
+### Overview
+
+![Overview](./images/domain_model.svg)
+
+### CRM Collaborator
+
+![CRM Collaborator](./images/domain_model_CRMCollaborator.svg)
+
+### Customer
+
+![Customer](./images/domain_model_customer.svg)
+
+### Drone
+
+![Drone](./images/domain_model_drone.svg)
+
+### Figure
+
+![Figure](./images/domain_model_figure.svg)
+
+### Show Request
+
+![Show Request](./images/domain_model_show_request.svg)
+
+### Show Proposal
+
+![Show Proposal](./images/domain_model_show_proposal.svg)
+
+## Story Board
 
 **Management story**
 
