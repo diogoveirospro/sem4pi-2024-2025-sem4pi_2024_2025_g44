@@ -1,5 +1,11 @@
 @startuml
 
+package "Customer " {
+
+    class Customer <<Entity>> <<root>>{
+    }
+}
+
 package "Figure " <<aggregate>> {
 
     class Figure <<Entity>> <<root>>{
@@ -17,16 +23,7 @@ package "Figure " <<aggregate>> {
     class DSLDescription <<Value Object>>{
     }
 
-    class Category <<Entity>>{
-    }
-
-    class idCategory <<Value Object>>{
-    }
-
-    class CategoryStatus <<Value Object>>{
-    }
-
-    class FigureStatus <<Value Object>>{
+    enum FigureStatus <<Value Object>>{
     }
 
     class Keyword <<Value Object>>{
@@ -44,7 +41,6 @@ package "Figure " <<aggregate>> {
 
     'Figure -> x
     Figure --> "1" DSLDescription: DSLDescription
-    Figure --> "1" Category: category
     Figure --> "1..*" Keyword: keywords
     Figure --> "1" Exclusivity: exclusivity
     Figure --> "1" Code: code
@@ -56,19 +52,72 @@ package "Figure " <<aggregate>> {
     DSLValidate ..> "1" DSLDescription: validates
 
     'Exclusivity -> x
+    Exclusivity --> "1" Customer: exclusive to
     Exclusivity --> "1" idExclusivity: id
+}
+
+package "Category " <<aggregate>>{
+
+    class Category <<Entity>> <<root>>{
+    }
+
+    class idCategory <<Value Object>>{
+    }
+
+    enum CategoryStatus <<Value Object>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
 
     'Category -> x
     Category --> "1" idCategory: id
     Category --> "1" CategoryStatus: categoryStatus
+    Category --> "1" CategoryName: name
+
+    'Figure -> x
+    Figure --> "1" Category: category
 }
 
-package "Customer " <<aggregate>> {
-    class Customer <<Entity>> <<root>>{
+package "ShowDesigner " <<aggregate>>{
+
+    class ShowDesigner <<Entity>> <<root>>{
     }
 
+    class IDShowDesigner <<Value Object>>{
+    }
+
+    'ShowDesigner -> x
+    ShowDesigner --> "1" IDShowDesigner: id
+
+    'Figure -> x
+    Figure --> "1" ShowDesigner: created by
+}
+
+package Shared {
+
+    class Time <<Value Object>>{
+    }
+
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    class PhoneNumber <<Value Object>>{
+    }
+
+    'ShowDesigner -> x
+    ShowDesigner --> "1" Name: name
+    ShowDesigner --> "1" Email: email
+    ShowDesigner --> "1" PhoneNumber: phoneNumber
+
     'Exclusivity -> x
-    Exclusivity --> "1" Customer: exclusive to
+    Exclusivity ----> "1" Time: duration
+
+    'Category -> x
+    Category ----> "1" Name: name
 }
 
 @enduml

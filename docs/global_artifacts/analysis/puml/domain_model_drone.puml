@@ -5,9 +5,6 @@ package "Drone " <<aggregate>> {
     class Drone <<Entity>> <<root>>{
     }
 
-    class Model <<Value Object>>{
-    }
-
     class SerialNumber <<Value Object>>{
     }
 
@@ -16,8 +13,39 @@ package "Drone " <<aggregate>> {
 
     'Drone -> x
     Drone --> "1" DroneStatus: status
-    Drone --> "1" Model: model
     Drone --> "1" SerialNumber: serialNumber
+}
+
+package "ModelOfDrone " <<aggregate>> {
+
+    class Model <<Entity>> <<root>>{
+    }
+
+    class ModelID <<Value Object>>{
+    }
+
+    class WindTolerance <<Value Object>>{
+    }
+
+    class WindSpeed <<Value Object>>{
+    }
+
+    class PositionTolerance <<Value Object>>{
+    }
+
+    enum SafetyStatus <<Value Object>>{
+    }
+
+    'Model -> x
+    Model --> "1" ModelID: id
+    Model --> "1" WindTolerance: windTolerance
+    Model --> "1" WindSpeed: windSpeed
+    Model --> "1" PositionTolerance: positionTolerance
+    Model --> "1" SafetyStatus: safetyStatus
+
+    'Drone -> x
+    Drone --> "1" Model: uses
+
 }
 
 package "Maintenance " <<aggregate>> {
