@@ -93,20 +93,5 @@ it gets reevaluated by the system.
 
 ### Questions to Clarify Requirements
 
-> 1. When the client reject's the proposal, does the status of the proposal change to "denied"?
-
-> 2. Who schedules the show, the CRM Collaborator or the CRM Manager, because in the assignment says CRM Team but in the use case says CRM Collaborator?
-
-> 3. Does the company already has some drones and creates more as needed?
-
-> 4. What happens if the client refuses the offer after discussing with the CRM Manager?
-
-> 5. In the document there is a use case, Customer, but there is also a reference to the client, are they the same thing?
-
-> 6. What do the different customer statuses mean and how are they assigned? We know that there are different statuses, but it's not clear what each one means or the criteria used to assign them.
-
-> 7. Can a customer with "Created" status submit a Show Request, or do only customers with "Regular" or "VIP" status have this permission? If not, what are the steps required for a "Created" customer to become "Regular" or "VIP"?
-
-> 8. In the third paragraph of section 3.1.4, it states that "the CRM Manager assigns each request to a Show Designer", but isn't the CRM Collaborator responsible for this assignment? It's not clear which of the two has this responsibility and what the specific role of the CRM Manager is in this process.
-
-> 9. How do you want the simulation to be demonstrated?
+> 1. How do you want the simulation to be demonstrated, via a third party program?
+> 2. In previous questions the client mentioned the need of a maintenance for drones, we wanted to know what are the attributes required. We thought about some like the date of the maintenance, the maintenance id, the description, and the type and status of the maintenance. If there are any missing or extra attributes please mention them. 
