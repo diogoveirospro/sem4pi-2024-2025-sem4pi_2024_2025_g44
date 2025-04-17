@@ -11,7 +11,8 @@
 		<module>shodrone.app1</module>
 		<module>shodrone.app2</module>
 		<module>shodrone.util.ci</module>
-	</modules>
+        <module>shodrone.persistence.impl.jpa</module>
+    </modules>
 	<version>0.1.0</version>
 
 	<properties>
