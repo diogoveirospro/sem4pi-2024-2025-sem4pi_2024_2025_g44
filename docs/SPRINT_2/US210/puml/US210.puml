@@ -1,0 +1,58 @@
+@startuml
+!define Table(name) class name << (T,#FFAAAA) >>
+!define Entity(name) class name << (E,#F9F9F9) >>
+
+' Definindo as classes e serviços da framework
+class AuthenticationService {
+  +authenticate(email: String, password: String): Boolean
+  +generateToken(user: User): String
+}
+
+class Authenticator {
+  +validateCredentials(email: String, password: String): Boolean
+}
+
+class AuthorizationService {
+  +checkPermission(user: User, permission: String): Boolean
+}
+
+class UserSession {
+  +createSession(user: User): Session
+  +invalidateSession(): void
+}
+
+class UserDetailsServiceImpl {
+  +loadUserByUsername(username: String): User
+}
+
+class User {
+  -email: String
+  -password: String
+  -role: String
+  -status: Boolean
+  +getRole(): String
+}
+
+class Role {
+  -roleName: String
+  -permissions: List<String>
+  +hasPermission(permission: String): Boolean
+}
+
+class Session {
+  -user: User
+  -token: String
+  +getToken(): String
+  +getUser(): User
+}
+
+' Definindo as associações entre as classes
+AuthenticationService --> Authenticator : uses
+AuthenticationService --> UserSession : creates
+AuthenticationService --> UserDetailsServiceImpl : loads user details
+AuthorizationService --> User : checks permissions for
+AuthorizationService --> Role : checks permissions for
+UserSession --> User : manages session for
+User --> Role : has role
+
+@enduml
