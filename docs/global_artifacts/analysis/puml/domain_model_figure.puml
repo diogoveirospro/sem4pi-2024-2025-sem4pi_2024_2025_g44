@@ -32,7 +32,7 @@ package "Figure " <<aggregate>> {
     class Exclusivity <<Entity>>{
     }
 
-    class idExclusivity <<Value Object>>{
+    class IDExclusivity <<Value Object>>{
     }
 
     class DSLValidate <<Service>>{
@@ -53,7 +53,7 @@ package "Figure " <<aggregate>> {
 
     'Exclusivity -> x
     Exclusivity --> "1" Customer: exclusive to
-    Exclusivity --> "1" idExclusivity: id
+    Exclusivity --> "1" IDExclusivity: id
 }
 
 package "Category " <<aggregate>>{
@@ -61,7 +61,7 @@ package "Category " <<aggregate>>{
     class Category <<Entity>> <<root>>{
     }
 
-    class idCategory <<Value Object>>{
+    class IDCategory <<Value Object>>{
     }
 
     enum CategoryStatus <<Value Object>>{
@@ -71,7 +71,7 @@ package "Category " <<aggregate>>{
     }
 
     'Category -> x
-    Category --> "1" idCategory: id
+    Category --> "1" IDCategory: id
     Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
 

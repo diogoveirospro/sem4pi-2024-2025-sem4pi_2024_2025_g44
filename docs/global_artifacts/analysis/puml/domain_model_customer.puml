@@ -4,7 +4,10 @@ package "Customer " <<aggregate>> {
     class Customer <<Entity>> <<root>>{
     }
 
-    class Representative <<Entity>>{
+    class CustomerRepresentative <<Entity>>{
+    }
+
+    enum CustomerRepresentativeStatus <<Value Object>>{
     }
 
     class Address <<Value Object>>{
@@ -23,14 +26,15 @@ package "Customer " <<aggregate>> {
     }
 
     'Customer -> x
-    Customer  --> "1..*" Representative : represented by
+    Customer  --> "1..*" CustomerRepresentative : represented by
     Customer --> "1" VatNumber : vat
     Customer --> "1" Address : address
     Customer --> "1" CustomerStatus : status
     Customer --> "1" CustomerType : type
 
     'Representative -> x
-    Representative --> "1" Position : position
+    CustomerRepresentative --> "1" Position : position
+    CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
 
 }
 
@@ -49,9 +53,9 @@ package Shared {
     Customer ----> "1" Name : name
 
     'Representative -> x
-    Representative --> "1" Name : name
-    Representative --> "1" Email : email
-    Representative --> "1" PhoneNumber : phoneNumber
+    CustomerRepresentative --> "1" Name : name
+    CustomerRepresentative --> "1" Email : email
+    CustomerRepresentative --> "1" PhoneNumber : phoneNumber
 }
 
 @enduml
