@@ -1,0 +1,109 @@
+@startuml
+
+package "Domain" #DDDDDD {
+
+    package "DTO" #DDDDDD {
+        class CustomerDTO <<DTO>> {
+
+        }
+    }
+
+    package "Mapper" #DDDDDD {
+        class CustomerListMapper <<Mapper>> {
+            + toDTO(customer) : CustomerDTO
+            + customersToDTO(customers) : List<CustomerDTO>
+        }
+    }
+
+    package "Repository" #DDDDDD {
+        Interface CustomerRepository <<Repository>> {
+            + getCustomers() : List<Customer>
+        }
+        Interface RepresentativeRepository <<Repository>> {
+            + addCustomerRepresentative(customer, representative)
+        }
+        Interface Repositories <<Repository>> {
+            - Repositories()
+            + getInstance() : Repositories
+            + getCustomerRepository() : CustomerRepository
+            + getRepresentativeRepository() : RepresentativeRepository
+        }
+    }
+
+    class Customer <<Entity>> {
+        + Customer (name, address, vat, status, type)
+        + addRepresentative (representative)
+    }
+    class Representative <<Entity>> {
+        + Representative (name, position, email, phoneNumber)
+        + setCustomer (customer)
+    }
+
+    class Address <<Value Object>> {
+
+    }
+    class VatNumber <<Value Object>> {
+
+    }
+    enum CustomerStatus <<Value Object>> {
+
+    }
+    enum CustomerType <<Value Object>> {
+
+    }
+    class Position <<Value Object>> {
+
+    }
+    class Name <<Value Object>> {
+
+    }
+    class Email <<Value Object>> {
+
+    }
+    class PhoneNumber <<Value Object>> {
+
+    }
+}
+
+package "UI" #DDDDDD {
+    class AddCustomerRepresentativeUI <<UI>> {
+
+    }
+}
+
+package "Controller" #DDDDDD {
+    class AddCustomerRepresentativeController <<Controller>> {
+        + registerNewRepresentativeOfCustomer(customer, representative)
+        + listAllCustomers()
+    }
+}
+
+' Relações entre as classes
+Customer --> "1..*" Representative : representative
+Customer --> "1" VatNumber : vat
+Customer --> "1" Address : address
+Customer --> "1" CustomerStatus : status
+Customer --> "1" CustomerType : type
+Customer ----> "1" Name : name
+
+Representative --> "1" Position : position
+Representative --> "1" Name : name
+Representative --> "1" Email : email
+Representative --> "1" PhoneNumber : phoneNumber
+
+Repositories --> Repositories : instance
+Repositories --> CustomerRepository : getCustomerRepository
+Repositories --> RepresentativeRepository : getRepresentativeRepository
+
+CustomerRepository --> "0..*" Customer : customers
+RepresentativeRepository --> "0..*" Representative : representatives
+
+AddCustomerRepresentativeUI ..> AddCustomerRepresentativeController
+AddCustomerRepresentativeController ..> Repositories : repositories
+AddCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
+AddCustomerRepresentativeController ..> RepresentativeRepository : representativeRepository
+AddCustomerRepresentativeController ..> CustomerRepository : customerRepository
+
+CustomerDTO ..> CustomerListMapper : customerDTO
+
+@enduml

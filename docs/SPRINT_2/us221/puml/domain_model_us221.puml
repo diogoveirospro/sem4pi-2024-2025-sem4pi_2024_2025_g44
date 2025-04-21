@@ -1,0 +1,15 @@
+@startuml
+
+class Customer <<Entity>> <<root>>{
+
+}
+
+class Representative <<Entity>>{
+
+}
+
+'Customer -> x
+
+Customer  --> "1..*" Representative : represented by
+
+@enduml
