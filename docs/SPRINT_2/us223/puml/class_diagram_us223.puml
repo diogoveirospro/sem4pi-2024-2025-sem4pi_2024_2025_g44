@@ -6,12 +6,21 @@ package "Domain" #DDDDDD {
         class CustomerDTO <<DTO>> {
 
         }
+
+        class CustomerRepresentativeDTO <<DTO>> {
+
+        }
     }
 
     package "Mapper" #DDDDDD {
         class CustomerListMapper <<Mapper>> {
             + toDTO(customer) : CustomerDTO
             + customersToDTO(customers) : List<CustomerDTO>
+        }
+
+        class CustomerRepresentativeListMapper <<Mapper>> {
+            + toDTO(representative) : CustomerRepresentativeDTO
+            + representativesToDTO(representatives) : List<CustomerRepresentativeDTO>
         }
     }
 
@@ -20,23 +29,26 @@ package "Domain" #DDDDDD {
             + getCustomers() : List<Customer>
         }
         Interface CustomerRepresentativeRepository <<Repository>> {
-            + addCustomerRepresentative(customer, representative)
+            + getRepresentativesOfCustomer(customer, representative): List<CustomerRepresentative>
+            + editEmailOfRepresentative(representative, email)
+            + editPhoneNumberOfRepresentative(representative, phoneNumber)
         }
         Interface Repositories <<Repository>> {
             - Repositories()
             + getInstance() : Repositories
             + getCustomerRepository() : CustomerRepository
-            + getCustomerRepresentativeRepository() : CustomerRepresentativeRepository
+            + getRepresentativeRepository() : CustomerRepresentativeRepository
         }
     }
 
     class Customer <<Entity>> {
         + Customer (name, address, vat, status, type)
-        + addRepresentative (representative)
     }
     class CustomerRepresentative <<Entity>> {
         + CustomerRepresentative (name, position, email, phoneNumber)
-        + setCustomer (customer)
+        + getRepresentativesOfCustomer(customer): List<CustomerRepresentative>
+        + setEmail(email)
+        + setPhoneNumber(phoneNumber)
     }
 
     class Address <<Value Object>> {
@@ -69,19 +81,21 @@ package "Domain" #DDDDDD {
 }
 
 package "UI" #DDDDDD {
-    class AddCustomerRepresentativeUI <<UI>> {
+    class EditCustomerRepresentativeUI <<UI>> {
 
     }
 }
 
 package "Controller" #DDDDDD {
-    class AddCustomerRepresentativeController <<Controller>> {
-        + registerNewRepresentativeOfCustomer(customer, representative)
+    class EditCustomerRepresentativeController <<Controller>> {
+        + listRepresentativesOfAGivenCustomer(customer)
         + listAllCustomers()
+        + EditInformationOfACustomerRepresentative(email,phoneNumber)
     }
 }
 
 ' Relações entre as classes
+'Customer --> *
 Customer --> "1..*" CustomerRepresentative : representative
 Customer --> "1" VatNumber : vat
 Customer --> "1" Address : address
@@ -89,6 +103,7 @@ Customer --> "1" CustomerStatus : status
 Customer --> "1" CustomerType : type
 Customer ----> "1" Name : name
 
+'Representative --> *
 CustomerRepresentative --> "1" Position : position
 CustomerRepresentative --> "1" Name : name
 CustomerRepresentative --> "1" Email : email
@@ -96,20 +111,30 @@ CustomerRepresentative --> "1" PhoneNumber : phoneNumber
 CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
 
 
+'Repositories --> *
 Repositories --> Repositories : instance
 Repositories --> CustomerRepository : getCustomerRepository
-Repositories --> CustomerRepresentativeRepository : getCustomerRepresentativeRepository
+Repositories --> CustomerRepresentativeRepository : getRepresentativeRepository
 
+'CustomerRepository --> *
 CustomerRepository --> "0..*" Customer : customers
+
+'CustomerRepresentativeRepository --> *
 CustomerRepresentativeRepository --> "0..*" CustomerRepresentative : representatives
 
-AddCustomerRepresentativeUI ..> AddCustomerRepresentativeController
-AddCustomerRepresentativeController ..> Repositories : repositories
-AddCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
-AddCustomerRepresentativeController ..> CustomerRepresentativeRepository : representativeRepository
-AddCustomerRepresentativeController ..> CustomerRepository : customerRepository
+'ListCustomerRepresentativesUI --> *
+EditCustomerRepresentativeUI ..> EditCustomerRepresentativeController
 
+'ListCustomerRepresentativesController --> *
+EditCustomerRepresentativeController ..> Repositories : repositories
+EditCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
+EditCustomerRepresentativeController ..> CustomerRepresentativeRepository : representativeRepository
+EditCustomerRepresentativeController ..> CustomerRepository : customerRepository
+EditCustomerRepresentativeController ..> CustomerRepresentativeListMapper : representativeListDTO
+
+'CustomerDTO --> *
 CustomerDTO ..> CustomerListMapper : customerDTO
 
-
+'CustomerRepresentativeDTO --> *
+CustomerRepresentativeDTO ..> CustomerRepresentativeListMapper : representativeDTO
 @enduml

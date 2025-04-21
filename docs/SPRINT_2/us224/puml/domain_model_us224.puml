@@ -1,0 +1,16 @@
+@startuml
+
+class CustomerRepresentative <<Entity>>{
+
+}
+
+enum CustomerRepresentativeStatus <<Value Object>>{
+
+}
+
+
+CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
+
+
+
+@enduml

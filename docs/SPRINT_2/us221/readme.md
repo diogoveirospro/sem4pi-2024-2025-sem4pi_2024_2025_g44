@@ -17,8 +17,6 @@ Test: To do
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
 **As** a CRM Collaborator,
 **I want** to register a new representative of a customer,
 **So that** the customer can be represented by another person.
@@ -64,7 +62,7 @@ O design do sistema aplica diversos padrões de projeto consagrados, promovendo 
 - **Descrição:** Responsável por converter objetos do domínio (`Customer`) em objetos DTO (`CustomerDTO`) e vice-versa. Centraliza a lógica de transformação, promovendo reuso e separação de responsabilidades.
 
 #### 3. **Repository Pattern**
-- **Classes Envolvidas:** `CustomerRepository`, `RepresentativeRepository`, `Repositories`
+- **Classes Envolvidas:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
 - **Descrição:** Abstrai a camada de persistência de dados. Define uma interface clara para operações sobre entidades do domínio, permitindo a substituição ou modificação da fonte de dados sem impactar a lógica de negócio.
 
 #### 4. **Singleton Pattern**

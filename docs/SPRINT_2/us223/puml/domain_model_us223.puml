@@ -1,0 +1,17 @@
+@startuml
+
+class CustomerRepresentative <<Entity>>{
+}
+
+class Email <<Value Object>>{
+}
+
+class PhoneNumber <<Value Object>>{
+}
+
+'Representative -> x
+
+CustomerRepresentative --> "1" Email : email
+CustomerRepresentative --> "1" PhoneNumber : phoneNumber
+
+@enduml
