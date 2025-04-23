@@ -1,0 +1,43 @@
+@startuml
+
+class User {
+    +userId: String
+    +email: String
+    +password: String
+    +getRoles(): List<UserRole>
+}
+
+class AuthenticationToken {
+    +token: String
+    +expiryDate: Date
+}
+
+class UserRole {
+    +roleName: String
+}
+
+class Permission {
+    +permissionName: String
+}
+
+class Authentication {
+    +user: User
+    +authenticateUser(): Boolean
+}
+
+class Authorization {
+    +user: User
+    +role: UserRole
+    +permission: Permission
+    +checkPermission(): Boolean
+}
+
+' Relationships
+User --> "1" UserRole : has
+User --> "0..*" AuthenticationToken : generates
+UserRole --> "0..*" Permission : grants
+Authentication --> "1" User : authenticates
+Authorization --> "1" Permission : grants
+Authorization --> "1" UserRole : checks
+
+@enduml

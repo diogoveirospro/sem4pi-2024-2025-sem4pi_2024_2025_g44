@@ -1,0 +1,37 @@
+@startuml
+
+package "Authentication" <<aggregate>> {
+
+    class User <<Entity>> <<root>> {
+        +userId: String
+        +email: String
+        +password: String
+    }
+
+    class AuthenticationToken <<Value Object>> {
+        +token: String
+        +expiryDate: Date
+    }
+
+    User --> "0..*" AuthenticationToken : generates
+}
+
+package "Authorization" <<aggregate>> {
+
+    class Authorization <<Entity>> <<root>> {
+        +checkPermission(): Boolean
+    }
+
+    class UserRole <<Value Object>> {
+        +roleName: String
+    }
+
+    class Permission <<Value Object>> {
+        +permissionName: String
+    }
+
+    User --> "1" UserRole : has
+    UserRole --> "0..*" Permission : grants
+}
+
+@enduml
