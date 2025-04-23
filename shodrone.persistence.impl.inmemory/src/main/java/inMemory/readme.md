@@ -1,0 +1,1 @@
+### All necessary code to get the information in memory

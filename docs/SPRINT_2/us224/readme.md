@@ -43,35 +43,35 @@ The system should allow the user to disable a customer representative through th
 
 ### 4.3. Applied Patterns
 
-A seguir, destacam-se os principais padrões de projeto utilizados na implementação da funcionalidade de desativação de representantes de cliente, conforme o diagrama de classes:
+Below are the main design patterns used in the implementation of the customer representative deactivation functionality, according to the class diagram:
 
 #### 1. **DTO (Data Transfer Object) Pattern**
-- **Classes Envolvidas:** `CustomerDTO`, `CustomerRepresentativeDTO`
-- **Descrição:** Os DTOs encapsulam os dados que são transferidos entre as camadas de domínio e de apresentação. Isso permite separar a lógica de domínio da interface do usuário e controlar quais dados são expostos.
+- **Classes Involved:** `CustomerDTO`, `CustomerRepresentativeDTO`
+- **Description:** DTOs encapsulate the data transferred between the domain and presentation layers. This allows for separation between domain logic and the user interface, and provides control over which data is exposed.
 
 #### 2. **Mapper Pattern**
-- **Classes Envolvidas:** `CustomerListMapper`, `CustomerRepresentativeListMapper`
-- **Descrição:** Responsáveis pela conversão entre entidades do domínio (`Customer`, `CustomerRepresentative`) e seus respectivos DTOs. Promovem reutilização e centralização da lógica de transformação.
+- **Classes Involved:** `CustomerListMapper`, `CustomerRepresentativeListMapper`
+- **Description:** Responsible for converting between domain entities (`Customer`, `CustomerRepresentative`) and their respective DTOs. Promote reuse and centralization of transformation logic.
 
 #### 3. **Repository Pattern**
-- **Classes Envolvidas:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
-- **Descrição:** As interfaces de repositório fornecem um contrato para acesso a dados de clientes e representantes. O uso desse padrão desacopla a lógica de persistência da lógica de negócios.
+- **Classes Involved:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
+- **Description:** Repository interfaces provide a contract for accessing customer and representative data. The use of this pattern decouples persistence logic from business logic.
 
 #### 4. **Singleton Pattern**
-- **Classe Envolvida:** `Repositories`
-- **Descrição:** A classe `Repositories` aplica o padrão Singleton ao garantir que exista apenas uma instância global, fornecendo acesso centralizado aos repositórios utilizados pela aplicação.
+- **Class Involved:** `Repositories`
+- **Description:** The `Repositories` class applies the Singleton pattern to ensure that there is only one global instance, providing centralized access to the repositories used by the application.
 
 #### 5. **Controller Pattern**
-- **Classe Envolvida:** `DisableCustomerRepresentativeController`
-- **Descrição:** O controller coordena a interação entre a interface do usuário e as camadas de serviço/repositório. Ele encapsula a lógica necessária para listar clientes, listar representantes e desativar representantes de cliente.
+- **Class Involved:** `DisableCustomerRepresentativeController`
+- **Description:** The controller coordinates the interaction between the user interface and the service/repository layers. It encapsulates the logic needed to list customers, list representatives, and deactivate customer representatives.
 
 #### 6. **Value Object Pattern**
-- **Classes Envolvidas:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`, `CustomerRepresentativeStatus`
-- **Descrição:** Esses objetos representam valores imutáveis que fazem parte das entidades, sem identidade própria. Eles encapsulam regras de validação e semântica, fortalecendo o modelo de domínio.
+- **Classes Involved:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`, `CustomerRepresentativeStatus`
+- **Description:** These objects represent immutable values that are part of entities and have no individual identity. They encapsulate validation rules and semantics, strengthening the domain model.
 
 ---
 
-Esses padrões contribuem para a organização modular do código e ajudam a manter uma separação clara entre responsabilidades nas diversas camadas da aplicação.
+These patterns contribute to the modular organization of the code and help maintain a clear separation of responsibilities across the various layers of the application.
 
 
 ### 5. Tests

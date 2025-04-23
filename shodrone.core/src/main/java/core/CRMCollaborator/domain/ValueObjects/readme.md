@@ -1,0 +1,1 @@
+### All value objects should be in the same package

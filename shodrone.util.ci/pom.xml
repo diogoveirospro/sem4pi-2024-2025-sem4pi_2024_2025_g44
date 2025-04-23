@@ -28,12 +28,12 @@
         <dependency>
             <version>0.1.0</version>
             <groupId>lapr4</groupId>
-            <artifactId>shodrone.app1</artifactId>
+            <artifactId>shodrone.app.backoffice</artifactId>
         </dependency>
         <dependency>
             <version>0.1.0</version>
             <groupId>lapr4</groupId>
-            <artifactId>shodrone.app2</artifactId>
+            <artifactId>shodrone.app.user</artifactId>
         </dependency>
     </dependencies>
 

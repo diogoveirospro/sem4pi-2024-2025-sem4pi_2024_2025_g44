@@ -23,7 +23,7 @@ Test: To do
 
 **Acceptance Criteria:**
 
-**AC01:** The customer representative will be a user of the system (Costumer App).
+**AC01:** The customer representative will be a user of the system (Costumer AppSettings).
 
 **Dependencies:**
 
@@ -51,35 +51,35 @@ The customer won't have an account in the system, so the customer representative
 
 ### 4.3. Applied Patterns
 
-O design do sistema aplica diversos padrões de projeto consagrados, promovendo uma arquitetura limpa, coesa e de fácil manutenção. Abaixo estão os principais padrões identificados:
+The system design applies several well-established design patterns, promoting a clean, cohesive, and maintainable architecture. Below are the main patterns identified:
 
 #### 1. **DTO (Data Transfer Object) Pattern**
-- **Classe Envolvida:** `CustomerDTO`
-- **Descrição:** Utilizado para transportar dados entre camadas, especialmente do domínio para a interface do usuário. Garante que apenas os dados necessários sejam expostos, protegendo as entidades do domínio.
+- **Class Involved:** `CustomerDTO`
+- **Description:** Used to transfer data between layers, especially from the domain to the user interface. Ensures that only the necessary data is exposed, protecting domain entities.
 
 #### 2. **Mapper Pattern**
-- **Classe Envolvida:** `CustomerListMapper`
-- **Descrição:** Responsável por converter objetos do domínio (`Customer`) em objetos DTO (`CustomerDTO`) e vice-versa. Centraliza a lógica de transformação, promovendo reuso e separação de responsabilidades.
+- **Class Involved:** `CustomerListMapper`
+- **Description:** Responsible for converting domain objects (`Customer`) into DTO objects (`CustomerDTO`) and vice versa. Centralizes transformation logic, promoting reuse and separation of concerns.
 
 #### 3. **Repository Pattern**
-- **Classes Envolvidas:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
-- **Descrição:** Abstrai a camada de persistência de dados. Define uma interface clara para operações sobre entidades do domínio, permitindo a substituição ou modificação da fonte de dados sem impactar a lógica de negócio.
+- **Classes Involved:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
+- **Description:** Abstracts the data persistence layer. Defines a clear interface for operations on domain entities, allowing the data source to be replaced or modified without impacting business logic.
 
 #### 4. **Singleton Pattern**
-- **Classe Envolvida:** `Repositories`
-- **Descrição:** Garante que exista apenas uma instância do agregador de repositórios no sistema. O método `getInstance()` implementa o padrão Singleton, provendo um ponto de acesso global e controlado aos repositórios.
+- **Class Involved:** `Repositories`
+- **Description:** Ensures that only one instance of the repository aggregator exists in the system. The `getInstance()` method implements the Singleton pattern, providing a controlled, global access point to the repositories.
 
 #### 5. **Controller Pattern**
-- **Classe Envolvida:** `AddCustomerRepresentativeController`
-- **Descrição:** Atua como intermediário entre a camada de UI e o domínio. Encapsula a lógica de orquestração de casos de uso, como o registro de representantes e a listagem de clientes.
+- **Class Involved:** `AddCustomerRepresentativeController`
+- **Description:** Acts as an intermediary between the UI layer and the domain. Encapsulates the orchestration logic of use cases, such as registering representatives and listing customers.
 
 #### 6. **Value Object Pattern**
-- **Classes Envolvidas:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`
-- **Descrição:** Representam objetos imutáveis que encapsulam valores e regras de validação. Usados para compor entidades, garantindo consistência e expressividade no modelo de domínio.
+- **Classes Involved:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`
+- **Description:** Represent immutable objects that encapsulate values and validation rules. Used to compose entities, ensuring consistency and expressiveness in the domain model.
 
 ---
 
-Esses padrões contribuem para a organização modular do código e ajudam a manter uma separação clara entre responsabilidades nas diversas camadas da aplicação.
+These patterns contribute to the modular organization of the code and help maintain a clear separation of concerns across the various layers of the application.
 
 
 ### 5. Tests

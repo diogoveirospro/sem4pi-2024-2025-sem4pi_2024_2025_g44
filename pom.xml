@@ -8,10 +8,14 @@
 	<artifactId>shodrone</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>shodrone.app1</module>
-		<module>shodrone.app2</module>
+		<module>shodrone.app.backoffice</module>
+		<module>shodrone.app.user</module>
 		<module>shodrone.util.ci</module>
         <module>shodrone.persistence.impl.jpa</module>
+		<module>shodrone.backoffice.bootstrap</module>
+		<module>shodrone.common.console</module>
+		<module>shodrone.core</module>
+        <module>shodrone.persistence.impl.inmemory</module>
     </modules>
 	<version>0.1.0</version>
 

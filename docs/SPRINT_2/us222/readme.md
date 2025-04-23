@@ -48,36 +48,35 @@ This method will be used in the UI to show the list of representatives of a cust
 
 ### 4.3. Applied Patterns
 
-A arquitetura do sistema continua aplicando diversos padrões de projeto reconhecidos, os quais garantem uma organização robusta e de fácil manutenção. A seguir, destacam-se os padrões aplicados para a funcionalidade de listagem de representantes de um cliente:
+The system architecture continues to apply several recognized design patterns, ensuring a robust and maintainable organization. Below are the patterns applied to the customer representative listing functionality:
 
 #### 1. **DTO (Data Transfer Object) Pattern**
-- **Classes Envolvidas:** `CustomerDTO`, `CustomerRepresentativeDTO`
-- **Descrição:** Os DTOs encapsulam os dados que serão transferidos da camada de domínio para a interface do usuário, evitando o acoplamento direto com as entidades e facilitando a serialização/deserialização.
+- **Classes Involved:** `CustomerDTO`, `CustomerRepresentativeDTO`
+- **Description:** DTOs encapsulate the data to be transferred from the domain layer to the user interface, avoiding direct coupling with entities and facilitating serialization/deserialization.
 
 #### 2. **Mapper Pattern**
-- **Classes Envolvidas:** `CustomerListMapper`, `CustomerRepresentativeListMapper`
-- **Descrição:** Realizam a conversão entre entidades do domínio e seus respectivos DTOs. A responsabilidade de transformação é isolada, promovendo reuso e clareza na estrutura da aplicação.
+- **Classes Involved:** `CustomerListMapper`, `CustomerRepresentativeListMapper`
+- **Description:** Perform the conversion between domain entities and their respective DTOs. The transformation responsibility is isolated, promoting reuse and clarity in the application's structure.
 
 #### 3. **Repository Pattern**
-- **Classes Envolvidas:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
-- **Descrição:** Abstraem o acesso aos dados persistentes. Permitem a obtenção de clientes e seus representantes por meio de interfaces bem definidas, desacoplando o domínio da implementação concreta da persistência.
+- **Classes Involved:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
+- **Description:** Abstract access to persistent data. They allow retrieving customers and their representatives through well-defined interfaces, decoupling the domain from the concrete persistence implementation.
 
 #### 4. **Singleton Pattern**
-- **Classe Envolvida:** `Repositories`
-- **Descrição:** A classe `Repositories` segue o padrão Singleton ao expor um método `getInstance()` que garante uma única instância acessível globalmente. Isso centraliza o acesso às instâncias de repositórios.
+- **Class Involved:** `Repositories`
+- **Description:** The `Repositories` class follows the Singleton pattern by exposing a `getInstance()` method that ensures a single globally accessible instance. This centralizes access to repository instances.
 
 #### 5. **Controller Pattern**
-- **Classe Envolvida:** `ListCustomerRepresentativesController`
-- **Descrição:** O controller gerencia os fluxos de interação entre a interface de usuário e o domínio. Ele orquestra a listagem de clientes e de seus representantes, interagindo com os repositórios e os mappers para preparar os dados apresentados.
+- **Class Involved:** `ListCustomerRepresentativesController`
+- **Description:** The controller manages the interaction flow between the user interface and the domain. It orchestrates the listing of customers and their representatives, interacting with repositories and mappers to prepare the data for presentation.
 
 #### 6. **Value Object Pattern**
-- **Classes Envolvidas:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`, `CustomerRepresentativeStatus`
-- **Descrição:** Representam valores imutáveis e sem identidade própria, usados para compor entidades como `Customer` e `Representative`. Garantem expressividade e consistência no modelo de domínio.
+- **Classes Involved:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`, `CustomerRepresentativeStatus`
+- **Description:** Represent immutable values without identity, used to compose entities like `Customer` and `Representative`. They ensure expressiveness and consistency in the domain model.
 
 ---
 
-Esses padrões contribuem para a organização modular do código e ajudam a manter uma separação clara entre responsabilidades nas diversas camadas da aplicação.
-
+These patterns contribute to the modular organization of the code and help maintain a clear separation of responsibilities across the various layers of the application.
 
 ### 5. Tests
 

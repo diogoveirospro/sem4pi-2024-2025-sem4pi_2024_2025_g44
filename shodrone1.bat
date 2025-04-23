@@ -5,9 +5,10 @@ ECHO Checking if build is necessary...
 
 :: Define paths
 SET "PROJECT_DIR=%~dp0"
-SET "TARGET_DIR=%PROJECT_DIR%shodrone.app1\target"
-SET "JAR_FILE=%TARGET_DIR%\shodrone.app1-0.1.0.jar"
+SET "TARGET_DIR=%PROJECT_DIR%shodrone.app.backoffice\target"
+SET "JAR_FILE=%TARGET_DIR%\shodrone.app.backoffice-0.1.0.jar"
 SET "HASH_FILE=%PROJECT_DIR%\hash_builds\.build_hash"
+SET "EXECUTABLE_FILE=shodrone.app.backoffice-0.1.0.jar"
 
 :: Initialize empty hash string
 SET "SOURCE_HASH="
@@ -71,7 +72,7 @@ ECHO Build completed successfully. Updated hash saved.
 :RUN
 ECHO Running the application...
 CD /D "%TARGET_DIR%"
-java -jar shodrone.app1-0.1.0.jar
+java -jar "%EXECUTABLE_FILE%"
 
 :: RemoveSpaces function to remove all spaces
 :RemoveSpaces

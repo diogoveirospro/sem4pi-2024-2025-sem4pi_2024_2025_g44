@@ -5,9 +5,10 @@ echo "Checking if build is necessary..."
 
 # Define paths
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TARGET_DIR="$PROJECT_DIR/shodrone.app1/target"
-JAR_FILE="$TARGET_DIR/shodrone.app1-0.1.0.jar"
+TARGET_DIR="$PROJECT_DIR/shodrone.app.backoffice/target"
+JAR_FILE="$TARGET_DIR/shodrone.app.backoffice-0.1.0.jar"
 HASH_FILE="$PROJECT_DIR/hash_builds/.build_hash"
+EXECUTABLE_FILE="shodrone.app.backoffice-0.1.0.jar"
 
 # Compute the current source hash (excluding target directory!)
 SOURCE_HASH=$(find "$PROJECT_DIR" -type f \( -name "*.java" -o -name "pom.xml" \) ! -path "*/target/*" -exec sha256sum {} + | sort -k2 | sha256sum | awk '{ print $1 }')
@@ -48,4 +49,4 @@ fi
 # Run the application
 echo "Running the application..."
 cd "$TARGET_DIR" || exit
-java -jar shodrone.app1-0.1.0.jar
+java -jar "$EXECUTABLE_FILE"
