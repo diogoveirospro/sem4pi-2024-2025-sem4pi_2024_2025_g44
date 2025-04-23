@@ -1,0 +1,36 @@
+@startuml
+
+class Figure <<Entity>> <<root>> {
+}
+
+class Code <<Value Object>>
+class Version <<Value Object>>
+class Description <<Value Object>>
+enum FigureStatus <<Value Object>>
+class Keyword <<Value Object>>
+
+class Exclusivity <<Entity>>
+class Customer <<Entity>> <<root>>
+
+class Category <<Entity>> <<root>>
+class CategoryName <<Value Object>>
+
+class ShowDesigner <<Entity>> <<root>>
+class Name <<Value Object>>
+
+' Relações principais
+Figure --> "1" Code
+Figure --> "1" Version
+Figure --> "1" Description
+Figure --> "1" FigureStatus
+Figure --> "1..*" Keyword
+Figure --> "1" Category
+Figure --> "0..1" Exclusivity
+Figure --> "1" ShowDesigner
+
+Exclusivity --> "1" Customer
+
+Category --> "1" CategoryName
+ShowDesigner --> "1" Name
+
+@enduml

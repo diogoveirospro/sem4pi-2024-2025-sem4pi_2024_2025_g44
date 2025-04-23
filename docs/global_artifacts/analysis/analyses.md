@@ -94,4 +94,10 @@ it gets reevaluated by the system.
 ### Questions to Clarify Requirements
 
 > 1. How do you want the simulation to be demonstrated, via a third party program?
-> 2. In previous questions the client mentioned the need of a maintenance for drones, we wanted to know what are the attributes required. We thought about some like the date of the maintenance, the maintenance id, the description, and the type and status of the maintenance. If there are any missing or extra attributes please mention them. 
+
+> 2. In previous questions the client mentioned the need of a maintenance for drones, we wanted to know what are the 
+attributes required. We thought about some like the date of the maintenance, the maintenance id, the description, 
+and the type and status of the maintenance. If there are any missing or extra attributes please mention them. 
+
+> 3. We would like to clarify if the DSL code is used only in LPROG (for parsing and validation), or if SCOMP also 
+needs to process or interpret this code during execution or simulation.
