@@ -1,4 +1,5 @@
 @startuml
+set separator none
 
 package "Domain" #DDDDDD {
 
@@ -94,7 +95,21 @@ package "Controller" #DDDDDD {
     }
 }
 
+package "repositories.impl.jpa" #DDDDDD {
+    class CustomerRepositoryJpaImpl <<Repository>> {
+    }
+    class CustomerRepresentativeRepositoryJpaImpl <<Repository>> {
+    }
+}
+
 ' Relações entre as classes
+
+'CustomerRepositoryJpaImpl --> *
+CustomerRepositoryJpaImpl ..|> CustomerRepository
+
+'CustomerRepresentativeRepositoryJpaImpl --> *
+CustomerRepresentativeRepositoryJpaImpl ..|> CustomerRepresentativeRepository
+
 'Customer --> *
 Customer --> "1..*" CustomerRepresentative : representative
 Customer --> "1" VatNumber : vat
