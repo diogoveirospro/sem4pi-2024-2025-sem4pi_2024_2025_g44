@@ -6,7 +6,6 @@ package "Domain" #DDDDDD {
     package "DTO" #DDDDDD {
         class CustomerDTO <<DTO>> {
         }
-
         class CustomerRepresentativeDTO <<DTO>> {
         }
     }
@@ -26,9 +25,7 @@ package "Domain" #DDDDDD {
     package "Repository " #DDDDDD {
         Interface CustomerRepository <<Repository>> {
             + getCustomers() : List<Customer>
-            + getRepresentativesOfCustomer(customer, representative): List<CustomerRepresentative>
-            + editEmailOfRepresentative(representative, email)
-            + editPhoneNumberOfRepresentative(representative, phoneNumber)
+            + getRepresentativesOfCustomer(customer): List<CustomerRepresentative>
         }
 
         Interface RepositoryFactory <<Factory>> {
@@ -48,52 +45,42 @@ package "Domain" #DDDDDD {
 
     class Customer <<Entity>> {
         + Customer(name, address, vat, status, type)
+        + getRepresentatives() : List<CustomerRepresentative>
     }
 
     class CustomerRepresentative <<Entity>> {
         + CustomerRepresentative(name, position, email, phoneNumber)
-        + setEmail(email)
-        + setPhoneNumber(phoneNumber)
     }
 
     class Address <<Value Object>> {
     }
-
     class VatNumber <<Value Object>> {
     }
-
     enum CustomerStatus <<Value Object>> {
     }
-
     enum CustomerType <<Value Object>> {
     }
-
     class Position <<Value Object>> {
     }
-
     class Name <<Value Object>> {
     }
-
     class Email <<Value Object>> {
     }
-
     class PhoneNumber <<Value Object>> {
     }
-
     enum CustomerRepresentativeStatus <<Value Object>> {
     }
 }
 
 package "UI" #DDDDDD {
-    class EditCustomerRepresentativeUI <<UI>> {
+    class ListCustomerRepresentativesUI <<UI>> {
     }
 }
 
 package "Controller" #DDDDDD {
-    class EditCustomerRepresentativeController <<Controller>> {
-        + listRepresentativesOfAGivenCustomer(customer)
+    class ListCustomerRepresentativesController <<Controller>> {
+        + listRepresentativesOfAGivenCustomer(customerId)
         + listAllCustomers()
-        + EditInformationOfACustomerRepresentative(email, phoneNumber)
     }
 }
 
@@ -124,7 +111,7 @@ package "persistence" #DDDDDD {
 }
 
 ' Relationships
-Customer --> "1..*" CustomerRepresentative : representative
+Customer --> "1..*" CustomerRepresentative : representatives
 Customer --> "1" VatNumber : vat
 Customer --> "1" Address : address
 Customer --> "1" CustomerStatus : status
@@ -138,18 +125,19 @@ CustomerRepresentative --> "1" PhoneNumber : phoneNumber
 CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
 
 RepositoryFactory ..> CustomerRepository : getCustomerRepository()
+
 CustomerRepository --> "0..*" Customer : customers
 
-EditCustomerRepresentativeUI ..> EditCustomerRepresentativeController
+ListCustomerRepresentativesUI ..> ListCustomerRepresentativesController
 
-EditCustomerRepresentativeController ..> RepositoryFactory : getCustomerRepository()
-EditCustomerRepresentativeController ..> CustomerRepository : customerRepository
-EditCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
-EditCustomerRepresentativeController ..> CustomerRepresentativeListMapper : representativeListDTO
-EditCustomerRepresentativeController ..> PersistenceContext : getRepositoryFactory()
+ListCustomerRepresentativesController ..> RepositoryFactory : getCustomerRepository()
+ListCustomerRepresentativesController ..> CustomerListMapper : customerListDTO
+ListCustomerRepresentativesController ..> CustomerRepresentativeListMapper : CustomerRepresentativeListDTO
+ListCustomerRepresentativesController ..> CustomerRepository : getCustomers()
+ListCustomerRepresentativesController ..> PersistenceContext : getRepositoryFactory()
 
 CustomerDTO ..> CustomerListMapper : customerDTO
-CustomerRepresentativeDTO ..> CustomerRepresentativeListMapper : representativeDTO
+CustomerRepresentativeDTO ..> CustomerRepresentativeListMapper : customerRepresentativeDTO
 
 PersistenceContext ..> JpaRepositoryFactory : getInstance()
 PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
@@ -159,11 +147,12 @@ JpaRepositoryFactory ...|> RepositoryFactory : getCustomerRepository()
 JpaRepositoryFactory ..> JpaCustomerRepository
 JpaRepositoryFactory --> JpaRepositoryFactory : instance
 
+JpaCustomerRepository ..|> CustomerRepository : getCustomers()
+
 InMemoryRepositoryFactory .|> RepositoryFactory : getCustomerRepository()
 InMemoryRepositoryFactory ..> InMemoryCustomerRepository
 InMemoryRepositoryFactory --> InMemoryRepositoryFactory : instance
 
-JpaCustomerRepository ..|> CustomerRepository : getCustomers()
 InMemoryCustomerRepository ..|> CustomerRepository : getCustomers()
 
 CustomerRepository ..|> Repository

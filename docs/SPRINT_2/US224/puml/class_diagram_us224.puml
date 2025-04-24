@@ -160,7 +160,7 @@ DisableCustomerRepresentativeUI ..> DisableCustomerRepresentativeController
 DisableCustomerRepresentativeController ..> RepositoryFactory : getCustomerRepository()
 DisableCustomerRepresentativeController ..> CustomerRepository : customerRepository
 DisableCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
-DisableCustomerRepresentativeController ..> CustomerRepresentativeListMapper : representativeListDTO
+DisableCustomerRepresentativeController ..> CustomerRepresentativeListMapper : customerRepresentativeListDTO
 DisableCustomerRepresentativeController ..> PersistenceContext : getRepositoryFactory()
 
 
@@ -185,5 +185,5 @@ CustomerRepository ..|> Repository
 CustomerDTO ..> CustomerListMapper : customerDTO
 
 'RepresentativeDTO --> *
-CustomerRepresentativeDTO ..> CustomerRepresentativeListMapper : representativeDTO
+CustomerRepresentativeDTO ..> CustomerRepresentativeListMapper : customerRepresentativeDTO
 @enduml
