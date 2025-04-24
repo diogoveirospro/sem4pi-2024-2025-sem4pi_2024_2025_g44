@@ -6,6 +6,7 @@ package "Authentication" <<aggregate>> {
         +userId: String
         +email: String
         +password: String
+        +authenticate(): Boolean
     }
 
     class AuthenticationToken <<Value Object>> {
@@ -13,16 +14,13 @@ package "Authentication" <<aggregate>> {
         +expiryDate: Date
     }
 
+    ' User pode gerar o AuthenticationToken mas ele será tratado separadamente
     User --> "0..*" AuthenticationToken : generates
 }
 
 package "Authorization" <<aggregate>> {
 
-    class Authorization <<Entity>> <<root>> {
-        +checkPermission(): Boolean
-    }
-
-    class UserRole <<Value Object>> {
+    class UserRole <<Entity>> <<root>> {
         +roleName: String
     }
 
@@ -30,7 +28,7 @@ package "Authorization" <<aggregate>> {
         +permissionName: String
     }
 
-    User --> "1" UserRole : has
+    ' UserRole pode ter múltiplas permissões
     UserRole --> "0..*" Permission : grants
 }
 
