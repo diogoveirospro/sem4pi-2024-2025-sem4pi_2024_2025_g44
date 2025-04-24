@@ -1,0 +1,224 @@
+@startuml
+set separator none
+
+package "Persistence " #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaRepositoryFactory {
+        - JpaRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class JpaFigureRepository {
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryRepositoryFactory {
+        - InMemoryRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class InMemoryFigureRepository {
+    }
+}
+
+package "Domain" #DDDDDD {
+
+    package "DTO" #DDDDDD {
+        class FigureDTO <<DTO>> {
+            + FigureDTO (code, version, description, category)
+        }
+    }
+
+    package "Mapper" #DDDDDD {
+        class CatalogueMapper <<Mapper>> {
+            + toDTO(figure) : FigureDTO
+            + toDTOList(figures) : List<FigureDTO>
+        }
+    }
+
+    package "Repository " #DDDDDD {
+        interface Repository {
+            + save(entity): T
+            + findAll(): Iterable<T>
+            + findById(id): Optional<T>
+            + delete(entity)
+            + deleteById(entityId)
+            + count(): long
+        }
+
+
+        interface RepositoryFactory {
+            + getFigureRepository(): FigureRepository
+        }
+
+        interface FigureRepository {
+            + getPublicCatalogue() : List<Figure>
+        }
+
+    }
+
+    'Figure Aggregate
+    class Figure <<Entity>>{
+        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner)
+        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner, exclusivity)
+        + isExclusive() : boolean
+    }
+
+    class Code <<Value Object>>{
+    }
+
+    class Version <<Value Object>>{
+    }
+
+    class Description <<Value Object>>{
+    }
+
+    class DSLDescription <<Value Object>>{
+    }
+
+    enum FigureStatus <<Value Object>>{
+    }
+
+    class Keyword <<Value Object>>{
+    }
+
+    class Exclusivity <<Entity>>{
+    }
+
+
+    'Category Aggregate
+    class Category <<Entity>>{
+        + Category (name, categoryStatus)
+    }
+
+    class IDCategory <<Value Object>>{
+    }
+
+    enum CategoryStatus <<Value Object>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+
+    'ShowDesigner Aggregate
+    class ShowDesigner <<Entity>>{
+        + ShowDesigner (name, email, phoneNumber)
+    }
+
+    class IDShowDesigner <<Value Object>>{
+    }
+
+
+    'Shared
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    class PhoneNumber <<Value Object>>{
+    }
+
+}
+
+package "UI" #DDDDDD {
+    class ListPublicCatalogueUI <<UI>> {
+        + showPublicFigures()
+    }
+}
+
+package "Controller" #DDDDDD {
+    class ListPublicCatalogueController <<Controller>> {
+        + listPublicCatalogue()
+    }
+}
+
+'Persistence
+
+    'PersistenceContext -> x
+    PersistenceContext ..> RepositoryFactory: figureRepository()
+    PersistenceContext ..> JpaRepositoryFactory
+    PersistenceContext ..> InMemoryRepositoryFactory
+
+'persistence.impl.jpa
+
+    'JpaFigureRepository -> x
+    JpaFigureRepository --|> FigureRepository
+
+    'JpaRepositoryFactory -> x
+    JpaRepositoryFactory ..|> RepositoryFactory
+    JpaRepositoryFactory ..> JpaFigureRepository
+    JpaRepositoryFactory --> JpaRepositoryFactory: instance
+
+'persistence.impl.inmemory
+
+    'InMemoryFigureRepository -> x
+    InMemoryFigureRepository ..|> FigureRepository
+
+    'InMemoryRepositoryFactory -> x
+    InMemoryRepositoryFactory ..|> RepositoryFactory
+    InMemoryRepositoryFactory ..> InMemoryFigureRepository
+    InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
+
+'DTO
+
+    'FigureDTO -> x
+    FigureDTO ..> CatalogueMapper : figureDTO
+
+'Repository
+
+    'FigureRepository -> x
+    FigureRepository ..|> Repository
+    FigureRepository ...> Figure
+
+    'RepositoryFactory -> x
+    RepositoryFactory ..> FigureRepository
+
+'Domain
+
+    'Figure -> x
+    Figure --> "1" DSLDescription: DSLDescription
+    Figure --> "1..*" Keyword: keywords
+    Figure --> "1" Code: code
+    Figure --> "1" Version: version
+    Figure --> "1" Description: description
+    Figure --> "1" FigureStatus: figureStatus
+    Figure --> "1" Category: category
+    Figure --> "1" ShowDesigner: created by
+    Figure --> "0..1" Exclusivity: exclusivity
+
+    'Category -> x
+    Category --> "1" IDCategory: id
+    Category --> "1" CategoryStatus: categoryStatus
+    Category --> "1" CategoryName: name
+    Category ----> "1" Name: name
+
+    'ShowDesigner -> x
+    ShowDesigner --> "1" IDShowDesigner: id
+    ShowDesigner --> "1" Name: name
+    ShowDesigner --> "1" Email: email
+    ShowDesigner --> "1" PhoneNumber: phoneNumber
+
+'UI
+
+    'ListPublicCatalogueUI -> x
+    ListPublicCatalogueUI ..> ListPublicCatalogueController
+
+'Controller
+
+    'ListPublicCatalogueController -> x
+    ListPublicCatalogueController ..> PersistenceContext : getRepositoryFactory()
+    ListPublicCatalogueController ..> RepositoryFactory : getFigureRepository()
+    ListPublicCatalogueController ..> FigureRepository : getPublicCatalogue()
+    ListPublicCatalogueController ..> CatalogueMapper : toDTOList()
+
+
+@enduml
