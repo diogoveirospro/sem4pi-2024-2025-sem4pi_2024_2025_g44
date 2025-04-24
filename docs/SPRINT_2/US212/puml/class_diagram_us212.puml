@@ -1,0 +1,33 @@
+@startuml
+
+class User {
+    +id: String
+    +name: String
+    +email: String
+    +password: String
+    +status: UserStatus
+    +disableUser(): void
+    +enableUser(): void
+}
+
+class UserStatus {
+    +status: String
+}
+
+class Admin {
+    +adminId: String
+    +role: String
+}
+
+class AuditLog {
+    +action: String
+    +changedBy: String
+    +changeDate: Date
+}
+
+' Relationships
+User --> "1" UserStatus : has
+User --> "1..*" AuditLog : has history
+User --> "1" Admin : managed by
+
+@enduml

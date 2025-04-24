@@ -1,0 +1,28 @@
+@startuml
+
+package "User Management" <<aggregate>> {
+
+    class User <<Entity>> <<root>> {
+        +id: String
+        +name: String
+        +email: String
+        +password: String
+        +status: String
+        +register(): void
+    }
+
+    class Admin <<Entity>> {
+        +adminId: String
+        +role: String
+    }
+
+    class BootstrapProcess <<Service>> {
+        +initializeUser(): void
+    }
+
+    User --> "1" Admin : created by
+    User --> "1" BootstrapProcess : initialized by
+
+}
+
+@enduml

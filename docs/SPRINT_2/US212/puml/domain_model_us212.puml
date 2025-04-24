@@ -1,0 +1,35 @@
+@startuml
+
+package "User Management" <<aggregate>> {
+
+    class User <<Entity>> <<root>> {
+        +id: String
+        +name: String
+        +email: String
+        +password: String
+        +status: UserStatus
+        +disableUser(): void
+        +enableUser(): void
+    }
+
+    class UserStatus <<Value Object>> {
+        +status: String
+    }
+
+    class Admin <<Entity>> {
+        +adminId: String
+        +role: String
+    }
+
+    class AuditLog <<Value Object>> {
+        +action: String
+        +changedBy: String
+        +changeDate: Date
+    }
+
+    ' User pode ser desativado ou ativado
+    User --> "1" UserStatus : has
+    User --> "1..*" AuditLog : has history
+}
+
+@enduml

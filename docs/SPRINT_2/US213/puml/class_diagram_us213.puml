@@ -1,0 +1,23 @@
+@startuml
+
+class User {
+    +id: String
+    +name: String
+    +email: String
+    +status: UserStatus
+}
+
+class UserStatus {
+    +status: String
+}
+
+class Admin {
+    +adminId: String
+    +role: String
+}
+
+' Relationships
+User --> "1" UserStatus : has
+User --> "1" Admin : managed by
+
+@enduml

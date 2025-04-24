@@ -1,0 +1,25 @@
+@startuml
+
+package "User Management" <<aggregate>> {
+
+    class User <<Entity>> <<root>> {
+        +id: String
+        +name: String
+        +email: String
+        +status: UserStatus
+    }
+
+    class UserStatus <<Value Object>> {
+        +status: String
+    }
+
+    class Admin <<Entity>> {
+        +adminId: String
+        +role: String
+    }
+
+    ' User tem um status e pode ser visualizado pelo Admin
+    User --> "1" UserStatus : has
+}
+
+@enduml

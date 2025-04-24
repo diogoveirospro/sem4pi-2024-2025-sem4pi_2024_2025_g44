@@ -1,0 +1,34 @@
+@startuml
+
+class Customer {
+    +id: String
+    +name: String
+    +address: String
+    +contactInfo: String
+    +register(): void
+}
+
+class CustomerRepresentative {
+    +id: String
+    +name: String
+    +position: String
+    +customer: Customer
+}
+
+class User {
+    +userId: String
+    +email: String
+    +password: String
+    +role: String
+}
+
+class BootstrapProcess {
+    +initializeCustomerWithRepresentative(): void
+}
+
+' Relationships
+Customer --> "1" CustomerRepresentative : has
+CustomerRepresentative --> "1" User : is a user of
+Customer --> "1" BootstrapProcess : initialized by
+
+@enduml

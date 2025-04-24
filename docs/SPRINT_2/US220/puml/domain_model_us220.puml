@@ -1,0 +1,36 @@
+@startuml
+
+package "Customer Management" <<aggregate>> {
+
+    class Customer <<Entity>> <<root>> {
+        +id: String
+        +name: String
+        +address: String
+        +contactInfo: String
+        +register(): void
+    }
+
+    class CustomerRepresentative <<Entity>> {
+        +id: String
+        +name: String
+        +position: String
+        +customer: Customer
+    }
+
+    class User <<Entity>> {
+        +userId: String
+        +email: String
+        +password: String
+        +role: String
+    }
+
+    class BootstrapProcess <<Service>> {
+        +initializeCustomerWithRepresentative(): void
+    }
+
+    Customer --> "1" CustomerRepresentative : has
+    CustomerRepresentative --> "1" User : is a user of
+    Customer --> "1" BootstrapProcess : initialized by
+}
+
+@enduml
