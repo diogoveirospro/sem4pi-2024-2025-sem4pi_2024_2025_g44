@@ -25,19 +25,25 @@ package "Domain" #DDDDDD {
         }
     }
 
-    package "Repository" #DDDDDD {
+    package "Repository " #DDDDDD {
         Interface CustomerRepository <<Repository>> {
             + getCustomers() : List<Customer>
-        }
-        Interface CustomerRepresentativeRepository <<Repository>> {
             + getRepresentativesOfCustomer(customer, representative): List<CustomerRepresentative>
             + disableCustomerRepresentative(representative)
         }
-        Interface Repositories <<Repository>> {
-            - Repositories()
-            + getInstance() : Repositories
+
+        Interface RepositoryFactory <<Factory>> {
+            - RepositoryFactory()
             + getCustomerRepository() : CustomerRepository
-            + getRepresentativeRepository() : CustomerRepresentativeRepository
+        }
+
+        Interface Repository <<Repository>> {
+            + save(entity T) : T
+            + delete(entity T)
+            + findById(id: String) : T
+            + findAll() : List<T>
+            + deleteById(id: ID)
+            + count() : long
         }
     }
 
@@ -47,8 +53,6 @@ package "Domain" #DDDDDD {
     class CustomerRepresentative <<Entity>> {
         + CustomerRepresentative (name, position, email, phoneNumber)
         + getRepresentativesOfCustomer(customer): List<CustomerRepresentative>
-        + setEmail(email)
-        + setPhoneNumber(phoneNumber)
         + setStatus(status)
     }
 
@@ -96,20 +100,37 @@ package "Controller" #DDDDDD {
     }
 }
 
-package "repositories.impl.jpa" #DDDDDD {
-    class CustomerRepositoryJpaImpl <<Repository>> {
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaCustomerRepository <<Repository>> {
     }
-    class CustomerRepresentativeRepositoryJpaImpl <<Repository>> {
+
+    class JpaRepositoryFactory <<Factory>> {
+        - JpaRepositoryFactory()
+        + getInstance() : RepositoryFactory
+    }
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryCustomerRepository <<Repository>> {
+    }
+
+    class InMemoryRepositoryFactory <<Factory>> {
+        - InMemoryRepositoryFactory()
+        + getInstance() : RepositoryFactory
+    }
+}
+
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        getRepositoryFactory() : RepositoryFactory
     }
 }
 
 ' Relações entre as classes
 
-'CustomerRepositoryJpaImpl --> *
-CustomerRepositoryJpaImpl ..|> CustomerRepository
+RepositoryFactory ..> CustomerRepository : getCustomerRepository()
 
-'CustomerRepresentativeRepositoryJpaImpl --> *
-CustomerRepresentativeRepositoryJpaImpl ..|> CustomerRepresentativeRepository
+
 
 'Customer --> *
 Customer --> "1..*" CustomerRepresentative : representative
@@ -127,25 +148,38 @@ CustomerRepresentative --> "1" PhoneNumber : phoneNumber
 CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
 
 'Repositories --> *
-Repositories --> Repositories : instance
-Repositories --> CustomerRepository : getCustomerRepository
-Repositories --> CustomerRepresentativeRepository : getRepresentativeRepository
 
 'CustomerRepository --> *
 CustomerRepository --> "0..*" Customer : customers
 
-'CustomerRepresentativeRepository --> *
-CustomerRepresentativeRepository --> "0..*" CustomerRepresentative : representatives
 
 'ListCustomerRepresentativesUI --> *
 DisableCustomerRepresentativeUI ..> DisableCustomerRepresentativeController
 
 'ListCustomerRepresentativesController --> *
-DisableCustomerRepresentativeController ..> Repositories : repositories
-DisableCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
-DisableCustomerRepresentativeController ..> CustomerRepresentativeRepository : representativeRepository
+DisableCustomerRepresentativeController ..> RepositoryFactory : getCustomerRepository()
 DisableCustomerRepresentativeController ..> CustomerRepository : customerRepository
+DisableCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
 DisableCustomerRepresentativeController ..> CustomerRepresentativeListMapper : representativeListDTO
+DisableCustomerRepresentativeController ..> PersistenceContext : getRepositoryFactory()
+
+
+PersistenceContext ..> JpaRepositoryFactory : getInstance()
+PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
+PersistenceContext ..> RepositoryFactory : getCustomerRepository()
+
+JpaRepositoryFactory ...|> RepositoryFactory : getCustomerRepository()
+JpaRepositoryFactory ..> JpaCustomerRepository
+JpaRepositoryFactory --> JpaRepositoryFactory : instance
+
+InMemoryRepositoryFactory .|> RepositoryFactory : getCustomerRepository()
+InMemoryRepositoryFactory ..> InMemoryCustomerRepository
+InMemoryRepositoryFactory --> InMemoryRepositoryFactory : instance
+
+JpaCustomerRepository ..|> CustomerRepository : getCustomers()
+InMemoryCustomerRepository ..|> CustomerRepository : getCustomers()
+
+CustomerRepository ..|> Repository
 
 'CustomerDTO --> *
 CustomerDTO ..> CustomerListMapper : customerDTO

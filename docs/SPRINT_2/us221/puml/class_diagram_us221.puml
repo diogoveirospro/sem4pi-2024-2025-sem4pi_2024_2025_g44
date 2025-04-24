@@ -16,19 +16,25 @@ package "Domain" #DDDDDD {
         }
     }
 
-    package "Repository" #DDDDDD {
+    package "Repository " #DDDDDD {
         Interface CustomerRepository <<Repository>> {
             + getCustomers() : List<Customer>
         }
-        Interface CustomerRepresentativeRepository <<Repository>> {
-            + addCustomerRepresentative(customer, representative)
-        }
-        Interface Repositories <<Repository>> {
-            - Repositories()
-            + getInstance() : Repositories
+
+        Interface RepositoryFactory <<Factory>> {
+            - RepositoryFactory()
             + getCustomerRepository() : CustomerRepository
-            + getCustomerRepresentativeRepository() : CustomerRepresentativeRepository
         }
+
+        Interface Repository <<Repository>> {
+            + save(entity T) : T
+            + delete(entity T)
+            + findById(id: String) : T
+            + findAll() : List<T>
+            + deleteById(id: ID)
+            + count() : long
+        }
+
     }
 
     class Customer <<Entity>> {
@@ -82,15 +88,35 @@ package "Controller" #DDDDDD {
     }
 }
 
-package "repositories.impl.jpa" #DDDDDD {
-    class CustomerRepositoryJpaImpl <<Repository>> {
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaCustomerRepository <<Repository>> {
     }
-    class CustomerRepresentativeRepositoryJpaImpl <<Repository>> {
+
+    class JpaRepositoryFactory <<Factory>> {
+        - JpaRepositoryFactory()
+        + getInstance() : RepositoryFactory
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryCustomerRepository <<Repository>> {
+    }
+
+    class InMemoryRepositoryFactory <<Factory>> {
+        - InMemoryRepositoryFactory()
+        + getInstance() : RepositoryFactory
+    }
+}
+
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        getRepositoryFactory() : RepositoryFactory
     }
 }
 
 ' Relações entre as classes
-Customer --> "1..*" CustomerRepresentative : representative
+Customer --> "1..*" CustomerRepresentative : representatives
 Customer --> "1" VatNumber : vat
 Customer --> "1" Address : address
 Customer --> "1" CustomerStatus : status
@@ -104,25 +130,33 @@ CustomerRepresentative --> "1" PhoneNumber : phoneNumber
 CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
 
 
-Repositories --> Repositories : instance
-Repositories --> CustomerRepository : getCustomerRepository
-Repositories --> CustomerRepresentativeRepository : getCustomerRepresentativeRepository
+RepositoryFactory ..> CustomerRepository : getCustomers()
 
 CustomerRepository --> "0..*" Customer : customers
-CustomerRepresentativeRepository --> "0..*" CustomerRepresentative : representatives
 
 AddCustomerRepresentativeUI ..> AddCustomerRepresentativeController
-AddCustomerRepresentativeController ..> Repositories : repositories
+AddCustomerRepresentativeController ..> RepositoryFactory : getFigureRepository()
 AddCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
-AddCustomerRepresentativeController ..> CustomerRepresentativeRepository : representativeRepository
-AddCustomerRepresentativeController ..> CustomerRepository : customerRepository
+AddCustomerRepresentativeController ..> CustomerRepository : getCustomers()
+AddCustomerRepresentativeController ..> PersistenceContext : getRepositoryFactory()
 
 CustomerDTO ..> CustomerListMapper : customerDTO
 
-CustomerRepositoryJpaImpl ..|> CustomerRepository
+PersistenceContext ..> JpaRepositoryFactory : getInstance()
+PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
+PersistenceContext ..> RepositoryFactory : getCustomerRepository()
 
-CustomerRepresentativeRepositoryJpaImpl ..|> CustomerRepresentativeRepository
+JpaRepositoryFactory ...|> RepositoryFactory : getCustomerRepository()
+JpaRepositoryFactory ..> JpaCustomerRepository
+JpaRepositoryFactory --> JpaRepositoryFactory : instance
 
+JpaCustomerRepository ..|> CustomerRepository : getCustomers()
 
+InMemoryRepositoryFactory .|> RepositoryFactory : getCustomerRepository()
+InMemoryRepositoryFactory ..> InMemoryCustomerRepository
+InMemoryRepositoryFactory --> InMemoryRepositoryFactory : instance
 
+InMemoryCustomerRepository ..|> CustomerRepository : getCustomers()
+
+CustomerRepository ..|> Repository
 @enduml
