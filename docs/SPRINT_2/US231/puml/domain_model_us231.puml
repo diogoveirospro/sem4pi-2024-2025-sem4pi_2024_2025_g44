@@ -1,36 +1,78 @@
 @startuml
 
-class Figure <<Entity>> <<root>> {
+package "Customer " {
+
+    class Customer <<Entity>> <<root>>{
+    }
 }
 
-class Code <<Value Object>>
-class Version <<Value Object>>
-class Description <<Value Object>>
-enum FigureStatus <<Value Object>>
-class Keyword <<Value Object>>
+package "Figure " <<aggregate>> {
 
-class Exclusivity <<Entity>>
-class Customer <<Entity>> <<root>>
+    class Figure <<Entity>> <<root>>{
+    }
 
-class Category <<Entity>> <<root>>
-class CategoryName <<Value Object>>
+    class Code <<Value Object>>{
+    }
 
-class ShowDesigner <<Entity>> <<root>>
-class Name <<Value Object>>
+    class Version <<Value Object>>{
+    }
 
-' Relações principais
-Figure --> "1" Code
-Figure --> "1" Version
-Figure --> "1" Description
-Figure --> "1" FigureStatus
-Figure --> "1..*" Keyword
-Figure --> "1" Category
-Figure --> "0..1" Exclusivity
-Figure --> "1" ShowDesigner
+    class Description <<Value Object>>{
+    }
 
-Exclusivity --> "1" Customer
+    enum FigureStatus <<Value Object>>{
+    }
 
-Category --> "1" CategoryName
-ShowDesigner --> "1" Name
+    class Keyword <<Value Object>>{
+    }
+
+    class Exclusivity <<Entity>>{
+    }
+
+
+    'Figure -> x
+    Figure --> "1..*" Keyword: keywords
+    Figure --> "1" Exclusivity: exclusivity
+    Figure --> "1" Code: code
+    Figure --> "1" Version: version
+    Figure --> "1" Description: description
+    Figure --> "1" FigureStatus: figureStatus
+
+    'Exclusivity -> x
+    Exclusivity --> "1" Customer: exclusive to
+}
+
+package "Category " <<aggregate>>{
+
+    class Category <<Entity>> <<root>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+    'Category -> x
+    Category --> "1" CategoryName: name
+
+    'Figure -> x
+    Figure --> "1" Category: category
+}
+
+package "ShowDesigner " <<aggregate>>{
+
+    class ShowDesigner <<Entity>> <<root>>{
+    }
+
+    'Figure -> x
+    Figure --> "1" ShowDesigner: created by
+}
+
+package Shared {
+
+    class Name <<Value Object>>{
+    }
+
+    'ShowDesigner -> x
+    ShowDesigner --> "1" Name: name
+}
 
 @enduml

@@ -199,7 +199,6 @@ package "Controller" #DDDDDD {
     Category --> "1" IDCategory: id
     Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
-    Category ----> "1" Name: name
 
     'ShowDesigner -> x
     ShowDesigner --> "1" IDShowDesigner: id

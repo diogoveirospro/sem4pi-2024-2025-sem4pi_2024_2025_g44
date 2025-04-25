@@ -307,9 +307,6 @@ package Shared {
     'Maintenance -> x
     Maintenance ----> "1" Date: date
 
-    'Category -> x
-    Category ----> "1" Name: name
-
     'ShowProposal -> x
     ShowProposal ----> "1" QuantityOfDrones: qnt_drones
     ShowProposal ----> "1" Time: time

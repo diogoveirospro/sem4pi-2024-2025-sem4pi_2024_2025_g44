@@ -52,14 +52,14 @@ from the diagram.
 
 ## 4. Design
 
-In this section, we describe the design approach adopted for implementing US231. The class diagram includes the key 
+In this section, we describe the design approach adopted for implementing **US231**. The class diagram includes the key 
 components responsible for handling the listing of public figures, with a clear separation between the UI, application 
 logic, domain model, and persistence infrastructure.
 
 
 ### 4.1. Realization
 
-The class diagram below represents the realization of the US231 — listing public figures. It illustrates how the UI
+The class diagram below represents the realization of the **US231 — Figure Catalogue**. It illustrates how the UI
 component communicates with the controller, which retrieves public figures from the configured repository (either JPA
 or in-memory). The retrieved domain entities are then mapped to DTOs and returned to the presentation layer.
 
@@ -76,37 +76,37 @@ maintainable, and testable architecture. Below are the main patterns identified 
 #### 1. **DTO (Data Transfer Object) Pattern**
 - **Class Involved:** `FigureDTO`
 - **Description:** Used to transfer only the necessary data about public figures from the domain layer to the 
-- presentation layer. It prevents exposure of the full domain entity and promotes decoupling between layers.
+presentation layer. It prevents exposure of the full domain entity and promotes decoupling between layers.
 
 #### 2. **Mapper Pattern**
 - **Class Involved:** `CatalogueMapper`
 - **Description:** Converts `Figure` domain entities into `FigureDTO` objects. Centralizes the transformation logic, 
-- ensuring reusability and separation of concerns between the application and presentation layers.
+ensuring reusability and separation of concerns between the application and presentation layers.
 
 #### 3. **Repository Pattern**
 - **Classes Involved:** `FigureRepository`, `JpaFigureRepository`, `InMemoryFigureRepository`
 - **Description:** Encapsulates data access logic. Provides a clear interface for retrieving public figures, allowing 
-- the persistence strategy (e.g. JPA or in-memory) to be swapped without affecting the rest of the application.
+the persistence strategy (e.g. JPA or in-memory) to be swapped without affecting the rest of the application.
 
 #### 4. **Factory Pattern**
 - **Classes Involved:** `RepositoryFactory`, `JpaRepositoryFactory`, `InMemoryRepositoryFactory`
 - **Description:** Responsible for creating instances of repositories depending on the context. Promotes flexibility 
-- and supports different persistence backends.
+and supports different persistence backends.
 
 #### 5. **Singleton Pattern**
 - **Classes Involved:** `JpaRepositoryFactory`, `InMemoryRepositoryFactory`
 - **Description:** Ensures that only one instance of the factory is used across the application. The `getInstance()` 
-- method provides a controlled access point.
+method provides a controlled access point.
 
 #### 6. **Controller Pattern**
 - **Class Involved:** `ListPublicCatalogueController`
 - **Description:** Orchestrates the listing use case by coordinating repository access and DTO mapping. Acts as the 
-- interface between the UI layer and the application logic.
+interface between the UI layer and the application logic.
 
 #### 7. **Value Object Pattern**
 - **Classes Involved:** `Code`, `Version`, `Description`, `CategoryName`, `FigureStatus`, etc.
 - **Description:** These classes represent immutable values used in the domain model. They encapsulate data and 
-- potential validation rules, promoting domain expressiveness and consistency.
+potential validation rules, promoting domain expressiveness and consistency.
 
 ---
 
@@ -162,8 +162,10 @@ void ensureReturnedDTOContainsExpectedFields() {
 ```java
 @Test
 void ensureDomainEntitiesAreNotLeaked() {
-    var result = controller.listPublicCatalogue();
-    assertTrue(result.stream().allMatch(dto -> dto instanceof FigureDTO));
+    List<?> result = controller.listPublicCatalogue();
+    for (Object dto : result) {
+        assertTrue(dto instanceof FigureDTO, "Element is not an instance of FigureDTO");
+    }
 }
 ```
 
