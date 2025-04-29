@@ -2,8 +2,8 @@
 
 ## 1. Context
 
-The purpose of this task is to provide a list of all public figures, enabling the appropriate selection during the show 
-request process. This task is included in Sprint 2 and is being implemented for the first time.
+The purpose of this task is to provide a list of all active public figures, enabling the appropriate selection during 
+the design of show request process. This task is included in Sprint 2 and is being implemented for the first time.
 
 ### 1.1 List of issues
 
@@ -18,9 +18,9 @@ Test: 📝 To Do
 
 ## 2. Requirements
 
-**As a** CRM Collaborator,
-**I want** to list all public figures in the catalogue,
-**So that** I can select them during a show request proposal.
+**As a** CRM Collaborator, 
+**I want** to list all active public figures in the catalogue, 
+**So that** I can select them during the design of a show request proposal.
 
 **Acceptance Criteria:**
 
