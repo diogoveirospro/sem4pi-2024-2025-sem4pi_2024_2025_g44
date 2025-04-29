@@ -13,10 +13,7 @@ participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
 participant "modelRepository\n:ModelRepository" as MOD_REPO
 participant "droneRepository\n:DroneRepository" as DRN_REPO
-
-
-participant "cityRepository\n:CityRepository" as CITY_REPO
-participant "city\n:City" as CITY
+participant "drone\n:Drone" as DRONE
 
 activate EDT
 
@@ -79,9 +76,9 @@ activate EDT
     deactivate UI
     EDT -> UI : confirms
     activate UI
-        UI -> CTRL : ListDrone(activateDrone)
+        UI -> CTRL : listDrone(activateDrone)
         activate CTRL
-             CTRL -> CTRL: getCityRepository()
+             CTRL -> CTRL: getDroneRepository()
                                     activate CTRL
 
                                         CTRL -> REPOS: getInstance()
@@ -91,32 +88,32 @@ activate EDT
 
                                         deactivate REPOS
 
-                                        CTRL -> REPOS_SINGLETON: getCityRepository()
+                                        CTRL -> REPOS_SINGLETON: getDroneRepository()
                                         activate REPOS_SINGLETON
 
-                                               REPOS_SINGLETON --> CTRL: cityRepository
+                                               REPOS_SINGLETON --> CTRL: droneRepository
                                         deactivate REPOS_SINGLETON
-                                    CTRL --> CTRL: cityRepository
+                                    CTRL --> CTRL: droneRepository
 
                                     |||
                                                                         deactivate CTRL
 
-                                    CTRL -> CITY_REPO : addCity(selectedMap, name,\n numHouseBlock, xyPos, houseBlockOpt)
-            activate CITY_REPO
-                CITY_REPO --> CITY**: create(selectedMap, name,\n numHouseBlock, xyPos, houseBlockOpt)
+                                    CTRL -> DRN_REPO : listDrone(activateDrone)
+            activate DRN_REPO
+                DRN_REPO --> DRONE **: list(activateDrone)
 
-                CITY_REPO -> CITY_REPO: addCity (city)
-                activate CITY_REPO
-                    CITY_REPO -> CITY_REPO: validateCity(city)
-                    activate CITY_REPO
-                        CITY_REPO --> CITY_REPO : true
-                    deactivate CITY_REPO
+                DRN_REPO -> DRN_REPO: listDrone(activateDrone)
+                activate DRN_REPO
+                    DRN_REPO -> DRN_REPO: validateCity(city)
+                    activate DRN_REPO
+                        DRN_REPO --> DRN_REPO : true
+                    deactivate DRN_REPO
 
-                    CITY_REPO --> CITY_REPO : true
-                deactivate CITY_REPO
+                    DRN_REPO --> DRN_REPO : true
+                deactivate DRN_REPO
 
-                CITY_REPO --> CTRL : true
-            deactivate CITY_REPO
+                DRN_REPO --> CTRL : true
+            deactivate DRN_REPO
 
             CTRL --> UI: true
             deactivate CTRL
