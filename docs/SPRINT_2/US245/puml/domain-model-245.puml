@@ -1,0 +1,22 @@
+@startuml
+
+package "Category " <<aggregate>>{
+
+    class Category <<Entity>> <<root>>{
+    }
+
+    class IDCategory <<Value Object>>{
+    }
+
+    enum CategoryStatus <<Value Object>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+    'Category -> x
+    Category --> "1" IDCategory: id
+    Category --> "1" CategoryStatus: categoryStatus
+    Category --> "1" CategoryName: name
+
+@enduml
