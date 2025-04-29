@@ -1,0 +1,167 @@
+@startuml
+set separator none
+
+package "Persistence " #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaRepositoryFactory {
+        - JpaRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class JpaCategoryRepository {
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryRepositoryFactory {
+        - InMemoryRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class InMemoryCategoryRepository {
+    }
+}
+
+package "Domain" #DDDDDD {
+
+    package "DTO" #DDDDDD {
+        class FigureCategoryDTO <<DTO>> {
+            + FigureCategoryDTO (code, version, description, category)
+        }
+    }
+
+    package "Mapper" #DDDDDD {
+        class CategoryMapper <<Mapper>> {
+            + toDTO(category) : FigureCategoryDTO
+        }
+    }
+
+    package "Repository " #DDDDDD {
+        interface Repository {
+            + save(entity): T
+            + findAll(): Iterable<T>
+            + findById(id): Optional<T>
+            + delete(entity)
+            + deleteById(entityId)
+            + count(): long
+        }
+
+
+        interface RepositoryFactory {
+            + getCategoryRepository(): CategoryRepository
+        }
+
+        interface CategoryRepository {
+            + addFigureCategory() : List<Category>
+        }
+
+    }
+
+    'Category Aggregate
+    class Category <<Entity>>{
+        + Category (name, categoryStatus)
+    }
+
+    class IDCategory <<Value Object>>{
+    }
+
+    enum CategoryStatus <<Value Object>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+    'Shared
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    class PhoneNumber <<Value Object>>{
+    }
+
+}
+
+package "UI" #DDDDDD {
+    class AddFigureCategoryUI <<UI>> {
+        + addFigureCategory()
+    }
+}
+
+package "Controller" #DDDDDD {
+    class AddFigureCategoryController <<Controller>> {
+        + addFigureCategory()
+    }
+}
+
+'Persistence
+
+    'PersistenceContext -> x
+    PersistenceContext ..> RepositoryFactory: categoryRepository()
+    PersistenceContext ..> JpaRepositoryFactory
+    PersistenceContext ..> InMemoryRepositoryFactory
+
+'persistence.impl.jpa
+
+    'JpaCategoryRepository -> x
+    JpaCategoryRepository --|> CategoryRepository
+
+    'JpaRepositoryFactory -> x
+    JpaRepositoryFactory ..|> RepositoryFactory
+    JpaRepositoryFactory ..> JpaCategoryRepository
+    JpaRepositoryFactory --> JpaRepositoryFactory: instance
+
+'persistence.impl.inmemory
+
+    'InMemoryFigureRepository -> x
+    InMemoryCategoryRepository ..|> CategoryRepository
+
+    'InMemoryRepositoryFactory -> x
+    InMemoryRepositoryFactory ..|> RepositoryFactory
+    InMemoryRepositoryFactory ..> InMemoryCategoryRepository
+    InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
+
+'DTO
+
+    'CategoryDTO -> x
+    FigureCategoryDTO ..> CategoryMapper : categoryDTO
+
+'Repository
+
+    'CategoryRepository -> x
+    CategoryRepository ..|> Repository
+    CategoryRepository ...> Category
+
+    'RepositoryFactory -> x
+    RepositoryFactory ..> CategoryRepository
+
+'Domain
+
+    'Category -> x
+    Category --> "1" IDCategory: id
+    Category --> "1" CategoryStatus: categoryStatus
+    Category --> "1" CategoryName: name
+    Category --> "1" Name: name
+
+'UI
+
+    'ListPublicCatalogueUI -> x
+    AddFigureCategoryUI ..> AddFigureCategoryController
+
+'Controller
+
+    'ListPublicCatalogueController -> x
+    AddFigureCategoryController ..> PersistenceContext : getRepositoryFactory()
+    AddFigureCategoryController ..> RepositoryFactory : getCategoryRepository()
+    AddFigureCategoryController ..> CategoryRepository : addFigureCategory()
+    AddFigureCategoryController ..> CategoryMapper : toDTO()
+
+
+@enduml
