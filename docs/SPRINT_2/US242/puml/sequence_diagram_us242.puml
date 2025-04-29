@@ -1,0 +1,68 @@
+@startuml
+'skinparam monochrome
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "DroneTech" as DT
+participant ":RemoveDronelUI" as UI
+participant ":RemoveDroneController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "droneRepository\n:DroneRepository" as DRN_REPO
+participant "drone\n:Drone" as DRONE
+
+activate DT
+
+DT -> UI : requests to remove a drone in the inventory
+activate UI
+    UI --> DT : asks for drone serial number
+    deactivate UI
+    DT -> UI : submits data
+    activate UI
+    UI --> UI : keepData(serialNumber)
+    UI --> DT : asks for confirmation
+    deactivate UI
+    DT -> UI : confirms data
+    activate UI
+    UI -> CTRL : removeDrone(serialNumber)
+    activate CTRL
+        CTRL --> CTRL :getDroneRepository()
+        activate CTRL
+        CTRL -> REPOS : getInstance()
+        activate REPOS
+            REPOS --> CTRL : repositories
+        deactivate REPOS
+
+        CTRL -> REPOS_SINGLETON : getDroneRepository()
+        activate REPOS_SINGLETON
+            REPOS_SINGLETON --> CTRL : droneRepository
+        deactivate REPOS_SINGLETON
+        CTRL --> CTRL : droneRepository
+
+        deactivate CTRL
+            CTRL -> DRN_REPO : removeDrone(serialNumber)
+            activate DRN_REPO
+
+        DRN_REPO -> DRONE** : remove(serialNumber)
+        deactivate DRONE
+                    DRN_REPO -> DRN_REPO: validateRemoval(serialNumber)
+                    activate DRN_REPO
+                        DRN_REPO --> DRN_REPO : true
+                    deactivate DRN_REPO
+
+                    DRN_REPO --> CTRL : true
+
+        deactivate DRN_REPO
+
+        CTRL --> UI : true
+
+    deactivate CTRL
+
+UI --> DT : displays success message
+deactivate UI
+deactivate DT
+
+@enduml
