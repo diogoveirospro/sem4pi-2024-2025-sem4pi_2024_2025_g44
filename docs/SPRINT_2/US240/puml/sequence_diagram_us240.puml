@@ -39,9 +39,11 @@ activate UI
         CTRL -> REPOS_SINGLETON : getModelRepository()
         activate REPOS_SINGLETON
             REPOS_SINGLETON --> CTRL : modelRepository
+        CTRL -->CTRL : modelRepository
         deactivate REPOS_SINGLETON
+        deactivate CTRL
             CTRL -> MOD_REPO : createModel(windTolerance, \nwindSpeed, posTolerance, safetyStatus)
-            deactivate CTRL
+
             activate MOD_REPO
         MOD_REPO -> MOD_REPO : getNextId()
         activate MOD_REPO
