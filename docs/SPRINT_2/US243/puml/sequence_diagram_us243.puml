@@ -101,16 +101,10 @@ activate EDT
                                     CTRL -> DRN_REPO : listDrone(activateDrone)
             activate DRN_REPO
                 DRN_REPO --> DRONE **: list(activateDrone)
-
-                DRN_REPO -> DRN_REPO: listDrone(activateDrone)
-                activate DRN_REPO
-                    DRN_REPO -> DRN_REPO: validateCity(city)
+                    DRN_REPO -> DRN_REPO: validateDrone(activateDrone)
                     activate DRN_REPO
                         DRN_REPO --> DRN_REPO : true
                     deactivate DRN_REPO
-
-                    DRN_REPO --> DRN_REPO : true
-                deactivate DRN_REPO
 
                 DRN_REPO --> CTRL : true
             deactivate DRN_REPO
