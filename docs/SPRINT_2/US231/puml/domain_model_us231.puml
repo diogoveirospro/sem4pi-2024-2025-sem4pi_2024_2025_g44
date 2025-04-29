@@ -1,11 +1,5 @@
 @startuml
 
-package "Customer " {
-
-    class Customer <<Entity>> <<root>>{
-    }
-}
-
 package "Figure " <<aggregate>> {
 
     class Figure <<Entity>> <<root>>{
@@ -37,9 +31,6 @@ package "Figure " <<aggregate>> {
     Figure --> "1" Version: version
     Figure --> "1" Description: description
     Figure --> "1" FigureStatus: figureStatus
-
-    'Exclusivity -> x
-    Exclusivity --> "1" Customer: exclusive to
 }
 
 package "Category " <<aggregate>>{
@@ -55,24 +46,6 @@ package "Category " <<aggregate>>{
 
     'Figure -> x
     Figure --> "1" Category: category
-}
-
-package "ShowDesigner " <<aggregate>>{
-
-    class ShowDesigner <<Entity>> <<root>>{
-    }
-
-    'Figure -> x
-    Figure --> "1" ShowDesigner: created by
-}
-
-package Shared {
-
-    class Name <<Value Object>>{
-    }
-
-    'ShowDesigner -> x
-    ShowDesigner --> "1" Name: name
 }
 
 @enduml
