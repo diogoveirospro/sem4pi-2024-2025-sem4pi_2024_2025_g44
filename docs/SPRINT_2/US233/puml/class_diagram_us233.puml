@@ -1,0 +1,249 @@
+@startuml
+set separator none
+
+package "Persistence " #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaRepositoryFactory {
+        - JpaRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class JpaFigureRepository {
+    }
+
+    class JpaCategoryRepository {
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryRepositoryFactory {
+        - InMemoryRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class InMemoryFigureRepository {
+    }
+
+    class InMemoryCategoryRepository {
+    }
+}
+
+package "Domain" #DDDDDD {
+
+    package "DTO" #DDDDDD {
+        class CategoryDTO <<DTO>> {
+            + CategoryDTO (name, status)
+        }
+    }
+
+    package "Mapper" #DDDDDD {
+        class CategoryMapper <<Mapper>> {
+            + toDTO(category) : CategoryDTO
+            + toDTOList(categories) : List<CategoryDTO>
+        }
+    }
+
+    package "Repository " #DDDDDD {
+        interface Repository {
+            + save(entity): T
+            + findAll(): Iterable<T>
+            + findById(id): Optional<T>
+            + delete(entity)
+            + deleteById(entityId)
+            + count(): long
+        }
+
+
+        interface RepositoryFactory {
+            + getCategoryRepository(): CategoryRepository
+        }
+
+        interface FigureRepository {
+            + addFigureToCatalogue(figure)
+        }
+
+        interface CategoryRepository {
+            + allCategories(): List<Category>
+        }
+
+    }
+
+    'Figure Aggregate
+    class Figure <<Entity>>{
+        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner)
+        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner, exclusivity)
+    }
+
+    class Code <<Value Object>>{
+    }
+
+    class Version <<Value Object>>{
+    }
+
+    class Description <<Value Object>>{
+    }
+
+    class DSLDescription <<Value Object>>{
+    }
+
+    enum FigureStatus <<Value Object>>{
+    }
+
+    class Keyword <<Value Object>>{
+    }
+
+    class Exclusivity <<Entity>>{
+    }
+
+
+    'Category Aggregate
+    class Category <<Entity>>{
+        + Category (name, status)
+    }
+
+    class IDCategory <<Value Object>>{
+    }
+
+    enum CategoryStatus <<Value Object>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+
+    'ShowDesigner Aggregate
+    class ShowDesigner <<Entity>>{
+        + ShowDesigner (name, email, phoneNumber)
+    }
+
+    class IDShowDesigner <<Value Object>>{
+    }
+
+
+    'Shared
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    class PhoneNumber <<Value Object>>{
+    }
+
+}
+
+package "UI" #DDDDDD {
+    class AddFigureToCatalogueUI <<UI>> {
+        + addFigureToCatalogue(figure)
+        + showCategories()
+    }
+}
+
+package "Controller" #DDDDDD {
+    class AddFigureToCatalogueController <<Controller>> {
+        + addFigureToCatalogue(figure)
+        + listCategories()
+    }
+}
+
+'Persistence
+
+    'PersistenceContext -> x
+    PersistenceContext ..> RepositoryFactory: figureRepository()\ncategoryRepository()
+    PersistenceContext ..> JpaRepositoryFactory
+    PersistenceContext ..> InMemoryRepositoryFactory
+
+'persistence.impl.jpa
+
+    'JpaFigureRepository -> x
+    JpaFigureRepository --|> FigureRepository
+
+    'JpaCategoryRepository -> x
+    JpaCategoryRepository --|> CategoryRepository
+
+    'JpaRepositoryFactory -> x
+    JpaRepositoryFactory ..|> RepositoryFactory
+    JpaRepositoryFactory ..> JpaFigureRepository
+    JpaRepositoryFactory ..> JpaCategoryRepository
+    JpaRepositoryFactory --> JpaRepositoryFactory: instance
+
+'persistence.impl.inmemory
+
+    'InMemoryFigureRepository -> x
+    InMemoryFigureRepository ..|> FigureRepository
+
+    'InMemoryCategoryRepository -> x
+    InMemoryCategoryRepository ..|> CategoryRepository
+
+    'InMemoryRepositoryFactory -> x
+    InMemoryRepositoryFactory ..|> RepositoryFactory
+    InMemoryRepositoryFactory ..> InMemoryFigureRepository
+    InMemoryRepositoryFactory ..> InMemoryCategoryRepository
+    InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
+
+'DTO
+
+    'CategoryDTO -> x
+    CategoryDTO ..> CategoryMapper : categoryDTO
+
+'Repository
+
+    'FigureRepository -> x
+    FigureRepository ..|> Repository
+    FigureRepository ...> Figure
+
+    'CategoryRepository -> x
+    CategoryRepository ..|> Repository
+    CategoryRepository ...> Category
+
+    'RepositoryFactory -> x
+    RepositoryFactory ..> FigureRepository
+    RepositoryFactory ..> CategoryRepository
+
+'Domain
+
+    'Figure -> x
+    Figure --> "1" DSLDescription: DSLDescription
+    Figure --> "1..*" Keyword: keywords
+    Figure --> "1" Code: code
+    Figure --> "1" Version: version
+    Figure --> "1" Description: description
+    Figure --> "1" FigureStatus: figureStatus
+    Figure --> "1" Category: category
+    Figure --> "1" ShowDesigner: created by
+    Figure --> "0..1" Exclusivity: exclusivity
+
+    'Category -> x
+    Category --> "1" IDCategory: id
+    Category --> "1" CategoryStatus: categoryStatus
+    Category --> "1" CategoryName: name
+
+    'ShowDesigner -> x
+    ShowDesigner --> "1" IDShowDesigner: id
+    ShowDesigner --> "1" Name: name
+    ShowDesigner --> "1" Email: email
+    ShowDesigner --> "1" PhoneNumber: phoneNumber
+
+'UI
+
+    'AddFigureToCatalogueUI -> x
+    AddFigureToCatalogueUI ..> AddFigureToCatalogueController
+
+'Controller
+
+    'AddFigureToCatalogueController -> x
+    AddFigureToCatalogueController ..> PersistenceContext : getRepositoryFactory()
+    AddFigureToCatalogueController ..> RepositoryFactory : getFigureRepository()
+    AddFigureToCatalogueController ..> RepositoryFactory : getCategoryRepository()
+    AddFigureToCatalogueController ..> FigureRepository : addFigureToCatalogue(figure)
+    AddFigureToCatalogueController ..> CategoryRepository : listCategories()
+    AddFigureToCatalogueController ..> CategoryMapper : toDTOList()
+
+
+@enduml
