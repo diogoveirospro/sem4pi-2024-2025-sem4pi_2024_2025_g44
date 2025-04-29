@@ -8,6 +8,12 @@
     class SerialNumber <<Value Object>>{
     }
 
+    enum DroneStatus <<Value Object>>{
+
+        }
+
     'Drone -> x
     Drone --> "1" SerialNumber: serialNumber
+    Drone --> "1" DroneStatus: status
+
 @enduml
