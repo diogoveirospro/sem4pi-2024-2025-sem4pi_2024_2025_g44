@@ -25,12 +25,12 @@ Test: 📝 To Do
 
 **Acceptance Criteria:**
 
-- **US233.1** The figure must be classified with a valid category and a set of keywords.
-- **US233.2** If a figure is exclusive to a customer, it must not be added to the public catalogue and should only be 
-associated with that customer.
-- **US233.3** The figure's DSL description and version must be stored in the system.
-- **US233.4** The system must ensure that only authenticated Show Designers can add a figure to the catalogue.
-- **US233.5** The figure name must be unique within the public catalogue.
+- **US233.1** A figure must include the following parameters: code, version, description, DSL description, keywords, 
+and category.
+- **US233.2** If a figure is exclusive to a customer, it must not be added to the public catalogue and must only be 
+available for use in shows for that customer.
+- **US233.3** Only authenticated Show Designers are allowed to add figures to the catalogue.
+- **US233.4** The system must store the Show Designer who created the figure.
 
 **Dependencies/References:**
 
@@ -78,181 +78,112 @@ the client's management of the catalogue.
 
 ## 3. Analysis
 
-The figure aggregate includes several attributes, but for this user story the most relevant ones are:
+The `Figure` aggregate includes multiple domain attributes, but only a subset is relevant to this user story, which 
+focuses on adding a new figure to the catalogue.
 
-- `Code` and `Version`, which together uniquely identify each figure in the system.
-- `Description`, used to provide meaningful information about the figure to users browsing the catalogue.
-- `FigureStatus`, to define whether the figure is currently active in the system.
-- `Keyword` and `Category`, which classify the figure and support future filtering and searching capabilities.
-- `Exclusivity` and the associated `Customer`, which indicate if the figure is exclusive and, if so, to which customer.
-- `ShowDesigner`, identifying the user responsible for creating the figure, which may be relevant for traceability or 
-validation.
+- `Code` and `Version` – together, they uniquely identify each figure in the system.
+- `Description` – provides a human-readable label to identify the figure in the catalogue.
+- `DSLDescription` – contains the DSL code that defines the figure’s visual representation.
+- `Keyword` – a set of labels that help describe the figure and may support future search or filtering functionalities.
+- `Category` – represents the classification to which the figure belongs and is selected from a predefined catalogue.
+- `Exclusivity` – indicates whether the figure is exclusive to a specific customer; if present, the figure should not 
+be listed publicly.
+- `ShowDesigner` – the user who created the figure, stored for traceability and attribution.
 
-Other attributes such as the DSL description or simulation metadata are not relevant in the context of this 
-functionality and were intentionally omitted from the diagram for clarity.
+Other elements not essential to this functionality have been omitted from the diagram to maintain clarity and focus.
 
 ![Domain Model for US233](images/domain_model_us233.svg)
 
 ## 4. Design
 
-In this section, we describe the design approach adopted for implementing **US233 – Add Figure to the Catalogue**. 
-The class diagram defines the main components involved in the addition of a new figure, showing a clear separation of 
-concerns between the UI, application logic, domain model, and persistence infrastructure.
+This section presents the design adopted for implementing **US233 – Add Figure to the Catalogue**.  
+The class diagram highlights the main components involved in the process, demonstrating a clear separation of concerns 
+between the UI, application logic, domain model, and persistence infrastructure.
 
-### 4.1. Realization
+### 4.1 Realisation
 
-The class diagram below illustrates the realization of **US233 – Add Figure to the Catalogue**. The UI component 
-initiates the process by invoking the `addFigureToCatalogue(figure)` method in the controller. The controller is 
-responsible for coordinating the operation: it retrieves the appropriate `FigureRepository` instance from the configured 
-`RepositoryFactory`, and delegates the persistence of the figure.
+The class diagram below depicts the realisation of **US233 – Add Figure to the Catalogue**. The user interface initiates 
+the process by calling the `addFigureToCatalogue(figure)` method on the controller. The controller is responsible for 
+coordinating the operation: it retrieves the appropriate `FigureRepository` via the `RepositoryFactory` and delegates 
+the creation and persistence of the new figure.
 
-Before adding a figure, the UI also calls `showCategories()` to present the user with a list of available categories 
-to associate with the new figure. This action internally invokes `listCategories()` in the controller, which interacts 
-with the `CategoryRepository` and converts the domain `Category` objects to `CategoryDTO` via the `CategoryMapper`.
+Before creating a figure, the UI also calls `showCategories()` to allow the user to select one of the available 
+categories. This action internally invokes `listCategories()` in the controller, which accesses the `CategoryRepository`.
 
-Both the `FigureRepository` and `CategoryRepository` have two implementations (JPA and in-memory), selected dynamically 
-via the `RepositoryFactory`.
-
-The domain model includes relevant elements such as `Figure`, `Category`, `ShowDesigner`, and `Exclusivity`, as well as 
-their supporting value objects (e.g., `Code`, `Version`, `CategoryName`, etc.), ensuring proper encapsulation and 
-expressiveness of the business rules.
+The `FigureRepository` and `CategoryRepository` have both JPA and in-memory implementations, which are dynamically 
+resolved through the `RepositoryFactory` depending on the configured persistence strategy.
 
 ![Class Diagram US233](images/class_diagram_us233.svg)
 
-### 4.2. Applied Patterns
-
-The design of the implementation for **US233 – Add Figure to the Catalogue** applies several well-established design 
-patterns, contributing to a robust and extensible architecture. Below are the key patterns identified in this solution:
-
-#### 1. **DTO (Data Transfer Object) Pattern**
-- **Class Involved:** `CategoryDTO`
-- **Description:** Used to transfer category information from the domain to the UI without exposing the domain entity.
-
-#### 2. **Mapper Pattern**
-- **Class Involved:** `CategoryMapper`
-- **Description:** Converts `Category` domain entities into `CategoryDTO` objects. Centralizes the transformation logic, 
-enhancing separation of concerns.
-
-#### 3. **Repository Pattern**
-- **Classes Involved:** `FigureRepository`, `CategoryRepository`, `JpaFigureRepository`, `InMemoryFigureRepository`, etc.
-- **Description:** Abstracts data access logic behind clear interfaces, allowing seamless switching between persistence 
-strategies.
-
-#### 4. **Factory Pattern**
-- **Classes Involved:** `RepositoryFactory`, `JpaRepositoryFactory`, `InMemoryRepositoryFactory`
-- **Description:** Provides repository instances according to the runtime context (JPA or in-memory), supporting 
-flexibility and configurability.
-
-#### 5. **Singleton Pattern**
-- **Classes Involved:** `JpaRepositoryFactory`, `InMemoryRepositoryFactory`
-- **Description:** Ensures a single instance of the repository factory is used, centralizing access to persistence 
-mechanisms.
-
-#### 6. **Controller Pattern**
-- **Class Involved:** `AddFigureToCatalogueController`
-- **Description:** Handles the orchestration of figure addition and category listing by coordinating the repositories 
-and mappers involved.
-
-#### 7. **Value Object Pattern**
-- **Classes Involved:** `Code`, `Version`, `Description`, `Keyword`, `CategoryName`, `FigureStatus`, etc.
-- **Description:** These immutable types encapsulate domain-specific logic and validation, contributing to a rich and 
-expressive model.
-
----
-
-These design patterns reinforce a clear separation of concerns and support long-term maintainability, testability, and 
-reusability of the system. By leveraging the combination of **Repository + Factory + Mapper + DTO**, the solution 
-ensures that the domain logic remains decoupled from infrastructure details and UI concerns.
-
-### 4.3. Acceptance Tests
+### 4.2. Acceptance Tests
 
 The following tests validate the acceptance criteria defined for **US233 – Add Figure to the Catalogue**. They ensure 
-that figures are correctly classified, validated, and stored, and that access control and uniqueness constraints are 
-properly enforced.
+that figures are correctly structured and validated, that exclusivity is respected, that access control is enforced, 
+and that authorship is properly recorded.
 
 ---
 
-#### **Test 1: Figure must be classified with a valid category and keywords**
+#### **Test 1: Figure must contain all required parameters**
 **Refers to Acceptance Criteria:** _US233.1_  
-**Description:** Ensures that a figure cannot be added without a category or keywords.
+**Description:** Ensures that a figure cannot be added if any of the mandatory attributes (code, version, description, 
+DSL description, keywords or category) are missing.
 
 ```java
 @Test
-void ensureFigureIsClassifiedWithCategoryAndKeywords() {
-    // setup: create a figure without category or keywords
+void ensureFigureIncludesAllRequiredParameters() {
+    // setup: create a figure with missing attributes (e.g. no keywords or category)
     // action: attempt to add the figure to the catalogue
     // assert: expect InvalidFigureException to be thrown
 }
-
 ```
 
 ---
 
-#### **Test 2: Exclusive figure cannot be added to the public catalogue**
+#### **Test 2: Exclusive figures are not added to the public catalogue**
 **Refers to Acceptance Criteria:** _US233.2_  
-**Description:** Ensures that exclusive figures are only associated with the respective customer and not made public.
+**Description:** Ensures that if a figure is exclusive to a customer, it is not made available in the public catalogue.
 
 ```java
 @Test
-void ensureExclusiveFiguresAreNotAddedToPublicCatalogue() {
-    // setup: create an exclusive figure for a customer
+void ensureExclusiveFiguresAreNotPublic() {
+    // setup: create an exclusive figure for a specific customer
     // action: add the figure to the catalogue
-    // assert: public catalogue must not contain the exclusive figure
+    // assert: figure is not listed in public catalogue
 }
-
 ```
 
 ---
 
-#### **Test 3: DSL description and version are stored**
+#### **Test 3: Only authenticated Show Designers can add figures**
 **Refers to Acceptance Criteria:** _US233.3_  
-**Description:** Verifies that when a figure is added, its DSL description and version are correctly saved.
+**Description:** Verifies that only users with the Show Designer role are allowed to add figures to the catalogue.
 
 ```java
 @Test
-void ensureDSLDescriptionAndVersionAreStored() {
-    // setup: create a figure with DSL description and version
-    // action: add the figure to the catalogue
-    // assert: verify DSL description and version are stored correctly
-}
-
-```
-
----
-
-#### **Test 4: Only authenticated Show Designers can add figures**
-**Refers to Acceptance Criteria:** _US233.4_  
-**Description:** Ensures that only users with the Show Designer role can add figures.
-
-```java
-@Test
-void ensureOnlyAuthenticatedShowDesignersCanAddFigures() {
+void ensureOnlyShowDesignersCanAddFigures() {
     // setup: authenticate as a Show Designer
-    // action: attempt to add a valid figure
-    // assert: addition succeeds
+    // action: add a valid figure
+    // assert: operation succeeds
 
-    // setup: authenticate as unauthorized user
+    // setup: authenticate as a user without required role
     // action: attempt to add a valid figure
-    // assert: expect AccessDeniedException to be thrown
+    // assert: expect AccessDeniedException or equivalent
 }
-
 ```
 
 ---
 
-#### **Test 5: Figure name must be unique in the public catalogue**
-**Refers to Acceptance Criteria:** _US233.5_  
-**Description:** Ensures that figures with duplicate names (descriptions) are not allowed in the public catalogue.
+#### **Test 4: The creator (Show Designer) is stored with the figure**
+**Refers to Acceptance Criteria:** _US233.4_  
+**Description:** Ensures that the system stores a reference to the authenticated Show Designer who created the figure.
 
 ```java
 @Test
-void ensureFigureNameIsUniqueInPublicCatalogue() {
-    // setup: add a figure with a specific name to the public catalogue
-    // action: attempt to add another figure with the same name
-    // assert: expect DuplicateFigureException to be thrown
+void ensureShowDesignerIsStoredWithFigure() {
+    // setup: authenticate as a Show Designer
+    // action: add a new figure
+    // assert: saved figure contains reference to the authenticated Show Designer
 }
-
-
 ```
 
 ## 5. Implementation

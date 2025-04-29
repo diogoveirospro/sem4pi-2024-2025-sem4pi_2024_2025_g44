@@ -36,29 +36,7 @@ package "persistence.impl.inmemory" #DDDDDD {
 
 package "Domain" #DDDDDD {
 
-    package "DTO" #DDDDDD {
-        class CategoryDTO <<DTO>> {
-            + CategoryDTO (name, status)
-        }
-    }
-
-    package "Mapper" #DDDDDD {
-        class CategoryMapper <<Mapper>> {
-            + toDTO(category) : CategoryDTO
-            + toDTOList(categories) : List<CategoryDTO>
-        }
-    }
-
     package "Repository " #DDDDDD {
-        interface Repository {
-            + save(entity): T
-            + findAll(): Iterable<T>
-            + findById(id): Optional<T>
-            + delete(entity)
-            + deleteById(entityId)
-            + count(): long
-        }
-
 
         interface RepositoryFactory {
             + getCategoryRepository(): CategoryRepository
@@ -76,8 +54,8 @@ package "Domain" #DDDDDD {
 
     'Figure Aggregate
     class Figure <<Entity>>{
-        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner)
-        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner, exclusivity)
+        + Figure(code, version, description, dslDescription, keywords, category)
+        + Figure(code, version, description, dslDescription, keywords, category, exclusivity)
     }
 
     class Code <<Value Object>>{
@@ -92,9 +70,6 @@ package "Domain" #DDDDDD {
     class DSLDescription <<Value Object>>{
     }
 
-    enum FigureStatus <<Value Object>>{
-    }
-
     class Keyword <<Value Object>>{
     }
 
@@ -104,36 +79,11 @@ package "Domain" #DDDDDD {
 
     'Category Aggregate
     class Category <<Entity>>{
-        + Category (name, status)
-    }
-
-    class IDCategory <<Value Object>>{
-    }
-
-    enum CategoryStatus <<Value Object>>{
-    }
-
-    class CategoryName <<Value Object>>{
     }
 
 
     'ShowDesigner Aggregate
     class ShowDesigner <<Entity>>{
-        + ShowDesigner (name, email, phoneNumber)
-    }
-
-    class IDShowDesigner <<Value Object>>{
-    }
-
-
-    'Shared
-    class Name <<Value Object>>{
-    }
-
-    class Email <<Value Object>>{
-    }
-
-    class PhoneNumber <<Value Object>>{
     }
 
 }
@@ -168,10 +118,9 @@ package "Controller" #DDDDDD {
     JpaCategoryRepository --|> CategoryRepository
 
     'JpaRepositoryFactory -> x
-    JpaRepositoryFactory ..|> RepositoryFactory
+    JpaRepositoryFactory ....|> RepositoryFactory
     JpaRepositoryFactory ..> JpaFigureRepository
     JpaRepositoryFactory ..> JpaCategoryRepository
-    JpaRepositoryFactory --> JpaRepositoryFactory: instance
 
 'persistence.impl.inmemory
 
@@ -182,24 +131,16 @@ package "Controller" #DDDDDD {
     InMemoryCategoryRepository ..|> CategoryRepository
 
     'InMemoryRepositoryFactory -> x
-    InMemoryRepositoryFactory ..|> RepositoryFactory
+    InMemoryRepositoryFactory ...|> RepositoryFactory
     InMemoryRepositoryFactory ..> InMemoryFigureRepository
     InMemoryRepositoryFactory ..> InMemoryCategoryRepository
-    InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
-
-'DTO
-
-    'CategoryDTO -> x
-    CategoryDTO ..> CategoryMapper : categoryDTO
 
 'Repository
 
     'FigureRepository -> x
-    FigureRepository ..|> Repository
     FigureRepository ...> Figure
 
     'CategoryRepository -> x
-    CategoryRepository ..|> Repository
     CategoryRepository ...> Category
 
     'RepositoryFactory -> x
@@ -214,21 +155,9 @@ package "Controller" #DDDDDD {
     Figure --> "1" Code: code
     Figure --> "1" Version: version
     Figure --> "1" Description: description
-    Figure --> "1" FigureStatus: figureStatus
     Figure --> "1" Category: category
     Figure --> "1" ShowDesigner: created by
     Figure --> "0..1" Exclusivity: exclusivity
-
-    'Category -> x
-    Category --> "1" IDCategory: id
-    Category --> "1" CategoryStatus: categoryStatus
-    Category --> "1" CategoryName: name
-
-    'ShowDesigner -> x
-    ShowDesigner --> "1" IDShowDesigner: id
-    ShowDesigner --> "1" Name: name
-    ShowDesigner --> "1" Email: email
-    ShowDesigner --> "1" PhoneNumber: phoneNumber
 
 'UI
 
@@ -242,8 +171,7 @@ package "Controller" #DDDDDD {
     AddFigureToCatalogueController ..> RepositoryFactory : getFigureRepository()
     AddFigureToCatalogueController ..> RepositoryFactory : getCategoryRepository()
     AddFigureToCatalogueController ..> FigureRepository : addFigureToCatalogue(figure)
-    AddFigureToCatalogueController ..> CategoryRepository : listCategories()
-    AddFigureToCatalogueController ..> CategoryMapper : toDTOList()
+    AddFigureToCatalogueController ..> CategoryRepository : allCategories()
 
 
 @enduml
