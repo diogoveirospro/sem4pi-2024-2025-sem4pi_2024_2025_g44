@@ -45,7 +45,7 @@ Test:
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-245.svg "A Class Diagram")
+![a class diagram](images/class-diagram-246.svg "A Class Diagram")
 
 ### 4.3. Applied Patterns
 

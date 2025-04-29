@@ -37,14 +37,14 @@ package "Domain" #DDDDDD {
         }
 
         interface CategoryRepository {
-            + addFigureCategory() : List<Category>
+            + addFigureCategory(category)
         }
 
     }
 
     'Category Aggregate
     class Category <<Entity>>{
-        + Category (name, categoryStatus)
+        + Category (name)
     }
 
     class IDCategory <<Value Object>>{
@@ -60,13 +60,13 @@ package "Domain" #DDDDDD {
 
 package "UI" #DDDDDD {
     class AddFigureCategoryUI <<UI>> {
-        + addFigureCategory()
+        + addFigureCategory(category)
     }
 }
 
 package "Controller" #DDDDDD {
     class AddFigureCategoryController <<Controller>> {
-        + addFigureCategory()
+        + addFigureCategory(category)
     }
 }
 
@@ -122,7 +122,7 @@ package "Controller" #DDDDDD {
     'ListPublicCatalogueController -> x
     AddFigureCategoryController ..> PersistenceContext : getRepositoryFactory()
     AddFigureCategoryController ..> RepositoryFactory : getCategoryRepository()
-    AddFigureCategoryController ..> CategoryRepository : addFigureCategory()
+    AddFigureCategoryController ..> CategoryRepository : addFigureCategory(category)
 
 
 @enduml

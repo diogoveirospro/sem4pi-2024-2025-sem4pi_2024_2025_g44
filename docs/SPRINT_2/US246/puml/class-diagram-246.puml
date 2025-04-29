@@ -30,42 +30,21 @@ package "persistence.impl.inmemory" #DDDDDD {
 
 package "Domain" #DDDDDD {
 
-    package "DTO" #DDDDDD {
-        class FigureCategoryDTO <<DTO>> {
-            + FigureCategoryDTO (code, version, description, category)
-        }
-    }
-
-    package "Mapper" #DDDDDD {
-        class CategoryMapper <<Mapper>> {
-            + toDTO(category) : FigureCategoryDTO
-        }
-    }
 
     package "Repository " #DDDDDD {
-        interface Repository {
-            + save(entity): T
-            + findAll(): Iterable<T>
-            + findById(id): Optional<T>
-            + delete(entity)
-            + deleteById(entityId)
-            + count(): long
-        }
-
-
         interface RepositoryFactory {
             + getCategoryRepository(): CategoryRepository
         }
 
         interface CategoryRepository {
-            + addFigureCategory() : List<Category>
+            + editFigureCategory(category)
         }
 
     }
 
     'Category Aggregate
     class Category <<Entity>>{
-        + Category (name, categoryStatus)
+        + Category (name)
     }
 
     class IDCategory <<Value Object>>{
@@ -77,27 +56,17 @@ package "Domain" #DDDDDD {
     class CategoryName <<Value Object>>{
     }
 
-    'Shared
-    class Name <<Value Object>>{
-    }
-
-    class Email <<Value Object>>{
-    }
-
-    class PhoneNumber <<Value Object>>{
-    }
-
 }
 
 package "UI" #DDDDDD {
-    class AddFigureCategoryUI <<UI>> {
-        + addFigureCategory()
+    class EditFigureCategoryUI <<UI>> {
+        + editFigureCategory(category)
     }
 }
 
 package "Controller" #DDDDDD {
-    class AddFigureCategoryController <<Controller>> {
-        + addFigureCategory()
+    class EditFigureCategoryController <<Controller>> {
+        + editFigureCategory(category)
     }
 }
 
@@ -128,15 +97,9 @@ package "Controller" #DDDDDD {
     InMemoryRepositoryFactory ..> InMemoryCategoryRepository
     InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
 
-'DTO
-
-    'CategoryDTO -> x
-    FigureCategoryDTO ..> CategoryMapper : categoryDTO
-
 'Repository
 
     'CategoryRepository -> x
-    CategoryRepository ..|> Repository
     CategoryRepository ...> Category
 
     'RepositoryFactory -> x
@@ -148,20 +111,18 @@ package "Controller" #DDDDDD {
     Category --> "1" IDCategory: id
     Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
-    Category --> "1" Name: name
 
 'UI
 
     'ListPublicCatalogueUI -> x
-    AddFigureCategoryUI ..> AddFigureCategoryController
+    EditFigureCategoryUI ..> EditFigureCategoryController
 
 'Controller
 
     'ListPublicCatalogueController -> x
-    AddFigureCategoryController ..> PersistenceContext : getRepositoryFactory()
-    AddFigureCategoryController ..> RepositoryFactory : getCategoryRepository()
-    AddFigureCategoryController ..> CategoryRepository : addFigureCategory()
-    AddFigureCategoryController ..> CategoryMapper : toDTO()
+    EditFigureCategoryController ..> PersistenceContext : getRepositoryFactory()
+    EditFigureCategoryController ..> RepositoryFactory : getCategoryRepository()
+    EditFigureCategoryController ..> CategoryRepository : editFigureCategory(category)
 
 
 @enduml
