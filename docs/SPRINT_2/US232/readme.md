@@ -30,8 +30,16 @@ Test: 📝 To Do
 
 **Dependencies/References:**
 
-- **_US233_** – Add Figure to Catalogue: Figures must be present in the catalogue to be searchable.
-- **_US234_** - Inactive figures should not appear in the search results, even if they match the keyword or category.
+- **_US233 – Add Figure to Catalogue_**: Figures must be present in the catalogue to be searchable.
+- **_US234 - Decommission Figure_**: Inactive figures should not appear in the search results, even if they match the 
+keyword or category.
+
+**Client Clarification:**
+
+> **[Topic: Versões de figuras](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35125)**
+>
+> Figures may have multiple versions. According to the client, this has no impact on the backend implementation and 
+should only affect the UI, where different versions may appear when searching for a figure.
 
 ## 3. Analysis
 

@@ -31,7 +31,7 @@ Test: 📝 To Do
 
 **Dependencies/References:**
 
-- **_US233_** – Add Figure to the Catalogue: This user story is a direct dependency. It is required to have figures 
+- **_US233 – Add Figure to the Catalogue_**: This user story is a direct dependency. It is required to have figures 
 added to the catalogue before listing them.
 
 ## 3. Analysis

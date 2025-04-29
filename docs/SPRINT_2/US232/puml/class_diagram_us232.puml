@@ -101,7 +101,7 @@ package "Domain" #DDDDDD {
 
     'Category Aggregate
     class Category <<Entity>>{
-        + Category (name, categoryStatus)
+        + Category (name, status)
     }
 
     class IDCategory <<Value Object>>{
