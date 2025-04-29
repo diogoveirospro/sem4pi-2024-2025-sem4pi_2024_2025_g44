@@ -1,5 +1,6 @@
 @startuml
-'skinparam monochrome true
+'skinparam monochrome
+
 skinparam packageStyle rectangle
 skinparam shadowing false
 
@@ -28,6 +29,8 @@ activate UI
     activate UI
     UI -> CTRL : createModel(windTolerance, \nwindSpeed, posTolerance, safetyStatus)
     activate CTRL
+        CTRL --> CTRL :getModelRepository()
+        activate CTRL
         CTRL -> REPOS : getInstance()
         activate REPOS
             REPOS --> CTRL : repositories
@@ -38,26 +41,28 @@ activate UI
             REPOS_SINGLETON --> CTRL : modelRepository
         deactivate REPOS_SINGLETON
             CTRL -> MOD_REPO : createModel(windTolerance, \nwindSpeed, posTolerance, safetyStatus)
+            deactivate CTRL
             activate MOD_REPO
         MOD_REPO -> MOD_REPO : getNextId()
         activate MOD_REPO
         MOD_REPO --> MOD_REPO : modelID
         deactivate MOD_REPO
 
-        MOD_REPO -> MODEL** : create(modelID, windTolerance, windSpeed, posTolerance, safetyStatus)
-        MOD_REPO -> MOD_REPO: addModel (modelCreated)
-                activate MOD_REPO
+        MOD_REPO -> MODEL : create(modelID, windTolerance, windSpeed, posTolerance, safetyStatus)
+        activate MODEL
+        MODEL -->MOD_REPO : modelCreated
+        deactivate MODEL
                     MOD_REPO -> MOD_REPO: validateModel(modelCreated)
                     activate MOD_REPO
                         MOD_REPO --> MOD_REPO : true
                     deactivate MOD_REPO
 
-                    MOD_REPO --> MOD_REPO : true
-                deactivate MOD_REPO
-            MOD_REPO --> CTRL : true
+                    MOD_REPO --> CTRL : true
+
         deactivate MOD_REPO
 
         CTRL --> UI : true
+
     deactivate CTRL
 
 UI --> DT : displays success message
