@@ -1,0 +1,18 @@
+@startuml
+
+package "Category " <<aggregate>>{
+
+    class Category <<Entity>> <<root>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+    class CategoryDescription <<Value Object>>{
+    }
+
+    'Category -> x
+    Category --> "1" CategoryName: name
+    Category --> "1" CategoryDescription: description
+
+@enduml
