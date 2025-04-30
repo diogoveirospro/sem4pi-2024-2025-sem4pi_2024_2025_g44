@@ -175,19 +175,19 @@ package "Category " <<aggregate>>{
     class Category <<Entity>> <<root>>{
     }
 
-    class IDCategory <<Value Object>>{
-    }
-
     enum CategoryStatus <<Value Object>>{
     }
 
     class CategoryName <<Value Object>>{
     }
 
+    class CategoryDescription <<Value Object>>{
+    }
+
     'Category -> x
-    Category --> "1" IDCategory: id
     Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
+    Category --> "1" CategoryDescription: description
 
     'Figure -> x
     Figure --> "1..*" Category: category
