@@ -1,4 +1,4 @@
-package core.Persitence;/*
+/*
  * Copyright (c) 2013-2024 the original author or authors.
  *
  * MIT License
@@ -22,27 +22,40 @@ package core.Persitence;/*
  * SOFTWARE.
  */
 
-import eapli.framework.util.Utility;
+package core.Persistence;
+
+import eapli.framework.domain.repositories.TransactionalContext;
+import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
+import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventConsumptionRepository;
+import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventRecordRepository;
 
 /**
- * A "global" static class with the application registry of well known objects.
- *
- * @author Paulo Gandra Sousa
+ * The interface for the repository factory of shodrone.
+ * <p>
+ * This is the Abstract Factory in the Abstract Factory (GoF) pattern. Each of
+ * the return types is an Abstract Product. For instance,
+ * {@link}
+ *  is an Abstract Product while
+ * {@link}
+ *  is a Concrete Product.
+ * </p>
  *
  */
-@Utility
-public class Application {
+public interface RepositoryFactory {
 
-    public static final String VERSION = "v0.1.0";
-    public static final String COPYRIGHT = "(C) 2025, ISEP's Grupo 44 Lapr4";
+    /**
+     * Factory method to create a transactional context to use in the repositories
+     *
+     * @return a new transactional context
+     */
+    TransactionalContext newTransactionalContext();
 
-    private static final AppSettings SETTINGS = new AppSettings();
+    UserRepository users(TransactionalContext autoTx);
 
-    public static AppSettings settings() {
-        return SETTINGS;
-    }
+    UserRepository users();
 
-    private Application() {
-        // private visibility to ensure singleton & utility
-    }
+
+    EventConsumptionRepository eventConsumption();
+
+    EventRecordRepository eventRecord();
 }

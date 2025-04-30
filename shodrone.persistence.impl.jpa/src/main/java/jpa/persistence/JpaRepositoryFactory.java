@@ -23,7 +23,7 @@
  */
 package jpa.persistence;
 
-import core.Persitence.RepositoryFactory;
+import core.Persistence.RepositoryFactory;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.infrastructure.authz.repositories.impl.jpa.JpaAutoTxUserRepository;
@@ -32,7 +32,7 @@ import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.jpa.JpaAutoTxEventConsumptionRepository;
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.jpa.JpaAutoTxEventRecordRepository;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
-import core.Persitence.Application;
+import core.Persistence.Application;
 
 /**
  * The repository factory for JPA repositories.

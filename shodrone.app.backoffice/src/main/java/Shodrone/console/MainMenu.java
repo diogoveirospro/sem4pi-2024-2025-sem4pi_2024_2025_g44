@@ -10,7 +10,7 @@ import eapli.framework.presentation.console.menu.HorizontalMenuRenderer;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
 import eapli.framework.presentation.console.menu.MenuRenderer;
 import eapli.framework.presentation.console.menu.VerticalMenuRenderer;
-import core.Persitence.Application;
+import core.Persistence.Application;
 import shodrone.authz.MyUserMenu;
 
 /**

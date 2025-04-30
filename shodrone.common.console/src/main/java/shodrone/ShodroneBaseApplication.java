@@ -21,7 +21,7 @@
 
 package shodrone;
 
-import core.Persitence.Application;
+import core.Persistence.Application;
 import eapli.framework.infrastructure.pubsub.EventDispatcher;
 import eapli.framework.infrastructure.pubsub.PubSubRegistry;
 import eapli.framework.infrastructure.pubsub.impl.inprocess.service.InProcessPubSub;

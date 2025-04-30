@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package core.Persitence;
+package core.Persistence;
 
 import eapli.framework.util.Utility;
 import org.apache.logging.log4j.LogManager;

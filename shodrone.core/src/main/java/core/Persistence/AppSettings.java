@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package core.Persitence;
+package core.Persistence;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
