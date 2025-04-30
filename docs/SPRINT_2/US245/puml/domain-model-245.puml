@@ -5,7 +5,7 @@ package "Category " <<aggregate>>{
     class Category <<Entity>> <<root>>{
     }
 
-    class IDCategory <<Value Object>>{
+    class CategoryDescription <<Value Object>>{
     }
 
     enum CategoryStatus <<Value Object>>{
@@ -15,8 +15,8 @@ package "Category " <<aggregate>>{
     }
 
     'Category -> x
-    Category --> "1" IDCategory: id
     Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
+    Category --> "1" CategoryDescription: description
 
 @enduml

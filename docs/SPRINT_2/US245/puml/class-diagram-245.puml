@@ -44,10 +44,7 @@ package "Domain" #DDDDDD {
 
     'Category Aggregate
     class Category <<Entity>>{
-        + Category (name)
-    }
-
-    class IDCategory <<Value Object>>{
+        + Category (name, description)
     }
 
     enum CategoryStatus <<Value Object>>{
@@ -56,6 +53,8 @@ package "Domain" #DDDDDD {
     class CategoryName <<Value Object>>{
     }
 
+    class CategoryDescription <<Value Object>>{
+    }
 }
 
 package "UI" #DDDDDD {
@@ -108,9 +107,9 @@ package "Controller" #DDDDDD {
 'Domain
 
     'Category -> x
-    Category --> "1" IDCategory: id
     Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
+    Category --> "1" CategoryDescription: description
 
 'UI
 
