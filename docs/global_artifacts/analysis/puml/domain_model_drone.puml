@@ -21,9 +21,6 @@ package "ModelOfDrone " <<aggregate>> {
     class Model <<Entity>> <<root>>{
     }
 
-    class ModelID <<Value Object>>{
-    }
-
     class WindTolerance <<Value Object>>{
     }
 
@@ -37,7 +34,6 @@ package "ModelOfDrone " <<aggregate>> {
     }
 
     'Model -> x
-    Model --> "1" ModelID: id
     Model --> "1" WindTolerance: windTolerance
     Model --> "1" WindSpeed: windSpeed
     Model --> "1" PositionTolerance: positionTolerance
@@ -53,9 +49,6 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    class MaintenanceID <<Value Object>>{
-    }
-
     class MaintenanceDescription <<Value Object>>{
     }
 
@@ -65,8 +58,8 @@ package "Maintenance " <<aggregate>> {
     'Maintenance -> x
     Maintenance --> "1" MaintenanceDescription: description
     Maintenance --> "1" MaintenanceType: type
-    Maintenance --> "1" MaintenanceID: id
 
+    'Drone -> x
     Drone --> "1..*" Maintenance: undergoes
 }
 
