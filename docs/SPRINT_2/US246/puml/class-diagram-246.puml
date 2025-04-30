@@ -47,13 +47,10 @@ package "Domain" #DDDDDD {
         + Category (name)
     }
 
-    class IDCategory <<Value Object>>{
-    }
-
-    enum CategoryStatus <<Value Object>>{
-    }
-
     class CategoryName <<Value Object>>{
+    }
+
+    class CategoryDescription <<Value Object>>{
     }
 
 }
@@ -108,9 +105,8 @@ package "Controller" #DDDDDD {
 'Domain
 
     'Category -> x
-    Category --> "1" IDCategory: id
-    Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
+    Category --> "1" CategoryDescription: description
 
 'UI
 
