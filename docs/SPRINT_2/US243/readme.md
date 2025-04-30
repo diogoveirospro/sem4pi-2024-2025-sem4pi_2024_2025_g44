@@ -23,7 +23,7 @@ Test: To do
 
 **Acceptance Criteria:**
 
-**AC01:** The customer representative will be a user of the system (Costumer AppSettings).
+**AC01:** The customer representative will be a user of the system (Costumer core.Persistence.AppSettings).
 
 **Dependencies:**
 

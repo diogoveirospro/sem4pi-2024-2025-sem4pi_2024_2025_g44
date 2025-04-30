@@ -30,9 +30,6 @@ package "ShowProposal " <<aggregate>>{
     enum ShowProposalStatus <<Value Object>>{
     }
 
-    class IDShowProposal<<Value Object>>{
-    }
-
     class ShowProposal <<Entity>> <<root>>{
     }
 
@@ -43,7 +40,6 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
-    ShowProposal --> "1" IDShowProposal: id
     ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
     ShowProposal --> "1..*" Model: uses

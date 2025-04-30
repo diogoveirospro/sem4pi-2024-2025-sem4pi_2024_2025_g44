@@ -18,19 +18,36 @@ Test: To do
 ## 2. Requirements
 
 **As** a CRM Collaborator,
+<br>
 **I want** to list all customer representatives of a given customer,
+<br>
 **So that** decision-making by the CRM Collaborator is easier.
 
 **Acceptance Criteria:**
 
 **AC01:** It should not list disabled representatives.
-**AC02:** It should list all representatives of a customer.
+<br>
+**AC02:** It should list all representatives of a given customer.
+<br>
 **AC03:** The data must be retrieved using a dedicated DTO to decouple the internal domain model.
 
 **Dependencies:**
 
 *Regarding this requirement we understand that it relates to US220, as there needs to be a customer registered in the system before listing a customer representative of a given customer.*
+<br>
 *Regarding this requirement we understand that it relates to US221, as there needs to be a customer representative registered in the system before listing them.*
+
+---
+
+### Client Clarifications:
+
+> **[Topic: US 222 List customer representatives](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35499)**  
+> P38: US 222 List customer representatives  
+> A listagem é de representantes de um cliente específico.
+
+> **[Topic: US 222 - List Customer Representatives](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35594)**  
+> É apropriado mostrar a informação completa dos Customer Representatives.  
+> Os IDs internos não interessam.
 
 ## 3. Analysis
 
@@ -46,148 +63,7 @@ This method will be used in the UI to show the list of representatives of a cust
 
 ### 4.1. Realization
 
-![US222 Class Diagram](images/class_diagram_us222.svg "US222 Class Diagram")
-
-### 4.3. Applied Patterns
-
-This document outlines the design patterns used in the system. It provides a breakdown of each pattern's role, involved classes, and their purpose in maintaining a clean and maintainable architecture.
-
----
-
-## **1. Data Transfer Object (DTO) Pattern**
-**Classes Involved:**
-- `CustomerDTO`
-- `CustomerRepresentativeDTO`
-
-**Purpose:**
-DTOs are used to transfer data across layers, particularly between the Controller and the UI. They ensure that only necessary data is exposed, protecting the domain entities and maintaining a clear separation of concerns between the domain model and the UI.
-
----
-
-## **2. Mapper Pattern**
-**Classes Involved:**
-- `CustomerListMapper`
-- `CustomerRepresentativeListMapper`
-
-**Purpose:**
-The Mapper pattern is responsible for converting domain objects (`Customer`, `CustomerRepresentative`) into their corresponding DTOs (`CustomerDTO`, `CustomerRepresentativeDTO`) and vice versa. This helps centralize the transformation logic and ensures that business logic is kept separate from presentation logic.
-
----
-
-## **3. Repository Pattern**
-
-### **3.1. Repository Interface**
-**Classes Involved:**
-- `CustomerRepository`
-
-**Purpose:**
-The Repository pattern abstracts the data access logic and provides a clean interface for interacting with the domain entities. It allows the underlying data source to be changed without affecting the business logic.
-
----
-
-### **3.2. Repository Implementations**
-
-#### **JPA-based Implementation:**
-**Classes Involved:**
-- `JpaCustomerRepository`
-
-**Purpose:**
-The `JpaCustomerRepository` implements the `CustomerRepository` interface using JPA (Java Persistence API). It provides methods for interacting with the database and persisting `Customer` and `CustomerRepresentative` entities.
-
-#### **In-Memory Implementation:**
-**Classes Involved:**
-- `InMemoryCustomerRepository`
-
-**Purpose:**
-The `InMemoryCustomerRepository` provides an in-memory solution for managing `Customer` and `CustomerRepresentative` entities. It is typically used for testing or when persistent storage is not required.
-
----
-
-### **3.3. Repository Factory**
-**Classes Involved:**
-- `RepositoryFactory`
-- `JpaRepositoryFactory`
-- `InMemoryRepositoryFactory`
-
-**Purpose:**
-The Factory pattern is used to create repository instances. Depending on the configuration (e.g., JPA or in-memory), the appropriate repository is instantiated. `JpaRepositoryFactory` and `InMemoryRepositoryFactory` handle the creation of JPA and in-memory repositories, respectively.
-
----
-
-## **4. Singleton Pattern**
-**Classes Involved:**
-- `Repositories`
-
-**Purpose:**
-The Singleton pattern ensures that only one instance of the `Repositories` class exists. This class is responsible for managing the repository instances and providing a global access point to the repositories.
-
----
-
-## **5. Controller Pattern**
-**Classes Involved:**
-- `ListCustomerRepresentativesController`
-
-**Purpose:**
-Controllers are responsible for handling user input and orchestrating the interactions between the UI and the domain.
-
----
-
-## **6. Value Object Pattern**
-**Classes Involved:**
-- `Address`
-- `VatNumber`
-- `CustomerStatus`
-- `CustomerType`
-- `Position`
-- `Name`
-- `Email`
-- `PhoneNumber`
-
-**Purpose:**
-Value objects represent immutable objects that encapsulate domain values. They ensure consistency and validity across the system.
-
----
-
-## **7. UI Pattern**
-**Classes Involved:**
-- `ListCustomerRepresentativesUI`
-
-**Purpose:**
-UI classes represent the user interface layer. They interact with the user, collect input, and delegate actions to controllers. These classes are responsible for rendering data to the user and handling user interactions.
-
----
-
-## **8. Entity Pattern**
-**Classes Involved:**
-- `Customer`
-- `CustomerRepresentative`
-
-**Purpose:**
-Entities represent core business objects with a unique identity. They are the central elements in the domain model and maintain business behavior and relationships.
-
----
-
-## **9. Persistence Context**
-**Classes Involved:**
-- `PersistenceContext`
-
-**Purpose:**
-The `PersistenceContext` class provides access to the appropriate repository factory, either for JPA or in-memory repositories, based on the current configuration. It serves as a centralized point for repository creation and management.
-
----
-
-## **10. Factory Pattern**
-**Classes Involved:**
-- `RepositoryFactory`
-- `JpaRepositoryFactory`
-- `InMemoryRepositoryFactory`
-
-**Purpose:**
-The Factory pattern abstracts the instantiation of repositories. It ensures that the correct repository implementation is used at runtime, making the system flexible and configurable.
-
----
-
-These patterns contribute to the modular organization of the code and help maintain a clear separation of responsibilities across the various layers of the application.
+The class diagram as a similar structure to the one presented in US221, as the only difference are the names of the ui and controller and the used functions.
 
 ### 5. Tests
 

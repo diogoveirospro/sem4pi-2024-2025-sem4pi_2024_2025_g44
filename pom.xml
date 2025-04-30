@@ -16,7 +16,10 @@
 		<module>shodrone.common.console</module>
 		<module>shodrone.core</module>
         <module>shodrone.persistence.impl.inmemory</module>
-    </modules>
+        <module>shodrone.plugin.figure</module>
+		<module>shodrone.plugin.drone</module>
+		<module>shodrone.plugin.proposal</module>
+	</modules>
 	<version>0.1.0</version>
 
 	<properties>

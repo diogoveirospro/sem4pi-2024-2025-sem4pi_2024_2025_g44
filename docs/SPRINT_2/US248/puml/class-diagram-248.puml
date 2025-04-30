@@ -1,0 +1,124 @@
+@startuml
+set separator none
+
+package "Persistence " #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaRepositoryFactory {
+        - JpaRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class JpaCategoryRepository {
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryRepositoryFactory {
+        - InMemoryRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class InMemoryCategoryRepository {
+    }
+}
+
+package "Domain" #DDDDDD {
+
+
+    package "Repository " #DDDDDD {
+        interface RepositoryFactory {
+            + getCategoryRepository(): CategoryRepository
+        }
+
+        interface CategoryRepository {
+            + changeFigureCategoryStatus(id, categoryStatus)
+        }
+
+    }
+
+    'Category Aggregate
+    class Category <<Entity>>{
+        + Category (name, categoryStatus)
+    }
+
+    enum CategoryStatus <<Value Object>>{
+    }
+
+    class CategoryName <<Value Object>>{
+    }
+
+}
+
+package "UI" #DDDDDD {
+    class EditFigureCategoryUI <<UI>> {
+        + changeFigureCategoryStatus(category)
+    }
+}
+
+package "Controller" #DDDDDD {
+    class EditFigureCategoryController <<Controller>> {
+        + changeFigureCategoryStatus(category)
+    }
+}
+
+'Persistence
+
+    'PersistenceContext -> x
+    PersistenceContext ..> RepositoryFactory: categoryRepository()
+    PersistenceContext ..> JpaRepositoryFactory
+    PersistenceContext ..> InMemoryRepositoryFactory
+
+'persistence.impl.jpa
+
+    'JpaCategoryRepository -> x
+    JpaCategoryRepository --|> CategoryRepository
+
+    'JpaRepositoryFactory -> x
+    JpaRepositoryFactory ..|> RepositoryFactory
+    JpaRepositoryFactory ..> JpaCategoryRepository
+    JpaRepositoryFactory --> JpaRepositoryFactory: instance
+
+'persistence.impl.inmemory
+
+    'InMemoryFigureRepository -> x
+    InMemoryCategoryRepository ..|> CategoryRepository
+
+    'InMemoryRepositoryFactory -> x
+    InMemoryRepositoryFactory ..|> RepositoryFactory
+    InMemoryRepositoryFactory ..> InMemoryCategoryRepository
+    InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
+
+'Repository
+
+    'CategoryRepository -> x
+    CategoryRepository ...> Category
+
+    'RepositoryFactory -> x
+    RepositoryFactory ..> CategoryRepository
+
+'Domain
+
+    'Category -> x
+    Category --> "1" CategoryStatus: categoryStatus
+    Category --> "1" CategoryName: name
+
+'UI
+
+    'ListPublicCatalogueUI -> x
+    EditFigureCategoryUI ..> EditFigureCategoryController
+
+'Controller
+
+    'ListPublicCatalogueController -> x
+    EditFigureCategoryController ..> PersistenceContext : getRepositoryFactory()
+    EditFigureCategoryController ..> RepositoryFactory : getCategoryRepository()
+    EditFigureCategoryController ..> CategoryRepository : changeFigureCategoryStatus(category)
+
+
+@enduml

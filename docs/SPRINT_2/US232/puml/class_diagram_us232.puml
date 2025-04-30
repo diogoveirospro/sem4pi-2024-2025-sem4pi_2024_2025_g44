@@ -30,51 +30,31 @@ package "persistence.impl.inmemory" #DDDDDD {
 
 package "Domain" #DDDDDD {
 
-    package "DTO" #DDDDDD {
-        class FigureDTO <<DTO>> {
-            + FigureDTO (code, version, description, category)
-            + FigureDTO (code, version, description, category, exclusivity)
-        }
-    }
-
-    package "Mapper" #DDDDDD {
-        class CatalogueMapper <<Mapper>> {
-            + toDTO(figure) : FigureDTO
-            + toDTOList(figures) : List<FigureDTO>
-        }
-    }
-
     package "Repository " #DDDDDD {
-        interface Repository {
-            + save(entity): T
-            + findAll(): Iterable<T>
-            + findById(id): Optional<T>
-            + delete(entity)
-            + deleteById(entityId)
-            + count(): long
-        }
-
 
         interface RepositoryFactory {
             + getFigureRepository(): FigureRepository
         }
 
         interface FigureRepository {
-            + searchCatalogue(category, keyword): List<Figure>
+            + searchCatalogue(category, keywords): List<Figure>
         }
 
-        note right of FigureRepository::searchCatalogue
-        If only one parameter is needed, pass the other as null.
-        If both are null, an exception is thrown.
+        note right of FigureRepository
+            The searchCatalogue method accepts two optional parameters:
+            a category and a keyword.
+
+            - If both are provided, the search filters by both criteria.
+            - If only one is provided, the search filters using that parameter only.
+            - To ignore a criterion, pass null for that parameter.
         end note
 
     }
 
     'Figure Aggregate
-    class Figure <<Entity>>{
-        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner)
-        + Figure(code, version, description, dslDescription, keywords, status, category, showDesigner, exclusivity)
-        + isExclusive() : boolean
+    class Figure {
+        + matchesCategory(category): boolean
+        + matchesKeyword(term): boolean
     }
 
     class Code <<Value Object>>{
@@ -84,9 +64,6 @@ package "Domain" #DDDDDD {
     }
 
     class Description <<Value Object>>{
-    }
-
-    class DSLDescription <<Value Object>>{
     }
 
     enum FigureStatus <<Value Object>>{
@@ -101,49 +78,30 @@ package "Domain" #DDDDDD {
 
     'Category Aggregate
     class Category <<Entity>>{
-        + Category (name, status)
-    }
-
-    class IDCategory <<Value Object>>{
-    }
-
-    enum CategoryStatus <<Value Object>>{
     }
 
     class CategoryName <<Value Object>>{
     }
 
-
-    'ShowDesigner Aggregate
-    class ShowDesigner <<Entity>>{
-        + ShowDesigner (name, email, phoneNumber)
+    'Customer Aggregate
+    class Customer <<Entity>>{
     }
-
-    class IDShowDesigner <<Value Object>>{
-    }
-
 
     'Shared
     class Name <<Value Object>>{
-    }
-
-    class Email <<Value Object>>{
-    }
-
-    class PhoneNumber <<Value Object>>{
     }
 
 }
 
 package "UI" #DDDDDD {
     class SearchCatalogueUI <<UI>> {
-        + showSearchCatalogue()
+        + showSearchCatalogue(category, keywords)
     }
 }
 
 package "Controller" #DDDDDD {
     class SearchCatalogueController <<Controller>> {
-        + listSearchCatalogue()
+        + listSearchResults(category, keywords)
     }
 }
 
@@ -162,7 +120,6 @@ package "Controller" #DDDDDD {
     'JpaRepositoryFactory -> x
     JpaRepositoryFactory ..|> RepositoryFactory
     JpaRepositoryFactory ..> JpaFigureRepository
-    JpaRepositoryFactory --> JpaRepositoryFactory: instance
 
 'persistence.impl.inmemory
 
@@ -172,17 +129,10 @@ package "Controller" #DDDDDD {
     'InMemoryRepositoryFactory -> x
     InMemoryRepositoryFactory ..|> RepositoryFactory
     InMemoryRepositoryFactory ..> InMemoryFigureRepository
-    InMemoryRepositoryFactory --> InMemoryRepositoryFactory: instance
-
-'DTO
-
-    'FigureDTO -> x
-    FigureDTO ..> CatalogueMapper : figureDTO
 
 'Repository
 
     'FigureRepository -> x
-    FigureRepository ..|> Repository
     FigureRepository ...> Figure
 
     'RepositoryFactory -> x
@@ -191,26 +141,22 @@ package "Controller" #DDDDDD {
 'Domain
 
     'Figure -> x
-    Figure --> "1" DSLDescription: DSLDescription
     Figure --> "1..*" Keyword: keywords
     Figure --> "1" Code: code
     Figure --> "1" Version: version
     Figure --> "1" Description: description
     Figure --> "1" FigureStatus: figureStatus
-    Figure --> "1" Category: category
-    Figure --> "1" ShowDesigner: created by
+    Figure --> "1..*" Category: category
     Figure --> "0..1" Exclusivity: exclusivity
 
     'Category -> x
-    Category --> "1" IDCategory: id
-    Category --> "1" CategoryStatus: categoryStatus
     Category --> "1" CategoryName: name
 
-    'ShowDesigner -> x
-    ShowDesigner --> "1" IDShowDesigner: id
-    ShowDesigner --> "1" Name: name
-    ShowDesigner --> "1" Email: email
-    ShowDesigner --> "1" PhoneNumber: phoneNumber
+    'Exclusivity -> x
+    Exclusivity --> "1" Customer: exclusive to
+
+    'Customer -> x
+    Customer --> "1" Name: name
 
 'UI
 
@@ -222,8 +168,7 @@ package "Controller" #DDDDDD {
     'SearchCatalogueController -> x
     SearchCatalogueController ..> PersistenceContext : getRepositoryFactory()
     SearchCatalogueController ..> RepositoryFactory : getFigureRepository()
-    SearchCatalogueController ..> FigureRepository : searchCatalogue()
-    SearchCatalogueController ..> CatalogueMapper : toDTOList()
+    SearchCatalogueController ..> FigureRepository : searchCatalogue(category, keywords)
 
 
 @enduml

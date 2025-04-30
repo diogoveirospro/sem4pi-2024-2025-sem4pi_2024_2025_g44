@@ -40,7 +40,7 @@ package "Category " <<aggregate>>{
     }
 
     'Figure -> x
-    Figure --> "1" Category: category
+    Figure --> "1..*" Category: category
 }
 
 package "ShowDesigner " <<aggregate>>{

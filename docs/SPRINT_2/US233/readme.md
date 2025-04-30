@@ -20,7 +20,9 @@ Test: 📝 To Do
 ## 2. Requirements
 
 **As a** Show Designer,
+<br>
 **I want** to add a figure to the public catalogue,
+<br>
 **So that** no figures are missing.
 
 **Acceptance Criteria:**
