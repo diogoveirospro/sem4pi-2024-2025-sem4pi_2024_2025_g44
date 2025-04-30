@@ -41,113 +41,80 @@ keyword or category.
 > Figures may have multiple versions. According to the client, this has no impact on the backend implementation and 
 should only affect the UI, where different versions may appear when searching for a figure.
 
+> **[Topic: US232](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35804)**
+>
+> The client confirmed that both public and exclusive figures may be shown in the search results. However, exclusive 
+figures must be clearly marked to indicate their restricted usage.
+
 ## 3. Analysis
 
-The figure aggregate includes several attributes, but for this user story the most relevant ones are:
+The `Figure` aggregate contains several domain attributes, but for this user story the most relevant ones are:
 
-- `Code` and `Version`, to uniquely identify each figure in the results.
-- `Description`, to display contextual information about the figure in the UI.
-- `FigureStatus`, to ensure only active figures are searchable.
-- `Keyword` and `Category`, which are the filtering criteria used in the search functionality.
-- `Exclusivity` and `Customer`, to indicate that a figure is exclusive and to whom it is exclusive, when applicable.
+- `Code` and `Version` – uniquely identify each figure in the search results.
+- `Description` – provides meaningful information to display in the user interface.
+- `FigureStatus` – ensures that only active figures are included in the search.
+- `Keyword` and `Category` – serve as filtering criteria in the search functionality.
+- `Exclusivity` – indicates whether a figure is exclusive; if so, it references a `Customer` entity.
+- `Customer` and its `Name` – allow exclusive figures to be clearly marked and associated with the correct client when 
+shown in the results.
 
-Other attributes such as the DSL description, Show Designer, or validation services are not relevant in the context of 
-this functionality and were omitted from the diagram for clarity.
+Attributes such as the DSL description or figure author are not relevant to this functionality and were intentionally 
+omitted from the diagram for simplicity.
 
 ![Domain Model for US232](images/domain_model_us232.svg)
 
 ## 4. Design
 
-In this section, we describe the design approach adopted for implementing **US232**. The class diagram defines the main 
-components involved in the search operation, showing a clear separation of concerns between the UI, application logic, 
-domain model, and persistence infrastructure.
+In this section, we describe the design approach adopted for implementing **US232 – Search Figure Catalogue**. The 
+class diagram defines the main components involved in the search operation, showcasing a clear separation of concerns 
+between the UI, application logic, domain model, and persistence infrastructure.
 
 ### 4.1. Realization
 
-The class diagram below illustrates the realization of **US232  – Search Figure Catalogue**. The UI component invokes 
-the controller, which delegates the operation to the `FigureRepository` through the configured `RepositoryFactory`. 
-The repository implementation (JPA or in-memory) performs the actual data access, returning domain entities that are 
-then mapped to DTOs via the `CatalogueMapper`.
+The class diagram below illustrates the realization of **US232 – Search Figure Catalogue**. The `SearchCatalogueUI` 
+component allows the user to initiate a search by providing a category and/or keyword. This request is forwarded to 
+the `SearchCatalogueController`, which orchestrates the use case.
 
-The `FigureRepository` defines a single method, `searchCatalogue(category, keyword)`, that supports flexible search 
-logic:
-- If only one criterion is needed, the other is passed as `null`.
-- If both are `null`, an exception is thrown.
-- The search should ignore accents and shouldn’t be case-sensitive.
+The controller retrieves the appropriate `FigureRepository` from the configured `RepositoryFactory` (resolved via the 
+`PersistenceContext`) and delegates the operation using the method `searchCatalogue(category, keywords)`. This method 
+accepts both parameters as optional:
+- If both category and keyword are provided, the results are filtered by both.
+- If only one is provided, the results are filtered accordingly.
+- If a parameter should be ignored, `null` is passed for that argument.
 
-This approach enables reusability and simplifies the interface, while maintaining alignment with the user story's 
-requirements.
+The actual filtering logic is encapsulated in the domain model, particularly within the `Figure` class, which includes 
+methods such as `matchesCategory(category)` and `matchesKeyword(term)` to support expressive and reusable criteria-based 
+filtering.
 
-The diagram also includes the relevant domain classes such as `Figure`, `Category`, `Keyword`, and their value objects, 
-ensuring a rich and expressive domain model.
+The persistence layer supports two interchangeable implementations—JPA and in-memory—through the use of 
+`JpaFigureRepository` and `InMemoryFigureRepository`, respectively. These implementations conform to the 
+`FigureRepository` interface and are instantiated through their respective factories.
+
+The model also includes domain concepts like `Category`, `Keyword`, `Exclusivity`, and `Customer`, as well as several 
+value objects such as `Code`, `Version`, and `FigureStatus`, ensuring that the domain logic is expressive, consistent, 
+and encapsulated.
 
 ![Class Diagram US232](images/class_diagram_us232.svg)
 
-### 4.2. Applied Patterns
-
-The design of the implementation for **US232 – Search Figure Catalogue** applies several well-established design 
-patterns, contributing to a modular, maintainable, and extensible architecture. Below are the key patterns identified 
-in this solution:
-
-#### 1. **DTO (Data Transfer Object) Pattern**
-- **Class Involved:** `FigureDTO`
-- **Description:** Encapsulates the data to be transferred from the domain layer to the UI. It abstracts the internal 
-domain structure and prevents leakage of business logic to the presentation layer.
-
-#### 2. **Mapper Pattern**
-- **Class Involved:** `CatalogueMapper`
-- **Description:** Converts `Figure` domain entities to `FigureDTO` objects. Centralizes transformation logic, 
-facilitating reuse and reducing duplication between layers.
-
-#### 3. **Repository Pattern**
-- **Classes Involved:** `FigureRepository`, `JpaFigureRepository`, `InMemoryFigureRepository`
-- **Description:** Abstracts the data access layer by exposing a clean interface for querying figures. Enables 
-flexibility in how data is stored and retrieved.
-
-#### 4. **Factory Pattern**
-- **Classes Involved:** `RepositoryFactory`, `JpaRepositoryFactory`, `InMemoryRepositoryFactory`
-- **Description:** Provides repository instances based on the chosen persistence strategy. Allows switching between 
-in-memory and JPA implementations without changing the business logic.
-
-#### 5. **Singleton Pattern**
-- **Classes Involved:** `JpaRepositoryFactory`, `InMemoryRepositoryFactory`
-- **Description:** Guarantees a single instance of each factory throughout the application. The `getInstance()` method 
-ensures centralized access.
-
-#### 6. **Controller Pattern**
-- **Class Involved:** `SearchCatalogueController`
-- **Description:** Coordinates the search use case by invoking the repository and converting the result into DTOs. Acts 
-as the mediator between the UI and domain layers.
-
-#### 7. **Value Object Pattern**
-- **Classes Involved:** `Code`, `Version`, `Description`, `Keyword`, `CategoryName`, `FigureStatus`, etc.
-- **Description:** These are immutable types that encapsulate value semantics and domain validation. They enhance 
-expressiveness and enforce domain invariants.
-
----
-
-These design patterns support a clean separation of concerns, promote testability, and provide a robust foundation for 
-extending the system in future sprints. By applying the **Repository + Factory + DTO + Mapper** combination, the system 
-remains decoupled, modular, and easy to maintain across multiple deployment contexts.
-
-### 4.3. Acceptance Tests
+### 4.2. Acceptance Tests
 
 The following tests validate the acceptance criteria defined for **US232 – Search Figure Catalogue**. They ensure that 
-the search functionality behaves as expected when filtering by category and/or keyword, that it only returns active 
-figures, and that case/accents are handled correctly.
+the search functionality supports flexible filtering (by category and/or keyword), returns only active figures, and 
+handles input in a case-insensitive and accent-insensitive manner.
 
 ---
 
 #### **Test 1: Only active figures are returned**
 **Refers to Acceptance Criteria:** _US232.3_  
-**Description:** Ensures that inactive figures are not returned, even if they match the search criteria.
+**Description:** Ensures that inactive figures are excluded from the search results, even if they match the keyword or 
+category.
 
 ```java
 @Test
 void ensureOnlyActiveFiguresAreReturned() {
     // setup: add active and inactive figures to the repository
-    // action: call controller.listSearchCatalogue() with matching keyword/category
-    // assert: result only includes active figures
+    // action: call controller.listSearchResults(category, keyword)
+    // assert: only active figures are returned
 }
 ```
 
@@ -155,15 +122,14 @@ void ensureOnlyActiveFiguresAreReturned() {
 
 #### **Test 2: Search by keyword only**
 **Refers to Acceptance Criteria:** _US232.2_  
-**Description:** Validates that filtering by keyword alone returns only figures that match the keyword 
-(case-insensitive and accent-insensitive).
+**Description:** Verifies that the search works correctly when filtering only by keyword.
 
 ```java
 @Test
 void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
-    // setup: create figures with various keywords (some matching, some not)
-    // action: call controller.listSearchCatalogue(null, "fire")
-    // assert: result only includes figures with keyword "fire", regardless of case or accents
+    // setup: add figures with different keywords
+    // action: call controller.listSearchResults(null, "fire")
+    // assert: only figures with the keyword "fire" (any case/accents) are returned
 }
 ```
 
@@ -171,30 +137,29 @@ void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
 
 #### **Test 3: Search by category only**
 **Refers to Acceptance Criteria:** _US232.2_  
-**Description:** Ensures that searching by category alone returns all figures within that category, and only active ones.
+**Description:** Verifies that the search works when filtering only by category.
 
 ```java
 @Test
 void ensureSearchByCategoryOnlyReturnsMatchingFigures() {
-    // setup: create figures assigned to specific categories
-    // action: call controller.listSearchCatalogue(category, null)
-    // assert: result only includes figures from the given category
+    // setup: assign figures to various categories
+    // action: call controller.listSearchResults(category, null)
+    // assert: only figures from the specified category are returned
 }
 ```
 
 ---
 
-#### **Test 4: Search by keyword and category combined**
+#### **Test 4: Combined search by keyword and category**
 **Refers to Acceptance Criteria:** _US232.2_  
-**Description:** Ensures that when both filters are applied, only figures that match both the keyword and category are 
-returned.
+**Description:** Ensures the search returns figures that match both the given category and keyword.
 
 ```java
 @Test
 void ensureSearchWithBothFiltersReturnsCorrectIntersection() {
-    // setup: create figures matching category, keyword, both, and neither
-    // action: call controller.listSearchCatalogue(category, "flames")
-    // assert: result only includes figures matching both filters
+    // setup: figures matching category, keyword, both, and neither
+    // action: call controller.listSearchResults(category, "flames")
+    // assert: only figures matching both category and keyword are returned
 }
 ```
 
@@ -202,45 +167,14 @@ void ensureSearchWithBothFiltersReturnsCorrectIntersection() {
 
 #### **Test 5: Search is case-insensitive and accent-insensitive**
 **Refers to Acceptance Criteria:** _US232.1_  
-**Description:** Validates that the search works regardless of letter casing and accent marks.
+**Description:** Ensures that keywords with different casing or accents still produce a match.
 
 ```java
 @Test
 void ensureSearchIgnoresCaseAndAccents() {
-    // setup: add a figure with keyword "Fénix"
-    // action: call controller.listSearchCatalogue(null, "fenix")
-    // assert: result includes the figure with "Fénix"
-}
-```
-
----
-
-#### **Test 6: Exception thrown when both filters are null**
-**Covers repository safeguard for invalid usage**  
-**Description:** Ensures the method throws an exception when called without any search filters.
-
-```java
-@Test
-void ensureExceptionIsThrownWhenBothFiltersAreNull() {
-    assertThrows(IllegalArgumentException.class, () -> {
-        controller.listSearchCatalogue(null, null);
-    });
-}
-```
-
----
-
-#### **Test 7: Returned results are DTOs**
-**Ensures proper use of data transfer and encapsulation**  
-**Description:** Confirms that the controller only returns `FigureDTO` objects, not domain entities.
-
-```java
-@Test
-void ensureReturnedResultsAreDTOs() {
-    List<?> result = controller.listSearchCatalogue(someCategory, "example");
-    for (Object dto : result) {
-        assertTrue(dto instanceof FigureDTO, "Element is not an instance of FigureDTO");
-    }
+    // setup: add figure with keyword "Fénix"
+    // action: call controller.listSearchResults(null, "fenix")
+    // assert: figure with "Fénix" is included in the result
 }
 ```
 
