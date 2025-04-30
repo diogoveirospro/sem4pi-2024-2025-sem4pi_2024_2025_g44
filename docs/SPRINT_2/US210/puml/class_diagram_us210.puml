@@ -1,43 +1,112 @@
 @startuml
+set separator none
 
-class User {
-    +userId: String
-    +email: String
-    +password: String
-    +getRoles(): List<UserRole>
+package "Domain" #DDDDDD {
+
+    class SystemUser <<Entity>> {
+        + enable()
+        + disable()
+        + isActive(): boolean
+    }
+
+    class Username <<Value Object>>
+    class Password <<Value Object>>
+    class Name <<Value Object>>
+    class PhoneNumber <<Value Object>>
+
+    enum Role {
+        ADMIN
+        CRM_MANAGER
+        CRM_COLLABORATOR
+        SHOW_DESIGNER
+        DRONE_TECH
+        CUSTOMER
+    }
+
+    interface UserRepository <<Repository>> {
+        + findByUsername(username: Username) : SystemUser
+        + findByActive(active: boolean) : Iterable<SystemUser>
+        + save(user: SystemUser) : SystemUser
+    }
+
+    interface RepositoryFactory <<Factory>> {
+        + userRepository(): UserRepository
+    }
+
+    class AuthService <<Service>> {
+        + authenticate(username: Username, password: Password): SystemUser
+        + authorize(user: SystemUser, role: Role): boolean
+    }
 }
 
-class AuthenticationToken {
-    +token: String
-    +expiryDate: Date
+package "UI" #DDDDDD {
+    class AuthenticationUI <<UI>> {
+        + show()
+    }
 }
 
-class UserRole {
-    +roleName: String
+package "Controller" #DDDDDD {
+    class AuthenticationController <<Controller>> {
+        + login(username: String, password: String)
+        + listUsers(): Iterable<SystemUser>
+        + enableUser(username: String)
+        + disableUser(username: String)
+    }
 }
 
-class Permission {
-    +permissionName: String
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaUserRepository <<Repository>> {
+    }
+
+    class JpaRepositoryFactory <<Factory>> {
+        - instance
+        + getInstance(): RepositoryFactory
+    }
 }
 
-class Authentication {
-    +user: User
-    +authenticateUser(): Boolean
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryUserRepository <<Repository>> {
+    }
+
+    class InMemoryRepositoryFactory <<Factory>> {
+        - instance
+        + getInstance(): RepositoryFactory
+    }
 }
 
-class Authorization {
-    +user: User
-    +role: UserRole
-    +permission: Permission
-    +checkPermission(): Boolean
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
 }
 
-' Relationships
-User --> "1" UserRole : has
-User --> "0..*" AuthenticationToken : generates
-UserRole --> "0..*" Permission : grants
-Authentication --> "1" User : authenticates
-Authorization --> "1" Permission : grants
-Authorization --> "1" UserRole : checks
+' Relações (com nomes nos métodos)
+SystemUser --> Username
+SystemUser --> Password
+SystemUser --> Name
+SystemUser --> PhoneNumber
+SystemUser --> Role
+
+UserRepository --> SystemUser : manages
+
+AuthService ..> UserRepository : userRepository()
+AuthenticationController ..> AuthService : authService
+AuthenticationController ..> RepositoryFactory : repositoryFactory
+AuthenticationController ..> PersistenceContext : getRepositoryFactory()
+AuthenticationUI ..> AuthenticationController : authenticationController
+
+PersistenceContext ..> JpaRepositoryFactory : getInstance()
+PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
+PersistenceContext ..> RepositoryFactory : getRepositoryFactory()
+
+JpaUserRepository ..|> UserRepository
+InMemoryUserRepository ..|> UserRepository
+
+JpaRepositoryFactory ..|> RepositoryFactory
+InMemoryRepositoryFactory ..|> RepositoryFactory
+JpaRepositoryFactory ..> JpaUserRepository : userRepository()
+InMemoryRepositoryFactory ..> InMemoryUserRepository : userRepository()
+
+RepositoryFactory ..> UserRepository : userRepository()
 
 @enduml
