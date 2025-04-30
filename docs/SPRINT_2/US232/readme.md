@@ -19,7 +19,9 @@ Test: 📝 To Do
 ## 2. Requirements
 
 **As a** CRM Collaborator,
+<br>
 **I want** to search the figure catalogue by category and/or keyword,
+<br>
 **So that** it is easier to navigate through the catalogue.
 
 **Acceptance Criteria:**

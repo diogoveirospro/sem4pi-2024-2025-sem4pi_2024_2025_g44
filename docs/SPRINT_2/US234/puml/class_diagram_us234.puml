@@ -1,0 +1,119 @@
+@startuml
+set separator none
+
+package "Persistence " #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaRepositoryFactory {
+        - JpaRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class JpaFigureRepository {
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryRepositoryFactory {
+        - InMemoryRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class InMemoryFigureRepository {
+    }
+}
+
+package "Domain" #DDDDDD {
+
+    package "Repository " #DDDDDD {
+
+        interface RepositoryFactory {
+            + getCategoryRepository(): CategoryRepository
+        }
+
+        interface FigureRepository {
+            + getCatalogue(): List<Figure>
+        }
+
+    }
+
+    'Figure Aggregate
+    class Figure <<Entity>>{
+        + decommission()
+    }
+
+    enum FigureStatus <<Value Object>>{
+    }
+}
+
+package "UI" #DDDDDD {
+    class DecommissionFigureUI <<UI>> {
+        + decommissionFigure(figure)
+        + selectFigure()
+    }
+}
+
+package "Controller" #DDDDDD {
+    class DecommissionFigureController <<Controller>> {
+        + decommissionFigure(figure)
+        + listCatalogue()
+    }
+}
+
+'Persistence
+
+    'PersistenceContext -> x
+    PersistenceContext ..> RepositoryFactory: figureRepository()
+    PersistenceContext ..> JpaRepositoryFactory
+    PersistenceContext ..> InMemoryRepositoryFactory
+
+'persistence.impl.jpa
+
+    'JpaFigureRepository -> x
+    JpaFigureRepository --|> FigureRepository
+
+    'JpaRepositoryFactory -> x
+    JpaRepositoryFactory ....|> RepositoryFactory
+    JpaRepositoryFactory ..> JpaFigureRepository
+
+'persistence.impl.inmemory
+
+    'InMemoryFigureRepository -> x
+    InMemoryFigureRepository ..|> FigureRepository
+
+    'InMemoryRepositoryFactory -> x
+    InMemoryRepositoryFactory ...|> RepositoryFactory
+    InMemoryRepositoryFactory ..> InMemoryFigureRepository
+
+'Repository
+
+    'FigureRepository -> x
+    FigureRepository ...> Figure
+
+    'RepositoryFactory -> x
+    RepositoryFactory ..> FigureRepository
+
+'Domain
+
+    'Figure -> x
+    Figure --> "1" FigureStatus: figureStatus
+
+'UI
+
+    'DecommissionFigureUI -> x
+    DecommissionFigureUI ..> DecommissionFigureController
+
+'Controller
+
+    'DecommissionFigureController -> x
+    DecommissionFigureController ..> PersistenceContext : getRepositoryFactory()
+    DecommissionFigureController ..> RepositoryFactory : getFigureRepository()
+    DecommissionFigureController ..> FigureRepository : getCatalogue()
+    DecommissionFigureController ..> Figure : decommissionFigure(figure)
+
+@enduml

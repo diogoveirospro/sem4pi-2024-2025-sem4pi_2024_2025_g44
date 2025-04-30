@@ -1,0 +1,17 @@
+@startuml
+
+package "Figure " <<aggregate>> {
+
+    class Figure <<Entity>> <<root>>{
+    }
+
+    enum FigureStatus <<Value Object>>{
+    }
+
+
+    'Figure -> x
+    Figure --> "1" FigureStatus: figureStatus
+
+}
+
+@enduml

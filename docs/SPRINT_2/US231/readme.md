@@ -19,7 +19,9 @@ Test: 📝 To Do
 ## 2. Requirements
 
 **As a** CRM Collaborator, 
+<br>
 **I want** to list all active public figures in the catalogue, 
+<br>
 **So that** I can select them during the design of a show request proposal.
 
 **Acceptance Criteria:**
