@@ -43,7 +43,7 @@ activate EDT
                            deactivate UI
                      EDT -> UI : selets one
                         activate UI
-            UI --> UI : keepModel(droneModel)
+            UI --> UI : keepData(droneModel)
             UI -> CTRL : getActiveDroneList()
             activate CTRL
                 CTRL -> REPOS : getInstance()
@@ -56,11 +56,10 @@ activate EDT
                     REPOS_SINGLETON --> CTRL: droneRepository
                 deactivate REPOS_SINGLETON
 
-                CTRL -> DRN_REPO : getDroneList()
+                CTRL -> DRN_REPO : getActiveDroneList(droneModel)
                 activate DRN_REPO
-                    DRN_REPO --> CTRL : droneList
+                    DRN_REPO --> CTRL : activeDroneList
                 deactivate DRN_REPO
-                CTRL --> CTRL : getActiveDroneList(droneList, droneModel)
                 CTRL --> UI : activeDroneList
             deactivate CTRL
 
@@ -71,7 +70,7 @@ activate EDT
 
     EDT -> UI : selets one and ask to list in the inventory
     activate UI
-    UI --> UI : keepDrone(activateDrone)
+    UI --> UI : keepData(activateDrone)
     UI --> EDT : requests confirmation
     deactivate UI
     EDT -> UI : confirms
@@ -100,7 +99,7 @@ activate EDT
 
                                     CTRL -> DRN_REPO : listDrone(activateDrone)
             activate DRN_REPO
-                DRN_REPO --> DRONE **: list(activateDrone)
+                DRN_REPO -> DRONE **: list(activateDrone)
                     DRN_REPO -> DRN_REPO: validateDrone(activateDrone)
                     activate DRN_REPO
                         DRN_REPO --> DRN_REPO : true

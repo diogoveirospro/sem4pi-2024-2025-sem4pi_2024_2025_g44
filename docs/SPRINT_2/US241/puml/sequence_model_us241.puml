@@ -10,14 +10,13 @@ participant ":CreateModelUI" as UI
 participant ":CreateModelController" as CTRL
 participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
-participant "modelRepository\n:ModelRepository" as MOD_REPO
-participant "model\n:Model" as MODEL
+participant "droneRepository\n:DroneRepository" as DRN_REPO
 
 activate DT
 
-DT -> UI : requests to create a new drone model
+DT -> UI : requests to add a drone to the inventory
 activate UI
-    UI --> DT : asks for model data(Serial Number)
+    UI --> DT : asks for the drone serial number
         deactivate UI
     DT -> UI : submits data
     activate UI
@@ -41,26 +40,20 @@ activate UI
         deactivate REPOS_SINGLETON
         CTRL -->CTRL : droneRepository
         deactivate CTRL
-            CTRL -> MOD_REPO : addDrone(serialNumber)
-            activate MOD_REPO
+            CTRL -> DRN_REPO : addDrone(serialNumber)
+            activate DRN_REPO
 
+        DRN_REPO -> DRN_REPO: addDrone (serialNumber)
+                activate DRN_REPO
+                    DRN_REPO -> DRN_REPO: validateDrone(serialNumber)
+                    activate DRN_REPO
+                        DRN_REPO --> DRN_REPO : true
+                    deactivate DRN_REPO
 
-
-        MOD_REPO -> MODEL : create(serialNumber)
-        activate MODEL
-        MODEL --> MOD_REPO : modelCreated
-        deactivate MODEL
-        MOD_REPO -> MOD_REPO: addModel (modelCreated)
-                activate MOD_REPO
-                    MOD_REPO -> MOD_REPO: validateModel(modelCreated)
-                    activate MOD_REPO
-                        MOD_REPO --> MOD_REPO : true
-                    deactivate MOD_REPO
-
-                    MOD_REPO --> MOD_REPO : true
-                deactivate MOD_REPO
-            MOD_REPO --> CTRL : true
-        deactivate MOD_REPO
+                    DRN_REPO --> DRN_REPO : true
+                deactivate DRN_REPO
+            DRN_REPO --> CTRL : true
+        deactivate DRN_REPO
 
         CTRL --> UI : true
     deactivate CTRL
