@@ -1,5 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
+ class Model <<Entity>> <<root>>{
+    }
 
 
   class Drone <<Entity>> <<root>>{
@@ -9,11 +11,11 @@
     }
 
     enum DroneStatus <<Value Object>>{
-
-        }
+    }
 
     'Drone -> x
-    Drone --> "1" SerialNumber: serialNumber
     Drone --> "1" DroneStatus: status
+    Drone --> "1" SerialNumber: serialNumber
+    Drone --> "1" Model: uses
 
 @enduml

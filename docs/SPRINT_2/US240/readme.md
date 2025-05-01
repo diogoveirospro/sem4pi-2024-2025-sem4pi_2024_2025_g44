@@ -1,4 +1,4 @@
-# US 221
+# US 240
 
 ## 1. Context
 
@@ -39,7 +39,7 @@ The customer won't be able to have the same representative as another customer, 
 
 The customer won't have an account in the system, so the customer representative will be the way to access the system.
 
-![Relation customer and representative](images/domain_model_us221.svg "Domain Model")
+![Relation customer and representative](images/domain_model_us240.svg "Domain Model")
 
 ## 4. Design
 
@@ -95,6 +95,8 @@ Include here the main tests used to validate the functionality. Focus on how the
 @Test(expected = IllegalArgumentException.class)
 public void ensureXxxxYyyy() {
 	...
+	
+	
 }
 ````
 
