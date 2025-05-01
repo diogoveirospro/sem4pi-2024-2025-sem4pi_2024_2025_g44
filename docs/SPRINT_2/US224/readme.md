@@ -6,13 +6,12 @@ This task as the objective of concluding the requirements of the us224 of sprint
 
 ### 1.1 List of issues
 
-Analysis: Testing
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: To do
+- **Testing**: To do
 
-Design: Testing
-
-Implement: To do
-
-Test: To do
+---
 
 
 ## 2. Requirements
@@ -45,6 +44,8 @@ Test: To do
 The system should allow the user to disable a customer representative. This is important because the customer representative might stop working for that enterprise, and it is important that the representatives registered that are integrated in the system are the ones that are still working for the enterprise. 
 
 The system should allow the user to disable a customer representative through the user interface, and the system should validate the input to ensure that it is valid.
+
+Check the us221 for more information about the customer representative and the customer.
 
 ![Relation representative](images/domain_model_us224.svg "Domain Model")
 

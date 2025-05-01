@@ -6,13 +6,12 @@ This task as the objective of concluding the requirements of the us223 of sprint
 
 ### 1.1 List of issues
 
-Analysis: Testing
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: To do
+- **Testing**: To do
 
-Design: Testing
-
-Implement: To do
-
-Test: To do
+---
 
 
 ## 2. Requirements
@@ -36,6 +35,8 @@ Test: To do
 The system should allow the user to edit the information of a customer representative. This is important because the information of a customer representative may change over time, and it is important to keep this information up to date.
 
 The system should allow the user to edit the email and phone number of a customer representative. The user should be able to edit this information through the user interface, and the system should validate the input to ensure that it is valid.
+
+Check the us221 for more information about the customer representative and the customer.
 
 ![Relation representative and his updatable information](images/domain_model_us223.svg "Domain Model")
 

@@ -6,14 +6,12 @@ This task as the objective of concluding the requirements of the us222 of sprint
 
 ### 1.1 List of issues
 
-Analysis: Testing
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: To do
+- **Testing**: To do
 
-Design: Testing
-
-Implement: To do
-
-Test: To do
-
+---
 
 ## 2. Requirements
 
@@ -54,6 +52,8 @@ Test: To do
 It is important that we are able to list all the representatives of a customer. As we have a one-to-many relationship between the customer and the representative, we can easily list all the representatives of a customer.
 
 This method will be used in the UI to show the list of representatives of a customer.
+
+Check the us221 for more information about the customer representative and the customer.
 
 ![Relation customer and representative](images/domain_model_us222.svg "Domain Model")
 

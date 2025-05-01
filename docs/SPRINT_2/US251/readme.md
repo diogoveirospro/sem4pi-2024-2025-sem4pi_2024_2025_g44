@@ -1,15 +1,15 @@
-# US 221 
+# US251 - Specification of the language for figure and show description
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us221 of sprint2, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task aims to conclude the requirements for **US221** of **Sprint 2**, which consists of developing a new functionality for the system. The team will now focus on completing the implementation and testing of this feature, as well as integrating it with the rest of the system.
 
 ### 1.1 List of Issues
 
-- **Analysis**: Done  
-- **Design**: Done  
-- **Implementation**: To do  
-- **Testing**: To do  
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: To do
+- **Testing**: To do
 
 ---
 
@@ -52,11 +52,7 @@ This requirement depends on **US220**, as a customer must be registered in the s
 
 ### Customer Aggregate
 
-It is important that we are able to register a new representative for a customer. As we have a one-to-many relationship between the customer and the representative, we can easily register a new representative for a customer.
-
-This method will be used in the UI to register a new representative for a customer.
-
-The `Customer` aggregate includes:
+The `Customer` aggregate contains multiple domain attributes, but only a subset is relevant for this functionality:
 
 - **Name** – Customer name (for identification)
 - **Address** – Customer address
