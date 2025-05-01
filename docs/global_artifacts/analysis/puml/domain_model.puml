@@ -172,7 +172,7 @@ package "Category " <<aggregate>>{
     Category --> "1" CategoryDescription: description
 
     'Figure -> x
-    Figure --> "1..*" Category: category
+    Figure --> "1..*" Category: categories
 }
 
 package "ShowRequest " <<aggregate>>{

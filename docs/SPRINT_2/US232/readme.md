@@ -78,7 +78,7 @@ component allows the user to initiate a search by providing a category and/or ke
 the `SearchCatalogueController`, which orchestrates the use case.
 
 The controller retrieves the appropriate `FigureRepository` from the configured `RepositoryFactory` (resolved via the 
-`PersistenceContext`) and delegates the operation using the method `searchCatalogue(category, keywords)`. This method 
+`PersistenceContext`) and delegates the operation using the method `searchCatalogue(categories, keywords)`. This method 
 accepts both parameters as optional:
 - If both category and keyword are provided, the results are filtered by both.
 - If only one is provided, the results are filtered accordingly.

@@ -33,11 +33,11 @@ package "Domain" #DDDDDD {
     package "Repository " #DDDDDD {
 
         interface RepositoryFactory {
-            + getCategoryRepository(): CategoryRepository
+            + getFigureRepository(): FigureRepository
         }
 
         interface FigureRepository {
-            + getCatalogue(): List<Figure>
+            + findAll(): Iterable<Figure>
         }
 
     }
@@ -113,7 +113,7 @@ package "Controller" #DDDDDD {
     'DecommissionFigureController -> x
     DecommissionFigureController ..> PersistenceContext : getRepositoryFactory()
     DecommissionFigureController ..> RepositoryFactory : getFigureRepository()
-    DecommissionFigureController ..> FigureRepository : getCatalogue()
+    DecommissionFigureController ..> FigureRepository : findAll()
     DecommissionFigureController ..> Figure : decommissionFigure(figure)
 
 @enduml

@@ -43,19 +43,19 @@ package "Domain" #DDDDDD {
         }
 
         interface FigureRepository {
-            + addFigureToCatalogue(figure)
+            + save(figure): Figure
         }
 
         interface CategoryRepository {
-            + allCategories(): List<Category>
+            + findAll(): Iterable<Category>
         }
 
     }
 
     'Figure Aggregate
     class Figure <<Entity>>{
-        + Figure(code, version, description, dslDescription, keywords, category)
-        + Figure(code, version, description, dslDescription, keywords, category, exclusivity)
+        + Figure(code, version, description, dslDescription, keywords, categories)
+        + Figure(code, version, description, dslDescription, keywords, categories, exclusivity)
     }
 
     class Code <<Value Object>>{
@@ -155,7 +155,7 @@ package "Controller" #DDDDDD {
     Figure --> "1" Code: code
     Figure --> "1" Version: version
     Figure --> "1" Description: description
-    Figure --> "1..*" Category: category
+    Figure --> "1..*" Category: categories
     Figure --> "1" ShowDesigner: created by
     Figure --> "0..1" Exclusivity: exclusivity
 
@@ -170,8 +170,8 @@ package "Controller" #DDDDDD {
     AddFigureToCatalogueController ..> PersistenceContext : getRepositoryFactory()
     AddFigureToCatalogueController ..> RepositoryFactory : getFigureRepository()
     AddFigureToCatalogueController ..> RepositoryFactory : getCategoryRepository()
-    AddFigureToCatalogueController ..> FigureRepository : addFigureToCatalogue(figure)
-    AddFigureToCatalogueController ..> CategoryRepository : allCategories()
+    AddFigureToCatalogueController ..> FigureRepository : save(figure)
+    AddFigureToCatalogueController ..> CategoryRepository : findAll()
 
 
 @enduml

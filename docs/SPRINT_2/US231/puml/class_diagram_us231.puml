@@ -121,7 +121,7 @@ package "Controller" #DDDDDD {
     Figure --> "1" Code: code
     Figure --> "1" Version: version
     Figure --> "1" Description: description
-    Figure --> "1..*" Category: category
+    Figure --> "1..*" Category: categories
 
     'Category -> x
     Category --> "1" CategoryName: name

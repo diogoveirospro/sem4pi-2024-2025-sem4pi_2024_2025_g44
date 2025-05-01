@@ -37,7 +37,7 @@ package "Domain" #DDDDDD {
         }
 
         interface FigureRepository {
-            + searchCatalogue(category, keywords): List<Figure>
+            + searchCatalogue(categories, keywords): List<Figure>
         }
 
         note right of FigureRepository
@@ -95,13 +95,13 @@ package "Domain" #DDDDDD {
 
 package "UI" #DDDDDD {
     class SearchCatalogueUI <<UI>> {
-        + showSearchCatalogue(category, keywords)
+        + showSearchCatalogue(categories, keywords)
     }
 }
 
 package "Controller" #DDDDDD {
     class SearchCatalogueController <<Controller>> {
-        + listSearchResults(category, keywords)
+        + listSearchResults(categories, keywords)
     }
 }
 
@@ -146,7 +146,7 @@ package "Controller" #DDDDDD {
     Figure --> "1" Version: version
     Figure --> "1" Description: description
     Figure --> "1" FigureStatus: figureStatus
-    Figure --> "1..*" Category: category
+    Figure --> "1..*" Category: categories
     Figure --> "0..1" Exclusivity: exclusivity
 
     'Category -> x
