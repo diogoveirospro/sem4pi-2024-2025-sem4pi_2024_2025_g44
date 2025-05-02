@@ -1,10 +1,10 @@
-# US 101
+# US 210
 
 *This is an example template*
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+*This task aims to conclude the requirements for US210 in Sprint 2, which consists of developing the authentication and authorization functionality for the system. The team will focus on completing the implementation of login functionality, user role verification, and enabling/disabling user access. Additionally, the team will integrate this feature with the rest of the system to ensure seamless security for all users.*
 
 ### 1.1 List of issues
 
@@ -19,49 +19,53 @@ Test:
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As** a Project Manager,  
+**I want** the system to support and apply authentication and authorization for all its users and functionalities.  
 
-*Example*
+### Acceptance Criteria
 
-**US G101** As {Ator} I Want...
+- **AC01**: The system should allow users to log in with valid credentials (username and password).
+- **AC02**: The system should verify the user’s role and allow or deny access to specific functionalities based on their role.
+- **AC03**: The system should allow enabling or disabling user access.
+- 
 
-**Acceptance Criteria:**
+### Dependencies
 
-- US101.1 The system should...Blá Blá Blá ...
+This requirement dont have any dependencies.
 
-- US101.2. Blá Blá Blá ...
-
-**Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+- **User Repository:** A repository (`UserRepository`) is already available for user data storage. We will leverage this for managing user information.
+- **Roles:** The roles (`ADMIN`, `CRM_MANAGER`, etc.) define the access levels. We ensured that the system is scalable to add new roles in the future.
+- **Security:** We considered basic authentication strategies and role-based access control (RBAC) to ensure the security of different functionalities.
 
 ## 4. Design
 
-*In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+In this section, we describe the design approach adopted for implementing **US210 – Authentication 1 and authorization**. The class diagram defines the main components, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US221 Class Diagram](images/class_diagram_us210.svg "US210 Class Diagram")
 
 ### 4.3. Applied Patterns
 
 ### 4.4. Acceptance Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
-
-**Test 1:** *Verifies that it is not possible to ...*
+Include here the main tests used to validate the functionality. These tests focus on ensuring that authentication and role-based access are correctly handled.
+**Test 1:** *Verifies that only active users can log in and access protected resources.*
 
 **Refers to Acceptance Criteria:** US101.1
 
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+```java
+@Test
+public void ensureOnlyActiveUsersCanLogIn() {
+    SystemUser user = new User("username", "password", Role.CRM_MANAGER);
+    user.setActive(false);
+    
+    boolean loginSuccess = authService.authenticate(user.getUsername(), user.getPassword());
+    assertFalse(loginSuccess);
 }
 ````
 
