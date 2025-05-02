@@ -1,12 +1,14 @@
 # US 230
 
 ## 1. Context
-
+\
 This task is being developed in sprint 2.\
 The customer will contact the CRM Collaborator to submit a request for a show.\
 The CRM Collaborator will create the show request into the system.
 
 ### 1.1 List of issues
+\
+Requirements: Done
 
 Analysis: In Progress
 
@@ -18,9 +20,9 @@ Test: TODO
 
 
 ## 2. Requirements
-
+\
 US230 - As a CRM Collaborator, I want to register (create) a show request
-
+\
 **Acceptance Criteria:**
 
 - AC01 - The CRM Collaborator must be a user in the system
@@ -71,8 +73,38 @@ To create a Show Request, a customer is needed.
 
  
 ## 3. Analysis
+\
+The `Show Request` aggregate includes:
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+- Time - Time for the Show
+- Date - Date for the Show
+- QuantityOfDrones - Number of drones to be used in the Show
+- Location - Location for the Show
+- ShowRequestStatus - Status for the Show Request (created, accepted, etc.)
+- ShowDescription - List of figures to be used in the show (i.e. a document)
+
+\
+The `CRM Collaborator` aggregate includes:
+
+- Name - Name of the CRM Collaborator
+- Email - Email of the Collaborator
+- PhoneNumber - Phone Number of the Collaborator
+
+\
+The `Customer` aggregate includes:
+
+- Name - Name of the customer (name of the company)
+- Address - Address of the customer
+- VatNumber - Value-added tax identification number
+- CustomerStatus - Status of the Customer (active, inactive, etc.)
+- CustomerType - Type of customer (individual, company, etc.)
+- CustomerRepresentative - Representative from the company
+
+  <br />
+  <br />
+
+![US230 Domain Model](images/domain_model_us230.svg "US230 Domain Model")
+
 
 ## 4. Design
 
