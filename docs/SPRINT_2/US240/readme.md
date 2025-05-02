@@ -1,103 +1,98 @@
-# US 240
+# US240 - Register Drone Model
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us221 of sprint2, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task concerns the implementation of **US240**, part of Sprint 3, which introduces a new system feature: the ability to define and store different drone models. This functionality is essential to support the future creation and tracking of physical drone units (US241), and is a foundational step toward drone fleet management.
 
-### 1.1 List of issues
+The system must ensure that each drone model includes specific physical and operational characteristics such as wind tolerance, maximum wind speed, position tolerance, and safety status. This information will guide validation and operation constraints in later features, including inventory and mission execution.
 
-Analysis: testing
+### 1.1 List of Issues
 
-Design: testing
-
-Implement: To do
-
-Test: To do
-
-
-## 2. Requirements
-
-**As** a CRM Collaborator,
-**I want** to register a new representative of a customer,
-**So that** the customer can be represented by another person.
-
-**Acceptance Criteria:**
-
-**AC01:** The customer representative will be a user of the system (Costumer core.Persistence.AppSettings).
-
-**Dependencies:**
-
-*Regarding this requirement we understand that it relates to US220, as there needs to be a customer registered in the system before registering a customer representative.*
-
-**Note:** There is no need to verify that customer representative’s email in the customer’s domain.
-
-## 3. Analysis
-
-The team decided that the best approach to implement this functionality is to have the `Customer Representative` that will be responsible for representing the customer in the system. Having a one-to-many relationship with the `Customer`, as a customer can have multiple representatives.
-
-The customer won't be able to have the same representative as another customer, so the system will not allow that.
-
-The customer won't have an account in the system, so the customer representative will be the way to access the system.
-
-![Relation customer and representative](images/domain_model_us240.svg "Domain Model")
-
-## 4. Design
-
-*In this section we are going to present the design of the system. We will focus on the design of the new functionality, but we will also include other parts of the system that are important to understand the implementation.*
-
-### 4.1. Realization
-
-![US221 Class Diagram](images/class_diagram_us221.svg "US221 Class Diagram")
-
-### 4.3. Applied Patterns
-
-The system design applies several well-established design patterns, promoting a clean, cohesive, and maintainable architecture. Below are the main patterns identified:
-
-#### 1. **DTO (Data Transfer Object) Pattern**
-- **Class Involved:** `CustomerDTO`
-- **Description:** Used to transfer data between layers, especially from the domain to the user interface. Ensures that only the necessary data is exposed, protecting domain entities.
-
-#### 2. **Mapper Pattern**
-- **Class Involved:** `CustomerListMapper`
-- **Description:** Responsible for converting domain objects (`Customer`) into DTO objects (`CustomerDTO`) and vice versa. Centralizes transformation logic, promoting reuse and separation of concerns.
-
-#### 3. **Repository Pattern**
-- **Classes Involved:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
-- **Description:** Abstracts the data persistence layer. Defines a clear interface for operations on domain entities, allowing the data source to be replaced or modified without impacting business logic.
-
-#### 4. **Singleton Pattern**
-- **Class Involved:** `Repositories`
-- **Description:** Ensures that only one instance of the repository aggregator exists in the system. The `getInstance()` method implements the Singleton pattern, providing a controlled, global access point to the repositories.
-
-#### 5. **Controller Pattern**
-- **Class Involved:** `AddCustomerRepresentativeController`
-- **Description:** Acts as an intermediary between the UI layer and the domain. Encapsulates the orchestration logic of use cases, such as registering representatives and listing customers.
-
-#### 6. **Value Object Pattern**
-- **Classes Involved:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`
-- **Description:** Represent immutable objects that encapsulate values and validation rules. Used to compose entities, ensuring consistency and expressiveness in the domain model.
+- **Analysis**: Done
+- **Design**: Done
+- **Implement**: To do
+- **Test**: To do
 
 ---
 
-These patterns contribute to the modular organization of the code and help maintain a clear separation of concerns across the various layers of the application.
+## 2. Requirements
 
+**As** a Drone Tech,  
+**I want** to create a drone model in the system,  
+**So that** a new model of drones can start being used.
 
-### 5. Tests
+### Acceptance Criteria
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+- **AC01**: This must also be achieved by a bootstrap process.
+- **AC02**: A drone model includes its behaviour under wind as a tolerance of the drone’s position (x, y, z) as a function of the wind speed (x, y, z) (In a first crude approach, this can be done in steps).
 
-**Test 1:** *Verifies that it is not possible to ...*
+### Dependencies
 
-**Refers to Acceptance Criteria:** US101.1
+This user story does not depend on any previous functionality.
 
+---
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-	
-	
+### Client Clarifications
+
+> **[Topic: Validação do modelo de drone](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35790#p45210)**  
+> Sim, esses parâmetros são obrigatórios para garantir a segurança operacional dos drones. Um modelo mal definido pode causar falhas em voo.
+
+---
+
+## 3. Analysis
+
+### Model Aggregate
+
+The core domain concept for this user story is the **Model** aggregate, which captures all essential characteristics of a drone type.
+
+#### Domain Attributes:
+
+- **ModelID** – A unique identifier for internal referencing.
+- **WindTolerance** – Maximum allowed wind force the model can handle.
+- **WindSpeed** – Maximum wind speed operational limits.
+- **PositionTolerance** – Tolerance of deviation during GPS-based navigation.
+- **SafetyStatus** – A boolean or enumerated field indicating whether the model is certified for use.
+
+These attributes must be validated during model creation. Invalid data should prevent the persistence of the model.
+
+### Value Objects
+
+- **ModelID** – Auto-generated unique ID for each model.
+- **WindTolerance / WindSpeed / PositionTolerance** – Numeric value objects validated against domain rules.
+- **SafetyStatus** – Boolean or status enum ensuring certified models only.
+
+### Domain Model
+
+![Model Aggregate](images/domain_model_us240.svg "Domain Model")
+
+---
+
+## 4. Design
+
+This section describes the design process for **US240**, which enables the creation of drone models. The interaction is initiated by a Drone Tech through a user interface and handled through a series of layered responsibilities, culminating in the creation and validation of a new `Model` entity.
+
+### 4.1 Realization
+
+The following diagram shows the flow of the drone model creation process:
+
+![US240 Sequence Diagram](images/sequence_diagram_us240.svg)
+
+---
+
+## 5. Tests
+
+### Test 1: Model data is persisted
+
+**Refers to Acceptance Criteria:** AC01  
+**Description:** Verifies that the key model attributes are stored correctly in the repository.
+
+```java
+@Test
+void ensureModelDataIsPersisted() {
+    controller.createModel(3.0, 40.0, 0.5, true);
+    assertTrue(repository.containsModelWithTolerance(3.0));
 }
+
 ````
 
 ## 6. Implementation
