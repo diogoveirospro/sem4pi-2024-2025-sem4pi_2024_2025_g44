@@ -10,9 +10,9 @@ The CRM Collaborator will create the show request into the system.
 \
 Requirements: Done
 
-Analysis: In Progress
+Analysis: Done
 
-Design: TODO
+Design: In Progress
 
 Implement: TODO
 
@@ -22,6 +22,7 @@ Test: TODO
 ## 2. Requirements
 \
 US230 - As a CRM Collaborator, I want to register (create) a show request
+
 \
 **Acceptance Criteria:**
 
