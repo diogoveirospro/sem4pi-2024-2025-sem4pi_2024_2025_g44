@@ -9,6 +9,7 @@
 | Category                       | The classification of a figure.                                                                                                                    |
 | Category Name                  | Name by which the category is known.                                                                                                               |
 | Category Status                | Represents the current status of a category, active or disable.                                                                                    |
+| Category Description           | The description of the category, describes the scope or purpose of the category                                                                    |
 | Code of Figure                 | An identifier of figure.                                                                                                                           |
 | CRM                            | Acronym of "Customer Relationship Management".                                                                                                     |
 | CRM Collaborator               | A CRM Collaborator who manages customer interactions, show requests, and proposals                                                                 |

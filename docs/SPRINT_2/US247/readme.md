@@ -1,6 +1,4 @@
-# US 245
-
-*This is an example template*
+# US 247
 
 ## 1. Context
 
