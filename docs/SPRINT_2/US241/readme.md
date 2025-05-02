@@ -77,6 +77,8 @@ In this section, we describe the design approach adopted for implementing US241 
 
 ### 4.1 Realization
 
+The following diagram shows the flow of the drone addition process.
+
 ![US241 Sequence Diagram](images/sequence_diagram_us241.svg "US241 Sequence Diagram")
 
 ---
