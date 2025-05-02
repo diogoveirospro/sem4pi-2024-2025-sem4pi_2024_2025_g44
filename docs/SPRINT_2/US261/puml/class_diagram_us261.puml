@@ -1,0 +1,198 @@
+@startuml
+set separator none
+
+package "Domain" #DDDDDD {
+
+    package "Repository " #DDDDDD {
+        Interface FigureRepository <<Repository>> {
+            + getFigures() : List<Customer>
+        }
+
+        Interface DroneRepository <<Repository>> {
+            + getDrones() : List<Drone>
+        }
+
+        Interface ModelRepository <<Repository>> {
+            + getModels() : List<Model>
+        }
+
+        Interface ShowProposalRepository <<Repository>> {
+            + getProposals() : List<ShowProposal>
+        }
+
+        Interface RepositoryFactory <<Factory>> {
+            - RepositoryFactory()
+            + getCustomerRepository() : FigureRepository
+        }
+
+    }
+
+   class Figure <<Entity>> <<root>>{
+         + Figure(description, version, dslDescription)
+         + getDSLDescription() : DSLDescription
+         + getDescription() : Description
+         + getVersion() : Version
+         + setStatus(status)
+   }
+   class Version <<Value Object>>{ }
+   class Description <<Value Object>>{ }
+   class DSLDescription <<Value Object>>{ }
+   enum FigureStatus <<Value Object>>{ }
+   class DSLValidate <<Service>>{ }
+   enum ShowProposalStatus <<Value Object>>{ }
+   class ShowProposal <<Entity>> <<root>>{
+        + ShowProposal(figures, models, qnt_drones)
+        + getFigures() : List<Figure>
+   }
+   class QuantityOfDrones <<Value Object>>{ }
+   class Model <<Entity>> <<root>>{
+        + Model(windTolerance, windSpeed, positionTolerance, safetyStatus)
+        + getWindTolerance() : WindTolerance
+        + getWindSpeed() : WindSpeed
+        + getPositionTolerance() : PositionTolerance
+        + getSafetyStatus() : SafetyStatus
+   }
+   class WindTolerance <<Value Object>>{ }
+   class WindSpeed <<Value Object>>{ }
+   class PositionTolerance <<Value Object>>{ }
+   enum SafetyStatus <<Value Object>>{ }
+   class Drone <<Entity>> <<root>>{
+        + Drone(serialNumber, model)
+        + getSerialNumber() : SerialNumber
+        + getModel() : Model
+        + setModel(model)
+    }
+   class SerialNumber <<Value Object>>{ }
+
+}
+
+package "UI" #DDDDDD {
+    class SimulateFigureUI <<UI>> {
+
+    }
+}
+
+package "Controller" #DDDDDD {
+    class SimulateFigureController <<Controller>> {
+        + simulateFigure(figure, model, drones)
+        + chooseFigureToSimulate(figure)
+        + obtainDSLDescription(figure)
+        + getAssociatedProposal(Figure)
+        + obtainDronesQuantity(proposal)
+        + obtainSimulationResults()
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaFigureRepository <<Repository>> {
+    }
+
+    class JpaDroneRepository <<Repository>> {
+    }
+
+    class JpaModelRepository <<Repository>> {
+    }
+
+    class JpaShowProposalRepository <<Repository>> {
+    }
+
+    class JpaRepositoryFactory <<Factory>> {
+        - JpaRepositoryFactory()
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryFigureRepository <<Repository>> {
+    }
+
+    class InMemoryDroneRepository <<Repository>> {
+    }
+
+    class InMemoryModelRepository <<Repository>> {
+    }
+
+    class InMemoryShowProposalRepository <<Repository>> {
+    }
+
+    class InMemoryRepositoryFactory <<Factory>> {
+        - InMemoryRepositoryFactory()
+    }
+}
+
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        getRepositoryFactory() : RepositoryFactory
+    }
+}
+
+' Relações entre as classes
+Figure --> "1" DSLDescription: DSLDescription
+Figure --> "1" Version: version
+Figure --> "1" Description: description
+Figure --> "1" FigureStatus: figureStatus
+
+DSLValidate ..> "1" DSLDescription: validates
+
+ShowProposal --> "1" QuantityOfDrones: qnt_drones
+ShowProposal --> "1" ShowProposalStatus: proposalStatus
+
+Model --> "1" WindTolerance: windTolerance
+Model --> "1" WindSpeed: windSpeed
+Model --> "1" PositionTolerance: positionTolerance
+Model --> "1" SafetyStatus: safetyStatus
+
+Drone --> "1" SerialNumber: serialNumber
+
+ShowProposal --> "0..*" Figure : requests new
+ShowProposal --> "1..*" Model : uses
+Drone --> "1" Model : uses
+
+RepositoryFactory ..> FigureRepository : getFigures()
+RepositoryFactory ..> DroneRepository : getDrones()
+RepositoryFactory ..> ModelRepository : getModels()
+RepositoryFactory ..> ShowProposalRepository : getProposals()
+
+FigureRepository --> "0..*" Figure : figures
+DroneRepository --> "0..*" Drone : drones
+ModelRepository --> "0..*" Model : models
+ShowProposalRepository --> "0..*" ShowProposal : proposals
+
+SimulateFigureUI ..> SimulateFigureController
+SimulateFigureController ..> RepositoryFactory
+SimulateFigureController ..> FigureRepository : getFigures()
+SimulateFigureController ..> DroneRepository : getDrones()
+SimulateFigureController ..> ModelRepository : getModels()
+SimulateFigureController ..> ShowProposalRepository : getProposals()
+SimulateFigureController ..> PersistenceContext : getRepositoryFactory()
+
+
+PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
+PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
+PersistenceContext ..> RepositoryFactory
+
+JpaRepositoryFactory ...|> RepositoryFactory
+JpaRepositoryFactory ..> JpaFigureRepository
+JpaRepositoryFactory ..> JpaDroneRepository
+JpaRepositoryFactory ..> JpaModelRepository
+JpaRepositoryFactory ..> JpaShowProposalRepository
+
+JpaFigureRepository ..|> FigureRepository : getFigures()
+JpaDroneRepository ..|> DroneRepository : getDrones()
+JpaModelRepository ..|> ModelRepository : getModels()
+JpaShowProposalRepository ..|> ShowProposalRepository : getProposals()
+
+InMemoryDroneRepository ...|> DroneRepository : getDrones()
+InMemoryModelRepository ...|> ModelRepository : getModels()
+InMemoryShowProposalRepository ...|> ShowProposalRepository : getProposals()
+InMemoryFigureRepository ...|> FigureRepository : getFigures()
+
+InMemoryRepositoryFactory ..|> RepositoryFactory
+InMemoryRepositoryFactory ..> InMemoryFigureRepository
+InMemoryRepositoryFactory ..> InMemoryDroneRepository
+InMemoryRepositoryFactory ..> InMemoryModelRepository
+InMemoryRepositoryFactory ..> InMemoryShowProposalRepository
+
+
+
+@enduml

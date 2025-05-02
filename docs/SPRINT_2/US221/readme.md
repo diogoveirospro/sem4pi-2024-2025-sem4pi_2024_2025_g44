@@ -1,223 +1,125 @@
-# US 221
+# US 221 
 
 ## 1. Context
 
 This task as the objective of concluding the requirements of the us221 of sprint2, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
 
-### 1.1 List of issues
+### 1.1 List of Issues
 
-Analysis: testing
+- **Analysis**: Done  
+- **Design**: Done  
+- **Implementation**: To do  
+- **Testing**: To do  
 
-Design: testing
-
-Implement: To do
-
-Test: To do
-
+---
 
 ## 2. Requirements
 
-**As** a CRM Collaborator,
-**I want** to register a new representative of a customer,
+**As** a CRM Collaborator,  
+**I want** to register a new representative for a customer,  
 **So that** the customer can be represented by another person.
 
-**Acceptance Criteria:**
+### Acceptance Criteria
 
-**AC01:** The customer representative will be a user of the system (Costumer AppSettings).
-**AC02:** The representative must have a customer associated with it.
-**AC03:** The representative must have a name, email, phone number, position and status.
-**AC04:** The data must be retrieved using a dedicated DTO to decouple the internal domain model.
+- **AC01**: The customer representative must be a system user (restricted to the Customer App). Each representative must be a distinct user.
+- **AC02**: The representative must be associated with a customer.
+- **AC03**: The representative must have a name, email, phone number, position, and status.
+- **AC04**: The data must be retrieved using a dedicated DTO to decouple the internal domain model.
 
-**Dependencies:**
+### Dependencies
 
-*Regarding this requirement we understand that it relates to US220, as there needs to be a customer registered in the system before registering a customer representative.*
+This requirement depends on **US220**, as a customer must be registered in the system before a customer representative can be registered.
 
-**Note:** There is no need to verify that customer representative’s email in the customer’s domain.
+---
+
+### Client Clarifications:
+
+> **[Topic: Representantes de um cliente](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35120)**  
+> Os representantes não são partilhados entre clientes.
+
+> **[Topic: Dúvidas sobre regras de negócio](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35121)**  
+> Não faz qualquer sentido atribuir um email da Shodrone a representantes dos clientes.  
+> Um cliente não precisa de ter um domínio próprio e, caso o tenha, não quer dizer que seja igual ao nome, etc.  
+> O cliente é a empresa, natural que todos os representantes vejam as propostas da empresa.
+
+> **[Topic: Identificador de clientes e collaboradores](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35235)**  
+> Todos os utilizadores devem ter um ID.  
+> O que deve ser esse ID é outra questão. (o id pode ser qualquer elemento que consiga identificar o user)
+
+---
 
 ## 3. Analysis
 
-The team decided that the best approach to implement this functionality is to have the `Customer Representative` that will be responsible for representing the customer in the system. Having a one-to-many relationship with the `Customer`, as a customer can have multiple representatives.
+### Customer Aggregate
 
-The customer won't be able to have the same representative as another customer, so the system will not allow that.
+It is important that we are able to register a new representative for a customer. As we have a one-to-many relationship between the customer and the representative, we can easily register a new representative for a customer.
 
-The customer won't have an account in the system, so the customer representative will be the way to access the system.
+This method will be used in the UI to register a new representative for a customer.
+
+The `Customer` aggregate includes:
+
+- **Name** – Customer name (for identification)
+- **Address** – Customer address
+- **VatNumber** – Tax identification number
+- **CustomerStatus** – Current status of the customer (active, inactive, etc.)
+- **CustomerType** – Type of customer (individual, company, etc.)
+- **Representatives** – A list of associated representatives
+
+Non-essential elements were omitted to maintain clarity and focus.
+
+### Customer Representative Aggregate
+
+The `CustomerRepresentative` aggregate includes:
+
+- **Name** – Representative's name
+- **Position** – Job title or role
+- **Email** – Representative’s email address
+- **PhoneNumber** – Contact number
+- **CustomerRepresentativeStatus** – Current status (active, inactive, etc.)
+- **Customer** – Associated customer
+
+Other elements not relevant to this functionality are omitted for simplicity.
 
 ![Relation customer and representative](images/domain_model_us221.svg "Domain Model")
 
+---
+
 ## 4. Design
 
-*In this section we are going to present the design of the system. We will focus on the design of the new functionality, but we will also include other parts of the system that are important to understand the implementation.*
+In this section, we describe the design approach adopted for implementing **US221 – Add a Customer Representative**. The class diagram defines the main components involved in the addition of a new representative, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
 
-### 4.1. Realization
+### 4.1 Realization
 
 ![US221 Class Diagram](images/class_diagram_us221.svg "US221 Class Diagram")
 
-### 4.3. Applied Patterns
+---
 
-This document outlines the design patterns used in the system. It provides a breakdown of each pattern's role, involved classes, and their purpose in maintaining a clean and maintainable architecture.
+## 5. Tests
+
+The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI, and that DTOs are used properly.
 
 ---
 
-## **1. Data Transfer Object (DTO) Pattern**
-**Classes Involved:**
-- `CustomerDTO`
+### Test 1: Customer is a user of the system
 
-**Purpose:**
-DTOs are used to transfer data across layers, particularly between the Controller and the UI. They ensure that only necessary data is exposed, protecting the domain entities and maintaining a clear separation of concerns between the domain model and the UI.
-
----
-
-## **2. Mapper Pattern**
-**Classes Involved:**
-- `CustomerListMapper`
-
-**Purpose:**
-The Mapper pattern is responsible for converting domain objects (`Customer`) into their corresponding DTOs (`CustomerDTO`) and vice versa. This helps centralize the transformation logic and ensures that business logic is kept separate from presentation logic.
-
----
-
-## **3. Repository Pattern**
-
-### **3.1. Repository Interface**
-**Classes Involved:**
-- `CustomerRepository`
-
-**Purpose:**
-The Repository pattern abstracts the data access logic and provides a clean interface for interacting with the domain entities. It allows the underlying data source to be changed without affecting the business logic.
-
----
-
-### **3.2. Repository Implementations**
-
-#### **JPA-based Implementation:**
-**Classes Involved:**
-- `JpaCustomerRepository`
-
-**Purpose:**
-The `JpaCustomerRepository` implements the `CustomerRepository` interface using JPA (Java Persistence API). It provides methods for interacting with the database and persisting `Customer` and `CustomerRepresentative` entities.
-
-#### **In-Memory Implementation:**
-**Classes Involved:**
-- `InMemoryCustomerRepository`
-
-**Purpose:**
-The `InMemoryCustomerRepository` provides an in-memory solution for managing `Customer` and `CustomerRepresentative` entities. It is typically used for testing or when persistent storage is not required.
-
----
-
-### **3.3. Repository Factory**
-**Classes Involved:**
-- `RepositoryFactory`
-- `JpaRepositoryFactory`
-- `InMemoryRepositoryFactory`
-
-**Purpose:**
-The Factory pattern is used to create repository instances. Depending on the configuration (e.g., JPA or in-memory), the appropriate repository is instantiated. `JpaRepositoryFactory` and `InMemoryRepositoryFactory` handle the creation of JPA and in-memory repositories, respectively.
-
----
-
-## **4. Singleton Pattern**
-**Classes Involved:**
-- `Repositories`
-
-**Purpose:**
-The Singleton pattern ensures that only one instance of the `Repositories` class exists. This class is responsible for managing the repository instances and providing a global access point to the repositories.
-
----
-
-## **5. Controller Pattern**
-**Classes Involved:**
-- `AddCustomerRepresentativeController`
-
-**Purpose:**
-Controllers are responsible for handling user input and orchestrating the interactions between the UI and the domain.
-
----
-
-## **6. Value Object Pattern**
-**Classes Involved:**
-- `Address`
-- `VatNumber`
-- `CustomerStatus`
-- `CustomerType`
-- `Position`
-- `Name`
-- `Email`
-- `PhoneNumber`
-
-**Purpose:**
-Value objects represent immutable objects that encapsulate domain values. They ensure consistency and validity across the system.
-
----
-
-## **7. UI Pattern**
-**Classes Involved:**
-- `AddCustomerRepresentativeUI`
-
-**Purpose:**
-UI classes represent the user interface layer. They interact with the user, collect input, and delegate actions to controllers. These classes are responsible for rendering data to the user and handling user interactions.
-
----
-
-## **8. Entity Pattern**
-**Classes Involved:**
-- `Customer`
-- `CustomerRepresentative`
-
-**Purpose:**
-Entities represent core business objects with a unique identity. They are the central elements in the domain model and maintain business behavior and relationships.
-
----
-
-## **9. Persistence Context**
-**Classes Involved:**
-- `PersistenceContext`
-
-**Purpose:**
-The `PersistenceContext` class provides access to the appropriate repository factory, either for JPA or in-memory repositories, based on the current configuration. It serves as a centralized point for repository creation and management.
-
----
-
-## **10. Factory Pattern**
-**Classes Involved:**
-- `RepositoryFactory`
-- `JpaRepositoryFactory`
-- `InMemoryRepositoryFactory`
-
-**Purpose:**
-The Factory pattern abstracts the instantiation of repositories. It ensures that the correct repository implementation is used at runtime, making the system flexible and configurable.
-
----
-
-These patterns contribute to the modular organization of the code and help maintain a clear separation of responsibilities across the various layers of the application.
-
-
-### 5. Tests
-
-The following tests were designed to validate the acceptance criteria defined for US221. These tests focus on verifying
-that only valid customer representatives are created, that the expected data is correctly returned to the UI, and that proper
-access control is enforced.
-
----
-
-#### **Test 1: Customer is a user of the system**
-**Refers to Acceptance Criteria:** _AC01_  
-**Description:** Ensures that customers representatives created are valid users of the system.
+**Refers to Acceptance Criteria:** AC01  
+**Description:** Ensures that customer representatives are valid system users.
 
 ```java
 @Test
 void ensureCustomerIsAUser() {
     // setup: create and persist a customer representative
-    // action: call controller.registerNewRepresentativeOfCustomer() and gets the users list
+    // action: call controller.registerNewRepresentativeOfCustomer() and get the users list
     // assert: customer representative is in the list of users
 }
 ```
 
 ---
 
-#### **Test 2: The Representative is associated to a customer**
-**Refers to Acceptance Criteria:** _AC02_  
-**Description:** Validates that the created representative is associated to a customer.
+### Test 2: The representative is associated with a customer
+
+**Refers to Acceptance Criteria:** AC02  
+**Description:** Validates that the representative is associated with a customer.
 
 ```java
 @Test
@@ -229,9 +131,10 @@ void ensureRepresentativeRepresentsACustomer() {
 
 ---
 
-#### **Test 3: Customer Representative information are correct**
-**Refers to Acceptance Criteria:** _AC03_  
-**Description:** Verifies that the representative has the correct information, name, email, phone number, position and status.
+### Test 3: Customer representative's information is correct
+
+**Refers to Acceptance Criteria:** AC03  
+**Description:** Verifies the correctness of name, email, phone number, position, and status.
 
 ```java
 @Test
@@ -245,9 +148,12 @@ void ensureCustomerInformationIsCorrect() {
 }
 ```
 
-#### **Test 4: DTOs are used to decouple domain and UI**
-**Refers to Acceptance Criteria:** _AC04_  
-**Description:** Verifies that no domain objects (`Customer`) are exposed directly by the controller, ensuring DTO usage.
+---
+
+### Test 4: Use of DTOs to decouple domain and UI
+
+**Refers to Acceptance Criteria:** AC04  
+**Description:** Ensures that domain entities are not directly exposed.
 
 ```java
 @Test
@@ -257,22 +163,43 @@ void ensureDomainEntitiesAreNotLeaked() {
 }
 ```
 
+---
+
 ## 6. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+This section should include evidence that the implementation aligns with the proposed design. Additional artifacts such as configuration files may also be included to help understand the implementation.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+### Major Commits (Sample Format)
 
-## 7. Integration/Demonstration
+- `feat(us221): add CustomerRepresentative entity and repository`
+- `feat(us221): implement DTO mapping for representative registration`
+- `test(us221): add unit tests for representative creation and validation`
+- `refactor: adjust Customer aggregate to support representatives`
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+---
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+## 7. Integration / Demonstration
+
+This section describes how the functionality was integrated with the system. It should also provide instructions for running or demonstrating the feature.
+
+### Example:
+
+1. Start the application.
+2. Log in with a CRM Collaborator account.
+3. Navigate to the Customer page.
+4. Click on "Add Representative".
+5. Fill in the representative's details and submit.
+6. Verify the representative is added and listed correctly.
+
+---
 
 ## 8. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+- The solution follows a clean architecture separating domain, application, and infrastructure layers.
+- The use of DTOs effectively prevents domain leakage.
+- Alternatives considered included merging representative data into the customer aggregate directly, but this was dismissed to preserve modularity.
+- All third-party libraries used (e.g., validation frameworks, mapping tools) are properly documented in the project repository.
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
+---
 
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+

@@ -32,20 +32,12 @@
 | Exclusivity                    | Defines whether a figure or show is exclusive to a client, and the duration of the exclusivity.                                                    |
 | Figure                         | A composition of drones performing a task.                                                                                                         |
 | Figure Status                  | Represents the current status of a figure, active or disable.                                                                                      |
-| ID CRM Collaborator            | Unique identifier of a CRM Collaborator.                                                                                                           |
-| ID Category                    | Unique identifier of a figure category.                                                                                                            |
-| ID Exclusivity                 | Unique identifier of an exclusivity agreement related to a figure.                                                                                 |
-| ID Show Designer               | Unique identifier of a Show Designer.                                                                                                              |
-| ID Show Proposal               | Unique identifier of a show proposal.                                                                                                              |
-| ID Show Request                | Unique identifier of a show request.                                                                                                               |
 | Keyword                        | Short descriptive term associated with a figure, used to improve searchability and organization within the figure catalogue.                       |
 | Location                       | The place where the show will be realized, it will have a latitude and longitude.                                                                  |
 | Maintenance                    | The maintenance history of a drone.                                                                                                                |
 | Maintenance Description        | The maintenance description, the description of the failure or problem.                                                                            |
-| Maintenance ID                 | Unique identifier of a maintenance record.                                                                                                         |
 | Maintenance Type               | The type of Maintenance, preventive maintenance (it's scheduled) and repair (due to faults).                                                       |
 | Model                          | The specific type or model of a drone.                                                                                                             |
-| Model ID                       | Unique identifier of a drone model.                                                                                                                |
 | Name                           | The name of a person or entity.                                                                                                                    |
 | Phone Number                   | A contact phone number for a representative or collaborator.                                                                                       |
 | Position                       | The job title or position of a representative within the costumer organization.                                                                    |

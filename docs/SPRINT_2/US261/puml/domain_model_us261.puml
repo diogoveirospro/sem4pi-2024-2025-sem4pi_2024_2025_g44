@@ -1,0 +1,53 @@
+@startuml
+
+package "Figure " <<aggregate>> {
+    class Figure <<Entity>> <<root>>{ }
+    class Version <<Value Object>>{ }
+    class Description <<Value Object>>{ }
+    class DSLDescription <<Value Object>>{ }
+    enum FigureStatus <<Value Object>>{ }
+    class DSLValidate <<Service>>{ }
+
+    Figure --> "1" DSLDescription: DSLDescription
+    Figure --> "1" Version: version
+    Figure --> "1" Description: description
+    Figure --> "1" FigureStatus: figureStatus
+
+    DSLValidate ..> "1" DSLDescription: validates
+}
+
+package "ShowProposal " <<aggregate>> {
+    enum ShowProposalStatus <<Value Object>>{ }
+    class ShowProposal <<Entity>> <<root>>{ }
+    class QuantityOfDrones <<Value Object>>{ }
+
+    ShowProposal --> "1" QuantityOfDrones: qnt_drones
+    ShowProposal --> "1" ShowProposalStatus: proposalStatus
+}
+
+package "ModelOfDrone " <<aggregate>> {
+    class Model <<Entity>> <<root>>{ }
+    class WindTolerance <<Value Object>>{ }
+    class WindSpeed <<Value Object>>{ }
+    class PositionTolerance <<Value Object>>{ }
+    enum SafetyStatus <<Value Object>>{ }
+
+    Model --> "1" WindTolerance: windTolerance
+    Model --> "1" WindSpeed: windSpeed
+    Model --> "1" PositionTolerance: positionTolerance
+    Model --> "1" SafetyStatus: safetyStatus
+}
+
+package "Drone " <<aggregate>> {
+    class Drone <<Entity>> <<root>>{ }
+    class SerialNumber <<Value Object>>{ }
+
+    Drone --> "1" SerialNumber: serialNumber
+}
+
+' === Cross-package associations ===
+ShowProposal --> "0..*" Figure : requests new
+ShowProposal --> "1..*" Model : uses
+Drone --> "1" Model : uses
+
+@enduml

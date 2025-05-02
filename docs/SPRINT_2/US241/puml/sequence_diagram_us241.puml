@@ -1,0 +1,94 @@
+@startuml
+'skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "DroneTech" as DT
+participant ":CreateModelUI" as UI
+participant ":CreateModelController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "droneRepository\n:DroneRepository" as DRN_REPO
+participant "modelRepository\n:ModelRepository" as MDL_REPO
+
+activate DT
+
+DT -> UI : requests to add a drone to the inventory
+activate UI
+    UI --> DT : asks for the drone serial number and model
+        deactivate UI
+    DT -> UI : submits data
+    activate UI
+    UI --> UI : keepData(serialNumber)
+
+    UI -> CTRL : verifyModel(droneModel)
+    activate CTRL
+    CTRL -> CTRL :getModelRepository()
+            activate CTRL
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_SINGLETON : getModelRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : modelRepository
+            deactivate REPOS_SINGLETON
+            CTRL -->CTRL : modelRepository
+            deactivate CTRL
+    CTRL -> MDL_REPO : verifyModel(droneModel)
+    activate MDL_REPO
+    MDL_REPO -> MDL_REPO : verifyModel(droneModel)
+    activate MDL_REPO
+    MDL_REPO --> MDL_REPO : true
+    deactivate MDL_REPO
+    MDL_REPO --> CTRL : true
+    deactivate MDL_REPO
+    CTRL --> UI : true
+    deactivate CTRL
+    UI --> UI : keepData(droneModel)
+
+    UI --> DT : asks for confirmation
+    deactivate UI
+    DT -> UI : confirms data
+    activate UI
+    UI -> CTRL : addDrone(serialNumber, droneModel)
+    activate CTRL
+        CTRL -> CTRL :getDroneRepository()
+        activate CTRL
+        CTRL -> REPOS : getInstance()
+        activate REPOS
+            REPOS --> CTRL : repositories
+        deactivate REPOS
+
+        CTRL -> REPOS_SINGLETON : getDroneRepository()
+        activate REPOS_SINGLETON
+            REPOS_SINGLETON --> CTRL : droneRepository
+        deactivate REPOS_SINGLETON
+        CTRL -->CTRL : droneRepository
+        deactivate CTRL
+            CTRL -> DRN_REPO : addDrone(serialNumbe, droneModelr)
+            activate DRN_REPO
+
+        DRN_REPO -> DRN_REPO: addDrone (serialNumber, droneModel)
+                activate DRN_REPO
+                    DRN_REPO -> DRN_REPO: validateDrone(serialNumber)
+                    activate DRN_REPO
+                        DRN_REPO --> DRN_REPO : true
+                    deactivate DRN_REPO
+
+                    DRN_REPO --> DRN_REPO : true
+                deactivate DRN_REPO
+            DRN_REPO --> CTRL : true
+        deactivate DRN_REPO
+
+        CTRL --> UI : true
+    deactivate CTRL
+
+UI --> DT : displays success message
+deactivate UI
+deactivate DT
+
+@enduml

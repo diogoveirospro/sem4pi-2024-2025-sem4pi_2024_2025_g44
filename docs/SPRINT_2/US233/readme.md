@@ -105,7 +105,7 @@ between the UI, application logic, domain model, and persistence infrastructure.
 ### 4.1 Realisation
 
 The class diagram below depicts the realisation of **US233 – Add Figure to the Catalogue**. The user interface initiates 
-the process by calling the `addFigureToCatalogue(figure)` method on the controller. The controller is responsible for 
+the process by calling the `save(figure)` method on the controller. The controller is responsible for 
 coordinating the operation: it retrieves the appropriate `FigureRepository` via the `RepositoryFactory` and delegates 
 the creation and persistence of the new figure.
 

@@ -18,18 +18,18 @@ activate DT
 
 DT -> UI : requests to remove a drone in the inventory
 activate UI
-    UI --> DT : asks for drone serial number
+    UI --> DT : asks for drone serial number and the reason for removal
     deactivate UI
     DT -> UI : submits data
     activate UI
-    UI --> UI : keepData(serialNumber)
+    UI --> UI : keepData(serialNumber, removReason)
     UI --> DT : asks for confirmation
     deactivate UI
     DT -> UI : confirms data
     activate UI
-    UI -> CTRL : removeDrone(serialNumber)
+    UI -> CTRL : removeDrone(serialNumber, removReason)
     activate CTRL
-        CTRL --> CTRL :getDroneRepository()
+        CTRL -> CTRL :getDroneRepository()
         activate CTRL
         CTRL -> REPOS : getInstance()
         activate REPOS
@@ -43,15 +43,15 @@ activate UI
         CTRL --> CTRL : droneRepository
 
         deactivate CTRL
-            CTRL -> DRN_REPO : removeDrone(serialNumber)
+            CTRL -> DRN_REPO : removeDrone(serialNumber, removReason)
             activate DRN_REPO
 
         DRN_REPO -> DRONE** : remove(serialNumber)
-        deactivate DRONE
                     DRN_REPO -> DRN_REPO: validateRemoval(serialNumber)
                     activate DRN_REPO
                         DRN_REPO --> DRN_REPO : true
                     deactivate DRN_REPO
+        DRN_REPO -> DRN_REPO : addDrnRemovData(serialNumber, \nremovReason)
 
                     DRN_REPO --> CTRL : true
 

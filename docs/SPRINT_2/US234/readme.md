@@ -81,7 +81,7 @@ changing the `FigureStatus` to a disable state. This ensures that the deactivati
 layer, enforcing the necessary business rules.
 
 The `FigureRepository` interface provides access to the current catalogue of figures through the method 
-`getCatalogue()`, which supports listing and selection. Two repository implementations are supported: `JpaFigureRepository` 
+`findAll()`, which supports listing and selection. Two repository implementations are supported: `JpaFigureRepository` 
 and `InMemoryFigureRepository`, both of which conform to the `FigureRepository` interface and are instantiated via their 
 respective factories.
 

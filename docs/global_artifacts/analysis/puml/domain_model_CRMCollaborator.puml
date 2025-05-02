@@ -4,12 +4,6 @@ package "CRMCollaborator " <<aggregate>> {
 
     class CRMCollaborator <<Entity>> <<root>>{
     }
-
-    class IDCRMCollaborator <<Value Object>>{
-    }
-
-    'CRMCollaborator -> x
-    CRMCollaborator --> "1" IDCRMCollaborator: id
 }
 
 package Shared {

@@ -9,20 +9,24 @@ autonumber
 actor "DroneTech" as EDT
 participant ":ListDroneUI" as UI
 participant ":ListDroneController" as CTRL
-participant "Repositories" as REPOS
-participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant "repositoryFactory\n:RepositoryFactory" as REPOS_SINGLETON
 participant "modelRepository\n:ModelRepository" as MOD_REPO
 participant "droneRepository\n:DroneRepository" as DRN_REPO
-participant "drone\n:Drone" as DRONE
 
 activate EDT
 
-        EDT -> UI : asks to list an active drone
+        EDT -> UI : asks to list all active \ndrones from a model in the inventory
         activate UI
             UI --> CTRL** : create()
 
             UI -> CTRL : getDroneModelList()
                         activate CTRL
+                            CTRL -> PERS : getRepositoryFactory
+                            activate PERS
+                            PERS --> CTRL : repositoryFactory
+                            deactivate PERS
                             CTRL -> REPOS : getInstance()
                             activate REPOS
                                 REPOS --> CTRL: repositories
@@ -43,44 +47,22 @@ activate EDT
                            deactivate UI
                      EDT -> UI : selets one
                         activate UI
-            UI --> UI : keepModel(droneModel)
-            UI -> CTRL : getActiveDroneList()
-            activate CTRL
-                CTRL -> REPOS : getInstance()
-                activate REPOS
-                    REPOS --> CTRL: repositories
-                deactivate REPOS
-
-                CTRL -> REPOS_SINGLETON : getDroneRepository()
-                activate REPOS_SINGLETON
-                    REPOS_SINGLETON --> CTRL: droneRepository
-                deactivate REPOS_SINGLETON
-
-                CTRL -> DRN_REPO : getDroneList()
-                activate DRN_REPO
-                    DRN_REPO --> CTRL : droneList
-                deactivate DRN_REPO
-                CTRL --> CTRL : getActiveDroneList(droneList, droneModel)
-                CTRL --> UI : activeDroneList
-            deactivate CTRL
-
-            UI --> EDT : shows the list off all activate drones and ask to select one
-        deactivate UI
+            UI --> UI : keepData(droneModel)
 
 
 
-    EDT -> UI : selets one and ask to list in the inventory
-    activate UI
-    UI --> UI : keepDrone(activateDrone)
     UI --> EDT : requests confirmation
     deactivate UI
     EDT -> UI : confirms
     activate UI
-        UI -> CTRL : listDrone(activateDrone)
+        UI -> CTRL : listDrn(droneModel)
         activate CTRL
-             CTRL -> CTRL: getDroneRepository()
+             CTRL -> CTRL: getDrnModelList()
                                     activate CTRL
-
+                                        CTRL -> PERS : getRepositoryFactory
+                                                                    activate PERS
+                                                                    PERS --> CTRL : reposirotyFactory
+                                                                    deactivate PERS
                                         CTRL -> REPOS: getInstance()
                                         activate REPOS
 
@@ -93,15 +75,19 @@ activate EDT
 
                                                REPOS_SINGLETON --> CTRL: droneRepository
                                         deactivate REPOS_SINGLETON
-                                    CTRL --> CTRL: droneRepository
+                                                        CTRL -> DRN_REPO: getDrnModelList(droneModel)
+                                                        activate DRN_REPO
+                                                        DRN_REPO --> CTRL: drnModelList
+                                                        deactivate DRN_REPO
+                                    CTRL --> CTRL: drnModelList
 
                                     |||
                                                                         deactivate CTRL
 
-                                    CTRL -> DRN_REPO : listDrone(activateDrone)
+                                    CTRL -> DRN_REPO : listDrone(drnModelList)
             activate DRN_REPO
-                DRN_REPO --> DRONE **: list(activateDrone)
-                    DRN_REPO -> DRN_REPO: validateDrone(activateDrone)
+                DRN_REPO -> DRN_REPO: listDrone(drnModelList)
+                    DRN_REPO -> DRN_REPO: validateDroneList(drnModelList)
                     activate DRN_REPO
                         DRN_REPO --> DRN_REPO : true
                     deactivate DRN_REPO

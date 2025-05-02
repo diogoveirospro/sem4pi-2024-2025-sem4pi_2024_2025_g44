@@ -3,19 +3,6 @@ set separator none
 
 package "Domain" #DDDDDD {
 
-    package "DTO" #DDDDDD {
-        class CustomerDTO <<DTO>> {
-
-        }
-    }
-
-    package "Mapper" #DDDDDD {
-        class CustomerListMapper <<Mapper>> {
-            + toDTO(customer) : CustomerDTO
-            + customersToDTO(customers) : List<CustomerDTO>
-        }
-    }
-
     package "Repository " #DDDDDD {
         Interface CustomerRepository <<Repository>> {
             + getCustomers() : List<Customer>
@@ -24,15 +11,6 @@ package "Domain" #DDDDDD {
         Interface RepositoryFactory <<Factory>> {
             - RepositoryFactory()
             + getCustomerRepository() : CustomerRepository
-        }
-
-        Interface Repository <<Repository>> {
-            + save(entity T) : T
-            + delete(entity T)
-            + findById(id: String) : T
-            + findAll() : List<T>
-            + deleteById(id: ID)
-            + count() : long
         }
 
     }
@@ -94,7 +72,6 @@ package "persistence.impl.jpa" #DDDDDD {
 
     class JpaRepositoryFactory <<Factory>> {
         - JpaRepositoryFactory()
-        + getInstance() : RepositoryFactory
     }
 
 }
@@ -105,7 +82,6 @@ package "persistence.impl.inmemory" #DDDDDD {
 
     class InMemoryRepositoryFactory <<Factory>> {
         - InMemoryRepositoryFactory()
-        + getInstance() : RepositoryFactory
     }
 }
 
@@ -136,27 +112,22 @@ CustomerRepository --> "0..*" Customer : customers
 
 AddCustomerRepresentativeUI ..> AddCustomerRepresentativeController
 AddCustomerRepresentativeController ..> RepositoryFactory : getFigureRepository()
-AddCustomerRepresentativeController ..> CustomerListMapper : customerListDTO
 AddCustomerRepresentativeController ..> CustomerRepository : getCustomers()
 AddCustomerRepresentativeController ..> PersistenceContext : getRepositoryFactory()
 
-CustomerDTO ..> CustomerListMapper : customerDTO
 
-PersistenceContext ..> JpaRepositoryFactory : getInstance()
-PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
+PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
+PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
 PersistenceContext ..> RepositoryFactory : getCustomerRepository()
 
 JpaRepositoryFactory ...|> RepositoryFactory : getCustomerRepository()
 JpaRepositoryFactory ..> JpaCustomerRepository
-JpaRepositoryFactory --> JpaRepositoryFactory : instance
 
 JpaCustomerRepository ..|> CustomerRepository : getCustomers()
 
 InMemoryRepositoryFactory .|> RepositoryFactory : getCustomerRepository()
 InMemoryRepositoryFactory ..> InMemoryCustomerRepository
-InMemoryRepositoryFactory --> InMemoryRepositoryFactory : instance
 
 InMemoryCustomerRepository ..|> CustomerRepository : getCustomers()
 
-CustomerRepository ..|> Repository
 @enduml

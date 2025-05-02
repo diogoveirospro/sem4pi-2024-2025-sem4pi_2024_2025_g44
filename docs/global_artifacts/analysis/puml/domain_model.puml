@@ -42,12 +42,6 @@ package "CRMCollaborator " <<aggregate>> {
 
     class CRMCollaborator <<Entity>> <<root>>{
     }
-
-    class IDCRMCollaborator <<Value Object>>{
-    }
-
-    'CRMCollaborator -> x
-    CRMCollaborator --> "1" IDCRMCollaborator: id
 }
 
 package "Drone " <<aggregate>> {
@@ -71,9 +65,6 @@ package "ModelOfDrone " <<aggregate>> {
     class Model <<Entity>> <<root>>{
     }
 
-    class ModelID <<Value Object>>{
-    }
-
     class WindTolerance <<Value Object>>{
     }
 
@@ -87,7 +78,6 @@ package "ModelOfDrone " <<aggregate>> {
     }
 
     'Model -> x
-    Model --> "1" ModelID: id
     Model --> "1" WindTolerance: windTolerance
     Model --> "1" WindSpeed: windSpeed
     Model --> "1" PositionTolerance: positionTolerance
@@ -103,9 +93,6 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    class MaintenanceID <<Value Object>>{
-    }
-
     class MaintenanceDescription <<Value Object>>{
     }
 
@@ -115,7 +102,6 @@ package "Maintenance " <<aggregate>> {
     'Maintenance -> x
     Maintenance --> "1" MaintenanceDescription: description
     Maintenance --> "1" MaintenanceType: type
-    Maintenance --> "1" MaintenanceID: id
 
     Drone --> "1..*" Maintenance: undergoes
 }
@@ -146,9 +132,6 @@ package "Figure " <<aggregate>> {
     class Exclusivity <<Entity>>{
     }
 
-    class IDExclusivity <<Value Object>>{
-    }
-
     class DSLValidate <<Service>>{
     }
 
@@ -167,7 +150,6 @@ package "Figure " <<aggregate>> {
 
     'Exclusivity -> x
     Exclusivity --> "1" Customer: exclusive to
-    Exclusivity --> "1" IDExclusivity: id
 }
 
 package "Category " <<aggregate>>{
@@ -190,7 +172,7 @@ package "Category " <<aggregate>>{
     Category --> "1" CategoryDescription: description
 
     'Figure -> x
-    Figure --> "1..*" Category: category
+    Figure --> "1..*" Category: categories
 }
 
 package "ShowRequest " <<aggregate>>{
@@ -207,24 +189,17 @@ package "ShowRequest " <<aggregate>>{
     class ShowRequest <<Entity>> <<root>>{
     }
 
-    class IDShowRequest<<Value Object>>{
-    }
-
     'ShowRequest -> x
     ShowRequest --> "1" ShowDescription : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
     ShowRequest --> "1" Location: place
     ShowRequest --> "1" ShowRequestStatus: requestStatus
-    ShowRequest --> "1"IDShowRequest: id
 }
 
 package "ShowProposal " <<aggregate>>{
 
     enum ShowProposalStatus <<Value Object>>{
-    }
-
-    class IDShowProposal<<Value Object>>{
     }
 
     class ShowProposal <<Entity>> <<root>>{
@@ -237,7 +212,6 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
-    ShowProposal --> "1" IDShowProposal: id
     ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
     ShowProposal --> "1..*" Model: uses
@@ -247,12 +221,6 @@ package "ShowDesigner " <<aggregate>>{
 
     class ShowDesigner <<Entity>> <<root>>{
     }
-
-    class IDShowDesigner <<Value Object>>{
-    }
-
-    'ShowDesigner -> x
-    ShowDesigner --> "1" IDShowDesigner: id
 
     'Figure -> x
     Figure --> "1" ShowDesigner: created by

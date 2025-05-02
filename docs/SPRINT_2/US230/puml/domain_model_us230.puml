@@ -1,0 +1,51 @@
+@startuml
+
+package "Customer " <<aggregate>> {
+    class Customer <<Entity>> <<root>>{
+    }
+
+}
+
+package "CRMCollaborator " <<aggregate>> {
+
+    class CRMCollaborator <<Entity>> <<root>>{
+    }
+}
+
+package "ShowRequest " <<aggregate>>{
+
+    class Location <<Value Object>>{
+    }
+
+    enum ShowRequestStatus <<Value Object>>{
+    }
+
+    class ShowDescription <<Value Object>>{
+    }
+
+    class ShowRequest <<Entity>> <<root>>{
+    }
+
+    'ShowRequest -> x
+    ShowRequest --> "1" ShowDescription : description
+    ShowRequest --> "1" CRMCollaborator : submitted by
+    ShowRequest --> "1" Customer: requested by
+    ShowRequest --> "1" Location: place
+    ShowRequest --> "1" ShowRequestStatus: requestStatus
+
+    class Time <<Value Object>>{
+    }
+
+    class Date <<Value Object>>{
+    }
+
+    class QuantityOfDrones <<Value Object>>{
+    }
+
+    'ShowRequest -> x
+    ShowRequest ----> "1" Time : duration
+    ShowRequest ----> "1" Date : startTime
+    ShowRequest ----> "1" QuantityOfDrones: qnt_drones
+}
+
+@enduml

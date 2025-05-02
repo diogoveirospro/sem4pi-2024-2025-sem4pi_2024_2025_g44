@@ -26,16 +26,12 @@ package "ShowRequest " <<aggregate>>{
     class ShowRequest <<Entity>> <<root>>{
     }
 
-    class IDShowRequest<<Value Object>>{
-    }
-
     'ShowRequest -> x
     ShowRequest --> "1" ShowDescription : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
     ShowRequest --> "1" Location: place
     ShowRequest --> "1" ShowRequestStatus: requestStatus
-    ShowRequest --> "1"IDShowRequest: id
 }
 
 package Shared {

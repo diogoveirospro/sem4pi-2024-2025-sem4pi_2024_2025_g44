@@ -45,7 +45,7 @@ package "Category " <<aggregate>>{
     Category --> "1" CategoryName: name
 
     'Figure -> x
-    Figure --> "1..*" Category: category
+    Figure --> "1..*" Category: categories
 }
 
 @enduml

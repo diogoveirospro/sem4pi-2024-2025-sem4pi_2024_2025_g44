@@ -1,119 +1,160 @@
-# US 221
+# US242 - Remove Drone from Inventory
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us221 of sprint2, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task focuses on completing the functionality for **US242**, which enables the removal of a specific drone from the inventory. This complements **US241** (adding drones) by giving Drone Techs the ability to manage which drones are actively listed in the system.
 
-### 1.1 List of issues
+The main objective is to allow operators to remove a drone when it's no longer needed or operational, while ensuring that the removal is recorded with a valid reason and timestamp for future auditing.
 
-Analysis: testing
+### 1.1 List of Issues
 
-Design: testing
-
-Implement: To do
-
-Test: To do
-
-
-## 2. Requirements
-
-**As** a CRM Collaborator,
-**I want** to register a new representative of a customer,
-**So that** the customer can be represented by another person.
-
-**Acceptance Criteria:**
-
-**AC01:** The customer representative will be a user of the system (Costumer AppSettings).
-
-**Dependencies:**
-
-*Regarding this requirement we understand that it relates to US220, as there needs to be a customer registered in the system before registering a customer representative.*
-
-**Note:** There is no need to verify that customer representative’s email in the customer’s domain.
-
-## 3. Analysis
-
-The team decided that the best approach to implement this functionality is to have the `Customer Representative` that will be responsible for representing the customer in the system. Having a one-to-many relationship with the `Customer`, as a customer can have multiple representatives.
-
-The customer won't be able to have the same representative as another customer, so the system will not allow that.
-
-The customer won't have an account in the system, so the customer representative will be the way to access the system.
-
-![Relation customer and representative](images/domain_model_us221.svg "Domain Model")
-
-## 4. Design
-
-*In this section we are going to present the design of the system. We will focus on the design of the new functionality, but we will also include other parts of the system that are important to understand the implementation.*
-
-### 4.1. Realization
-
-![US221 Class Diagram](images/class_diagram_us221.svg "US221 Class Diagram")
-
-### 4.3. Applied Patterns
-
-The system design applies several well-established design patterns, promoting a clean, cohesive, and maintainable architecture. Below are the main patterns identified:
-
-#### 1. **DTO (Data Transfer Object) Pattern**
-- **Class Involved:** `CustomerDTO`
-- **Description:** Used to transfer data between layers, especially from the domain to the user interface. Ensures that only the necessary data is exposed, protecting domain entities.
-
-#### 2. **Mapper Pattern**
-- **Class Involved:** `CustomerListMapper`
-- **Description:** Responsible for converting domain objects (`Customer`) into DTO objects (`CustomerDTO`) and vice versa. Centralizes transformation logic, promoting reuse and separation of concerns.
-
-#### 3. **Repository Pattern**
-- **Classes Involved:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
-- **Description:** Abstracts the data persistence layer. Defines a clear interface for operations on domain entities, allowing the data source to be replaced or modified without impacting business logic.
-
-#### 4. **Singleton Pattern**
-- **Class Involved:** `Repositories`
-- **Description:** Ensures that only one instance of the repository aggregator exists in the system. The `getInstance()` method implements the Singleton pattern, providing a controlled, global access point to the repositories.
-
-#### 5. **Controller Pattern**
-- **Class Involved:** `AddCustomerRepresentativeController`
-- **Description:** Acts as an intermediary between the UI layer and the domain. Encapsulates the orchestration logic of use cases, such as registering representatives and listing customers.
-
-#### 6. **Value Object Pattern**
-- **Classes Involved:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`
-- **Description:** Represent immutable objects that encapsulate values and validation rules. Used to compose entities, ensuring consistency and expressiveness in the domain model.
+- **Analysis**: Done
+- **Design**: Done
+- **Implement**: To do
+- **Test**: To do
 
 ---
 
-These patterns contribute to the modular organization of the code and help maintain a clear separation of concerns across the various layers of the application.
+## 2. Requirements
 
+**As** a Drone Tech,  
+**I want** to remove a specific drone from the inventory,  
+**So that** only required drones are shown.
+
+### Acceptance Criteria
+
+- **AC01**: The reason for removal and the date must be stored.
+
+### Dependencies
+
+- **US241** – Adding drones to the inventory.
+
+---
+
+## 3. Analysis
+
+### Drone Aggregate
+
+The `Drone` aggregate represents a physical drone in the system, uniquely identified by its `SerialNumber`. In the context of **US242**, the goal is not to delete the drone physically from the system, but to **logically remove** it from the active inventory by recording:
+
+- The **reason** for removal (e.g., "decommissioned", "damaged", "lost").
+- The **date/time** the removal occurred.
+
+This approach ensures that data integrity and auditability are maintained, as removed drones may still be referenced for historical or regulatory purposes.
+
+### Value Objects
+
+- **SerialNumber** – Uniquely identifies a drone and ensures consistent formatting.
+- **RemovalReason** – Text or predefined enumeration describing why the drone is being removed.
+
+### Domain Model
+
+![Drone and Removal Relationship](images/domain_model_us242.svg "Domain Model")
+
+---
+
+## 4. Design
+
+This section describes the design process for US242, which enables the removal of drones from the inventory. The interaction begins when a Drone Tech initiates a removal request through the user interface. The request flows through a structured application layer, which ensures proper validation, including the existence of the drone and the capture of a removal reason and timestamp. The process culminates in the logical removal of the drone from active inventory, while retaining historical data for auditing and traceability purposes.
+
+### 4.1 Realization
+
+The following diagram shows the flow of the drone removal process.
+
+![US242 Sequence Diagram](images/sequence_diagram_us242.svg)
+
+---
 
 ### 5. Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+### Test 1: Removal reason and date are stored
 
-**Test 1:** *Verifies that it is not possible to ...*
+**Refers to Acceptance Criteria:** AC01
+**Description:** Validates that when a drone is removed, the reason and current date are saved.
 
-**Refers to Acceptance Criteria:** US101.1
+```java
+@Test
+void ensureDroneRemovalReasonAndDateAreSaved() {
+    controller.removeDrone("DRN-123456", "Decommissioned");
 
+    DroneRemovalLog log = repository.getRemovalLog("DRN-123456");
+    assertEquals("Decommissioned", log.getReason());
+    assertNotNull(log.getDate());
+}
+```
+
+### Test 1: Cannot remove non-existent drone
+
+**Description:** Verifies that attempting to remove a drone that doesn’t exist results in a failure.
+
+```java
+@Test
+void ensureCannotRemoveNonexistentDrone() {
+        assertThrows(DroneNotFoundException.class, () -> {
+        controller.removeDrone("UNKNOWN-001", "Lost");
+        });
+        }
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
+
+### Test 1: Removed drone is no longer listed
+
+**Description:** Checks that a drone removed from the inventory is not returned in future inventory listings.
+
+```java
+@Test
+void ensureRemovedDroneNotInInventory() {
+        controller.removeDrone("DRN-123456", "Broken");
+        List<Drone> activeDrones = repository.listActiveDrones();
+        assertFalse(activeDrones.stream()
+        .anyMatch(d -> d.getSerialNumber().equals("DRN-123456")));
+        }
+
+```
+---
 
 ## 6. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+### Major Commits
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+- `feat(us242): add Drone removal capability`  
+  Added ability to remove drones and log removal reason and date.
 
-## 7. Integration/Demonstration
+- `feat(us242): implement RemoveDroneController and UI flow`  
+  Provided UI interaction for removal confirmation and input.
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+- `test(us242): unit tests for removal scenarios`  
+  Ensured proper validation, storage, and filtering of removed drones.
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+- `refactor: reuse repository instance via factory`  
+  Improved access to `DroneRepository` via singleton repository factory.
+
+---
+
+## 7. Integration / Demonstration
+
+### Integration
+
+- Connected to existing `DroneRepository`.
+- UI linked with new controller: `RemoveDroneController`.
+- Removal logs persisted with timestamp and reason.
+
+### How to Demonstrate
+
+1. Start the application.
+2. Log in as a **Drone Tech**.
+3. Go to **Inventory Management**.
+4. Select a drone to remove.
+5. Enter a **reason** for removal and confirm.
+6. Check the inventory: the drone should no longer appear.
+7. View removal logs for auditability (optional).
+
+---
 
 ## 8. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+- Drone removal is **logical**, not physical — records persist for auditing.
+- The removal includes the **reason** and **timestamp**, as per safety and traceability standards.
+- **Validation ensures** the drone exists before removal is allowed.
+- The system avoids data loss by retaining logs of removal operations.
+- Future improvements may include **status tagging** instead of hard removal (e.g., `"decommissioned"`, `"lost"`).
