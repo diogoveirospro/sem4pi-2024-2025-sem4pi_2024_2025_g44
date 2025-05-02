@@ -101,8 +101,8 @@ The `Customer` aggregate includes:
 - CustomerType - Type of customer (individual, company, etc.)
 - CustomerRepresentative - Representative from the company
 
-  <br />
-  <br />
+  <br>
+  <br>
 
 ![US230 Domain Model](images/domain_model_us230.svg "US230 Domain Model")
 

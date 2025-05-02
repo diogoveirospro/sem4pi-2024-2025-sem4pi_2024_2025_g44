@@ -68,12 +68,43 @@ The client must be registered before this functionality is executed
 
 
 ## 3. Analysis
+\
+The `Show Request` aggregate includes:
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+- Time - Time for the Show
+- Date - Date for the Show
+- QuantityOfDrones - Number of drones to be used in the Show
+- Location - Location for the Show
+- ShowRequestStatus - Status for the Show Request (created, accepted, etc.)
+- ShowDescription - List of figures to be used in the show (i.e. a document)
+
+\
+The `CRM Collaborator` aggregate includes:
+
+- Name - Name of the CRM Collaborator
+- Email - Email of the Collaborator
+- PhoneNumber - Phone Number of the Collaborator
+
+\
+The `Customer` aggregate includes:
+
+- Name - Name of the customer (name of the company)
+- Address - Address of the customer
+- VatNumber - Value-added tax identification number
+- CustomerStatus - Status of the Customer (active, inactive, etc.)
+- CustomerType - Type of customer (individual, company, etc.)
+- CustomerRepresentative - Representative from the company
+
+<br>
+<br>
+
+![US235 Domain Model](images/domain_model_us235.svg "US235 Domain Model")
+
+
 
 ## 4. Design
 
-*In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
 
 ### 4.1. Realization
 
