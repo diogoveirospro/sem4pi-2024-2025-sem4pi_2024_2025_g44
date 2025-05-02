@@ -66,7 +66,7 @@ The following diagram shows the flow of the active drone listing process based o
 
 ### Test 1: Drones are filtered by model
 
-**Refers to Acceptance Criteria:** AC01
+**Refers to Acceptance Criteria:** AC01  
 **Description:** Drones must be filtered by model.
 
 ```java

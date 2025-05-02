@@ -8,8 +8,9 @@ autonumber
 actor "DroneTech" as DT
 participant ":CreateModelUI" as UI
 participant ":CreateModelController" as CTRL
-participant "Repositories" as REPOS
-participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
 participant "droneRepository\n:DroneRepository" as DRN_REPO
 participant "modelRepository\n:ModelRepository" as MDL_REPO
 
@@ -27,6 +28,10 @@ activate UI
     activate CTRL
     CTRL -> CTRL :getModelRepository()
             activate CTRL
+            CTRL -> PERS : getRepositoryFactory
+                                        activate PERS
+                                        PERS --> CTRL : repositoryFactory
+                                        deactivate PERS
             CTRL -> REPOS : getInstance()
             activate REPOS
                 REPOS --> CTRL : repositories
@@ -58,6 +63,10 @@ activate UI
     activate CTRL
         CTRL -> CTRL :getDroneRepository()
         activate CTRL
+        CTRL -> PERS : getRepositoryFactory
+                                                activate PERS
+                                                PERS --> CTRL : repositoryFactory
+                                                deactivate PERS
         CTRL -> REPOS : getInstance()
         activate REPOS
             REPOS --> CTRL : repositories
