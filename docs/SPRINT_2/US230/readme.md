@@ -41,7 +41,7 @@ The CRM Collaborator must be registered before a show request is created
 To create a Show Request, a customer is needed. 
 
 
-- This US assumes the customer is already in the system before starting to execute
+- This US needs the customer is already in the system before starting to execute
 
 ---
 
@@ -60,7 +60,7 @@ To create a Show Request, a customer is needed.
 > The Show Request is created in a valid state, and not in an incomplete state waiting for information
 
 > **[Topic: Identificão do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35376)**\
-> The Show Request is identified by a Customer, a CRM Collaborator, and a Timestamp
+> The Show Request is identified by a Customer, a CRM Collaborator and a Timestamp
 
 > **[Topic: Show Request - Place](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35653)**\
 > The Show Request place is defined by a location and an altitude, because it can affect the drone's performance

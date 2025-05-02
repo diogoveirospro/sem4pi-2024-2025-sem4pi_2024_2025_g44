@@ -3,14 +3,14 @@
 ## 1. Context
 \
 This task is being developed in sprint 2.\
-The CRM Manager or the CRM Collaborator should be able to list all show requests.\
+The CRM Manager or the CRM Collaborator should be able to list all show requests of a client.\
 The show request should also provide the show request status information.
 
 ### 1.1 List of issues
 \
-Requirements: In Progress
+Requirements: Done
 
-Analysis: TODO
+Analysis: In Progress
 
 Design: TODO
 
@@ -21,7 +21,7 @@ Test: TODO
 
 ## 2. Requirements
 \
-US235 - As CRM Manager or CRM Collaborator, I want to list all show requests of a client.
+US235 - As CRM Manager or CRM Collaborator, I want to list all show requests of a client. \
 The show request status information should be provided.
 
 \
@@ -29,7 +29,8 @@ The show request status information should be provided.
 
 - AC01 - The CRM Manager must be a user in the system
 - AC02 - The CRM Collaborator must be a user in the system
-- AC03 - The Show Request status information must be provided
+- AC03 - The Client must be a user in the system
+- AC04 - The Show Request status information must be provided
 
 ---
 **Dependencies/References:**
@@ -38,18 +39,32 @@ The show request status information should be provided.
 The CRM Manager and CRM Collaborator must be registered before this functionality is executed
 
 
-- US230 - As a CRM Collaborator. I want to register (create) a show request\
-  In order to list any Show Request, it should be created before this functionality is executed
+- US220 - As a CRM Collaborator, I want to register a customer, 
+and that the system automatically creates a customer representative for that customer\
+The client must be registered before this functionality is executed
  
 
-- This US works even if there is no Show Request in the system
+- US230 - As a CRM Collaborator. I want to register (create) a show request\
+  In order to list any Show Request, it should be created before this functionality is executed
+
+
+- If there is no clients, the functionality can not show anything
+
+
+- If there is a client but no show request for that client, the functionality can not show anything rather than the list of clients
 
 ---
 
 **Client Clarifications:**
 
-> **[Topic: ]()**\
-> Hello There
+> **[Topic: Status do Show Request e Show Proposal](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
+> The Show Request status information should be either created or accepted
+
+> **[Topic: Identificação do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
+> The Show Request is identified by a Customer, a CRM Collaborator and a Timestamp
+
+> **[Topic: US235](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35706)**\
+> When listing a Show Request, it should have a date, a time, a location, a status and a description
 
 
 ## 3. Analysis
