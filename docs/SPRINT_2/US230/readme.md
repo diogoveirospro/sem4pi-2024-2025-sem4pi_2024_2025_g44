@@ -56,7 +56,20 @@ To create a Show Request, a customer is needed.
 > **[Topic: Status do Show Request e Show Proposal](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
 > The Show Request is created in a valid state, and not in an incomplete state waiting for information
 
+> **[Topic: Identificão do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35376)**\
+> The Show Request is identified by a Customer, a CRM Collaborator, and a Timestamp
 
+> **[Topic: Show Request - Place](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35653)**\
+> The Show Request place is defined by a location and an altitude, because it can affect the drone's performance
+
+> **[Topic: Identificação do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35649)**\
+> The Customer can place multiple Show Request at the same time.\
+> Each Show Request must have a number or a code to identify it
+
+> **[Topic: Show Request - Q&A](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35671)**\
+> The Show duration should be expressed in minutes
+
+ 
 ## 3. Analysis
 
 *In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
