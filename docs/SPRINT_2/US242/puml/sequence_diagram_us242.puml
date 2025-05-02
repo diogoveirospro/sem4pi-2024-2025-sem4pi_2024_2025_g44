@@ -9,8 +9,9 @@ autonumber
 actor "DroneTech" as DT
 participant ":RemoveDronelUI" as UI
 participant ":RemoveDroneController" as CTRL
-participant "Repositories" as REPOS
-participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
 participant "droneRepository\n:DroneRepository" as DRN_REPO
 participant "drone\n:Drone" as DRONE
 
@@ -31,6 +32,10 @@ activate UI
     activate CTRL
         CTRL -> CTRL :getDroneRepository()
         activate CTRL
+        CTRL -> PERS : getRepositoryFactory
+                                    activate PERS
+                                    PERS --> CTRL : repositoryFactory
+                                    deactivate PERS
         CTRL -> REPOS : getInstance()
         activate REPOS
             REPOS --> CTRL : repositories
@@ -47,12 +52,12 @@ activate UI
             activate DRN_REPO
 
         DRN_REPO -> DRONE** : remove(serialNumber)
-        DRN_REPO -> DRN_REPO : addDrnRemovData(serialNumber, \nremovReason)
                     DRN_REPO -> DRN_REPO: validateRemoval(serialNumber)
                     activate DRN_REPO
                         DRN_REPO --> DRN_REPO : true
                     deactivate DRN_REPO
-
+        DRN_REPO -> DRN_REPO : addDrnRemovData(serialNumber, \nremovReason)
+        DRN_REPO -> DRN_REPO : changeDrnStat(serialNumber)
                     DRN_REPO --> CTRL : true
 
         deactivate DRN_REPO

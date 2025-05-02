@@ -1,14 +1,15 @@
-# US 221
+# US 241
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us221 of sprint2, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task has the objective of concluding the requirements of US241 from Sprint 3, which consists of developing a new functionality in the system: the addition of drones to the inventory. The team is now focused on completing the implementation and testing of this functionality, as well as integrating it with the existing system components.
 
+This feature ensures that drones can be registered in the system with all the necessary attributes, including their serial number, operational status, and associated model. It builds upon previously implemented functionalities (such as US240, which enables the creation of drone models), and is a necessary step toward enabling drone-based operations within the system.
 ### 1.1 List of issues
 
-Analysis: testing
+Analysis: Done
 
-Design: testing
+Design: Done
 
 Implement: To do
 
@@ -17,103 +18,177 @@ Test: To do
 
 ## 2. Requirements
 
-**As** a CRM Collaborator,
-**I want** to register a new representative of a customer,
-**So that** the customer can be represented by another person.
+**As** a Drone Tech,  
+**I want** to add drones of an existing type to inventory,
+**So that** all drones in the inventory are accounted for.
 
-**Acceptance Criteria:**
+### Acceptance Criteria
 
-**AC01:** The customer representative will be a user of the system (Costumer core.Persitence.AppSettings).
+- **AC01**: For each drone, the serial number must be stored.
+- **AC02**: This must also be achieved by a bootstrap process.
+- **AC03**: Drone model must already exist.
 
-**Dependencies:**
+### Dependencies
 
-*Regarding this requirement we understand that it relates to US220, as there needs to be a customer registered in the system before registering a customer representative.*
-
-**Note:** There is no need to verify that customer representative’s email in the customer’s domain.
-
-## 3. Analysis
-
-The team decided that the best approach to implement this functionality is to have the `Customer Representative` that will be responsible for representing the customer in the system. Having a one-to-many relationship with the `Customer`, as a customer can have multiple representatives.
-
-The customer won't be able to have the same representative as another customer, so the system will not allow that.
-
-The customer won't have an account in the system, so the customer representative will be the way to access the system.
-
-![Relation customer and representative](images/domain_model_us221.svg "Domain Model")
-
-## 4. Design
-
-*In this section we are going to present the design of the system. We will focus on the design of the new functionality, but we will also include other parts of the system that are important to understand the implementation.*
-
-### 4.1. Realization
-
-![US221 Class Diagram](images/class_diagram_us221.svg "US221 Class Diagram")
-
-### 4.3. Applied Patterns
-
-The system design applies several well-established design patterns, promoting a clean, cohesive, and maintainable architecture. Below are the main patterns identified:
-
-#### 1. **DTO (Data Transfer Object) Pattern**
-- **Class Involved:** `CustomerDTO`
-- **Description:** Used to transfer data between layers, especially from the domain to the user interface. Ensures that only the necessary data is exposed, protecting domain entities.
-
-#### 2. **Mapper Pattern**
-- **Class Involved:** `CustomerListMapper`
-- **Description:** Responsible for converting domain objects (`Customer`) into DTO objects (`CustomerDTO`) and vice versa. Centralizes transformation logic, promoting reuse and separation of concerns.
-
-#### 3. **Repository Pattern**
-- **Classes Involved:** `CustomerRepository`, `CustomerRepresentativeRepository`, `Repositories`
-- **Description:** Abstracts the data persistence layer. Defines a clear interface for operations on domain entities, allowing the data source to be replaced or modified without impacting business logic.
-
-#### 4. **Singleton Pattern**
-- **Class Involved:** `Repositories`
-- **Description:** Ensures that only one instance of the repository aggregator exists in the system. The `getInstance()` method implements the Singleton pattern, providing a controlled, global access point to the repositories.
-
-#### 5. **Controller Pattern**
-- **Class Involved:** `AddCustomerRepresentativeController`
-- **Description:** Acts as an intermediary between the UI layer and the domain. Encapsulates the orchestration logic of use cases, such as registering representatives and listing customers.
-
-#### 6. **Value Object Pattern**
-- **Classes Involved:** `Address`, `VatNumber`, `CustomerStatus`, `CustomerType`, `Position`, `Name`, `Email`, `PhoneNumber`
-- **Description:** Represent immutable objects that encapsulate values and validation rules. Used to compose entities, ensuring consistency and expressiveness in the domain model.
+This requirement depends on **US240:** As a Drone Tech, I want to create a drone model in the system
 
 ---
 
-These patterns contribute to the modular organization of the code and help maintain a clear separation of concerns across the various layers of the application.
+### Client Clarifications:
 
+> **[Topic: Estado de um drone ao adicioná-lo no inventário](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35829#p45386)**  
+> Fará sentido adicionar um drone desactivado ao sistema? Acho que seria perder tempo.  
+> Adicionar um drone em manutenção ao sistema seria um problema muito complexo, pois teria que incluir também o processo de manutenção. Esqueça...
 
-### 5. Tests
+---
+## 3. Analysis
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+### Drone Aggregate
 
-**Test 1:** *Verifies that it is not possible to ...*
+The `Drone` aggregate represents an individual drone in the system. For the purpose of US241, the key domain elements are:
 
-**Refers to Acceptance Criteria:** US101.1
+- **SerialNumber** – A value object representing the unique identifier for each drone. No two drones may share the same serial number.
+- **DroneStatus** – A value object that captures the current status of the drone (e.g., ACTIVE, INACTIVE, MAINTENANCE).
+- **Model** – An entity representing the drone’s model. Every drone must be associated with an existing model in the system.
 
+This design ensures that drones are uniquely identifiable and tied to a known model already configured in the system.
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+### Model Aggregate
+
+The `Model` aggregate (also referred to as DroneModel in earlier discussions) represents the specifications of a type of drone. A model must exist before drones of that model can be created.
+
+In this US, the model must already be present when creating a drone, thus this entity acts as a dependency and point of validation during the creation process.
+
+### Value Objects
+
+- **SerialNumber** – Encapsulates formatting and uniqueness rules.
+- **DroneStatus** – Encodes the drone’s lifecycle states in a strongly typed, controlled way.
+- **DroneModel** – Represents the technical specifications and constraints of a drone type, including its behavior under wind conditions. This entity must exist before a drone instance can be created, ensuring that only valid models are referenced.
+
+### Domain Model
+
+![Drone and Model Relationship](images/domain_model_us241.svg "Domain Model")
+
+---
+
+## 4. Design
+
+In this section, we describe the design approach adopted for implementing US241 – Add drone to the inventory. The sequence diagram defines the main components involved in the addition of a new drone to the inventory, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
+
+### 4.1 Realization
+
+The following diagram shows the flow of the drone addition process.
+
+![US241 Sequence Diagram](images/sequence_diagram_us241.svg "US241 Sequence Diagram")
+
+---
+
+## 5. Tests
+
+The following tests validate the acceptance criteria defined for **US241**. They ensure that drones are added with a unique serial number, that bootstrap processes insert valid data, and that each drone is linked to an existing model.
+
+---
+
+### Test 1: Each drone must have a serial number
+
+**Refers to Acceptance Criteria:** AC01  
+**Description:** Verifies that a drone cannot be added without a valid serial number and that the number is persisted.
+
+```java
+@Test
+void ensureDroneSerialNumberIsStored() {
+    controller.addDrone("DRN-123456", "Model-X");
+    assertTrue(repository.existsBySerialNumber("DRN-123456"));
 }
 ````
 
+### Test 2: Drone addition must support bootstrap process
+**Refers to Acceptance Criteria:** AC02   
+**Description:** Validates that drones can be added through a bootstrap (batch) process using the same validations as manual input.
+
+```java
+@Test
+void ensureBootstrapProcessAddsDrones() {
+List<String> serials = List.of("BOOT-001", "BOOT-002");
+controller.bootstrapAddDrones(serials, "Model-X");
+
+    for (String serial : serials) {
+        assertTrue(repository.existsBySerialNumber(serial));
+    }
+}
+````
+
+### Test 3: Drone model must already exist
+**Refers to Acceptance Criteria:** AC03   
+**Description:** Ensures that a drone cannot be added unless the associated model is registered in the system.
+
+```java
+@Test
+void ensureDroneModelExistsBeforeAddingDrone() {
+        assertThrows(DroneModelNotFoundException.class, () -> {
+        controller.addDrone("DRN-999999", "UnknownModel");
+        });
+        }
+````
+---
+
 ## 6. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+This section includes evidence that the implementation of US241 aligns with the proposed design. The drone inventory feature was developed based on a clean separation of concerns and layered architecture.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+### Major Commits
 
-## 7. Integration/Demonstration
+- `feat(us241): add Drone entity and DroneRepository`
+  Introduced the core domain entity and persistence layer for drones.
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+- `feat(us241): implement AddDroneToInventoryController`
+  Developed the controller to handle drone registration with serial number validation.
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+- `feat(us241): implement bootstrap mechanism to preload drones`
+  Supported automatic drone registration at system startup.
+
+- `test(us241): add unit tests for adding drones and validating serial numbers`
+  Verified core behaviors related to the addition of drones.
+
+- `refactor: ensure model check before adding drone`
+  Implemented guard clause to ensure only drones of existing models are added.
+
+---
+
+## 7. Integration / Demonstration
+
+This section describes how the functionality was integrated into the system and instructions to run or demonstrate it.
+
+### Integration
+
+- Connected to the existing **DroneModel** entities.
+- Integrated with the persistence layer via `DroneRepository`.
+- Drone registration logic made available through UI and bootstrap process.
+
+### How to Demonstrate
+
+1. Start the application.
+2. Log in as a **Drone Tech**.
+3. Go to the **Inventory Management** section.
+4. Click on **"Add Drone"**.
+5. Enter a **valid serial number** and select a **pre-existing drone model**.
+6. Submit the form.
+7. The drone is now stored and visible in the inventory list.
+
+To test the bootstrap process:
+
+- Add drone data to the configuration or bootstrap script.
+- Run the application.
+- Verify that the drones appear in the inventory at startup.
+
+---
 
 ## 8. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+- The system uses **clean architecture**, isolating domain logic from persistence and UI.
+- **Serial number validation** ensures unique identification of each drone.
+- The **bootstrap process** uses the same logic flow as the UI to avoid duplicating behaviors.
+- A key design decision was to **require the drone model to exist prior to drone registration**, avoiding orphaned drones.
+- Future enhancements could include automatic generation of serial numbers or a drone status tracker.
+- All used libraries (e.g., for input validation) are documented in the project’s dependency files.
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
