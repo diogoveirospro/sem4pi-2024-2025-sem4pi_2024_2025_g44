@@ -2,7 +2,9 @@
 
 ## 1. Context
 
-This task is being developed in sprint 2. It adds new functionality to the application, by allowing the CRM Collaborator to create a show request.
+This task is being developed in sprint 2.\
+The customer will contact the CRM Collaborator to submit a request for a show.\
+The CRM Collaborator will create the show request into the system.
 
 ### 1.1 List of issues
 
@@ -17,7 +19,7 @@ Test: TODO
 
 ## 2. Requirements
 
-US230 - As a CRM Collaborator, I want to register (create) a show request.
+US230 - As a CRM Collaborator, I want to register (create) a show request
 
 **Acceptance Criteria:**
 
@@ -25,10 +27,35 @@ US230 - As a CRM Collaborator, I want to register (create) a show request.
 - AC02 - The Show Request must have a Customer associated
 - AC03 - The Show Request must have a Show Description, a Request Status and a Location 
 - AC04 - The Show Request must also have a timestamp and the quantity of drones used
-
+---
 **Dependencies/References:**
+ 
+- US211 - As Administrator, I want to be able to register users of the backoffice\
+The CRM Collaborator must be registered before a show request is created
 
-*Regarding this requirement we understand that it relates to...*
+
+- US220 - As a CRM Collaborator, I want to register a customer, and that the system automatically creates a customer representative for that customer\
+To create a Show Request, a customer is needed. 
+
+
+- This US assumes the customer is already in the system before starting to execute
+
+---
+
+**Client Clarifications:**
+
+> **[Topic: Show Request Drones](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35126)**\
+> The number of drones used is the total amount specified
+
+> **[Topic: Conceito de um Show Request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35286)**\
+> The Show Request's show description can be a document with sequence of figures from the catalogue and/or new figures, as well as customer's exclusivity requirements
+
+> **[Topic: Show Request Time](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35349)**\
+> The customer should provide to the CRM Collaborator, the date and time for the show
+
+> **[Topic: Status do Show Request e Show Proposal](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
+> The Show Request is created in a valid state, and not in an incomplete state waiting for information
+
 
 ## 3. Analysis
 
@@ -36,7 +63,7 @@ US230 - As a CRM Collaborator, I want to register (create) a show request.
 
 ## 4. Design
 
-*In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
 
 ### 4.1. Realization
 
