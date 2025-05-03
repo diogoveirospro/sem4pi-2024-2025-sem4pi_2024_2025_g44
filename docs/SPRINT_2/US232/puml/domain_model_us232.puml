@@ -17,9 +17,6 @@ package "Figure " <<aggregate>> {
     class Version <<Value Object>>{
     }
 
-    class Description <<Value Object>>{
-    }
-
     enum FigureStatus <<Value Object>>{
     }
 
@@ -35,7 +32,6 @@ package "Figure " <<aggregate>> {
     Figure --> "1" Exclusivity: exclusivity
     Figure --> "1" Code: code
     Figure --> "1" Version: version
-    Figure --> "1" Description: description
     Figure --> "1" FigureStatus: figureStatus
 
     'Exclusivity -> x
@@ -47,19 +43,24 @@ package "Category " <<aggregate>>{
     class Category <<Entity>> <<root>>{
     }
 
-    class CategoryName <<Value Object>>{
-    }
-
-    'Category -> x
-    Category --> "1" CategoryName: name
-
     'Figure -> x
     Figure --> "1..*" Category: categories
 }
 
 package Shared {
+
     class Name <<Value Object>>{
     }
+
+    class Description <<Value Object>>{
+    }
+
+    'Category -> x
+    Category --> "1" Name: name
+    Category --> "1" Description: description
+
+    'Figure -> x
+    Figure ----> "1" Description: description
 
     Customer --> "1" Name: name
 }

@@ -17,9 +17,6 @@ package "Figure " <<aggregate>> {
     class Version <<Value Object>>{
     }
 
-    class Description <<Value Object>>{
-    }
-
     class DSLDescription <<Value Object>>{
     }
 
@@ -42,7 +39,6 @@ package "Figure " <<aggregate>> {
     Figure --> "1" Exclusivity: exclusivity
     Figure --> "1" Code: code
     Figure --> "1" Version: version
-    Figure --> "1" Description: description
     Figure --> "1" FigureStatus: figureStatus
 
     'DSLValidate -> x
@@ -60,12 +56,8 @@ package "Category " <<aggregate>>{
     enum CategoryStatus <<Value Object>>{
     }
 
-    class CategoryName <<Value Object>>{
-    }
-
     'Category -> x
     Category --> "1" CategoryStatus: categoryStatus
-    Category --> "1" CategoryName: name
 
     'Figure -> x
     Figure --> "1..*" Category: categories
@@ -94,6 +86,9 @@ package Shared {
     class PhoneNumber <<Value Object>>{
     }
 
+    class Description <<Value Object>>{
+    }
+
     'ShowDesigner -> x
     ShowDesigner --> "1" Name: name
     ShowDesigner --> "1" Email: email
@@ -101,6 +96,13 @@ package Shared {
 
     'Exclusivity -> x
     Exclusivity ----> "1" Time: duration
+
+    'Figure -> x
+    Figure ----> "1" Description: description
+
+    'Category -> x
+    Category ----> "1" Description: description
+    Category ----> "1" Name: name
 }
 
 @enduml

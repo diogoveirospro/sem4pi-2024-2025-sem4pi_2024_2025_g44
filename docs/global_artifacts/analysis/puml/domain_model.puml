@@ -93,14 +93,10 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    class MaintenanceDescription <<Value Object>>{
-    }
-
     enum MaintenanceType <<Value Object>>{
     }
 
     'Maintenance -> x
-    Maintenance --> "1" MaintenanceDescription: description
     Maintenance --> "1" MaintenanceType: type
 
     Drone --> "1..*" Maintenance: undergoes
@@ -115,9 +111,6 @@ package "Figure " <<aggregate>> {
     }
 
     class Version <<Value Object>>{
-    }
-
-    class Description <<Value Object>>{
     }
 
     class DSLDescription <<Value Object>>{
@@ -142,7 +135,6 @@ package "Figure " <<aggregate>> {
     Figure --> "1" Exclusivity: exclusivity
     Figure --> "1" Code: code
     Figure --> "1" Version: version
-    Figure --> "1" Description: description
     Figure --> "1" FigureStatus: figureStatus
 
     'DSLValidate -> x
@@ -160,16 +152,8 @@ package "Category " <<aggregate>>{
     enum CategoryStatus <<Value Object>>{
     }
 
-    class CategoryName <<Value Object>>{
-    }
-
-    class CategoryDescription <<Value Object>>{
-    }
-
     'Category -> x
     Category --> "1" CategoryStatus: categoryStatus
-    Category --> "1" CategoryName: name
-    Category --> "1" CategoryDescription: description
 
     'Figure -> x
     Figure --> "1..*" Category: categories
@@ -183,14 +167,10 @@ package "ShowRequest " <<aggregate>>{
     enum ShowRequestStatus <<Value Object>>{
     }
 
-    class ShowDescription <<Value Object>>{
-    }
-
     class ShowRequest <<Entity>> <<root>>{
     }
 
     'ShowRequest -> x
-    ShowRequest --> "1" ShowDescription : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
     ShowRequest --> "1" Location: place
@@ -246,6 +226,9 @@ package Shared {
     class QuantityOfDrones <<Value Object>>{
     }
 
+    class Description <<Value Object>>{
+    }
+
     'CRM Collaborator -> x
     CRMCollaborator --> "1" Name: name
     CRMCollaborator --> "1" Email: email
@@ -271,14 +254,23 @@ package Shared {
     ShowRequest ----> "1" Time : duration
     ShowRequest ----> "1" Date : startTime
     ShowRequest ----> "1" QuantityOfDrones: qnt_drones
+    ShowRequest ----> "1" Description: description
 
     'Maintenance -> x
     Maintenance ----> "1" Date: date
+    Maintenance ----> "1" Description: description
 
     'ShowProposal -> x
     ShowProposal ----> "1" QuantityOfDrones: qnt_drones
     ShowProposal ----> "1" Time: time
     ShowProposal ----> "1" Date: date
+
+    'Category -> x
+    Category ----> "1" Name: name
+    Category ----> "1" Description: description
+
+    'Figure -> x
+    Figure ----> "1" Description: description
 }
 
 @enduml

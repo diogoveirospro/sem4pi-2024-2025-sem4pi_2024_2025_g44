@@ -11,9 +11,6 @@ package "Figure " <<aggregate>> {
     class Version <<Value Object>>{
     }
 
-    class Description <<Value Object>>{
-    }
-
     enum FigureStatus <<Value Object>>{
     }
 
@@ -38,14 +35,23 @@ package "Category " <<aggregate>>{
     class Category <<Entity>> <<root>>{
     }
 
-    class CategoryName <<Value Object>>{
-    }
-
-    'Category -> x
-    Category --> "1" CategoryName: name
-
     'Figure -> x
     Figure --> "1..*" Category: categories
 }
+
+package "Shared" {
+
+    class Description <<Value Object>>{
+    }
+
+    class Name <<Value Object>>{
+    }
+
+    'Category -> x
+    Category --> "1" Name: name
+    Category --> "1" Description: description
+
+    'Figure -> x
+    Figure ----> "1" Description: description
 
 @enduml

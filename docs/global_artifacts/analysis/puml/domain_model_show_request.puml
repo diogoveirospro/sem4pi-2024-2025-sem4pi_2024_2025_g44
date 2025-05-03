@@ -20,14 +20,10 @@ package "ShowRequest " <<aggregate>>{
     enum ShowRequestStatus <<Value Object>>{
     }
 
-    class ShowDescription <<Value Object>>{
-    }
-
     class ShowRequest <<Entity>> <<root>>{
     }
 
     'ShowRequest -> x
-    ShowRequest --> "1" ShowDescription : description
     ShowRequest --> "1" CRMCollaborator : submitted by
     ShowRequest --> "1" Customer: requested by
     ShowRequest --> "1" Location: place
@@ -45,10 +41,14 @@ package Shared {
     class QuantityOfDrones <<Value Object>>{
     }
 
+    class Description <<Value Object>>{
+    }
+
     'ShowRequest -> x
     ShowRequest ----> "1" Time : duration
     ShowRequest ----> "1" Date : startTime
     ShowRequest ----> "1" QuantityOfDrones: qnt_drones
+    ShowRequest ----> "1" Description: description
 
 }
 

@@ -83,10 +83,9 @@ public class PhoneNumber implements Serializable, ValueObject {
 
     /**
      * Default constructor for JPA.
-     * This constructor is protected to prevent direct instantiation.
+     *
      */
     protected PhoneNumber() {
-        // for ORM
         this.countryCode = null;
         this.nationalNumber = null;
     }
