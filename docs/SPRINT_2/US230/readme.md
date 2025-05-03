@@ -33,12 +33,12 @@ US230 - As a CRM Collaborator, I want to register (create) a show request
 ---
 **Dependencies/References:**
  
-- US211 - As Administrator, I want to be able to register users of the backoffice\
+- US211 - As Administrator, I want to be able to register users of the backoffice.\
 The CRM Collaborator must be registered before a show request is created
 
 
-- US220 - As a CRM Collaborator, I want to register a customer, and that the system automatically creates a customer representative for that customer\
-To create a Show Request, a customer is needed. 
+- US220 - As a CRM Collaborator, I want to register a customer, and that the system automatically creates a customer representative for that customer.\
+To create a Show Request, a customer is needed
 
 
 - This US needs the customer is already in the system before starting to execute

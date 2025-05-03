@@ -1,18 +1,18 @@
-# US 235
+# US 236
 
 ## 1. Context
 \
 This task is being developed in sprint 2.\
-The CRM Manager or the CRM Collaborator should be able to list all show requests of a client.\
-The show request should also provide the show request status information.
+The CRM Collaborator should be able to edit show requests from a client.\
+The show request's editing can only be done before a proposal is made.
 
 ### 1.1 List of issues
 \
-Requirements: Done
+Requirements: In Progress
 
-Analysis: Done
+Analysis: TODO
 
-Design: In Progress
+Design: TODO
 
 Implement: TODO
 
@@ -21,84 +21,59 @@ Test: TODO
 
 ## 2. Requirements
 \
-US235 - As CRM Manager or CRM Collaborator, I want to list all show requests of a client. \
-The show request status information should be provided.
+US236 - As CRM Collaborator, I want to edit a show request of a client.\
+Only show requests without a proposal can be edited.
 
 \
 **Acceptance Criteria:**
 
-- AC01 - The CRM Manager must be a user in the system
-- AC02 - The CRM Collaborator must be a user in the system
-- AC03 - The Client must be a user in the system
-- AC04 - The Show Request status information must be provided
+- AC01 - The CRM Collaborator must be a user in the system
+- AC02 - The Client must be a user in the system
 
 ---
 **Dependencies/References:**
 
 - US211 - As Administrator, I want to be able to register users of the backoffice.\
-  The CRM Manager and CRM Collaborator must be registered before this functionality is executed
+  The CRM Collaborator must be registered before this functionality is executed
 
 
-- US220 - As a CRM Collaborator, I want to register a customer, 
+- US220 - As a CRM Collaborator, I want to register a customer,
   and that the system automatically creates a customer representative for that customer.\
   The client must be registered before this functionality is executed
- 
+
 
 - US230 - As a CRM Collaborator. I want to register (create) a show request.\
-  In order to list any Show Request, it should be created before this functionality is executed
+  In order to edit any Show Request, it should be created before this functionality is executed
 
+
+- US235 - As CRM Manager or CRM Collaborator, I want to list all show requests of a client.\
+  In order to provide a list of Show Request for the CRM Collaborator edit, the US235 should be used
+  
 
 - If there is no clients, the functionality can not show anything
 
 
 - If there is a client but no show request for that client, the functionality can not show anything rather than the list of clients
 
+
+- If there is a client and show requests for that client, but the show request does already have an proposal made, it should not be allowed to edit
+
 ---
 
-**Client Clarifications:**
+**Client Clarifications**
 
-> **[Topic: Status do Show Request e Show Proposal](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
-> The Show Request status information should be either created or accepted
-
-> **[Topic: Identificação do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
-> The Show Request is identified by a Customer, a CRM Collaborator and a Timestamp
-
-> **[Topic: US235](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35706)**\
-> When listing a Show Request, it should have a date, a time, a location, a status and a description
+> **[Topic: ]()**\
+> Hello There
 
 
 ## 3. Analysis
 \
-The `Show Request` aggregate includes:
-
-- Time - Time for the Show
-- Date - Date for the Show
-- QuantityOfDrones - Number of drones to be used in the Show
-- Location - Location for the Show
-- ShowRequestStatus - Status for the Show Request (created, accepted, etc.)
-- ShowDescription - List of figures to be used in the show (i.e. a document)
-
-\
-The `CRM Collaborator` aggregate includes:
-
-- Name - Name of the CRM Collaborator
-- Email - Email of the Collaborator
-- PhoneNumber - Phone Number of the Collaborator
-
-\
-The `Customer` aggregate includes:
-
-- Name - Name of the customer (name of the company)
-- Address - Address of the customer
-- VatNumber - Value-added tax identification number
-- CustomerStatus - Status of the Customer (active, inactive, etc.)
-- CustomerType - Type of customer (individual, company, etc.)
-- CustomerRepresentative - Representative from the company
+The
 
 <br>
 <br>
 
-![US235 Domain Model](images/domain_model_us235.svg "US235 Domain Model")
+![US236 Domain Model](images/domain_model_us236.svg "US236 Domain Model")
 
 
 
