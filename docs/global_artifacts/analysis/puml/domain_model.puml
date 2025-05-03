@@ -239,9 +239,6 @@ package Shared {
     ShowDesigner --> "1" Email: email
     ShowDesigner --> "1" PhoneNumber: phoneNumber
 
-    'Exclusivity -> x
-    Exclusivity ----> "1" Time: duration
-
     'Customer -> x
     Customer ----> "1" Name : name
 
@@ -271,6 +268,13 @@ package Shared {
 
     'Figure -> x
     Figure ----> "1" Description: description
+}
+
+package "EAPLI Framework" <<framework>> {
+    class DateInterval <<Value Object>>{
+    }
+
+    Exclusivity --> "1" DateInterval: duration
 }
 
 @enduml
