@@ -1,4 +1,8 @@
 package core.Figure.repositories;
 
-public interface FigureRepository {
+import core.Figure.domain.Entities.Figure;
+import core.Figure.domain.ValueObjects.FigureID;
+import eapli.framework.domain.repositories.DomainRepository;
+
+public interface FigureRepository extends DomainRepository<FigureID, Figure> {
 }

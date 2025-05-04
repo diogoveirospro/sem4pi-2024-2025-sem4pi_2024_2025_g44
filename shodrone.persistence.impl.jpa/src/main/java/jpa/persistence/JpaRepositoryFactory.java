@@ -23,6 +23,8 @@
  */
 package jpa.persistence;
 
+import core.Category.repositories.CategoryRepository;
+import core.Figure.repositories.FigureRepository;
 import core.Persistence.RepositoryFactory;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -58,6 +60,26 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	public UserRepository users() {
 		return new JpaAutoTxUserRepository(Application.settings().persistenceUnitName(),
 				Application.settings().extendedPersistenceProperties());
+	}
+
+	@Override
+	public FigureRepository figures(TransactionalContext autoTx) {
+		return new JpaFigureRepository(autoTx);
+	}
+
+	@Override
+	public FigureRepository figures() {
+		return new JpaFigureRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public CategoryRepository categories(TransactionalContext autoTx) {
+		return new JpaCategoryRepository(autoTx);
+	}
+
+	@Override
+	public CategoryRepository categories() {
+		return new JpaCategoryRepository(Application.settings().persistenceUnitName());
 	}
 
 

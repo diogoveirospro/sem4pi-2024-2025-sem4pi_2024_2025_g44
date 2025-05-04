@@ -24,6 +24,8 @@
 
 package core.Persistence;
 
+import core.Category.repositories.CategoryRepository;
+import core.Figure.repositories.FigureRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventConsumptionRepository;
@@ -54,6 +56,13 @@ public interface RepositoryFactory {
 
     UserRepository users();
 
+    FigureRepository figures(TransactionalContext autoTx);
+
+    FigureRepository figures();
+
+    CategoryRepository categories(TransactionalContext autoTx);
+
+    CategoryRepository categories();
 
     EventConsumptionRepository eventConsumption();
 
