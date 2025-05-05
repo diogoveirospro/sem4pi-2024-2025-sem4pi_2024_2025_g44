@@ -52,6 +52,26 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
         this.type = type;
     }
 
+    public Name name(){
+        return name;
+    }
+
+    public Address address(){
+        return address;
+    }
+
+    public VatNumber vat(){
+        return vat;
+    }
+
+    public CustomerStatus status(){
+        return status;
+    }
+
+    public CustomerType type(){
+        return type;
+    }
+
     /**
      * @param other the object to compare with
      * @return true if the two objects are the same, false otherwise
