@@ -110,6 +110,7 @@ package "Controller" #DDDDDD {
     'Category -> x
     Category --> "1" CategoryName: name
     Category --> "1" CategoryDescription: description
+    Category --> "1" CategoryStatus: categoryStatus
 
 'UI
 

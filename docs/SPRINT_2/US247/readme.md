@@ -2,64 +2,102 @@
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+The objective of this task is to allow the listing of all figure categories stored in the system. 
+This user story is included in Sprint 2 and represents the first implementation of the category listing functionality.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing
 
-Design:
+Design: 🧪 Testing
 
-Implement:
+Implement: 📝 To Do
 
-Test:
-
+Test: 📝 To Do
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
-*Example*
-
-**US G101** As {Ator} I Want...
+**As a** Show Designer or CRM Collaborator,
+<br>
+**I want** to list all figure categories in the catalogue,
+<br>
+**So that** the user can see the categories available in the system.
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
+- US247.1. The category status information should be provided.
+- US247.2. The functionality should only be accessible to authenticated Show Designer or CRM Collaborator users.
 
 **Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+- **_US211 - Register users_**: This user story is a direct dependency. It is required to have a Show Designer registered in the system, so he can edit a category.
+
+- **_ US245 - Add figure category to the catalogue_**: This user story is a direct dependency. It is required to have a figure category added to the catalogue, so it can be listed.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+The Category aggregate encapsulates all figure category data. It comprises the following value objects:
+
+* `CategoryName`: The name by which the category is known.
+* `CategoryDescription`: Describes the scope or purpose of the category.
+* `CategoryStatus`: Represents the current status of a category, either active or inactive.
 
 ## 4. Design
 
-*In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+This section describes the class structure used to implement **US247**. It illustrates how the UI, controller, domain model, and persistence layers interact.
 
 ### 4.1. Realization
 
+The class diagram below depicts the core design for retrieving figure categories:
+* The UI (`ListFigureCategoryUI`) calls the controller to request a category listing.
+* The controller (`ListFigureCategoryController`) accesses the repository factory via the `PersistenceContext`.
+* The factory returns the configured `CategoryRepository` instance, which retrieves the list of categories.
+* The controller then returns the list to the UI for display.
+
 ![a class diagram](images/class-diagram-247.svg "A Class Diagram")
 
-### 4.3. Applied Patterns
+### 4.2. Acceptance Tests
 
-### 4.4. Acceptance Tests
+**Test 1:** *Verifies that the category status is provided in the output*
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+**Refers to Acceptance Criteria:** US247.1
 
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
-
+**Description**: Ensures that each listed category includes its current status.
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureCategoryStatusIsIncludedInList() {
+    // Setup: create categories with varying statuses (ACTIVE, INACTIVE)
+    // Action: invoke controller.getCategoryList()
+    // Assert: each category in the result contains a non-null status field
+    //         and the status is either ACTIVE or INACTIVE
+}
+````
+
+**Test 2:** *Verifies that the category status is provided in the output*
+
+**Refers to Acceptance Criteria:** US247.2
+
+**Description**: Ensures that only a Show Designer or CRM Collaborator can access the functionality.
+```
+@Test
+void ensureOnlyAuthorizedUsersCanListCategories() {
+    // Setup: authenticate as a user without the Show Designer or CRM Collaborator role
+    // Action: attempt to invoke controller.getCategoryList()
+    // Assert: an AccessDeniedException (or equivalent) is thrown
+}
+
+@Test
+void ensureShowDesignerCanAccessCategoryList() {
+    // Setup: authenticate as a Show Designer
+    // Action: invoke controller.getCategoryList()
+    // Assert: category list is returned successfully
+}
+
+@Test
+void ensureCrmCollaboratorCanAccessCategoryList() {
+    // Setup: authenticate as a CRM Collaborator
+    // Action: invoke controller.getCategoryList()
+    // Assert: category list is returned successfully
 }
 ````
 

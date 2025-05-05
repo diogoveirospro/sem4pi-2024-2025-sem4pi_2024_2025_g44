@@ -11,8 +11,12 @@ package "Category " <<aggregate>>{
     class CategoryDescription <<Value Object>>{
     }
 
+    enum CategoryStatus <<Value Object>>{
+    }
+
     'Category -> x
     Category --> "1" CategoryName: name
     Category --> "1" CategoryDescription: description
+    Category --> "1" CategoryStatus: categoryStatus
 
 @enduml
