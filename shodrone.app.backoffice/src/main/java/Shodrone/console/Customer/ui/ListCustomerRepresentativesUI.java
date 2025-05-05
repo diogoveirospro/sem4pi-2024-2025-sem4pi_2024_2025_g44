@@ -1,5 +1,6 @@
 package Shodrone.console.Customer.ui;
 
+import Shodrone.console.Customer.printer.CustomerPrinter;
 import Shodrone.console.Customer.printer.CustomerRepresentativePrinter;
 import core.Customer.application.ListCustomerRepresentativesController;
 import core.Customer.domain.Entities.Customer;
@@ -61,7 +62,7 @@ public class ListCustomerRepresentativesUI extends AbstractListUI<CustomerRepres
             customerList.add(customer);
         }
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customers, new CustomerRepresentativePrinter());
+        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customers, new CustomerPrinter());
         customerListWidget.show();
 
         int option = UtilsUI.selectsIndex(customerList);
