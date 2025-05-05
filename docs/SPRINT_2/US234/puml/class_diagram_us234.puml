@@ -44,7 +44,7 @@ package "Domain" #DDDDDD {
 
     'Figure Aggregate
     class Figure <<Entity>>{
-        + decommission()
+        + decommission(): boolean
     }
 
     enum FigureStatus <<Value Object>>{
@@ -61,7 +61,7 @@ package "UI" #DDDDDD {
 package "Controller" #DDDDDD {
     class DecommissionFigureController <<Controller>> {
         + decommissionFigure(figure)
-        + listCatalogue()
+        + listCatalogue(): Iterable<Figure>
     }
 }
 

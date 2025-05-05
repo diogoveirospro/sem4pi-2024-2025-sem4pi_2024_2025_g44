@@ -11,9 +11,6 @@ package "Figure " <<aggregate>> {
     class Version <<Value Object>>{
     }
 
-    class Description <<Value Object>>{
-    }
-
     class DSLDescription <<Value Object>>{
     }
 
@@ -30,7 +27,6 @@ package "Figure " <<aggregate>> {
     Figure --> "1" Exclusivity: exclusivity
     Figure --> "1" Code: code
     Figure --> "1" Version: version
-    Figure --> "1" Description: description
 
 }
 
@@ -50,6 +46,15 @@ package "ShowDesigner " <<aggregate>>{
 
     'Figure -> x
     Figure --> "1" ShowDesigner: created by
+}
+
+package "Shared" {
+
+    class Description <<Value Object>>{
+    }
+
+    'Figure -> x
+    Figure ----> "1" Description: description
 }
 
 @enduml

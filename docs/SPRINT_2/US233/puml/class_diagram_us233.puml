@@ -91,14 +91,14 @@ package "Domain" #DDDDDD {
 package "UI" #DDDDDD {
     class AddFigureToCatalogueUI <<UI>> {
         + addFigureToCatalogue(figure)
-        + showCategories()
+        + showCategoriesAndSelect()
     }
 }
 
 package "Controller" #DDDDDD {
     class AddFigureToCatalogueController <<Controller>> {
-        + addFigureToCatalogue(figure)
-        + listCategories()
+        + addFigureToCatalogue(figure): boolean
+        + listCategories(): Iterable<Category>
     }
 }
 

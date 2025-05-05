@@ -64,7 +64,8 @@ package "Domain" #DDDDDD {
     class Category <<Entity>>{
     }
 
-    class CategoryName <<Value Object>>{
+    'Shared Aggregate
+    class Name <<Value Object>>{
     }
 
 }
@@ -77,7 +78,7 @@ package "UI" #DDDDDD {
 
 package "Controller" #DDDDDD {
     class ListPublicCatalogueController <<Controller>> {
-        + listPublicCatalogue()
+        + listPublicCatalogue(): Iterable<Figure>
     }
 }
 
@@ -124,7 +125,7 @@ package "Controller" #DDDDDD {
     Figure --> "1..*" Category: categories
 
     'Category -> x
-    Category --> "1" CategoryName: name
+    Category --> "1" Name: name
 
 'UI
 

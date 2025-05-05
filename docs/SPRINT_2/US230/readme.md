@@ -10,9 +10,9 @@ The CRM Collaborator will create the show request into the system.
 \
 Requirements: Done
 
-Analysis: In Progress
+Analysis: Done
 
-Design: TODO
+Design: In Progress
 
 Implement: TODO
 
@@ -22,6 +22,7 @@ Test: TODO
 ## 2. Requirements
 \
 US230 - As a CRM Collaborator, I want to register (create) a show request
+
 \
 **Acceptance Criteria:**
 
@@ -32,15 +33,15 @@ US230 - As a CRM Collaborator, I want to register (create) a show request
 ---
 **Dependencies/References:**
  
-- US211 - As Administrator, I want to be able to register users of the backoffice\
+- US211 - As Administrator, I want to be able to register users of the backoffice.\
 The CRM Collaborator must be registered before a show request is created
 
 
-- US220 - As a CRM Collaborator, I want to register a customer, and that the system automatically creates a customer representative for that customer\
-To create a Show Request, a customer is needed. 
+- US220 - As a CRM Collaborator, I want to register a customer, and that the system automatically creates a customer representative for that customer.\
+To create a Show Request, a customer is needed
 
 
-- This US assumes the customer is already in the system before starting to execute
+- This US needs the customer is already in the system before starting to execute
 
 ---
 
@@ -59,7 +60,7 @@ To create a Show Request, a customer is needed.
 > The Show Request is created in a valid state, and not in an incomplete state waiting for information
 
 > **[Topic: Identificão do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35376)**\
-> The Show Request is identified by a Customer, a CRM Collaborator, and a Timestamp
+> The Show Request is identified by a Customer, a CRM Collaborator and a Timestamp
 
 > **[Topic: Show Request - Place](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35653)**\
 > The Show Request place is defined by a location and an altitude, because it can affect the drone's performance
@@ -100,8 +101,8 @@ The `Customer` aggregate includes:
 - CustomerType - Type of customer (individual, company, etc.)
 - CustomerRepresentative - Representative from the company
 
-  <br />
-  <br />
+  <br>
+  <br>
 
 ![US230 Domain Model](images/domain_model_us230.svg "US230 Domain Model")
 

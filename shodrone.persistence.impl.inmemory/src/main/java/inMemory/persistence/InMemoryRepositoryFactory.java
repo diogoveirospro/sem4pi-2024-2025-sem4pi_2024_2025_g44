@@ -20,6 +20,8 @@
  */
 package inMemory.persistence;
 
+import core.Category.repositories.CategoryRepository;
+import core.Figure.repositories.FigureRepository;
 import core.Persistence.RepositoryFactory;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -54,6 +56,25 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 		return users(null);
 	}
 
+	@Override
+	public FigureRepository figures(TransactionalContext autoTx) {
+		return null;
+	}
+
+	@Override
+	public FigureRepository figures() {
+		return null;
+	}
+
+	@Override
+	public CategoryRepository categories(TransactionalContext autoTx) {
+		return null;
+	}
+
+	@Override
+	public CategoryRepository categories() {
+		return null;
+	}
 
 
 	@Override

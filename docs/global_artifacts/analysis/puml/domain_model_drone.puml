@@ -49,14 +49,10 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    class MaintenanceDescription <<Value Object>>{
-    }
-
     enum MaintenanceType <<Value Object>>{
     }
 
     'Maintenance -> x
-    Maintenance --> "1" MaintenanceDescription: description
     Maintenance --> "1" MaintenanceType: type
 
     'Drone -> x
@@ -68,8 +64,12 @@ package Shared {
     class Date <<Value Object>>{
     }
 
+    class Description <<Value Object>>{
+    }
+
     'Maintenance -> x
     Maintenance ----> "1" Date: date
+    Maintenance ----> "1" Description: description
 }
 
 @enduml

@@ -5,6 +5,10 @@
              version="3.2">
   <persistence-unit name="shodrone.app">
 
+    <class>core.Figure.domain.Entities.Figure</class>
+    <class>core.Figure.domain.Entities.Exclusivity</class>
+    <class>core.ShowDesigner.domain.Entities.ShowDesigner</class>
+
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp:localhost/~/DB/shodrone.app"/>

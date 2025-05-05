@@ -80,9 +80,6 @@ package "Domain" #DDDDDD {
     class Category <<Entity>>{
     }
 
-    class CategoryName <<Value Object>>{
-    }
-
     'Customer Aggregate
     class Customer <<Entity>>{
     }
@@ -101,7 +98,7 @@ package "UI" #DDDDDD {
 
 package "Controller" #DDDDDD {
     class SearchCatalogueController <<Controller>> {
-        + listSearchResults(categories, keywords)
+        + listSearchResults(categories, keywords): List<Figure>
     }
 }
 
@@ -150,7 +147,7 @@ package "Controller" #DDDDDD {
     Figure --> "0..1" Exclusivity: exclusivity
 
     'Category -> x
-    Category --> "1" CategoryName: name
+    Category --> "1" Name: name
 
     'Exclusivity -> x
     Exclusivity --> "1" Customer: exclusive to
