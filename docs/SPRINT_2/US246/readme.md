@@ -1,67 +1,74 @@
-# US 245
-
-*This is an example template*
+# US 246
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+The objective of this task is to edit a figure category. This task is included in Sprint 2 and it's the first time it's being implemented.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing
 
-Design:
+Design: 🧪 Testing
 
-Implement:
+Implement: 📝 To Do
 
-Test:
+Test: 📝 To Do
 
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
-*Example*
-
-**US G101** As {Ator} I Want...
+**As a** Show Designer,
+<br>
+**I want** to edit a existing figure category,
+<br>
+**So that** categories are correct and updated.
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
+- US246.1 The category name must be unique (not case-sensitive).
+- US246.2 The functionality should only be accessible to authenticated Show Designer users.
 
 **Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+- **_US211 - Register users_**: This user story is a direct dependency. It is required to have a Show Designer registered in the system so he can edit a category.
+- **_US245 - Add figure category to the catalogue_**: This user story is a direct dependency. It is required to have a figure category added to the catalogue so it can be edited.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+The core aggregate involved is `Category`, which includes the following value objects:
+
+* `CategoryName`: Name by which the category is known.
+
+* `CategoryDescription`: Describes the scope or purpose of the category.
+
+
 
 ## 4. Design
 
-*In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
-
 ### 4.1. Realization
+
+The class diagram depicts the high-level design used to implement category editing:
+
+* UI delegates user input to the controller.
+* the controller accesses the repository via the `PersistenceContext`, calling `editFigureCategory`.
+* Repository implementations (JPA or in-memory) update the stored entity.
+* Business validation (e.g., unique name enforcement or format constraints) can be validated within the repository.
 
 ![a class diagram](images/class-diagram-246.svg "A Class Diagram")
 
-### 4.3. Applied Patterns
 
-### 4.4. Acceptance Tests
+### 4.2. Acceptance Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+**Test 1:** *Edit the category name and description*
 
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
+**Refers to Acceptance Criteria:** US246.1
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureCategoryCanBeEdited() {
+    // Setup: create and persist a category
+    // Action: edit name and description, then persist, check if the name is unique
+    // Assert: the updated category reflects the changes
 }
 ````
 
