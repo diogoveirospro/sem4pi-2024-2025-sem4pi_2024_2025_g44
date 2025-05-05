@@ -55,7 +55,7 @@ import shodrone.bootstrappers.ShodroneBootstrapper;
  * @author Paulo Gandra de Sousa
  *
  */
-final class InMemoryInitializer {
+public final class InMemoryInitializer {
 
 	private static class LazyHolder {
 		private static final InMemoryInitializer INSTANCE = new InMemoryInitializer();

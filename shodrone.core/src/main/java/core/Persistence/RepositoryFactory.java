@@ -25,6 +25,7 @@
 package core.Persistence;
 
 import core.Category.repositories.CategoryRepository;
+import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -59,6 +60,10 @@ public interface RepositoryFactory {
     FigureRepository figures(TransactionalContext autoTx);
 
     FigureRepository figures();
+
+    CustomerRepository customers(TransactionalContext autoTx);
+
+    CustomerRepository customers();
 
     CategoryRepository categories(TransactionalContext autoTx);
 

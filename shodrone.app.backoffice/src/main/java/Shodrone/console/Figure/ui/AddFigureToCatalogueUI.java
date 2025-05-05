@@ -1,4 +1,4 @@
-package shodrone.figure.ui;
+package Shodrone.console.Figure.ui;
 
 import core.Category.domain.Entities.Category;
 import core.Figure.application.AddFigureToCatalogueController;

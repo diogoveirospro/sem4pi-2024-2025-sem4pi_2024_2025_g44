@@ -1,4 +1,4 @@
-package jpa.persistence;
+package jpa;
 
 import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.FigureID;

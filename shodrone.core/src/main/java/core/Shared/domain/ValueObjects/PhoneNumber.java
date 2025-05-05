@@ -23,52 +23,57 @@ public class PhoneNumber implements Serializable, ValueObject {
      * This map is static and final, meaning it cannot be modified after initialization.
      */
     private static final Map<String, String> COUNTRY_CODES = Map.ofEntries(
-            Map.entry("+30", "Greece"),
-            Map.entry("+31", "Netherlands"),
-            Map.entry("+32", "Belgium"),
-            Map.entry("+33", "France"),
-            Map.entry("+34", "Spain"),
-            Map.entry("+350", "Gibraltar"),
-            Map.entry("+351", "Portugal"),
-            Map.entry("+352", "Luxembourg"),
-            Map.entry("+353", "Ireland"),
-            Map.entry("+354", "Iceland"),
             Map.entry("+355", "Albania"),
-            Map.entry("+356", "Malta"),
-            Map.entry("+357", "Cyprus"),
-            Map.entry("+358", "Finland"),
-            Map.entry("+359", "Bulgaria"),
-            Map.entry("+36", "Hungary"),
-            Map.entry("+370", "Lithuania"),
-            Map.entry("+371", "Latvia"),
-            Map.entry("+372", "Estonia"),
-            Map.entry("+373", "Moldova"),
-            Map.entry("+375", "Belarus"),
             Map.entry("+376", "Andorra"),
-            Map.entry("+377", "Monaco"),
-            Map.entry("+378", "San Marino"),
-            Map.entry("+379", "Vatican City"),
-            Map.entry("+380", "Ukraine"),
-            Map.entry("+381", "Serbia"),
-            Map.entry("+382", "Montenegro"),
-            Map.entry("+383", "Kosovo"),
-            Map.entry("+385", "Croatia"),
-            Map.entry("+386", "Slovenia"),
-            Map.entry("+387", "Bosnia and Herzegovina"),
-            Map.entry("+389", "North Macedonia"),
-            Map.entry("+39", "Italy"),
-            Map.entry("+40", "Romania"),
-            Map.entry("+41", "Switzerland"),
-            Map.entry("+420", "Czech Republic"),
-            Map.entry("+421", "Slovakia"),
-            Map.entry("+423", "Liechtenstein"),
+            Map.entry("+374", "Armenia"),
             Map.entry("+43", "Austria"),
-            Map.entry("+44", "United Kingdom"),
+            Map.entry("+994", "Azerbaijan"),
+            Map.entry("+375", "Belarus"),
+            Map.entry("+32", "Belgium"),
+            Map.entry("+387", "Bosnia and Herzegovina"),
+            Map.entry("+359", "Bulgaria"),
+            Map.entry("+385", "Croatia"),
+            Map.entry("+357", "Cyprus"),
+            Map.entry("+420", "Czech Republic"),
             Map.entry("+45", "Denmark"),
-            Map.entry("+46", "Sweden"),
+            Map.entry("+372", "Estonia"),
+            Map.entry("+358", "Finland"),
+            Map.entry("+33", "France"),
+            Map.entry("+995", "Georgia"),
+            Map.entry("+49", "Germany"),
+            Map.entry("+350", "Gibraltar"),
+            Map.entry("+30", "Greece"),
+            Map.entry("+36", "Hungary"),
+            Map.entry("+354", "Iceland"),
+            Map.entry("+353", "Ireland"),
+            Map.entry("+39", "Italy"),
+            Map.entry("+383", "Kosovo"),
+            Map.entry("+371", "Latvia"),
+            Map.entry("+423", "Liechtenstein"),
+            Map.entry("+370", "Lithuania"),
+            Map.entry("+352", "Luxembourg"),
+            Map.entry("+356", "Malta"),
+            Map.entry("+373", "Moldova"),
+            Map.entry("+377", "Monaco"),
+            Map.entry("+382", "Montenegro"),
+            Map.entry("+31", "Netherlands"),
+            Map.entry("+389", "North Macedonia"),
             Map.entry("+47", "Norway"),
             Map.entry("+48", "Poland"),
-            Map.entry("+49", "Germany")
+            Map.entry("+351", "Portugal"),
+            Map.entry("+40", "Romania"),
+            Map.entry("+7", "Russia"),
+            Map.entry("+378", "San Marino"),
+            Map.entry("+381", "Serbia"),
+            Map.entry("+421", "Slovakia"),
+            Map.entry("+386", "Slovenia"),
+            Map.entry("+34", "Spain"),
+            Map.entry("+46", "Sweden"),
+            Map.entry("+41", "Switzerland"),
+            Map.entry("+90", "Turkey"),
+            Map.entry("+380", "Ukraine"),
+            Map.entry("+44", "United Kingdom"),
+            Map.entry("+379", "Vatican City")
     );
 
     /**
@@ -147,6 +152,24 @@ public class PhoneNumber implements Serializable, ValueObject {
     }
 
     /**
+     * Returns the country code of a country.
+     * @return the country code of the phone number
+     */
+
+    public static String countryCodeOfCountry(String country) {
+        if (country == null || country.isEmpty()) {
+            return null;
+        }
+        for (Map.Entry<String, String> entry : COUNTRY_CODES.entrySet()) {
+            if (entry.getValue().equalsIgnoreCase(country)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+
+    /**
      * Returns the phone number with the country code.
      * @return the full phone number including the country code
      */
@@ -182,5 +205,13 @@ public class PhoneNumber implements Serializable, ValueObject {
         result = result * PRIME + countryCode.hashCode();
         result = result * PRIME + nationalNumber.hashCode();
         return result;
+    }
+
+    /**
+     * The map of country codes and their corresponding country names is static and final,
+     *
+     */
+    public static Map<String, String> countryCodes() {
+        return COUNTRY_CODES;
     }
 }

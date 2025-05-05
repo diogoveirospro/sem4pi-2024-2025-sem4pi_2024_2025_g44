@@ -24,6 +24,7 @@
 package jpa.persistence;
 
 import core.Category.repositories.CategoryRepository;
+import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.RepositoryFactory;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -35,6 +36,9 @@ import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.jpa.JpaAutoTxEventRecordRepository;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import core.Persistence.Application;
+import jpa.JpaCategoryRepository;
+import jpa.JpaCustomerRepository;
+import jpa.JpaFigureRepository;
 
 /**
  * The repository factory for JPA repositories.
@@ -70,6 +74,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public FigureRepository figures() {
 		return new JpaFigureRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public CustomerRepository customers(TransactionalContext autoTx) {
+		return new JpaCustomerRepository(autoTx);
+	}
+
+	@Override
+	public CustomerRepository customers() {
+		return new JpaCustomerRepository(Application.settings().persistenceUnitName());
 	}
 
 	@Override

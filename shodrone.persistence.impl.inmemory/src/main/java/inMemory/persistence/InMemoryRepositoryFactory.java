@@ -21,6 +21,7 @@
 package inMemory.persistence;
 
 import core.Category.repositories.CategoryRepository;
+import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.RepositoryFactory;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -29,6 +30,7 @@ import eapli.framework.infrastructure.authz.repositories.impl.inmemory.InMemoryU
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventConsumptionRepository;
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventRecordRepository;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryTransactionalContext;
+import inMemory.InMemoryCustomerRepository;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 
 /**
@@ -67,6 +69,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	}
 
 	@Override
+	public CustomerRepository customers(TransactionalContext autoTx) {
+		return new InMemoryCustomerRepository();
+	}
+
+	@Override
+	public CustomerRepository customers() {
+		return customers(null);
+	}
+
+	@Override
 	public CategoryRepository categories(TransactionalContext autoTx) {
 		return null;
 	}
@@ -75,7 +87,6 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	public CategoryRepository categories() {
 		return null;
 	}
-
 
 	@Override
 	public EventConsumptionRepository eventConsumption() {

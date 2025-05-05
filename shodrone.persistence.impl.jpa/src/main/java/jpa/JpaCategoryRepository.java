@@ -1,4 +1,4 @@
-package jpa.persistence;
+package jpa;
 
 import core.Category.domain.Entities.Category;
 import core.Category.repositories.CategoryRepository;
