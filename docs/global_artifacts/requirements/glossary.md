@@ -8,7 +8,7 @@
 | Admin                          | A Admin who manages users.                                                                                                                         |
 | Category                       | The classification of a figure.                                                                                                                    |
 | Category Name                  | Name by which the category is known.                                                                                                               |
-| Category Status                | Represents the current status of a category, active or disable.                                                                                    |
+| Category Status                | Represents the current status of a category, active or inactive.                                                                                   |
 | Category Description           | The description of the category, describes the scope or purpose of the category.                                                                   |
 | Client                         | The same as Customer.                                                                                                                              |
 | Code of Figure                 | An identifier of figure.                                                                                                                           |
