@@ -72,33 +72,39 @@ public class VatNumber implements Comparable<VatNumber>, Serializable {
 
     private String countryCode;
     private String countryName;
+    private String vatNumber; // only the numeric part
 
-    public VatNumber(String vatNumber) {
-        if (vatNumber == null || vatNumber.trim().isEmpty()) {
+    public VatNumber(String fullVat) {
+        if (fullVat == null || fullVat.trim().isEmpty()) {
             throw new IllegalArgumentException("VAT Number cannot be null or empty");
         }
 
-        vatNumber = vatNumber.trim().toUpperCase();
+        fullVat = fullVat.trim().toUpperCase();
 
-        if (vatNumber.length() < 3) {
+        if (fullVat.length() < 3) {
             throw new IllegalArgumentException("VAT Number is too short");
         }
 
-        String prefix = vatNumber.substring(0, 2);
+        String prefix = fullVat.substring(0, 2);
         if (!VAT_COUNTRY_CODES.containsKey(prefix)) {
             throw new IllegalArgumentException("Invalid VAT country prefix: " + prefix);
         }
-
-        if (!vatNumber.matches("[A-Z0-9]+")) {
-            throw new IllegalArgumentException("VAT Number contains invalid characters");
+        if(!prefix.matches("[A-Z]{2}")) {
+            throw new IllegalArgumentException("VAT country prefix must be two uppercase letters");
         }
 
-        if (vatNumber.length() > 15) {
-            throw new IllegalArgumentException("VAT Number is too long");
+        String numberPart = fullVat.substring(2);
+        if (!numberPart.matches("[0-9]+")) {
+            throw new IllegalArgumentException("VAT number must contain only digits after country code");
+        }
+
+        if (numberPart.length() > 13) {
+            throw new IllegalArgumentException("VAT number is too long");
         }
 
         this.countryCode = prefix;
         this.countryName = VAT_COUNTRY_CODES.get(prefix);
+        this.vatNumber = numberPart;
     }
 
     public String countryCode() {
@@ -109,9 +115,17 @@ public class VatNumber implements Comparable<VatNumber>, Serializable {
         return countryName;
     }
 
+    public String vatNumber() {
+        return vatNumber;
+    }
+
+    public String fullVatNumber() {
+        return countryCode + vatNumber;
+    }
+
     @Override
     public int compareTo(VatNumber other) {
-        return this.countryCode.compareTo(other.countryCode);
+        return this.fullVatNumber().compareTo(other.fullVatNumber());
     }
 
     @Override
@@ -120,17 +134,17 @@ public class VatNumber implements Comparable<VatNumber>, Serializable {
         if (!(o instanceof VatNumber)) return false;
         VatNumber that = (VatNumber) o;
         return Objects.equals(countryCode, that.countryCode) &&
-                Objects.equals(countryName, that.countryName);
+                Objects.equals(vatNumber, that.vatNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(countryCode, countryName);
+        return Objects.hash(countryCode, vatNumber);
     }
 
     @Override
     public String toString() {
-        return countryCode + " - " + countryName;
+        return fullVatNumber();
     }
 
     public static Map<String, String> getVatCountryCodes() {
