@@ -2,66 +2,103 @@
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+The goal of this task is to allow authorized users to change the status of a figure category.
+This task is included in Sprint 2 and represents the first implementation of the category status change functionality.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing
 
-Design:
+Design: 🧪 Testing
 
-Implement:
+Implement: 📝 To Do
 
-Test:
+Test: 📝 To Do
 
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
 
 *Example*
 
-**US G101** As {Ator} I Want...
+**As a** Show Designer 
+**I Want** to change the status of an existing figure category in the figure category catalogue.
+**So that** the status of the category is correct and updated.
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
+- US248.1 Inactive categories cannot be used in new figures.
+- US248.2 The functionality should only be accessible to authenticated Show Designer users.
 
 **Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+- **_US211 - Register users_**: This user story is a direct dependency. It is required to have a Show Designer registered in the system, so he can change the status of a category.
+- **_US245 - Add figure category to the catalogue_**: This user story is a direct dependency. It is required to have a figure category added to the catalogue, so it can be changed.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+The `Category` aggregate contains a `CategoryStatus value object which reflects whether a category is active or disabled.
+Changing the category's status is a domain-level operation and must preserve business invariants (e.g., a disabled category should not be used to tag new figures).
+Relevant components include:
+- `Category`: The aggregate root representing a figure category.
+- `CategoryStatus`: A value object representing the status of a category (active or disabled).
+- `CategoryRepository`: The repository interface for accessing and modifying category data.
 
 ## 4. Design
 
-*In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+The class diagram illustrates how the change of category status is supported across the layers of the system:
+
+* The UI layer (`EditFigureCategoryUI`) interacts with the controller to initiate the change.
+
+* The Controller (`EditFigureCategoryController`) queries the repository factory and invokes the domain-level change operation.
+
+* The Domain layer performs the change, enforcing validations.
+
+* Both JPA and in-memory persistence implementations are supported for flexibility and testing.
+
 
 ### 4.1. Realization
 
+The class diagram below depicts the core design for changing the status of a figure category:
+* The UI (`EditFigureCategoryUI`) calls the controller to request a status change.
+* The controller (`EditFigureCategoryController`) accesses the repository factory via the `PersistenceContext`.
+* The factory returns the configured `CategoryRepository` instance, which performs the status change.
+* The controller then returns the result to the UI for display.
+
 ![a class diagram](images/class-diagram-248.svg "A Class Diagram")
 
-### 4.3. Applied Patterns
+### 4.2. Acceptance Tests
 
-### 4.4. Acceptance Tests
+**Test 1:** *Validate that inactive categories cannot be used in new figures*
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+**Refers to Acceptance Criteria:** US248.1
 
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
+**Description:** Ensures that when a category is marked as inactive, it cannot be used in the creation of new figures.
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureInactiveCategoriesCannotBeUsedInNewFigures() {
+    // Setup: create and persist a category, then change its status to INACTIVE
+    // Action: attempt to create a new figure with the inactive category
+    // Assert: the system should throw an exception or return an error indicating the category is inactive
 }
 ````
+
+**Test 2:** *Validate that only authenticated Show Designer users can change the status*
+
+**Refers to Acceptance Criteria:** US248.2
+
+**Description:** Ensures that only users with the Show Designer role can access the functionality to change category status.
+
+```
+@Test
+void ensureOnlyShowDesignerCanChangeCategoryStatus() {
+    // Setup: authenticate as a user without the Show Designer role
+    // Action: attempt to invoke controller.changeCategoryStatus()
+    // Assert: the system should throw an exception or return an error indicating insufficient permissions
+}
+````
+
 
 ## 5. Implementation
 

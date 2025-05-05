@@ -40,13 +40,14 @@ The `Category` aggregate is central to this functionality. It includes the follo
 
 * `CategoryDescription`: Describes the scope or purpose of the category.
 
-* `CategoryStatus`: Represents the current status of a category, active or disable.
+* `CategoryStatus`: Represents the current status of a category, active or inactive.
 
 ## 4. Design
 
 This section outlines the design adopted for implementing **US245**. The class diagram presents the essential components
 involved in adding new figure categories, with a clear separation between the user interface, application logic, domain model,
 and persistence layer.
+ 
 
 ### 4.1. Realization
 
@@ -70,7 +71,7 @@ Business rules (e.g., validating uniqueness of category names, input constraints
 #### **Test 1:** *Verifies that a new category can be created*
 **Refers to Acceptance Criteria:** _US245.1_
 
-Description: Validates that the user can add a category with a name and description, the name must be unique.
+**Description:** Validates that the user can add a category with a name and description, the name must be unique.
 
 ```java
 @Test
