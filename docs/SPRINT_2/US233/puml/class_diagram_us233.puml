@@ -1,5 +1,6 @@
 @startuml
 set separator none
+left to right direction
 
 package "Persistence " #DDDDDD {
     class PersistenceContext {
@@ -66,8 +67,8 @@ package "Domain" #DDDDDD {
 
     'Figure Aggregate
     class Figure <<Entity>>{
-        + Figure(code, version, description, dslDescription, keywords, categories)
-        + Figure(code, version, description, dslDescription, keywords, categories, exclusivity)
+        + Figure(code, version, description, dslDescription, keywords, categories, showDesigner)
+        + Figure(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity)
     }
 
     class Code <<Value Object>>{
@@ -106,7 +107,8 @@ package "Domain" #DDDDDD {
 
 package "UI" #DDDDDD {
     class AddFigureToCatalogueUI <<UI>> {
-        + addFigureToCatalogue(figure)
+        + addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner)
+        + addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity)
         + showCategoriesAndSelect()
         + showCustomersAndSelect()
     }
@@ -114,7 +116,8 @@ package "UI" #DDDDDD {
 
 package "Controller" #DDDDDD {
     class AddFigureToCatalogueController <<Controller>> {
-        + addFigureToCatalogue(figure): boolean
+        + addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner): boolean
+        + addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity): boolean
         + listCategories(): Iterable<Category>
         + listCustomers(): Iterable<Customer>
     }

@@ -99,25 +99,35 @@ Other elements not essential to this functionality have been omitted from the di
 ## 4. Design
 
 This section presents the design adopted for implementing **US233 – Add Figure to the Catalogue**.
-The class diagram highlights the main components involved in the process, demonstrating a clear separation of concerns
-between the UI, application logic, domain model, and persistence infrastructure.
+The class diagram highlights the main components involved in the process, demonstrating a clear separation of concerns 
+between the user interface (UI), application logic (Controller), domain model (Domain), and persistence infrastructure 
+(Persistence).
 
 ### 4.1 Realisation
 
 The class diagram below illustrates the realisation of **US233 – Add Figure to the Catalogue**.
-The user interface (`AddFigureToCatalogueUI`) initiates the process by requesting the necessary data from the user.
-It reads the DSL code from a `.txt` file (line by line), prompts for other Figure attributes, and then calls 
-`addFigureToCatalogue(...)` on the controller.
+The user interface (`AddFigureToCatalogueUI`) initiates the process by requesting all necessary data from the user. 
+It reads the DSL code from a `.txt` file line by line, collects the remaining figure attributes, and invokes one of the 
+available controller methods—`addPublicFigureToCatalogue(...)` or `addExclusiveFigureToCatalogue(...)`— depending on 
+whether the figure is public or exclusive.
 
-The `AddFigureToCatalogueController` orchestrates the creation and persistence of the `Figure` entity.
-It retrieves the appropriate repositories via the `PersistenceContext`, using the configured `RepositoryFactory` 
-implementation (JPA or In-Memory). The controller calls `save(figure)` on the `FigureRepository` to persist the new figure.
+The `AddFigureToCatalogueController` is responsible for orchestrating the creation and persistence of the 
+`Figure` entity.
+It retrieves the required repositories through the `PersistenceContext`, which provides the appropriate 
+`RepositoryFactory` implementation (either JPA or In-Memory). With the collected data, the controller instantiates the 
+new `Figure` and persists it by calling `save(figure)` on the `FigureRepository`.
 
-Before the figure is created, the UI also invokes `showCategoriesAndSelect()` and optionally `showCustomersAndSelect()`
-to allow the user to associate categories and exclusivity with the figure. These operations internally invoke 
-`listCategories()` and `listCustomers()` on the controller.
+Before creating the figure, the UI allows the user to select one or more `Category` objects via the 
+`showCategoriesAndSelect()` method. If the figure is exclusive, the `showCustomersAndSelect()` method is also invoked 
+to associate a `Customer` with an `Exclusivity` object. These methods interact with the controller, which exposes the 
+necessary data through `listCategories()` and `listCustomers()`.
 
-Each `Repository` interface has multiple concrete implementations (JPA and In-Memory), resolved dynamically at runtime.
+The persistence layer follows the Abstract Factory pattern. The `RepositoryFactory` interface has multiple concrete 
+implementations (JPA and In-Memory), enabling flexibility in the underlying persistence strategy. Each repository 
+interface (e.g., `FigureRepository`, `CategoryRepository`, `CustomerRepository`) has corresponding implementations 
+compatible with the selected storage backend.
+
+![Class Diagram for US233](images/class_diagram_us233.svg)
 
 ### 4.2. Acceptance Tests
 
