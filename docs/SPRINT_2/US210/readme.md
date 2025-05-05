@@ -1,7 +1,5 @@
 # US 210
 
-*This is an example template*
-
 ## 1. Context
 
 *This task aims to conclude the requirements for US210 in Sprint 2, which consists of developing the authentication and authorization functionality for the system. The team will focus on completing the implementation of login functionality, user role verification, and enabling/disabling user access. Additionally, the team will integrate this feature with the rest of the system to ensure seamless security for all users.*
@@ -46,7 +44,7 @@ In this section, we describe the design approach adopted for implementing **US21
 
 ### 4.1. Realization
 
-![US221 Class Diagram](images/class_diagram_us210.svg "US210 Class Diagram")
+![US210 Class Diagram](images/class_diagram_us210.svg "US210 Class Diagram")
 
 ### 4.3. Applied Patterns
 

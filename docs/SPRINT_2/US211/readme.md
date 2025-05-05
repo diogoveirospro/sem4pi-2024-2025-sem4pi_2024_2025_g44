@@ -1,57 +1,49 @@
-# US 101
-
-*This is an example template*
+# US 211
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+*This task aims to conclude the requirements for US211 in Sprint 2, which consists of developing the register users functionality for the system. The team will focus on completing the implementation of register user functionality. Additionally, the team will integrate this feature with the rest of the system to ensure seamless security for all users.*
 
 ### 1.1 List of issues
 
 Analysis:
-
+- Understanding the user management process and how administrator will interact with the back-office system.
+- Defining the necessary roles and permissions to ensure proper access control.
 Design:
-
+- Developing a clear process for user registration, incorporating role assignments and validation.
 Implement:
-
+- Implementing a system to handle user registration, ensuring roles and statuses are set correctly.
 Test:
-
+- Verifying that users can be registered properly, and that roles are assigned and users are active after registration.
 
 ## 2. Requirements
-
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
-*Example*
-
-**US G101** As {Ator} I Want...
+**US G211** As Administrator I Want to register users in the system
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
-
+- US211 The system should allow the administrator to register new users.
+- US211 The system should allow the administrator to assign roles to users during registration.
+- US211 The system should ensure that the registered user is active by default.
+- US211 The system should validate the user’s information before registration.
+- 
 **Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
+- **US210 Authentication and Authorization**: The system should support authentication and authorization for all its users and functionalities before the registration process can proceed.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
-
+In order to support user registration, a bootstrap process will be created, which will pre-register an initial set of users. This process will ensure the back-office system has a functional set of users to begin with. The role management system will use the `Role` enum and will allow the administrator to assign appropriate roles to users.
+A **UserRepository** will manage the persistence of user data, and this will be accessible through the **RepositoryFactory**. The **AuthenticationService** will ensure that users are authenticated after registration, which is important for accessing the back-office functionalities.
 ## 4. Design
 
 *In this sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US210 Class Diagram](images/class_diagram_us210.svg "US210 Class Diagram")
 
 ### 4.3. Applied Patterns
 
 ### 4.4. Acceptance Tests
-
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
 
 **Test 1:** *Verifies that it is not possible to ...*
 
@@ -59,9 +51,12 @@ Include here the main tests used to validate the functionality. Focus on how the
 
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+public void registerUserSuccessfully() {
+    UserRepository userRepository = repositoryFactory.userRepository();
+    SystemUser user = new SystemUser("admin", "password", Role.ADMIN);
+    userRepository.save(user);
+    assertTrue(user.isActive());
 }
 ````
 

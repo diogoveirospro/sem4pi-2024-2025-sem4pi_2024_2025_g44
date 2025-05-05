@@ -1,43 +1,45 @@
-# US 101
+# US 212
 
 *This is an example template*
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+*This task aims to conclude the requirements for US212 in Sprint 2, which consists of developing the Disable/enable users functionality for the system. The team will focus on completing the implementation of Disable/enable user functionality. Additionally, the team will integrate this feature with the rest of the system to ensure seamless security for all users.*
 
 ### 1.1 List of issues
 
 Analysis:
-
+- Determine the criteria for disabling or enabling users.
+- Define the permissions and effects on users when they are disabled or enabled.
 Design:
-
+- Implement the logic to change the user status between active and disabled.
 Implement:
-
+- Create methods to enable/disable users in the user repository.
 Test:
-
+- Ensure that users can be enabled or disabled correctly and that their status is reflected in the system.
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
-*Example*
-
-**US G101** As {Ator} I Want...
+**US G212** As Administrator I Want to be able to disable/enable users in the system.
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
+- US212 The system should allow the administrator to disable or enable users.
+- US212 The system should ensure that disabled users cannot access the system.
+- US212 The system should allow the administrator to view the status of users (active/disabled).
+- US212 The system should provide a confirmation prompt before disabling/enabling a user.
 
 **Dependencies/References:**
+- **US210 Authentication and Authorization**: The system should support authentication and authorization for all its users and functionalities before the registration process can proceed.
+- **US211 Register Users**: The functionality for disabling/enabling users will rely on the existence of registered users.
 
 *Regarding this requirement we understand that it relates to...*
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+Disabling users is crucial to ensure that only authorized users access the system. The user status will be managed by a field in the database, which can be changed to reflect whether the user is active or disabled.
+
+The interaction with the user repository will be managed through the **UserRepository** and will be handled by the **AuthenticationController**. The disable/enable process will be executed through appropriate methods in the service layer.
 
 ## 4. Design
 
@@ -45,13 +47,11 @@ Test:
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US210 Class Diagram](images/class_diagram_us210.svg "US210 Class Diagram")
 
 ### 4.3. Applied Patterns
 
 ### 4.4. Acceptance Tests
-
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
 
 **Test 1:** *Verifies that it is not possible to ...*
 
@@ -59,9 +59,13 @@ Include here the main tests used to validate the functionality. Focus on how the
 
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+public void deactivateUserSuccessfully() {
+    UserRepository userRepository = repositoryFactory.userRepository();
+    SystemUser user = new SystemUser("user1", "password", Role.CRM_MANAGER);
+    userRepository.save(user);
+    user.deactivate();
+    assertFalse(user.isActive());
 }
 ````
 
