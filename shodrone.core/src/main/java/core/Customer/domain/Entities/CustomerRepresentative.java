@@ -46,5 +46,36 @@ public class CustomerRepresentative {
         this.status = CustomerRepresentativeStatus.ACTIVE;
     }
 
-    // Getters and setters omitted for brevity
+    public Customer representee() {
+        return customer;
+    }
+
+    public Long id() {
+        return id;
+    }
+
+    public Name name() {
+        return name;
+    }
+    public PhoneNumber phoneNumber() {
+        return phoneNumber;
+    }
+    public Email email() {
+        return email;
+    }
+    public Position position() {
+        return position;
+    }
+    public CustomerRepresentativeStatus status() {
+        return status;
+    }
+
+    public void changeInfo(Email newEmail, PhoneNumber newPhone) {
+        this.email = newEmail;
+        this.phoneNumber = newPhone;
+    }
+
+    public void deactivate() {
+        this.status = CustomerRepresentativeStatus.DISABLE;
+    }
 }

@@ -6,6 +6,6 @@ import core.Customer.domain.ValueObjects.VatNumber;
 import eapli.framework.domain.repositories.DomainRepository;
 
 public interface CustomerRepository extends DomainRepository<VatNumber,Customer> {
-    Iterable<CustomerRepresentative> findAllCustomerRepresentatives(Customer customer);
-
+    Iterable<Customer> findAllCreatedCustomers();
+    Iterable<CustomerRepresentative> findAllActiveCustomerRepresentatives(Customer customer);
 }

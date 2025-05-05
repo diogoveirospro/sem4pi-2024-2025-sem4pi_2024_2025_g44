@@ -1,5 +1,14 @@
 package Shodrone.console;
 
+import Shodrone.console.Customer.ui.*;
+import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
+import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
+import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
+import Shodrone.console.authz.ui.ActivateDeactivateUserUI;
+import Shodrone.console.authz.ui.ListUsersUI;
+import Shodrone.console.authz.ui.RegisterUserUI;
+import core.User.domain.ShodroneRoles;
+import eapli.framework.actions.Actions;
 import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -24,14 +33,41 @@ public class MainMenu extends AbstractUI {
 
     private static final int EXIT_OPTION = 0;
 
+    //USERS
+    private static final int REGISTER_USER_OPTION = 1;
+    private static final int LIST_USERS_OPTION = 2;
+    private static final int ACTIVATE_DEACTIVATE_USER_OPTION = 3;
+
+    // USER MENU (This has no US associated it is just a good thing to add for UX)
+    private static final int CHANGE_USERNAME_OPTION = 1;
+    private static final int CHANGE_PASSWORD_OPTION = 2;
+
+
     // The options will be put here like the following example:
     // EXAMPLE
     private static final int SHOW_MESSAGE = 1;
 
-    // MAIN MENU EXAMPLE
-    private static final int MY_USER_OPTION = 1;
-    private static final int USERS_OPTION = 2;
-    private static final int SETTINGS_OPTION = 4;
+    // MAIN MENU
+    private static final int MY_USER_MENU = 1;
+    private static final int USERS_MENU = 2;
+    private static final int CUSTOMER_MENU = 3;
+    private static final int FIGURE_MENU = 4;
+    private static final int SHOW_REQUEST_MENU = 5;
+    private static final int DRONE_MENU = 6;
+    private static final int FIGURE_CATEGORY_MENU = 7;
+    private static final int HELP_MENU = 8;
+
+    // CUSTOMER MENU
+    private static final int REGISTER_CUSTOMER_OPTION = 1;
+    private static final int ADD_CUSTOMER_REPRESENTATIVE_OPTION = 2;
+    private static final int LIST_CUSTOMER_REPRESENTATIVES_OPTION = 3;
+    private static final int EDIT_CUSTOMER_REPRESENTATIVE_OPTION = 4;
+    private static final int DISABLE_CUSTOMER_REPRESENTATIVE_OPTION = 5;
+
+    // SHOW REQUEST MENU
+    private static final int REGISTER_SHOW_REQUEST_OPTION = 1;
+    private static final int LIST_SHOW_REQUESTS_OPTION = 2;
+    private static final int EDIT_SHOW_REQUEST_OPTION = 3;
 
     private static final String SEPARATOR_LABEL = "--------------";
 
@@ -60,7 +96,6 @@ public class MainMenu extends AbstractUI {
 
     @Override
     public String headline() {
-
         return authz.session().map(s -> "Shodrone [ @" + s.authenticatedUser().identity() + " ]")
                 .orElse("Shodrone [ ==Anonymous== ]");
     }
@@ -69,44 +104,71 @@ public class MainMenu extends AbstractUI {
         final Menu mainMenu = new Menu();
 
         final Menu myUserMenu = new MyUserMenu();
-        mainMenu.addSubMenu(MY_USER_OPTION, myUserMenu);
+        mainMenu.addSubMenu(MY_USER_MENU, myUserMenu);
 
         if (!Application.settings().isMenuLayoutHorizontal()) {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
-        /*
-        if (authz.isAuthenticatedUserAuthorizedTo(CafeteriaRoles.POWER_USER,
-                CafeteriaRoles.ADMIN)) {
+        
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
+                ShodroneRoles.ADMIN)) {
             final Menu usersMenu = buildUsersMenu();
-            mainMenu.addSubMenu(USERS_OPTION, usersMenu);
-            final Menu settingsMenu = buildAdminSettingsMenu();
-            mainMenu.addSubMenu(SETTINGS_OPTION, settingsMenu);
+            mainMenu.addSubMenu(USERS_MENU, usersMenu);
+
         }
-        if (authz.isAuthenticatedUserAuthorizedTo(CafeteriaRoles.POWER_USER,
-                CafeteriaRoles.KITCHEN_MANAGER)) {
-            final Menu kitchenMenu = buildKitchenMenu();
-            mainMenu.addSubMenu(TRACEABILITY_OPTION, kitchenMenu);
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
+                ShodroneRoles.COLLABORATOR)) {
+            final Menu customerMenu = buildCustomersMenu();
+            mainMenu.addSubMenu(CUSTOMER_MENU, customerMenu);
+            final Menu showRequestMenu = buildShowRequestMenu();
+            mainMenu.addSubMenu(SHOW_REQUEST_MENU, showRequestMenu);
         }
-        if (authz.isAuthenticatedUserAuthorizedTo(CafeteriaRoles.POWER_USER,
-                CafeteriaRoles.MENU_MANAGER)) {
-            final Menu dishTypeMenu = buildDishMenu();
-            mainMenu.addSubMenu(DISH_OPTION, dishTypeMenu);
-            final Menu menusMenu = buildMealsMenu();
-            mainMenu.addSubMenu(MEALS_OPTION, menusMenu);
-            // reporting
-            final Menu reportingDishesMenu = buildReportingDishesMenu();
-            mainMenu.addSubMenu(REPORTING_DISHES_OPTION, reportingDishesMenu);
-        }
+
 
         if (!Application.settings().isMenuLayoutHorizontal()) {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
 
-         */
+         
 
         mainMenu.addItem(EXIT_OPTION, "Exit", new ExitWithMessageAction("Bye, Bye"));
 
         return mainMenu;
+    }
+
+    private Menu buildShowRequestMenu() {
+        final Menu menu = new Menu("Show Requests >");
+
+        menu.addItem(REGISTER_SHOW_REQUEST_OPTION, "Register new Show Request", new RegisterShowRequestUI()::show);
+        menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List all Show Requests", new ListShowRequestsUI()::show);
+        menu.addItem(EDIT_SHOW_REQUEST_OPTION, "Edit a Show Request", new EditShowRequestUI()::show);
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
+
+    private Menu buildCustomersMenu() {
+        final Menu menu = new Menu("Customers >");
+
+        menu.addItem(REGISTER_CUSTOMER_OPTION, "Register new Customer", new RegisterCustomerUI()::show);
+        menu.addItem(ADD_CUSTOMER_REPRESENTATIVE_OPTION, "Add a Representative to a Customer", new AddCustomerRepresentativeUI()::show);
+        menu.addItem(LIST_CUSTOMER_REPRESENTATIVES_OPTION, "List the Representatives of a Customer", new ListCustomerRepresentativesUI()::show);
+        menu.addItem(EDIT_CUSTOMER_REPRESENTATIVE_OPTION, "Edit a Customer Representative", new EditCustomerRepresentativeUI()::show);
+        menu.addItem(DISABLE_CUSTOMER_REPRESENTATIVE_OPTION, "Deactivate a Customer Representative", new DeactivateCustomerRepresentativeUI()::show);
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
+
+    private Menu buildUsersMenu() {
+        final Menu menu = new Menu("Users >");
+
+        menu.addItem(REGISTER_USER_OPTION, "Add User", new RegisterUserUI()::show);
+        menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
+        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Deactivate User", new ActivateDeactivateUserUI()::show);
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
     }
 
     // Example of a menu item

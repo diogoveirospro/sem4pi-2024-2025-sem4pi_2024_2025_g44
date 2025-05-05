@@ -4,6 +4,7 @@ import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -16,19 +17,27 @@ import java.util.List;
 import java.util.Map;
 
 @UseCaseController
-public class AddCustomerRepresentativeController {
+public class EditCustomerRepresentativeController {
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
 
-    public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer) {
-        Preconditions.noneNull(representative);
-        authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
-        customer.addCustomerRepresentative(representative);
-        customerRepository.save(customer);
-    }
-
     public Iterable<Customer> listCustomers() {
         return customerRepository.findAllCreatedCustomers();
+    }
+
+    public Iterable<CustomerRepresentative> listRepresentativesOfCustomer(Customer customer) {
+        return customerRepository.findAllActiveCustomerRepresentatives(customer);
+    }
+
+    public void changeCustomerRepresentativeInfo(Customer customer, CustomerRepresentative representative, Email newEmail, PhoneNumber newPhone) {
+        Preconditions.noneNull(representative);
+        authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
+        CustomerRepresentative existingRepresentative = customer.findCustomerRepresentative(representative);
+        if (existingRepresentative == null) {
+            throw new IllegalArgumentException("Customer representative not found.");
+        }
+        existingRepresentative.changeInfo(newEmail, newPhone);
+        customerRepository.save(customer);
     }
 
     public List<String> availableCountries() {

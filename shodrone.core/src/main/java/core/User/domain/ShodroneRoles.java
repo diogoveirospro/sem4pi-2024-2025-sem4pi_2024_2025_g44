@@ -31,11 +31,44 @@ import eapli.framework.infrastructure.authz.domain.model.Role;
  */
 public final class ShodroneRoles {
 
+
     /**
-     * System Administrator.
+     * System poweruser (this is a technical role).
+     */
+    public static final Role POWER_USER = Role.valueOf("POWER_USER");
+    /**
+     * System Administrator account.
      */
     public static final Role ADMIN = Role.valueOf("ADMIN");
 
+    /**
+     * System User account.
+     */
+    public static final Role USER = Role.valueOf("SHODRONE_USER");
+    /**
+     * CRM Collaborator account.
+     */
+    public static final Role COLLABORATOR = Role.valueOf("CRM_COLLABORATOR");
+
+    /**
+     * CRM Manager account.
+     */
+    public static final Role MANAGER = Role.valueOf("CRM_MANAGER");
+
+    /**
+     * Drone Tech account.
+     */
+    public static final Role DRONETECH = Role.valueOf("DRONE_TECH");
+
+    /**
+     * Show Designer account.
+     */
+    public static final Role SHOWDESIGNER = Role.valueOf("SHOW_DESIGNER");
+
+    /**
+     * Customer Representative account.
+     */
+    public static final Role CUSTOMERREPRESENTATIVE = Role.valueOf("CUSTOMER_REPRESENTATIVE");
 
     /**
      * Get available role types for cafeteria employees.
@@ -43,7 +76,14 @@ public final class ShodroneRoles {
      * @return employee roles
      */
     public static Role[] nonUserValues() {
-        return new Role[] { ADMIN };
+        return new Role[] {
+                ADMIN
+                , COLLABORATOR
+                , MANAGER
+                , SHOWDESIGNER
+                , CUSTOMERREPRESENTATIVE
+                , DRONETECH
+        };
     }
 
     /**
@@ -53,6 +93,6 @@ public final class ShodroneRoles {
      * @return {@code true} if a role is one of the employee roles
      */
     public boolean isCollaborator(final Role role) {
-        return role.equals(ADMIN); // This needs to change when we have more roles
+        return role != USER;
     }
 }

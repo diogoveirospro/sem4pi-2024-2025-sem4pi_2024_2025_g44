@@ -1,11 +1,11 @@
 package Shodrone.console.Customer.ui;
 
-import core.Customer.application.AddCustomerRepresentativeController;
+import Shodrone.console.Customer.printer.CustomerPrinter;
+import Shodrone.console.Customer.printer.CustomerRepresentativePrinter;
+import core.Customer.application.EditCustomerRepresentativeController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
-import core.Customer.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Email;
-import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -16,37 +16,32 @@ import shodrone.UtilsUI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddCustomerRepresentativeUI extends AbstractUI {
+public class EditCustomerRepresentativeUI extends AbstractUI {
 
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
-    private final AddCustomerRepresentativeController controller = new AddCustomerRepresentativeController();
+    private final EditCustomerRepresentativeController controller = new EditCustomerRepresentativeController();
 
     @Override
     protected boolean doShow() {
         Customer customer = selectCustomer();
         if (customer == null) {
-            System.out.println("No customer selected. Operation canceled.");
+            return false;
+        }
+        CustomerRepresentative representative = selectCustomerRepresentative(customer);
+        if (representative == null) {
             return false;
         }
 
-        Name name = enterValidName();
-        Email email = enterValidEmail();
-        PhoneNumber phoneNumber = enterValidPhoneNumber();
-        Position position = enterValidPosition();
+        Email newEmail = enterValidEmail();
+        PhoneNumber newPhone = enterValidPhoneNumber();
 
-        CustomerRepresentative representative = new CustomerRepresentative(name, email, phoneNumber, position, customer);
-
-        addCustomerRepresentative(representative, customer);
+        controller.changeCustomerRepresentativeInfo(customer, representative, newEmail, newPhone);
         return true;
     }
 
     @Override
     public String headline() {
-        return UtilsUI.generateHeader(UtilsUI.PURPLE, "Add Customer Representative");
-    }
-
-    public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer) {
-        controller.addCustomerRepresentative(representative, customer);
+        return UtilsUI.generateHeader(UtilsUI.PURPLE, "Edit Customer Representative Information");
     }
 
     private Customer selectCustomer() {
@@ -61,7 +56,7 @@ public class AddCustomerRepresentativeUI extends AbstractUI {
             customerList.add(customer);
         }
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customers, Customer::toString);
+        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customers, new CustomerPrinter());
         customerListWidget.show();
 
         int option = UtilsUI.selectsIndex(customerList);
@@ -72,28 +67,23 @@ public class AddCustomerRepresentativeUI extends AbstractUI {
         return customerList.get(option - 1);
     }
 
-    private Name enterValidName() {
-        String name;
-        do {
-            try {
-                name = UtilsUI.readLineFromConsole("Enter the representative's name: ");
-                return new Name(name);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid name. Please try again.");
-            }
-        } while (true);
-    }
-
-    private Email enterValidEmail() {
-        String email;
-        do {
-            try {
-                email = UtilsUI.readLineFromConsole("Enter the representative's email: ");
-                return new Email(email);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid email. Please try again.");
-            }
-        } while (true);
+    private CustomerRepresentative selectCustomerRepresentative(Customer customer) {
+        Iterable<CustomerRepresentative> representatives = controller.listRepresentativesOfCustomer(customer);
+        if (representatives == null || !representatives.iterator().hasNext()) {
+            System.out.println("No customer representatives available.");
+            return null;
+        }
+        List<CustomerRepresentative> representativeList = new ArrayList<>();
+        for (CustomerRepresentative representative : representatives) {
+            representativeList.add(representative);
+        }
+        ListWidget<CustomerRepresentative> representativeListWidget = new ListWidget<>("Customer Representatives", representatives, new CustomerRepresentativePrinter());
+        representativeListWidget.show();
+        int option = UtilsUI.selectsIndex(representativeList);
+        if (option == -2) {
+            return null;
+        }
+        return representativeList.get(option - 1);
     }
 
     private PhoneNumber enterValidPhoneNumber() {
@@ -104,7 +94,7 @@ public class AddCustomerRepresentativeUI extends AbstractUI {
             try {
                 country = selectCountry();
                 countryCode = controller.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole("Enter the representative's phone number: ");
+                phoneNumber = UtilsUI.readLineFromConsole("Enter the new representative's phone number: ");
                 return new PhoneNumber(countryCode,phoneNumber);
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid phone number. Please try again.");
@@ -130,14 +120,14 @@ public class AddCustomerRepresentativeUI extends AbstractUI {
         return countries.get(option - 1);
     }
 
-    private Position enterValidPosition() {
-        String position;
+    private Email enterValidEmail() {
+        String email;
         do {
             try {
-                position = UtilsUI.readLineFromConsole("Enter the representative's position: ");
-                return new Position(position);
+                email = UtilsUI.readLineFromConsole("Enter the new representative's email: ");
+                return new Email(email);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid position. Please try again.");
+                System.out.println("Invalid email. Please try again.");
             }
         } while (true);
     }

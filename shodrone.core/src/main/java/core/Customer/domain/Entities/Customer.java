@@ -129,4 +129,13 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
     public int hashCode() {
         return Objects.hash(name, address, vat, status, type, representatives);
     }
+
+    public CustomerRepresentative findCustomerRepresentative(CustomerRepresentative representative) {
+        for (CustomerRepresentative rep : representatives) {
+            if (rep.equals(representative)) {
+                return rep;
+            }
+        }
+        return null;
+    }
 }
