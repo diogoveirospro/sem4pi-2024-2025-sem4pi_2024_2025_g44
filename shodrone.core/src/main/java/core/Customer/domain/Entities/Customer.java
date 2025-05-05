@@ -1,5 +1,6 @@
 package core.Customer.domain.Entities;
 
+import eapli.framework.domain.model.DomainEntities;
 import jakarta.persistence.Entity;
 
 import core.Customer.domain.ValueObjects.Address;
@@ -13,6 +14,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Customer implements Serializable, AggregateRoot<VatNumber> {
@@ -108,5 +110,23 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
 
     public List<CustomerRepresentative> representativesOfCustomer() {
         return representatives;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Customer)) return false;
+        Customer customer = (Customer) o;
+        return  Objects.equals(name, customer.name) &&
+                Objects.equals(address, customer.address) &&
+                Objects.equals(vat, customer.vat) &&
+                status == customer.status &&
+                type == customer.type &&
+                Objects.equals(representatives, customer.representatives);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, address, vat, status, type, representatives);
     }
 }

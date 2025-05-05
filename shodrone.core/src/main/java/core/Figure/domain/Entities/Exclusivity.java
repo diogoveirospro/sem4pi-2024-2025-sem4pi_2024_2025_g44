@@ -7,7 +7,13 @@ import eapli.framework.time.domain.model.DateInterval;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Objects;
 
+/**
+ * Represents an exclusivity of Figure in the system.
+ * This class is immutable and implements DomainEntity and Serializable interfaces.
+ */
 @Entity
 public class Exclusivity implements DomainEntity<Long>, Serializable {
 
@@ -80,6 +86,26 @@ public class Exclusivity implements DomainEntity<Long>, Serializable {
     }
 
     /**
+     * Gets the start time of the exclusivity.
+     *
+     * @return the start time of the exclusivity
+     */
+    public String startTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return formatter.format(duration.start().getTime());
+    }
+
+    /**
+     * Gets the end time of the exclusivity.
+     *
+     * @return the end time of the exclusivity
+     */
+    public String endTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return formatter.format(duration.end().getTime());
+    }
+
+    /**
      * Checks if the exclusivity is the same as another object.
      * @param other the object to compare
      * @return true if the exclusivity is the same as the other object, false otherwise
@@ -100,5 +126,27 @@ public class Exclusivity implements DomainEntity<Long>, Serializable {
     @Override
     public Long identity() {
         return this.id;
+    }
+
+    /**
+     * Checks if the exclusivity has the same identity as another exclusivity.
+     * @param o the object to compare
+     * @return true if the exclusivity has the same identity as the other object, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Exclusivity)) return false;
+        Exclusivity that = (Exclusivity) o;
+        return this.customer.equals(that.customer) && this.duration.equals(that.duration);
+    }
+
+    /**
+     * Hash code method to generate a hash code for the Exclusivity object.
+     * @return the hash code for the Exclusivity object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(customer, duration);
     }
 }

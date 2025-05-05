@@ -44,7 +44,7 @@ public class Keyword implements Serializable, ValueObject, Comparable<Keyword> {
             throw new IllegalArgumentException("Keyword must be between 2 and 30 characters");
         }
 
-        if (!value.matches("[a-zA-Z0-9\\-]+")) {
+        if (!value.matches("[\\p{L}\\p{N}\\-]+")) {
             throw new IllegalArgumentException("Keyword can only contain letters, numbers and dashes");
         }
 

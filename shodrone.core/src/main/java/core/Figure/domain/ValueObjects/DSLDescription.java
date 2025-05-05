@@ -107,10 +107,9 @@ public class DSLDescription implements ValueObject, Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DSLDescription)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         DSLDescription that = (DSLDescription) o;
-        return Objects.equals(DSLCodeLines, that.DSLCodeLines)
-                && Objects.equals(DSLVersion, that.DSLVersion);
+        return DSLCodeLines.equals(that.DSLCodeLines) && DSLVersion.equals(that.DSLVersion);
     }
 
     /**

@@ -12,7 +12,7 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implement: 🚧 Doing
+Implement: 🧪 Testing
 
 Test: 📝 To Do
 

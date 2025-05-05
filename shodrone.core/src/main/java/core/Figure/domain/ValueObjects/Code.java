@@ -1,13 +1,16 @@
 package core.Figure.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents a code in the format FIG-XXXX.
  * This class is immutable and implements ValueObject interface.
  */
+@Embeddable
 public class Code implements Comparable<Code>, ValueObject, Serializable {
 
     /**
@@ -72,8 +75,7 @@ public class Code implements Comparable<Code>, ValueObject, Serializable {
      */
     @Override
     public int hashCode(){
-        int PRIME = 59;
-        return value.hashCode() * PRIME;
+        return Objects.hash(value);
     }
 
     /**

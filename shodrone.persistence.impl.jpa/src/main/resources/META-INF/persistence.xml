@@ -5,11 +5,39 @@
              version="3.2">
   <persistence-unit name="shodrone.app">
 
+    <!-- Category Aggregate -->
+    <class>core.Category.domain.Entities.Category</class>
+
+    <!-- CRM Collaborator Aggregate -->
+    <class>core.CRMCollaborator.domain.Entities.CRMCollaborator</class>
+
+    <!-- Customer Aggregate -->
+    <class>core.Customer.domain.Entities.Customer</class>
+    <class>core.Customer.domain.Entities.CustomerRepresentative</class>
+
+    <!-- Drone Aggregate -->
+    <class>core.Drone.domain.Entities.Drone</class>
+
+    <!-- Figure Aggregate -->
     <class>core.Figure.domain.Entities.Figure</class>
     <class>core.Figure.domain.Entities.Exclusivity</class>
+
+    <!-- Maintenance Aggregate -->
+    <class>core.Maintenance.domain.Entities.Maintenance</class>
+
+    <!-- ModelOfDrone Aggregate -->
+    <class>core.ModelOfDrone.domain.Entities.Model</class>
+
+    <!-- Show Designer Aggregate -->
     <class>core.ShowDesigner.domain.Entities.ShowDesigner</class>
     <class>core.Customer.domain.Entities.Customer</class>
     <class>core.Customer.domain.Entities.CustomerRepresentative</class>
+
+    <!-- Show Proposal Aggregate -->
+    <class>core.ShowProposal.domain.Entities.ShowProposal</class>
+
+    <!-- Show Request Aggregate -->
+    <class>core.ShowRequest.domain.Entities.ShowRequest</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>

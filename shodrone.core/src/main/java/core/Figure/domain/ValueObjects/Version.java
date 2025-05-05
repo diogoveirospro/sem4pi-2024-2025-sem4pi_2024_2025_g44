@@ -1,6 +1,7 @@
 package core.Figure.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
  * Represents a version in the format X.Y.Z.
  * This class is immutable and implements Comparable, Serializable, and ValueObject interfaces.
  */
+@Embeddable
 public class Version implements Comparable<Version>, Serializable, ValueObject {
 
     /**

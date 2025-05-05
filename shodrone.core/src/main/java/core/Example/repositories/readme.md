@@ -1,1 +1,0 @@
-### All repository related classes should be put here. (only interfaces the impl ones are in jpa)

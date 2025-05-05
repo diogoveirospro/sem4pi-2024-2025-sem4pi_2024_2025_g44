@@ -1,10 +1,12 @@
 package core.ShowDesigner.domain.Entities;
 
+import core.Shared.domain.ValueObjects.Email;
+import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import eapli.framework.domain.model.AggregateRoot;
+import eapli.framework.domain.model.DomainEntities;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.general.domain.model.EmailAddress;
-import eapli.framework.infrastructure.authz.domain.model.Name;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -40,7 +42,7 @@ public class ShowDesigner implements AggregateRoot<EmailAddress>, Serializable {
      * The name of the Show Designer
      */
     @Embedded
-    private Designation name;
+    private Name name;
 
     /**
      * The phone number of the Show Designer
@@ -52,7 +54,7 @@ public class ShowDesigner implements AggregateRoot<EmailAddress>, Serializable {
      * The email address of the Show Designer
      */
     @Embedded
-    private EmailAddress email;
+    private Email email;
 
     /**
      * Default constructor for JPA
@@ -71,13 +73,40 @@ public class ShowDesigner implements AggregateRoot<EmailAddress>, Serializable {
      * @param phoneNumber the phone number of the Show Designer
      * @param email the email address of the Show Designer
      */
-    public ShowDesigner(Designation name, PhoneNumber phoneNumber, EmailAddress email) {
+    public ShowDesigner(Name name, PhoneNumber phoneNumber, Email email) {
         if (name == null || phoneNumber == null || email == null) {
             throw new IllegalArgumentException("Name, Phone Number and Email cannot be null");
         }
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+    }
+
+    /**
+     * Returns the name of the Show Designer
+     *
+     * @return the name of the Show Designer
+     */
+    public Name name() {
+        return this.name;
+    }
+
+    /**
+     * Returns the phone number of the Show Designer
+     *
+     * @return the phone number of the Show Designer
+     */
+    public PhoneNumber phoneNumber() {
+        return this.phoneNumber;
+    }
+
+    /**
+     * Returns the email address of the Show Designer
+     *
+     * @return the email address of the Show Designer
+     */
+    public Email email() {
+        return this.email;
     }
 
     /**
@@ -129,5 +158,15 @@ public class ShowDesigner implements AggregateRoot<EmailAddress>, Serializable {
             return false;
         }
         return this.email.equals(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return DomainEntities.areEqual(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return DomainEntities.hashCode(this);
     }
 }

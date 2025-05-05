@@ -86,30 +86,14 @@ public class Description implements ValueObject, Serializable, StringMixin {
      * @param o the object to compare with this object
      * @return true if the objects are equal, false otherwise
      */
-    public boolean equals(final Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof Description)) {
-            return false;
-        } else {
-            Description other = (Description)o;
-            if (!other.canEqual(this)) {
-                return false;
-            } else {
-                Object this$value = this.value;
-                Object other$value = other.value;
-                if (this$value == null) {
-                    if (other$value != null) {
-                        return false;
-                    }
-                } else if (!this$value.equals(other$value)) {
-                    return false;
-                }
-
-                return true;
-            }
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Description that = (Description) o;
+        return value.equals(that.value);
     }
+
 
     /**
      * Checks if the other object can be compared with this object.

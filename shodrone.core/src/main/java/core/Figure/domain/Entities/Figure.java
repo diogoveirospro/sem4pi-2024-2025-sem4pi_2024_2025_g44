@@ -11,6 +11,7 @@ import jakarta.persistence.Version;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -68,7 +69,7 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * The keywords associated with the Figure
      */
     @ElementCollection
-    private Set<Keyword> keywords = new HashSet<>();
+    private Set<Keyword> keywords;
 
     /**
      * The exclusivity of the Figure
@@ -80,7 +81,7 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * The categories associated with the Figure
      */
     @ManyToMany
-    private Set<Category> categories = new HashSet<>();
+    private Set<Category> categories;
 
     /**
      * The Show Designer associated with the Figure
@@ -99,14 +100,17 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * @param categories the categories associated with the Figure
      */
     public Figure(Code code, core.Figure.domain.ValueObjects.Version version, Description description,
-                  DSLDescription DSLDescription, Set<Keyword> keywords, Set<Category> categories) {
+                  DSLDescription DSLDescription, Set<Keyword> keywords, Set<Category> categories, ShowDesigner showDesigner) {
 
+        assert code != null && version != null && description != null && DSLDescription != null &&
+                keywords != null && categories != null && showDesigner != null;
         this.figureID = new FigureID(code, version);
         this.description = description;
         this.DSLDescription = DSLDescription;
         this.figureStatus = FigureStatus.ACTIVE;
         this.keywords = keywords;
         this.categories = categories;
+        this.exclusivity = null;
         this.showDesigner = showDesigner;
 
     }
@@ -123,8 +127,11 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * @param exclusivity the exclusivity of the Figure
      */
     public Figure(Code code, core.Figure.domain.ValueObjects.Version version, Description description,
-                  DSLDescription DSLDescription, Set<Keyword> keywords, Set<Category> categories, Exclusivity exclusivity) {
+                  DSLDescription DSLDescription, Set<Keyword> keywords, Set<Category> categories, ShowDesigner showDesigner,
+                  Exclusivity exclusivity) {
 
+        assert code != null && version != null && description != null && DSLDescription != null &&
+                keywords != null && categories != null && showDesigner != null;
         this.figureID = new FigureID(code, version);
         this.description = description;
         this.DSLDescription = DSLDescription;
@@ -215,25 +222,46 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
     }
 
     /**
-     * equals method to compare two Figure objects.
-     *
-     * @param o the object to compare with this object
-     * @return true if the objects are equal, false otherwise
+     * Checks if the Figure is the same as another object.
+     * @param other the object to compare
+     * @return true if the Figure is the same as the other object, false otherwise
      */
     @Override
-    public boolean equals(final Object o) {
+    public boolean sameAs(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Figure)) return false;
+        Figure figure = (Figure) other;
+
+        return figureID.equals(figure.figureID()) &&
+                description.equals(figure.description()) &&
+                DSLDescription.equals(figure.DSLDescription()) &&
+                figureStatus.equals(figure.figureStatus()) &&
+                keywords.equals(figure.keywords()) &&
+                categories.equals(figure.categories()) &&
+                ((exclusivity == null && figure.exclusivity() == null) ||
+                        (exclusivity != null && exclusivity.equals(figure.exclusivity()))) &&
+                showDesigner.equals(figure.showDesigner());
+
+    }
+
+    /**
+     * Equals method to compare two Figure objects.
+     * @param o the object to compare
+     * @return true if the two objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
         return DomainEntities.areEqual(this, o);
     }
 
     /**
-     * sameAs method to verify if the Figure is the same as another object.
-     * @param other the other object to compare with this object
-     * @return true if the objects are the same, false otherwise
+     * Compares this Figure object with another Figure object.
+     * @param other the object to be compared.
+     * @return 1 if this Figure is greater than the other, -1 if less, 0 if equal
      */
     @Override
-    public boolean sameAs(Object other) {
-        final Figure figure = (Figure) other;
-        return this.equals(figure) && figureID.equals(figure.figureID());
+    public int compareTo(FigureID other) {
+        return AggregateRoot.super.compareTo(other);
     }
 
     /**
@@ -243,5 +271,24 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
     @Override
     public FigureID identity() {
         return figureID;
+    }
+
+    /**
+     * Checks if the Figure has the same identity as another Figure.
+     * @param id the FigureID to compare
+     * @return true if the Figure has the same identity as the other Figure, false otherwise
+     */
+    @Override
+    public boolean hasIdentity(FigureID id) {
+        return AggregateRoot.super.hasIdentity(id);
+    }
+
+    /**
+     * Hash code method to generate a hash code for the Figure object.
+     * @return the hash code for the Figure object
+     */
+    @Override
+    public int hashCode() {
+        return DomainEntities.hashCode(this);
     }
 }
