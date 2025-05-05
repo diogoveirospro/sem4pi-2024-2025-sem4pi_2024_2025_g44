@@ -1,19 +1,22 @@
 package core.Customer.domain.ValueObjects;
 
-import lombok.Getter;
+import jakarta.persistence.Embeddable;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * Represents a European VAT number with validation based on known country codes.
  */
-@Getter
-public class VatNumber implements Comparable<VatNumber> {
+@Embeddable
+public class VatNumber implements Comparable<VatNumber>, Serializable {
 
-    private final String value;
+    private static final long serialVersionUID = 1L;
 
-    // Known VAT country codes (including EU and EEA countries + UK, etc.)
+    protected VatNumber() {
+    }
+
     private static final Map<String, String> VAT_COUNTRY_CODES = Map.ofEntries(
             Map.entry("AL", "Albania"),
             Map.entry("AD", "Andorra"),
@@ -67,43 +70,48 @@ public class VatNumber implements Comparable<VatNumber> {
             Map.entry("VA", "Vatican City")
     );
 
+    private String countryCode;
+    private String countryName;
 
-    public VatNumber(String value) {
-        if (value == null || value.trim().isEmpty()) {
+    public VatNumber(String vatNumber) {
+        if (vatNumber == null || vatNumber.trim().isEmpty()) {
             throw new IllegalArgumentException("VAT Number cannot be null or empty");
         }
-        value = value.trim().toUpperCase();
-        if (value.length() < 3) {
+
+        vatNumber = vatNumber.trim().toUpperCase();
+
+        if (vatNumber.length() < 3) {
             throw new IllegalArgumentException("VAT Number is too short");
         }
-        String prefix = value.substring(0, 2);
+
+        String prefix = vatNumber.substring(0, 2);
         if (!VAT_COUNTRY_CODES.containsKey(prefix)) {
             throw new IllegalArgumentException("Invalid VAT country prefix: " + prefix);
         }
-        if (!value.matches("[A-Z0-9]+")) {
+
+        if (!vatNumber.matches("[A-Z0-9]+")) {
             throw new IllegalArgumentException("VAT Number contains invalid characters");
         }
 
-        this.value = value;
+        if (vatNumber.length() > 15) {
+            throw new IllegalArgumentException("VAT Number is too long");
+        }
+
+        this.countryCode = prefix;
+        this.countryName = VAT_COUNTRY_CODES.get(prefix);
     }
 
-    /**
-     * Returns the 2-letter country code from the VAT number.
-     */
     public String countryCode() {
-        return value.substring(0, 2);
+        return countryCode;
     }
 
-    /**
-     * Returns the country name based on the VAT number's prefix.
-     */
     public String countryName() {
-        return VAT_COUNTRY_CODES.get(countryCode());
+        return countryName;
     }
 
     @Override
     public int compareTo(VatNumber other) {
-        return this.value.compareTo(other.value);
+        return this.countryCode.compareTo(other.countryCode);
     }
 
     @Override
@@ -111,23 +119,19 @@ public class VatNumber implements Comparable<VatNumber> {
         if (this == o) return true;
         if (!(o instanceof VatNumber)) return false;
         VatNumber that = (VatNumber) o;
-        return Objects.equals(value, that.value);
+        return Objects.equals(countryCode, that.countryCode) &&
+                Objects.equals(countryName, that.countryName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(countryCode, countryName);
     }
 
     @Override
     public String toString() {
-        return value;
+        return countryCode + " - " + countryName;
     }
-
-    /**
-     * Returns a map of all known VAT country codes and their corresponding country names.
-     *
-     */
 
     public static Map<String, String> getVatCountryCodes() {
         return VAT_COUNTRY_CODES;
