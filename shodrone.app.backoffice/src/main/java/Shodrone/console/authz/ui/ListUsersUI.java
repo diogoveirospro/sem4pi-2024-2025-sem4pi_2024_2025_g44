@@ -1,37 +1,42 @@
 package Shodrone.console.authz.ui;
 
-import core.User.domain.Entities.User;
+import Shodrone.console.authz.printer.SystemUserPrinter;
+import core.User.application.ListUsersController;
 import eapli.framework.presentation.console.AbstractListUI;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.visitor.Visitor;
 
-public class ListUsersUI extends AbstractListUI<User> {
-    @Override
-    protected Iterable<User> elements() {
-        return null;
-    }
+@SuppressWarnings({ "squid:S106" })
+public class ListUsersUI extends AbstractListUI<SystemUser> {
+    private final ListUsersController theController = new ListUsersController();
 
     @Override
-    protected Visitor<User> elementPrinter() {
-        return null;
-    }
-
-    @Override
-    protected String elementName() {
-        return "";
-    }
-
-    @Override
-    protected String listHeader() {
-        return "";
+    public String headline() {
+        return "List Users";
     }
 
     @Override
     protected String emptyMessage() {
-        return "";
+        return "No data.";
     }
 
     @Override
-    public String headline() {
-        return "";
+    protected Iterable<SystemUser> elements() {
+        return theController.allUsers();
+    }
+
+    @Override
+    protected Visitor<SystemUser> elementPrinter() {
+        return new SystemUserPrinter();
+    }
+
+    @Override
+    protected String elementName() {
+        return "User";
+    }
+
+    @Override
+    protected String listHeader() {
+        return String.format("#  %-10s%-30s%-30s", "USERNAME", "F. NAME", "L. NAME");
     }
 }

@@ -163,7 +163,7 @@ public class MainMenu extends AbstractUI {
     private Menu buildUsersMenu() {
         final Menu menu = new Menu("Users >");
 
-        menu.addItem(REGISTER_USER_OPTION, "Add User", new RegisterUserUI()::show);
+        menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
         menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
         menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Deactivate User", new ActivateDeactivateUserUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
