@@ -1,4 +1,11 @@
 package core.Customer.repositories;
 
-public interface CustomerRepository {
+import core.Customer.domain.Entities.Customer;
+import core.Customer.domain.Entities.CustomerRepresentative;
+import core.Customer.domain.ValueObjects.VatNumber;
+import eapli.framework.domain.repositories.DomainRepository;
+
+public interface CustomerRepository extends DomainRepository<VatNumber,Customer> {
+    Iterable<CustomerRepresentative> findAllCustomerRepresentatives(Customer customer);
+
 }

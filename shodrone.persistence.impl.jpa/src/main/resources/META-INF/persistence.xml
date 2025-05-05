@@ -8,6 +8,8 @@
     <class>core.Figure.domain.Entities.Figure</class>
     <class>core.Figure.domain.Entities.Exclusivity</class>
     <class>core.ShowDesigner.domain.Entities.ShowDesigner</class>
+    <class>core.Customer.domain.Entities.Customer</class>
+    <class>core.Customer.domain.Entities.CustomerRepresentative</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
