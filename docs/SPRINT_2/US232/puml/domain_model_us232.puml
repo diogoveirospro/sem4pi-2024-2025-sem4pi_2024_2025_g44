@@ -29,7 +29,7 @@ package "Figure " <<aggregate>> {
 
     'Figure -> x
     Figure --> "1..*" Keyword: keywords
-    Figure --> "1" Exclusivity: exclusivity
+    Figure --> "0..1" Exclusivity: exclusivity
     Figure --> "1" Code: code
     Figure --> "1" Version: version
     Figure --> "1" FigureStatus: figureStatus
