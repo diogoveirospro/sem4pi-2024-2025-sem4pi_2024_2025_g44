@@ -13,7 +13,6 @@ participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS
 participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
 participant "droneRepository\n:DroneRepository" as DRN_REPO
-participant "drone\n:Drone" as DRONE
 
 activate DT
 
@@ -51,7 +50,7 @@ activate UI
             CTRL -> DRN_REPO : removeDrone(serialNumber, removReason)
             activate DRN_REPO
 
-        DRN_REPO -> DRONE** : remove(serialNumber)
+        DRN_REPO -> DRN_REPO : remove(serialNumber)
                     DRN_REPO -> DRN_REPO: validateRemoval(serialNumber)
                     activate DRN_REPO
                         DRN_REPO --> DRN_REPO : true
