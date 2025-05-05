@@ -8,11 +8,11 @@ The show request's editing can only be done before a proposal is made.
 
 ### 1.1 List of issues
 \
-Requirements: In Progress
+Requirements: Done
 
-Analysis: TODO
+Analysis: Done
 
-Design: TODO
+Design: In Progress
 
 Implement: TODO
 
@@ -62,13 +62,49 @@ Only show requests without a proposal can be edited.
 
 **Client Clarifications**
 
-> **[Topic: ]()**\
-> Hello There
+> **[Topic: Status do Show Request e Show Proposal](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
+> The Show Request status information should be either created or accepted
+
+
+> **[Topic: Identificação do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
+> The Show Request is identified by a Customer, a CRM Collaborator and a Timestamp
+
+
+> **[Topic: US 235](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35706)**\
+> When listing a Show Request, it should have a date, a time, a location, a status and a description
+ 
+
+> **[Topic: US 236](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35707)**\
+> The Show Request history should register the modifications made.
 
 
 ## 3. Analysis
 \
-The
+The `Show Request` aggregate includes:
+
+- Time - Time for the Show
+- Date - Date for the Show
+- QuantityOfDrones - Number of drones to be used in the Show
+- Location - Location for the Show
+- ShowRequestStatus - Status for the Show Request (created, accepted, etc.)
+- ShowDescription - List of figures to be used in the show (i.e. a document)
+
+\
+The `CRM Collaborator` aggregate includes:
+
+- Name - Name of the CRM Collaborator
+- Email - Email of the Collaborator
+- PhoneNumber - Phone Number of the Collaborator
+
+\
+The `Customer` aggregate includes:
+
+- Name - Name of the customer (name of the company)
+- Address - Address of the customer
+- VatNumber - Value-added tax identification number
+- CustomerStatus - Status of the Customer (active, inactive, etc.)
+- CustomerType - Type of customer (individual, company, etc.)
+- CustomerRepresentative - Representative from the company
 
 <br>
 <br>

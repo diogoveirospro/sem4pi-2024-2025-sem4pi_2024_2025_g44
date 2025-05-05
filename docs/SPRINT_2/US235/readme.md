@@ -63,7 +63,7 @@ The show request status information should be provided.
 > **[Topic: Identificação do show request](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35337)**\
 > The Show Request is identified by a Customer, a CRM Collaborator and a Timestamp
 
-> **[Topic: US235](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35706)**\
+> **[Topic: US 235](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35706)**\
 > When listing a Show Request, it should have a date, a time, a location, a status and a description
 
 
