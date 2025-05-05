@@ -13,6 +13,7 @@ import eapli.framework.domain.model.AggregateRoot;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +53,7 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
         this.vat = vat;
         this.status = CustomerStatus.CREATED;
         this.type = type;
+        this.representatives = new ArrayList<>();
     }
 
     public Name name(){

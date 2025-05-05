@@ -24,7 +24,6 @@ This task as the objective of concluding the requirements of the us223 of sprint
 
 **AC01:** The system should allow the user to edit the email and phone number of a customer representative. All other information cannot be changed.
 **AC02:** The system should validate the input to ensure that it is valid.
-**AC03:** The data must be retrieved using a dedicated DTO to decouple the internal domain model.
 
 **Dependencies:**
 
@@ -84,22 +83,6 @@ void ensureRepresentativeRepresentsACustomer() {
     // setup: create and persist a representative.
     // action: call controller.editInformationOfCustomerRepresentative() with invalid data and valid data
     // assert: the first call throws an exception and the second one does not
-}
-```
-
----
-
-#### **Test 3: DTOs are used to decouple domain and UI**
-**Refers to Acceptance Criteria:** _AC03_  
-**Description:** Verifies that no domain objects (`Customer`, `CustomerRepresentative`) are exposed directly by the controller, ensuring DTO usage.
-
-```java
-@Test
-void ensureDomainEntitiesAreNotLeaked() {
-    var result1 = controller.listAllCustomers();
-    var result2 = controller.listRepresentativesOfAGivenCustomer();
-    assertTrue(result1.stream().allMatch(dto -> dto instanceof CustomerDTO));
-    assertTrue(result2.stream().allMatch(dto -> dto instanceof CustomerRepresentativeDTO));
 }
 ```
 

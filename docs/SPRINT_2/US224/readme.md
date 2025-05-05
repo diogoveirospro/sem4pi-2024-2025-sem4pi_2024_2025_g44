@@ -24,7 +24,6 @@ This task as the objective of concluding the requirements of the us224 of sprint
 
 **AC01:** The system must validate the input to ensure that the customer representative is valid and exists in the system.
 **AC02:** The system must ensure that the customer representative is not contacted in the future (the status of the customer representative must be changed to "disabled").
-**AC03:** The data must be retrieved using a dedicated DTO to decouple the internal domain model.
 
 **Dependencies:**
 
@@ -90,20 +89,6 @@ void ensureCustomerInformationIsCorrect() {
     CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
     controller.disableCustomerRepresentative(dto);
     assertEquals(CustomerStatus.DISABLED, dto.getStatus());
-}
-```
-
-#### **Test 3: DTOs are used to decouple domain and UI**
-**Refers to Acceptance Criteria:** _AC03_  
-**Description:** Verifies that no domain objects (`Customer`, `CustomerRepresentative`) are exposed directly by the controller, ensuring DTO usage.
-
-```java
-@Test
-void ensureDomainEntitiesAreNotLeaked() {
-    var result1 = controller.listAllCustomers();
-    var result2 = controller.listRepresentativesOfAGivenCustomer();
-    assertTrue(result1.stream().allMatch(dto -> dto instanceof CustomerDTO));
-    assertTrue(result2.stream().allMatch(dto -> dto instanceof CustomerRepresentativeDTO));
 }
 ```
 

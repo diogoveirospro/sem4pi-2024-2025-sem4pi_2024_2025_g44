@@ -24,7 +24,6 @@ This task as the objective of concluding the requirements of the us221 of sprint
 - **AC01**: The customer representative must be a system user (restricted to the Customer App). Each representative must be a distinct user.
 - **AC02**: The representative must be associated with a customer.
 - **AC03**: The representative must have a name, email, phone number, position, and status.
-- **AC04**: The data must be retrieved using a dedicated DTO to decouple the internal domain model.
 
 ### Dependencies
 
@@ -107,7 +106,7 @@ The following tests validate the acceptance criteria defined for US221. They ens
 
 ```java
 @Test
-void ensureCustomerIsAUser() {
+void ensureCustomerRepresentativeIsAUser() {
     // setup: create and persist a customer representative
     // action: call controller.registerNewRepresentativeOfCustomer() and get the users list
     // assert: customer representative is in the list of users
@@ -148,22 +147,7 @@ void ensureCustomerInformationIsCorrect() {
 }
 ```
 
----
 
-### Test 4: Use of DTOs to decouple domain and UI
-
-**Refers to Acceptance Criteria:** AC04  
-**Description:** Ensures that domain entities are not directly exposed.
-
-```java
-@Test
-void ensureDomainEntitiesAreNotLeaked() {
-    var result = controller.listAllCustomers();
-    assertTrue(result.stream().allMatch(dto -> dto instanceof CustomerDTO));
-}
-```
-
----
 
 ## 6. Implementation
 

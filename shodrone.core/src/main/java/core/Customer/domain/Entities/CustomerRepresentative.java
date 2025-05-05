@@ -7,8 +7,10 @@ import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-public class CustomerRepresentative {
+public class CustomerRepresentative implements Serializable {
 
     @Id
     @GeneratedValue
@@ -77,5 +79,18 @@ public class CustomerRepresentative {
 
     public void deactivate() {
         this.status = CustomerRepresentativeStatus.DISABLE;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CustomerRepresentative)) return false;
+
+        CustomerRepresentative that = (CustomerRepresentative) o;
+
+        if (!name.equals(that.name)) return false;
+        if (!email.equals(that.email)) return false;
+        if (!phoneNumber.equals(that.phoneNumber)) return false;
+        if (!position.equals(that.position)) return false;
+        return status == that.status;
     }
 }

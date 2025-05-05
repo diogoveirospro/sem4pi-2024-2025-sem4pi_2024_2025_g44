@@ -26,8 +26,7 @@ This task as the objective of concluding the requirements of the us222 of sprint
 **AC01:** It should not list disabled representatives.
 <br>
 **AC02:** It should list all representatives of a given customer.
-<br>
-**AC03:** The data must be retrieved using a dedicated DTO to decouple the internal domain model.
+
 
 **Dependencies:**
 
@@ -101,21 +100,6 @@ void ensureRepresentativeRepresentsACustomer() {
 }
 ```
 
----
-
-#### **Test 3: DTOs are used to decouple domain and UI**
-**Refers to Acceptance Criteria:** _AC03_  
-**Description:** Verifies that no domain objects (`Customer`, `CustomerRepresentative`) are exposed directly by the controller, ensuring DTO usage.
-
-```java
-@Test
-void ensureDomainEntitiesAreNotLeaked() {
-    var result1 = controller.listAllCustomers();
-    var result2 = controller.listRepresentativesOfAGivenCustomer();
-    assertTrue(result1.stream().allMatch(dto -> dto instanceof CustomerDTO));
-    assertTrue(result2.stream().allMatch(dto -> dto instanceof CustomerRepresentativeDTO));
-}
-```
 
 ## 6. Implementation
 

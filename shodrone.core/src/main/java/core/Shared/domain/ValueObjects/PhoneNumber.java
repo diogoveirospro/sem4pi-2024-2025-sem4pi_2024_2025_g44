@@ -103,6 +103,12 @@ public class PhoneNumber implements Serializable, ValueObject {
      * @param nationalNumber the national number of the phone number
      */
     public PhoneNumber(final String countryCode, final String nationalNumber) {
+        if (countryCode == null || countryCode.isEmpty()) {
+            throw new IllegalArgumentException("Country code cannot be null or empty");
+        }
+        if (nationalNumber == null || nationalNumber.isEmpty()) {
+            throw new IllegalArgumentException("National number cannot be null or empty");
+        }
         if (!isValidCountryCode(countryCode)) {
             throw new IllegalArgumentException("Invalid country code");
         }
