@@ -19,6 +19,9 @@ package "persistence.impl.jpa" #DDDDDD {
     class JpaCategoryRepository {
     }
 
+    class JpaCustomerRepository {
+    }
+
 }
 
 package "persistence.impl.inmemory" #DDDDDD {
@@ -32,6 +35,9 @@ package "persistence.impl.inmemory" #DDDDDD {
 
     class InMemoryCategoryRepository {
     }
+
+    class InMemoryCustomerRepository {
+    }
 }
 
 package "Domain" #DDDDDD {
@@ -39,7 +45,9 @@ package "Domain" #DDDDDD {
     package "Repository " #DDDDDD {
 
         interface RepositoryFactory {
+            + getFigureRepository(): FigureRepository
             + getCategoryRepository(): CategoryRepository
+            + getCustomerRepository(): CustomerRepository
         }
 
         interface FigureRepository {
@@ -48,6 +56,10 @@ package "Domain" #DDDDDD {
 
         interface CategoryRepository {
             + findAll(): Iterable<Category>
+        }
+
+        interface CustomerRepository {
+            + findAll(): Iterable<Customer>
         }
 
     }
@@ -86,12 +98,17 @@ package "Domain" #DDDDDD {
     class ShowDesigner <<Entity>>{
     }
 
+    'Customer Aggregate
+    class Customer <<Entity>>{
+    }
+
 }
 
 package "UI" #DDDDDD {
     class AddFigureToCatalogueUI <<UI>> {
         + addFigureToCatalogue(figure)
         + showCategoriesAndSelect()
+        + showCustomersAndSelect()
     }
 }
 
@@ -99,13 +116,14 @@ package "Controller" #DDDDDD {
     class AddFigureToCatalogueController <<Controller>> {
         + addFigureToCatalogue(figure): boolean
         + listCategories(): Iterable<Category>
+        + listCustomers(): Iterable<Customer>
     }
 }
 
 'Persistence
 
     'PersistenceContext -> x
-    PersistenceContext ..> RepositoryFactory: figureRepository()\ncategoryRepository()
+    PersistenceContext ..> RepositoryFactory: figureRepository()\ncategoryRepository()\ncustomerRepository()
     PersistenceContext ..> JpaRepositoryFactory
     PersistenceContext ..> InMemoryRepositoryFactory
 
@@ -117,10 +135,14 @@ package "Controller" #DDDDDD {
     'JpaCategoryRepository -> x
     JpaCategoryRepository --|> CategoryRepository
 
+    'JpaCustomerRepository -> x
+    JpaCustomerRepository --|> CustomerRepository
+
     'JpaRepositoryFactory -> x
     JpaRepositoryFactory ....|> RepositoryFactory
     JpaRepositoryFactory ..> JpaFigureRepository
     JpaRepositoryFactory ..> JpaCategoryRepository
+    JpaRepositoryFactory ..> JpaCustomerRepository
 
 'persistence.impl.inmemory
 
@@ -130,10 +152,14 @@ package "Controller" #DDDDDD {
     'InMemoryCategoryRepository -> x
     InMemoryCategoryRepository ..|> CategoryRepository
 
+    'InMemoryCustomerRepository -> x
+    InMemoryCustomerRepository ..|> CustomerRepository
+
     'InMemoryRepositoryFactory -> x
     InMemoryRepositoryFactory ...|> RepositoryFactory
     InMemoryRepositoryFactory ..> InMemoryFigureRepository
     InMemoryRepositoryFactory ..> InMemoryCategoryRepository
+    InMemoryRepositoryFactory ..> InMemoryCustomerRepository
 
 'Repository
 
@@ -143,9 +169,13 @@ package "Controller" #DDDDDD {
     'CategoryRepository -> x
     CategoryRepository ...> Category
 
+    'CustomerRepository -> x
+    CustomerRepository ...> Customer
+
     'RepositoryFactory -> x
     RepositoryFactory ..> FigureRepository
     RepositoryFactory ..> CategoryRepository
+    RepositoryFactory ..> CustomerRepository
 
 'Domain
 
@@ -159,6 +189,9 @@ package "Controller" #DDDDDD {
     Figure --> "1" ShowDesigner: created by
     Figure --> "0..1" Exclusivity: exclusivity
 
+    'Exclusivity -> x
+    Exclusivity --> "1" Customer: exclusive to
+
 'UI
 
     'AddFigureToCatalogueUI -> x
@@ -170,6 +203,7 @@ package "Controller" #DDDDDD {
     AddFigureToCatalogueController ..> PersistenceContext : getRepositoryFactory()
     AddFigureToCatalogueController ..> RepositoryFactory : getFigureRepository()
     AddFigureToCatalogueController ..> RepositoryFactory : getCategoryRepository()
+    AddFigureToCatalogueController ..> RepositoryFactory : getCustomerRepository()
     AddFigureToCatalogueController ..> FigureRepository : save(figure)
     AddFigureToCatalogueController ..> CategoryRepository : findAll()
 
