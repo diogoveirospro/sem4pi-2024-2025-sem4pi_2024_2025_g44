@@ -14,7 +14,7 @@ Design: 🧪 Testing
 
 Implement: 🧪 Testing
 
-Test: 📝 To Do
+Test: 🧪 Testing
 
 
 ## 2. Requirements
@@ -29,8 +29,6 @@ Test: 📝 To Do
 
 - **US233.1** A figure must include the following parameters: code, version, description, DSL description, keywords, 
 categories and showDesigner.
-- **US233.2** Only authenticated Show Designers are allowed to add figures to the catalogue.
-- **US233.3** The system must store the Show Designer who created the figure.
 
 **Dependencies/References:**
 
@@ -146,40 +144,6 @@ void ensureFigureIncludesAllRequiredParameters() {
     // setup: create figures with missing attributes
     // action: attempt to add the figure to the catalogue
     // assert: expect AssertionError to be thrown
-}
-```
-
----
-
-#### **Test 2: Only authenticated Show Designers can add figures**
-**Refers to Acceptance Criteria:** _US233.2_  
-**Description:** Verifies that only users with the Show Designer role are allowed to add figures to the catalogue.
-
-```java
-@Test
-void ensureOnlyShowDesignersCanAddFigures() {
-    // setup: authenticate as a Show Designer
-    // action: add a valid figure
-    // assert: operation succeeds
-
-    // setup: authenticate as a user without required role
-    // action: attempt to add a valid figure
-    // assert: expect AccessDeniedException or equivalent
-}
-```
-
----
-
-#### **Test 4: The creator (Show Designer) is stored with the figure**
-**Refers to Acceptance Criteria:** _US233.3_  
-**Description:** Ensures that the system stores a reference to the authenticated Show Designer who created the figure.
-
-```java
-@Test
-void ensureShowDesignerIsStoredWithFigure() {
-    // setup: authenticate as a Show Designer
-    // action: add a new figure
-    // assert: saved figure contains reference to the authenticated Show Designer
 }
 ```
 

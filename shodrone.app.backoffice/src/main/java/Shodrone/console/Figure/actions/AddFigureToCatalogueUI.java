@@ -1,4 +1,4 @@
-package Shodrone.console.Figure.ui;
+package Shodrone.console.Figure.actions;
 
 import core.Category.domain.Entities.Category;
 import core.Customer.domain.Entities.Customer;
@@ -91,7 +91,7 @@ public class AddFigureToCatalogueUI extends AbstractUI {
     public Set<Category> showCategoriesAndSelect() {
         Iterable<Category> categories = controller.listCategories();
         if (categories == null || !categories.iterator().hasNext()) {
-            System.out.println("No categories available.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No categories available." + UtilsUI.RESET);
             return null;
         }
 
@@ -102,7 +102,7 @@ public class AddFigureToCatalogueUI extends AbstractUI {
 
         Set<Category> selectedCategories = new HashSet<>();
 
-        ListWidget<Category> categoryListWidget = new ListWidget<>("Categories", categories,
+        ListWidget<Category> categoryListWidget = new ListWidget<>("Choose the Categories", categories,
                 Category::toString);
         categoryListWidget.show();
 
@@ -114,7 +114,7 @@ public class AddFigureToCatalogueUI extends AbstractUI {
                 break;
             }
             if (option < 1 || option > categories.spliterator().estimateSize()) {
-                System.out.println("Invalid option. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
                 continue;
             }
 
@@ -122,10 +122,10 @@ public class AddFigureToCatalogueUI extends AbstractUI {
         } while(option < 1 || option > categories.spliterator().estimateSize());
 
         if (selectedCategories.isEmpty()) {
-            System.out.println("No categories selected.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No categories selected." + UtilsUI.RESET);
             showCategoriesAndSelect();
         } else {
-            System.out.println("Selected categories: " + selectedCategories);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected categories: " + selectedCategories);
         }
 
         return selectedCategories;
@@ -138,29 +138,29 @@ public class AddFigureToCatalogueUI extends AbstractUI {
     public Customer showCustomerAndSelect() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println("No customers available.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
         customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customerList, Customer::toString);
+        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, Customer::toString);
         customerListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                System.out.println("Selection cancelled.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
                 return null;
             }
 
             if (option < 1 || option > customerList.size()) {
-                System.out.println("Invalid option. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 Customer selected = customerList.get(option - 1);
-                System.out.println("Selected customer: " + selected);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected customer: " + selected + UtilsUI.RESET);
                 return selected;
             }
 
@@ -175,14 +175,14 @@ public class AddFigureToCatalogueUI extends AbstractUI {
         Set<Keyword> keywords = new HashSet<>();
         String keyword;
         do {
-            keyword = UtilsUI.readLineFromConsole("Enter a keyword (or 'done' to finish): ");
+            keyword = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a keyword (or 'done' to finish): " + UtilsUI.RESET);
             assert keyword != null;
             if (!keyword.equalsIgnoreCase("done")) {
                 try {
                     Keyword keywordObj = new Keyword(keyword);
                     keywords.add(keywordObj);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid keyword. Please try again.");
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid keyword. Please try again." + UtilsUI.RESET);
                 }
             }
         } while (!keyword.equalsIgnoreCase("done"));
@@ -196,7 +196,7 @@ public class AddFigureToCatalogueUI extends AbstractUI {
     private DSLDescription enterValidDSLDescription() {
         while (true) {
             try {
-                final String filePath = UtilsUI.readLineFromConsole("Enter the path to the DSL file (.txt): ");
+                final String filePath = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the path to the DSL file (.txt): " + UtilsUI.RESET);
                 assert filePath != null;
                 final List<String> dslLines = Files.readAllLines(Paths.get(filePath));
 
@@ -212,15 +212,14 @@ public class AddFigureToCatalogueUI extends AbstractUI {
                 return new DSLDescription(dslLines, dslVersion);
 
             } catch (IOException e) {
-                System.out.println("Error reading file: " + e.getMessage());
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError reading file: " + e.getMessage() + UtilsUI.RESET);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid input: " + e.getMessage());
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid input: " + e.getMessage() + UtilsUI.RESET);
             }
 
-            System.out.println("Please try again.\n");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Please try again." + UtilsUI.RESET);
         }
     }
-
 
     /**
      * Enter a valid description for the figure.
@@ -230,10 +229,10 @@ public class AddFigureToCatalogueUI extends AbstractUI {
         String description;
         do {
             try{
-                description = UtilsUI.readLineFromConsole("Enter a description: ");
+                description = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a description: " + UtilsUI.RESET);
                 return new Description(description);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid input. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -247,10 +246,10 @@ public class AddFigureToCatalogueUI extends AbstractUI {
         String version;
         do {
             try {
-                version = UtilsUI.readLineFromConsole("Enter a version: ");
+                version = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a version: " + UtilsUI.RESET);
                 return new Version(version);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid input. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -264,10 +263,10 @@ public class AddFigureToCatalogueUI extends AbstractUI {
         String code;
         do {
             try {
-                code = UtilsUI.readLineFromConsole("Enter a code: ");
+                code = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a code: " + UtilsUI.RESET);
                 return new Code(code);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid input. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -280,16 +279,16 @@ public class AddFigureToCatalogueUI extends AbstractUI {
     private Exclusivity enterValidExclusivity() {
         do {
             try {
-                if (UtilsUI.confirm("Are you an Exclusive Figure? (Y/N):")) {
+                if (UtilsUI.confirm(UtilsUI.BOLD + "Are you an Exclusive Figure? (Y/N):" + UtilsUI.RESET)) {
 
                     Customer customer = showCustomerAndSelect();
                     if (customer == null) {
-                        System.out.println("No customer selected. Please try again.");
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer selected. Please try again." + UtilsUI.RESET);
                         continue;
                     }
 
-                    Date startDate = UtilsUI.readDateFromConsole("Enter the start date (dd-MM-yyyy): ");
-                    Date endDate = UtilsUI.readDateFromConsole("Enter the end date (dd-MM-yyyy): ");
+                    Date startDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "\nEnter the start date (dd-MM-yyyy): " + UtilsUI.RESET);
+                    Date endDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "Enter the end date (dd-MM-yyyy): " + UtilsUI.RESET);
 
                     Calendar start = Calendar.getInstance();
                     start.setTime(startDate);
@@ -306,7 +305,7 @@ public class AddFigureToCatalogueUI extends AbstractUI {
                 }
 
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid input. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);

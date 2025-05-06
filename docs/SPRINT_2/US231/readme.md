@@ -11,9 +11,9 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implement: 📝 To Do
+Implement: 🧪 Testing
 
-Test: 📝 To Do
+Test: 🧪 Testing
 
 
 ## 2. Requirements
@@ -27,8 +27,6 @@ Test: 📝 To Do
 **Acceptance Criteria:**
 
 - **_US231.1_** Only active public figures must be listed.
-- **_US231.2_** The list must include at least the figure's code, version and description.
-- **_US231.3_** The functionality should only be accessible to authenticated CRM Collaborator users.
 
 **Dependencies/References:**
 
