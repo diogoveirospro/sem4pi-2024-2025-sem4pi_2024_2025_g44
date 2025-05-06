@@ -57,17 +57,6 @@ package "Domain" #DDDDDD {
     class Description <<Value Object>>{
     }
 
-    class Keyword <<Value Object>>{
-    }
-
-    'Category Aggregate
-    class Category <<Entity>>{
-    }
-
-    'Shared Aggregate
-    class Name <<Value Object>>{
-    }
-
 }
 
 package "UI" #DDDDDD {
@@ -78,7 +67,7 @@ package "UI" #DDDDDD {
 
 package "Controller" #DDDDDD {
     class ListPublicCatalogueController <<Controller>> {
-        + listPublicCatalogue(): Iterable<Figure>
+        + listPublicCatalogue(): List<Figure>
     }
 }
 
@@ -118,14 +107,9 @@ package "Controller" #DDDDDD {
 'Domain
 
     'Figure -> x
-    Figure --> "1..*" Keyword: keywords
     Figure --> "1" Code: code
     Figure --> "1" Version: version
     Figure --> "1" Description: description
-    Figure --> "1..*" Category: categories
-
-    'Category -> x
-    Category --> "1" Name: name
 
 'UI
 

@@ -1,6 +1,7 @@
 package core.Figure.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 

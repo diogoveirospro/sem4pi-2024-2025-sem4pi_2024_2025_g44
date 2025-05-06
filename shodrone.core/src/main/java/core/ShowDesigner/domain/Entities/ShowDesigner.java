@@ -5,7 +5,6 @@ import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.domain.model.DomainEntities;
-import eapli.framework.general.domain.model.Designation;
 import eapli.framework.general.domain.model.EmailAddress;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

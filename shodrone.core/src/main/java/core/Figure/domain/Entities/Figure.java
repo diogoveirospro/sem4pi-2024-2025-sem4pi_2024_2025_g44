@@ -10,8 +10,6 @@ import jakarta.persistence.*;
 import jakarta.persistence.Version;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -31,6 +29,7 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -43,19 +42,23 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * The ID of the Figure with the code and version
      */
     @Embedded
-    @Column(unique = true)
     private FigureID figureID;
 
     /**
      * The description of the Figure
      */
     @Embedded
+    @Column(name = "description")
     private Description description;
 
     /**
      * The DSL description of the Figure
      */
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "DSLCodeLines", column = @Column(name = "DSLCodeLines")),
+            @AttributeOverride(name = "DSLVersion", column = @Column(name = "DSLVersion"))
+    })
     private DSLDescription DSLDescription;
 
     /**
@@ -63,30 +66,35 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     @Embedded
     @Enumerated(EnumType.STRING)
-    FigureStatus figureStatus;
+    @Column(name = "figureStatus")
+    private FigureStatus figureStatus;
 
     /**
      * The keywords associated with the Figure
      */
     @ElementCollection
+    @Column(name = "keywords")
     private Set<Keyword> keywords;
 
     /**
      * The exclusivity of the Figure
      */
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exclusivity")
     private Exclusivity exclusivity;
 
     /**
      * The categories associated with the Figure
      */
     @ManyToMany
+    @JoinTable(name = "categories")
     private Set<Category> categories;
 
     /**
      * The Show Designer associated with the Figure
      */
     @ManyToOne (optional = false)
+    @JoinColumn(name = "showDesigner")
     private ShowDesigner showDesigner;
 
     /**
@@ -219,6 +227,22 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     public ShowDesigner showDesigner() {
         return showDesigner;
+    }
+
+    /**
+     * Allows to know if the Figure is exclusive or not
+     * @return true if the Figure is exclusive, false otherwise
+     */
+    public boolean isExclusive() {
+        return exclusivity != null;
+    }
+
+    /**
+     * Allows to know if the Figure is active or not
+     * @return true if the Figure is active, false otherwise
+     */
+    public boolean isActive() {
+        return figureStatus == FigureStatus.ACTIVE;
     }
 
     /**

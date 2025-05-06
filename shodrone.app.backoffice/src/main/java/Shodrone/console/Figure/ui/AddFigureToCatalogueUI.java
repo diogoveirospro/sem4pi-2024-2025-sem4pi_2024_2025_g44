@@ -4,15 +4,12 @@ import core.Category.domain.Entities.Category;
 import core.Customer.domain.Entities.Customer;
 import core.Figure.application.AddFigureToCatalogueController;
 import core.Figure.domain.Entities.Exclusivity;
-import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Description;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
-import eapli.framework.infrastructure.authz.application.AuthorizationService;
-import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.time.domain.model.DateInterval;
@@ -64,7 +61,7 @@ public class AddFigureToCatalogueUI extends AbstractUI {
      */
     @Override
     public String headline() {
-        return UtilsUI.PURPLE + "Add Figure to Catalogue" + UtilsUI.RESET;
+        return "Add Figure to Catalogue";
     }
 
     /**
@@ -313,10 +310,5 @@ public class AddFigureToCatalogueUI extends AbstractUI {
                 continue;
             }
         } while (true);
-    }
-
-    public static void main(String[] args) {
-        AddFigureToCatalogueUI ui = new AddFigureToCatalogueUI();
-        ui.show();
     }
 }

@@ -4,6 +4,7 @@ import eapli.framework.domain.model.ValueObject;
 import eapli.framework.functional.Either;
 import eapli.framework.strings.StringMixin;
 import eapli.framework.validations.CheckIf;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Description implements ValueObject, Serializable, StringMixin {
     /**
      * The description of the figure.
      */
+    @Column(name = "description")
     private final String value;
 
     /**

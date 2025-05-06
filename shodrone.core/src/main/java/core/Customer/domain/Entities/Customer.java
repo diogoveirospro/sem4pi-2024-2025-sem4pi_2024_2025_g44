@@ -1,6 +1,5 @@
 package core.Customer.domain.Entities;
 
-import eapli.framework.domain.model.DomainEntities;
 import jakarta.persistence.Entity;
 
 import core.Customer.domain.ValueObjects.Address;

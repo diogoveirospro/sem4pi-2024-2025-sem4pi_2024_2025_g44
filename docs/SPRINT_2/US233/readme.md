@@ -28,11 +28,9 @@ Test: 📝 To Do
 **Acceptance Criteria:**
 
 - **US233.1** A figure must include the following parameters: code, version, description, DSL description, keywords, 
-and category.
-- **US233.2** If a figure is exclusive to a customer, it must not be added to the public catalogue and must only be 
-available for use in shows for that customer.
-- **US233.3** Only authenticated Show Designers are allowed to add figures to the catalogue.
-- **US233.4** The system must store the Show Designer who created the figure.
+categories and showDesigner.
+- **US233.2** Only authenticated Show Designers are allowed to add figures to the catalogue.
+- **US233.3** The system must store the Show Designer who created the figure.
 
 **Dependencies/References:**
 
@@ -145,31 +143,16 @@ DSL description, keywords or category) are missing.
 ```java
 @Test
 void ensureFigureIncludesAllRequiredParameters() {
-    // setup: create a figure with missing attributes (e.g. no keywords or category)
+    // setup: create figures with missing attributes
     // action: attempt to add the figure to the catalogue
-    // assert: expect InvalidFigureException to be thrown
+    // assert: expect AssertionError to be thrown
 }
 ```
 
 ---
 
-#### **Test 2: Exclusive figures are not added to the public catalogue**
+#### **Test 2: Only authenticated Show Designers can add figures**
 **Refers to Acceptance Criteria:** _US233.2_  
-**Description:** Ensures that if a figure is exclusive to a customer, it is not made available in the public catalogue.
-
-```java
-@Test
-void ensureExclusiveFiguresAreNotPublic() {
-    // setup: create an exclusive figure for a specific customer
-    // action: add the figure to the catalogue
-    // assert: figure is not listed in public catalogue
-}
-```
-
----
-
-#### **Test 3: Only authenticated Show Designers can add figures**
-**Refers to Acceptance Criteria:** _US233.3_  
 **Description:** Verifies that only users with the Show Designer role are allowed to add figures to the catalogue.
 
 ```java
@@ -188,7 +171,7 @@ void ensureOnlyShowDesignersCanAddFigures() {
 ---
 
 #### **Test 4: The creator (Show Designer) is stored with the figure**
-**Refers to Acceptance Criteria:** _US233.4_  
+**Refers to Acceptance Criteria:** _US233.3_  
 **Description:** Ensures that the system stores a reference to the authenticated Show Designer who created the figure.
 
 ```java

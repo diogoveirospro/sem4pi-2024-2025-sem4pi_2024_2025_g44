@@ -224,37 +224,33 @@ public class FigureTest {
     }
 
     @Test
-    public void testFigureCreationFailsWithNullCode() {
+    void ensureFigureIncludesAllRequiredParameters() {
+
+        // null code
         assertThrows(AssertionError.class, () -> {
             new Figure(null, new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
-    }
 
-    @Test
-    public void testFigureCreationFailsWithNullVersion() {
+        // null version
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), null,
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
-    }
 
-    @Test
-    public void testFigureCreationFailsWithNullDescription() {
+        // null description
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     null, new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
-    }
 
-    @Test
-    public void testFigureCreationFailsWithNullDSLDescription() {
+        // null DSLDescription
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), null,
@@ -262,36 +258,44 @@ public class FigureTest {
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
-    }
-
-    @Test
-    public void testFigureCreationFailsWithNullKeywords() {
+        // null keywords
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     null, Set.of(new Category(new Name("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
-    }
 
-    @Test
-    public void testFigureCreationFailsWithNullCategories() {
+        // null categories
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), null,
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
-    }
 
-    @Test
-    public void testFigureCreationFailsWithNullShowDesigner() {
+        // showDesigner is null
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
                     null);
         });
+    }
+
+    @Test
+    public void testIsExclusive(){
+        Figure figure = buildExclusiveFigure();
+        assertTrue(figure.isExclusive());
+
+        Figure publicFigure = buildPublicFigure();
+        assertFalse(publicFigure.isExclusive());
+    }
+
+    @Test
+    public void testIsActive(){
+        Figure figure = buildPublicFigure();
+        assertTrue(figure.isActive());
     }
 
 }

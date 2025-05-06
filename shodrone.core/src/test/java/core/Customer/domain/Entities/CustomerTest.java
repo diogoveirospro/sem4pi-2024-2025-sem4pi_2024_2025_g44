@@ -1,7 +1,5 @@
-package core.Figure.domain.Entities;
+package core.Customer.domain.Entities;
 
-import core.Customer.domain.Entities.Customer;
-import core.Customer.domain.Entities.CustomerRepresentative;
 import core.Customer.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;

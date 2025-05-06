@@ -1,7 +1,6 @@
 package core.Figure.domain.Entities;
 
 import core.Customer.domain.Entities.Customer;
-import core.Shared.domain.ValueObjects.Time;
 import eapli.framework.domain.model.DomainEntity;
 import eapli.framework.time.domain.model.DateInterval;
 import jakarta.persistence.*;

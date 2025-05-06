@@ -1,6 +1,7 @@
 package core.Figure.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class Version implements Comparable<Version>, Serializable, ValueObject {
      */
     private static final long serialVersionUID = 1L;
 
+    @Column(name = "figureVersion")
     private String value;
 
     /**

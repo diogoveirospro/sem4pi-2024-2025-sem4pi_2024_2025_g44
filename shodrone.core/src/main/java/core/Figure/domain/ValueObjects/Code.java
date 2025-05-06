@@ -1,6 +1,7 @@
 package core.Figure.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -21,6 +22,7 @@ public class Code implements Comparable<Code>, ValueObject, Serializable {
     /**
      * The code value in the format FIG-XXXX.
      */
+    @Column(name = "code")
     private String value;
 
     /**

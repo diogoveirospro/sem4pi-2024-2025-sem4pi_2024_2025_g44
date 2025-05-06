@@ -1,6 +1,5 @@
-package core.Figure.domain.ValueObjects;
+package core.Shared.domain.ValueObjects;
 
-import core.Shared.domain.ValueObjects.PhoneNumber;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

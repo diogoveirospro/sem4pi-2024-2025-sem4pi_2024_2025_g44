@@ -1,6 +1,5 @@
-package core.Figure.domain.ValueObjects;
+package core.Customer.domain.ValueObjects;
 
-import core.Customer.domain.ValueObjects.Address;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

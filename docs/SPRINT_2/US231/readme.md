@@ -27,7 +27,7 @@ Test: 📝 To Do
 **Acceptance Criteria:**
 
 - **_US231.1_** Only active public figures must be listed.
-- **_US231.2_** The list must include at least the figure's code, version, description, keywords and category.
+- **_US231.2_** The list must include at least the figure's code, version and description.
 - **_US231.3_** The functionality should only be accessible to authenticated CRM Collaborator users.
 
 **Dependencies/References:**
@@ -43,13 +43,11 @@ focuses on listing public figures. The attributes considered are:
 - `Code` and `Version` – used to uniquely identify and distinguish each figure.
 - `Description` – provides a human-readable label for display in the user interface.
 - `FigureStatus` – used to filter out inactive figures; only active ones should be listed.
-- `Keyword` and `Category` – represent the searchable metadata associated with each figure and may support filtering 
-in the UI.
 - `Exclusivity` – determines whether a figure is exclusive to a customer and therefore must be excluded from the public 
 listing.
 
-Other attributes such as the `DSLDescription` or `ShowDesigner` reference are not required for this use case and were 
-excluded from the diagram for clarity.
+Other attributes such as the `Keyword`, `Category`, `DSLDescription` or `ShowDesigner` reference are not required for 
+this use case and were excluded from the diagram for clarity.
 
 ![Domain Model for US231](images/domain_model_us231.svg)
 
@@ -69,8 +67,8 @@ Filtering for public and active figures is encapsulated within the `Figure` enti
 `isActive()` methods. This ensures that business logic remains within the domain layer.
 
 Only the relevant domain elements are included in the diagram, such as `Figure`, its value objects 
-(e.g., `Code`, `Version`, `Description`, `Keyword`) and its relation to `Category`. The diagram omits unrelated 
-components to maintain clarity and focus on the functionality.
+(i.e., `Code`, `Version`, `Description`). The diagram omits unrelated components to maintain clarity and focus on the 
+functionality.
 
 ![Class Diagram US231](images/class_diagram_us231.svg)
 
@@ -89,44 +87,26 @@ appropriately restricted to authorised users.
 
 ```java
 @Test
-void ensureOnlyActiveAndPublicFiguresAreListed() {
-    // Setup: create and persist a set of figures with varying status and exclusivity
-    // Action: invoke controller.listPublicCatalogue()
-    // Assert: the result includes only figures that are both active and public
+public void testIsExclusive(){
+    // Setup: create an exclusive figure
+    // Action: invoke figure.isExclusive()
+    // Assert: verify the result is true
 }
 ```
 
 ---
 
-#### **Test 2: Returned data includes required attributes**
-**Refers to Acceptance Criteria:** _US231.2_  
-**Description:** Validates that each returned figure includes the code, version, description, keywords, and category name.
+#### **Test 2: Only active public figures are listed**
+**Refers to Acceptance Criteria:** _US231.1_  
+**Description:** Ensures that figures marked as inactive or exclusive are excluded from the results returned by
+`listPublicCatalogue()`.
 
 ```java
 @Test
-void ensureReturnedDataIncludesRequiredAttributes() {
-    // Setup: create and persist a valid public figure
-    // Action: invoke controller.listPublicCatalogue()
-    // Assert: for each result, verify that all required attributes are present and not null
-}
-```
-
----
-
-#### **Test 3: Access restricted to authenticated CRM Collaborator users**
-**Refers to Acceptance Criteria:** _US231.3_  
-**Description:** Confirms that only users with the CRM Collaborator role can access the listing functionality.
-
-```java
-@Test
-void ensureOnlyCRMCollaboratorCanAccessListing() {
-    // Setup: simulate login as a CRM Collaborator
-    // Action: invoke controller.listPublicCatalogue()
-    // Assert: access is granted
-
-    // Setup: simulate login as a user without the required role
-    // Action: invoke controller.listPublicCatalogue()
-    // Assert: access is denied or an exception is thrown
+public void testIsActive(){
+    // Setup: create an active figure
+    // Action: invoke figure.isActive()
+    // Assert: verify the result is true
 }
 ```
 

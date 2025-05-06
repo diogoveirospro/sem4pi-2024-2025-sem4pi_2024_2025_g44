@@ -3,7 +3,6 @@ package core.Category.domain.Entities;
 import core.Shared.domain.ValueObjects.Description;
 import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.model.AggregateRoot;
-import eapli.framework.domain.model.DomainEntities;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
