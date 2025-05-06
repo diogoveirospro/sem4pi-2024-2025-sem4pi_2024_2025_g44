@@ -53,14 +53,14 @@ package "Domain" #DDDDDD {
 
 package "UI" #DDDDDD {
     class DecommissionFigureUI <<UI>> {
-        + decommissionFigure(figure)
-        + selectFigure()
+        + decommissionFigure(figure): boolean
+        + selectFigure(): Figure
     }
 }
 
 package "Controller" #DDDDDD {
     class DecommissionFigureController <<Controller>> {
-        + decommissionFigure(figure)
+        + decommissionFigure(figure): boolean
         + listCatalogue(): Iterable<Figure>
     }
 }

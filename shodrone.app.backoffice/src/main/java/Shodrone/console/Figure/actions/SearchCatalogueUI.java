@@ -57,13 +57,7 @@ public class SearchCatalogueUI extends AbstractUI {
         }
 
         for (Figure figure : figures) {
-            if (figure.isExclusive()){
-                System.out.printf("Code: %s | Version: %s | Description: %s | Exclusivity: %s%n",
-                        figure.identity().code(), figure.identity().version(), figure.description(), figure.exclusivity().customer().name());
-            } else {
-                System.out.printf("Code: %s | Version: %s | Description: %s | Exclusivity: %s%n",
-                        figure.identity().code(), figure.identity().version(), figure.description(), "None");
-            }
+            figure.toString();
         }
 
     }

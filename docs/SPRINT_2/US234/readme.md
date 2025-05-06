@@ -13,9 +13,9 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implement: 📝 To Do
+Implement: 🧪 Testing
 
-Test: 📝 To Do
+Test: 🧪 Testing
 
 
 ## 2. Requirements
@@ -30,8 +30,6 @@ Test: 📝 To Do
 
 - **_US234.1_** Only active figures can be decommissioned
 - **_US234.2_** Decommissioning a figure sets its status to disable
-- **_US234.3_** Decommissioned figures are excluded from all listings
-- **_US234.4_** Only authorized users (CRM Managers) can decommission figures
 
 **Dependencies/References:**
 
@@ -107,7 +105,7 @@ that the operation is restricted to authorized users.
 void ensureOnlyActiveFiguresCanBeDecommissioned() {
     // setup: create an active figure and decommission it
     // action: attempt to decommission the same figure again
-    // assert: expect InvalidOperationException to be thrown
+    // assert: expect IllegalStateException to be thrown
 }
 
 ```
@@ -124,58 +122,6 @@ void ensureDecommissionedFigureIsMarkedAsDisable() {
     // setup: create an active figure
     // action: decommission the figure
     // assert: verify that the figure status is set to DISABLE
-}
-
-```
-
----
-
-#### **Test 3: Decommissioned figures are excluded from search and listings**
-**Refers to Acceptance Criteria:** _US234.3_  
-**Description:** Ensures that decommissioned figures are no longer accessible through catalogue search or listings.
-
-```java
-@Test
-void ensureDecommissionedFiguresAreNotListed() {
-    // setup: create and add an active figure to the catalogue
-    // action: decommission the figure
-    // assert: figure should not be present in the catalogue listing
-}
-
-```
-
----
-
-#### **Test 4: Only authorized users can decommission figures**
-**Refers to Acceptance Criteria:** _US234.5_  
-**Description:** Ensures that only users with the CRM Manager role can perform the decommission action.
-
-```java
-@Test
-void ensureOnlyCRMManagersCanDecommissionFigures() {
-    // setup: authenticate as CRM Manager
-    // action: attempt to decommission a valid figure
-    // assert: decommissioning succeeds
-
-    // setup: authenticate as a regular user
-    // action: attempt to decommission the same valid figure
-    // assert: expect AccessDeniedException to be thrown
-}
-
-```
-
----
-
-#### **Test 5: Only one version is affected by decommissioning**
-**Refers to Acceptance Criteria:** _US234.4_  
-**Description:** Ensures that decommissioning a figure only affects that specific version, not others.
-
-```java
-@Test
-void ensureDecommissioningOnlyAffectsSelectedVersion() {
-    // setup: create and add two versions of the same figure to the catalogue
-    // action: decommission one specific version
-    // assert: only the selected version is removed; other version remains listed
 }
 
 ```

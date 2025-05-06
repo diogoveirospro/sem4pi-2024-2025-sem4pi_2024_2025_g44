@@ -252,6 +252,10 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * @return true if the Figure matches the category, false otherwise
      */
     public boolean matchesCategory(String category) {
+        if (category == null || category.isEmpty() || figureStatus == FigureStatus.DISABLE) {
+            return false;
+        }
+
         String normalizedInput = normalize(category);
 
         for (Category c : categories) {
@@ -268,6 +272,10 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * @return true if the Figure matches the keyword, false otherwise
      */
     public boolean matchesKeyword(String term) {
+        if (term == null || term.isEmpty() || figureStatus == FigureStatus.DISABLE) {
+            return false;
+        }
+
         String normalizedInput = normalize(term);
 
         for (Keyword k : keywords) {
@@ -282,6 +290,18 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
         return Normalizer.normalize(input, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
                 .toLowerCase();
+    }
+
+    /**
+     * Decommissions the Figure by changing its status to DISABLE.
+     * @return true if the Figure was successfully decommissioned, false otherwise
+     */
+    public boolean decommission() {
+        if (figureStatus == FigureStatus.ACTIVE) {
+            figureStatus = FigureStatus.DISABLE;
+            return true;
+        }
+        throw new IllegalStateException("Figure is already decommissioned");
     }
 
     /**
@@ -354,4 +374,19 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
     public int hashCode() {
         return DomainEntities.hashCode(this);
     }
+
+    /**
+     * toString method to generate a string representation of the Figure object.
+     * @return the string representation of the Figure object
+     */
+    @Override
+    public String toString() {
+        String exclusivity = isExclusive()
+                ? exclusivity().customer().name().toString()
+                : "None";
+
+        return String.format("Code: %s | Version: %s | Description: %s | Exclusivity: %s",
+                identity().code(), identity().version(), description(), exclusivity);
+    }
+
 }

@@ -32,8 +32,7 @@ public class ListPublicCatalogueUI extends AbstractListUI {
      */
     @Override
     protected Visitor<Figure> elementPrinter() {
-        return figure -> System.out.printf("Code: %s | Version: %s | Description: %s%n",
-                figure.identity().code(), figure.identity().version(), figure.description());
+        return figure -> System.out.printf(figure.toString());
     }
 
     /**

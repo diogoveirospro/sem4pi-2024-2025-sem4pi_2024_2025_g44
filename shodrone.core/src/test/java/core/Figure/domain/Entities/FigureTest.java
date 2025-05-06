@@ -301,13 +301,14 @@ public class FigureTest {
     @Test
     void ensureOnlyActiveFiguresAreReturned() {
         Figure figure1 = buildPublicFigure();
-        Figure figure2 = buildExclusiveFigure();
+        figure1.decommission();
 
-        // I continue after the implementation of US234
+        assertFalse(figure1.matchesKeyword("keyword1"));
+        assertFalse(figure1.matchesCategory("Category1"));
 
-        // setup: create two figures, one active and one inactive
-        // action: call matchesCategory(category) and matchesKeyword(term)
-        // assert: only active figure are true
+        Figure figure2 = buildPublicFigure();
+        assertTrue(figure2.matchesKeyword("keyword1"));
+        assertTrue(figure2.matchesCategory("Category1"));
     }
 
     @Test
@@ -358,6 +359,20 @@ public class FigureTest {
         assertTrue(figure2.matchesKeyword("phoenix"));
     }
 
+    @Test
+    void ensureOnlyActiveFiguresCanBeDecommissioned() {
+        Figure figure = buildPublicFigure();
+        figure.decommission();
 
+        assertThrows(IllegalStateException.class, () -> figure.decommission());
+    }
+
+
+    @Test
+    void ensureDecommissionedFigureIsMarkedAsDisable() {
+        Figure figure = buildPublicFigure();
+        figure.decommission();
+        assertEquals(FigureStatus.DISABLE, figure.figureStatus());
+    }
 
 }
