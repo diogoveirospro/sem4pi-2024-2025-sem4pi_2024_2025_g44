@@ -11,9 +11,9 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implement: 📝 To Do
+Implement: 🧪 Testing
 
-Test: 📝 To Do
+Test: 🧪 Testing
 
 
 ## 2. Requirements
@@ -114,9 +114,9 @@ category.
 ```java
 @Test
 void ensureOnlyActiveFiguresAreReturned() {
-    // setup: add active and inactive figures to the repository
-    // action: call controller.listSearchResults(category, keyword)
-    // assert: only active figures are returned
+    // setup: create two figures, one active and one inactive
+    // action: call matchesCategory(category) and matchesKeyword(term)
+    // assert: only active figure are true
 }
 ```
 
@@ -129,9 +129,9 @@ void ensureOnlyActiveFiguresAreReturned() {
 ```java
 @Test
 void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
-    // setup: add figures with different keywords
-    // action: call controller.listSearchResults(null, "fire")
-    // assert: only figures with the keyword "fire" (any case/accents) are returned
+    // setup: create figure with the keyword "fire" and another with "water"
+    // action: call matchesKeyword("fire") for both figures
+    // assert: return true for the first and false for the second
 }
 ```
 
@@ -144,39 +144,24 @@ void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
 ```java
 @Test
 void ensureSearchByCategoryOnlyReturnsMatchingFigures() {
-    // setup: assign figures to various categories
-    // action: call controller.listSearchResults(category, null)
-    // assert: only figures from the specified category are returned
+    // setup: create figure with the category "mythology" and another with "nature"
+    // action: call matchesCategory("mythology") for both figures
+    // assert: return true for the first and false for the second
 }
 ```
 
 ---
 
-#### **Test 4: Combined search by keyword and category**
-**Refers to Acceptance Criteria:** _US232.2_  
-**Description:** Ensures the search returns figures that match both the given category and keyword.
-
-```java
-@Test
-void ensureSearchWithBothFiltersReturnsCorrectIntersection() {
-    // setup: figures matching category, keyword, both, and neither
-    // action: call controller.listSearchResults(category, "flames")
-    // assert: only figures matching both category and keyword are returned
-}
-```
-
----
-
-#### **Test 5: Search is case-insensitive and accent-insensitive**
+#### **Test 4: Search is case-insensitive and accent-insensitive**
 **Refers to Acceptance Criteria:** _US232.1_  
 **Description:** Ensures that keywords with different casing or accents still produce a match.
 
 ```java
 @Test
 void ensureSearchIgnoresCaseAndAccents() {
-    // setup: add figure with keyword "Fénix"
-    // action: call controller.listSearchResults(null, "fenix")
-    // assert: figure with "Fénix" is included in the result
+    // setup: create figure with the keyword "Fénix" and another with "Phoenix"
+    // action: call matchesKeyword("fenix") and matchesKeyword("phoenix")
+    // assert: return true for both
 }
 ```
 

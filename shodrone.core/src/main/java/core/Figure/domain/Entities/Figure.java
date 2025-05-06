@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Version;
 
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.Set;
 
 /**
@@ -243,6 +244,44 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     public boolean isActive() {
         return figureStatus == FigureStatus.ACTIVE;
+    }
+
+    /**
+     * Checks if the Figure matches a given category.
+     * @param category the category to check
+     * @return true if the Figure matches the category, false otherwise
+     */
+    public boolean matchesCategory(String category) {
+        String normalizedInput = normalize(category);
+
+        for (Category c : categories) {
+            if (normalize(c.name().toString()).equals(normalizedInput)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the Figure matches a given keyword.
+     * @param term the term to check
+     * @return true if the Figure matches the keyword, false otherwise
+     */
+    public boolean matchesKeyword(String term) {
+        String normalizedInput = normalize(term);
+
+        for (Keyword k : keywords) {
+            if (normalize(k.toString()).equals(normalizedInput)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String normalize(String input) {
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .toLowerCase();
     }
 
     /**

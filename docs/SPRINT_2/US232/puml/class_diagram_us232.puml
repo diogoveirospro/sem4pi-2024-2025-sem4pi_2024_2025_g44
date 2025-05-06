@@ -37,7 +37,7 @@ package "Domain" #DDDDDD {
         }
 
         interface FigureRepository {
-            + searchCatalogue(categories, keywords): List<Figure>
+            + searchCatalogue(category, keyword): List<Figure>
         }
 
         note right of FigureRepository
@@ -92,13 +92,13 @@ package "Domain" #DDDDDD {
 
 package "UI" #DDDDDD {
     class SearchCatalogueUI <<UI>> {
-        + showSearchCatalogue(categories, keywords)
+        + showSearchCatalogue(category, keyword)
     }
 }
 
 package "Controller" #DDDDDD {
     class SearchCatalogueController <<Controller>> {
-        + listSearchResults(categories, keywords): List<Figure>
+        + listSearchResults(category, keyword): List<Figure>
     }
 }
 

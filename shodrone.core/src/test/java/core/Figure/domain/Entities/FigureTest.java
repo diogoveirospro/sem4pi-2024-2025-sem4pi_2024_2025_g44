@@ -298,4 +298,66 @@ public class FigureTest {
         assertTrue(figure.isActive());
     }
 
+    @Test
+    void ensureOnlyActiveFiguresAreReturned() {
+        Figure figure1 = buildPublicFigure();
+        Figure figure2 = buildExclusiveFigure();
+
+        // I continue after the implementation of US234
+
+        // setup: create two figures, one active and one inactive
+        // action: call matchesCategory(category) and matchesKeyword(term)
+        // assert: only active figure are true
+    }
+
+    @Test
+    void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
+        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                Set.of(new Keyword("fire")), Set.of(new Category(new Name("C"), new Description("D"))),
+                new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+
+        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                Set.of(new Keyword("water")), Set.of(new Category(new Name("C"), new Description("D"))),
+                new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+
+        assertTrue(figure1.matchesKeyword("fire"));
+        assertFalse(figure2.matchesKeyword("fire"));
+    }
+
+    @Test
+    void ensureSearchByCategoryOnlyReturnsMatchingFigures() {
+        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                Set.of(new Keyword("test")), Set.of(new Category(new Name("mythology"), new Description("Description"))),
+                new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+
+        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                Set.of(new Keyword("test")), Set.of(new Category(new Name("nature"), new Description("Description"))),
+                new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+
+        assertTrue(figure1.matchesCategory("mythology"));
+        assertFalse(figure2.matchesCategory("mythology"));
+    }
+
+    @Test
+    void ensureSearchIgnoresCaseAndAccents() {
+        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                Set.of(new Keyword("Fénix")), Set.of(new Category(new Name("C"), new Description("Description"))),
+                new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+
+        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                Set.of(new Keyword("Phoenix")), Set.of(new Category(new Name("C"), new Description("Description"))),
+                new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+
+        assertTrue(figure1.matchesKeyword("fenix"));
+        assertTrue(figure2.matchesKeyword("phoenix"));
+    }
+
+
+
 }

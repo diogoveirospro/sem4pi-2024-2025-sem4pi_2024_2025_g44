@@ -60,16 +60,16 @@ public class Keyword implements Serializable, ValueObject, Comparable<Keyword> {
     @Override
     public int compareTo(Keyword other) {
         if (other == null) return 1;
-        return normalize(this.value).compareTo(normalize(other.value));
+        return normalize().compareTo(other.normalize());
     }
 
     /**
      * Normalizes the input string by removing accents and converting to lowercase.
-     * @param input the input string to be normalized
+     *
      * @return the normalized string
      */
-    private String normalize(String input) {
-        String noAccents = Normalizer.normalize(input, Normalizer.Form.NFD)
+    public String normalize() {
+        String noAccents = Normalizer.normalize(value, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         return noAccents.toLowerCase(Locale.ROOT);
     }
@@ -94,7 +94,7 @@ public class Keyword implements Serializable, ValueObject, Comparable<Keyword> {
         if (!(o instanceof Keyword)) return false;
 
         Keyword other = (Keyword) o;
-        return normalize(value).equals(normalize(other.value));
+        return normalize().equals(other.normalize());
     }
 
     /**
@@ -103,6 +103,6 @@ public class Keyword implements Serializable, ValueObject, Comparable<Keyword> {
      */
     @Override
     public int hashCode() {
-        return normalize(value).hashCode();
+        return normalize().hashCode();
     }
 }

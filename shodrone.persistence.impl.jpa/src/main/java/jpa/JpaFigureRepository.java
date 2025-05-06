@@ -1,7 +1,9 @@
 package jpa;
 
+import core.Category.domain.Entities.Category;
 import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.FigureID;
+import core.Figure.domain.ValueObjects.Keyword;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -49,5 +51,43 @@ public class JpaFigureRepository extends JpaAutoTxRepository<Figure, Long, Figur
         }
 
         return publicFigures;
+    }
+
+    /**
+     * Returns a list of all figures in the catalogue with the given category and/or keyword.
+     * @param category the category to search for or null
+     * @param keyword the keyword to search for or null
+     * @return a list of figures
+     */
+    @Override
+    public List<Figure> searchCatalogue(String category, String keyword) {
+
+        List<Figure> foundFigures = new ArrayList<>();
+        Iterable<Figure> allFigures = findAll();
+
+        if (category != null && keyword != null) {
+
+            for (Figure figure : allFigures) {
+                if (figure.isActive() && figure.matchesCategory(category) && figure.matchesKeyword(keyword)) {
+                    foundFigures.add(figure);
+                }
+            }
+
+        } else if (category != null) {
+            for (Figure figure : allFigures) {
+                if (figure.isActive() && figure.matchesCategory(category)) {
+                    foundFigures.add(figure);
+                }
+            }
+
+        } else if (keyword != null) {
+            for (Figure figure : allFigures) {
+                if (figure.isActive() && figure.matchesKeyword(keyword)) {
+                    foundFigures.add(figure);
+                }
+            }
+        }
+
+        return foundFigures;
     }
 }
