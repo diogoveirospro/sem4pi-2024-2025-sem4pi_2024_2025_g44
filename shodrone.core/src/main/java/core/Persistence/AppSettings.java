@@ -72,7 +72,7 @@ public class AppSettings {
     private void setDefaultProperties() {
         applicationProperties.setProperty(REPOSITORY_FACTORY_KEY,
                 "jpa.persistence.JpaRepositoryFactory");
-        applicationProperties.setProperty(UI_MENU_LAYOUT_KEY, "horizontal");
+        applicationProperties.setProperty(UI_MENU_LAYOUT_KEY, "vertical");
         applicationProperties.setProperty(PERSISTENCE_UNIT_KEY, "shodrone.app");
     }
 

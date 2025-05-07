@@ -1,6 +1,10 @@
 package Shodrone.console;
 
 import Shodrone.console.Customer.ui.*;
+import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
+import Shodrone.console.Figure.actions.DecommissionFigureUI;
+import Shodrone.console.Figure.actions.SearchCatalogueUI;
+import Shodrone.console.Figure.printer.ListPublicCatalogueUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
@@ -13,7 +17,6 @@ import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ExitWithMessageAction;
 import eapli.framework.presentation.console.menu.HorizontalMenuRenderer;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
@@ -21,13 +24,13 @@ import eapli.framework.presentation.console.menu.MenuRenderer;
 import eapli.framework.presentation.console.menu.VerticalMenuRenderer;
 import core.Persistence.Application;
 import shodrone.authz.MyUserMenu;
+import shodrone.presentation.AbstractFancyUI;
 
 /**
  * TODO split this class in more specialized classes for each menu
  *
- * @author Paulo Gandra Sousa
  */
-public class MainMenu extends AbstractUI {
+public class MainMenu extends AbstractFancyUI {
 
     private static final String RETURN_LABEL = "Return ";
 
@@ -42,20 +45,27 @@ public class MainMenu extends AbstractUI {
     private static final int CHANGE_USERNAME_OPTION = 1;
     private static final int CHANGE_PASSWORD_OPTION = 2;
 
-
-    // The options will be put here like the following example:
-    // EXAMPLE
-    private static final int SHOW_MESSAGE = 1;
-
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int USERS_MENU = 2;
-    private static final int CUSTOMER_MENU = 3;
-    private static final int FIGURE_MENU = 4;
-    private static final int SHOW_REQUEST_MENU = 5;
-    private static final int DRONE_MENU = 6;
-    private static final int FIGURE_CATEGORY_MENU = 7;
     private static final int HELP_MENU = 8;
+
+    // ADMIN MENUS
+    private static final int ADMIN_USERS_MENU = 1;
+
+    // CRM COLLABORATOR MENUS
+    private static final int COLLABORATOR_CUSTOMER_MENU = 1;
+    private static final int COLLABORATOR_FIGURE_MENU = 2;
+    private static final int COLLABORATOR_SHOW_REQUEST_MENU = 3;
+
+    // SHOW DESIGNER MENUS
+    private static final int SHOW_DESIGNER_FIGURE_MENU = 1;
+    private static final int FIGURE_CATEGORY_MENU = 2;
+
+    // CRM MANAGER MENUS
+    private static final int CRM_MANAGER_FIGURE_MENU = 1;
+
+    // DRONE TECH MENUS
+    private static final int DRONE_MENU = 1;
 
     // CUSTOMER MENU
     private static final int REGISTER_CUSTOMER_OPTION = 1;
@@ -63,6 +73,16 @@ public class MainMenu extends AbstractUI {
     private static final int LIST_CUSTOMER_REPRESENTATIVES_OPTION = 3;
     private static final int EDIT_CUSTOMER_REPRESENTATIVE_OPTION = 4;
     private static final int DISABLE_CUSTOMER_REPRESENTATIVE_OPTION = 5;
+
+    // FIGURE CRM COLLABORATOR MENU
+    private static final int LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
+    private static final int SEARCH_FIGURE_CATALOGUE_OPTION = 2;
+
+    // FIGURE SHOW DESIGNER MENU
+    private static final int ADD_FIGURE_CATALOGUE_OPTION = 1;
+
+    // FIGURE CRM MANAGER MENU
+    private static final int DECOMMISSION_FIGURE_OPTION = 1;
 
     // SHOW REQUEST MENU
     private static final int REGISTER_SHOW_REQUEST_OPTION = 1;
@@ -96,9 +116,14 @@ public class MainMenu extends AbstractUI {
 
     @Override
     public String headline() {
-        return authz.session().map(s -> "Shodrone [ @" + s.authenticatedUser().identity() + " ]")
-                .orElse("Shodrone [ ==Anonymous== ]");
+        return authz.session()
+                .map(session -> {
+                    final String username = session.authenticatedUser().identity().toString();
+                    return String.format("🛰️  SHODRONE // Logged in as @%s", username.toUpperCase());
+                })
+                .orElse("🛰️  SHODRONE // == ANONYMOUS USER ==");
     }
+
 
     private Menu buildMainMenu() {
         final Menu mainMenu = new Menu();
@@ -109,35 +134,88 @@ public class MainMenu extends AbstractUI {
         if (!Application.settings().isMenuLayoutHorizontal()) {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
-        
+
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
                 ShodroneRoles.ADMIN)) {
             final Menu usersMenu = buildUsersMenu();
-            mainMenu.addSubMenu(USERS_MENU, usersMenu);
+            mainMenu.addSubMenu(ADMIN_USERS_MENU, usersMenu);
 
         }
+
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
                 ShodroneRoles.COLLABORATOR)) {
             final Menu customerMenu = buildCustomersMenu();
-            mainMenu.addSubMenu(CUSTOMER_MENU, customerMenu);
+            mainMenu.addSubMenu(COLLABORATOR_CUSTOMER_MENU, customerMenu);
+
+            final Menu figureMenu = buildCollaboratorFiguresMenu();
+            mainMenu.addSubMenu(COLLABORATOR_FIGURE_MENU, figureMenu);
+
             final Menu showRequestMenu = buildShowRequestMenu();
-            mainMenu.addSubMenu(SHOW_REQUEST_MENU, showRequestMenu);
+            mainMenu.addSubMenu(COLLABORATOR_SHOW_REQUEST_MENU, showRequestMenu);
         }
 
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
+                ShodroneRoles.SHOWDESIGNER)) {
+            final Menu showDesignerFiguresMenu = buildShowDesignerFiguresMenu();
+            mainMenu.addSubMenu(SHOW_DESIGNER_FIGURE_MENU, showDesignerFiguresMenu);
+            final Menu figureCategoryMenu = buildCategoriesMenu();
+            mainMenu.addSubMenu(FIGURE_CATEGORY_MENU, figureCategoryMenu);
+        }
+
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
+                ShodroneRoles.MANAGER)) {
+            final Menu managerFiguresMenu = buildManagerFiguresMenu();
+            mainMenu.addSubMenu(CRM_MANAGER_FIGURE_MENU, managerFiguresMenu);
+        }
+
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
+                ShodroneRoles.DRONETECH)) {
+            final Menu dronesMenu = buildDronesMenu();
+            mainMenu.addSubMenu(DRONE_MENU, dronesMenu);
+        }
 
         if (!Application.settings().isMenuLayoutHorizontal()) {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
-
-         
 
         mainMenu.addItem(EXIT_OPTION, "Exit", new ExitWithMessageAction("Bye, Bye"));
 
         return mainMenu;
     }
 
+    private Menu buildCollaboratorFiguresMenu() {
+        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+
+        menu.addItem(LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
+        menu.addItem(SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
+
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
+
+    private Menu buildShowDesignerFiguresMenu() {
+        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+
+        menu.addItem(ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
+
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
+
+    private Menu buildManagerFiguresMenu() {
+        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+
+        menu.addItem(DECOMMISSION_FIGURE_OPTION, "Decommission Figure", new DecommissionFigureUI()::show);
+
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
+
     private Menu buildShowRequestMenu() {
-        final Menu menu = new Menu("Show Requests >");
+        final Menu menu = new Menu("\uD83C\uDF9F\uFE0F Show Requests");
 
         menu.addItem(REGISTER_SHOW_REQUEST_OPTION, "Register new Show Request", new RegisterShowRequestUI()::show);
         menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List all Show Requests", new ListShowRequestsUI()::show);
@@ -148,7 +226,7 @@ public class MainMenu extends AbstractUI {
     }
 
     private Menu buildCustomersMenu() {
-        final Menu menu = new Menu("Customers >");
+        final Menu menu = new Menu("\uD83E\uDD1D Customers");
 
         menu.addItem(REGISTER_CUSTOMER_OPTION, "Register new Customer", new RegisterCustomerUI()::show);
         menu.addItem(ADD_CUSTOMER_REPRESENTATIVE_OPTION, "Add a Representative to a Customer", new AddCustomerRepresentativeUI()::show);
@@ -161,7 +239,7 @@ public class MainMenu extends AbstractUI {
     }
 
     private Menu buildUsersMenu() {
-        final Menu menu = new Menu("Users >");
+        final Menu menu = new Menu("\uD83E\uDDD1\u200D\uD83D\uDCBC Users");
 
         menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
         menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
@@ -171,41 +249,21 @@ public class MainMenu extends AbstractUI {
         return menu;
     }
 
-    // Example of a menu item
-    private Menu buildDishMenu() {
-        final Menu menu = new Menu("Dishes >");
-        /*
-        // dish types
-        menu.addItem(DISH_TYPE_REGISTER_OPTION, "Register new Dish Type",
-                new RegisterDishTypeAction());
-        menu.addItem(DISH_TYPE_LIST_OPTION, "List all Dish Type", new ListDishTypeAction());
-        menu.addItem(DISH_TYPE_CHANGE_OPTION, "Change Dish Type description",
-                new ChangeDishTypeAction());
-        menu.addItem(DISH_TYPE_CHANGE_PESIMISTIC_LOCK_OPTION, "Change Dish Type description (Pessimistic Lock)",
-                new ChangeDishTypePessimisticLockUI()::show);
-        menu.addItem(DISH_TYPE_ACTIVATE_DEACTIVATE_OPTION, "Activate/Deactivate Dish Type",
-                new ActivateDeactivateDishTypeAction());
+    private Menu buildCategoriesMenu() {
+        final Menu menu = new Menu("\uD83D\uDDC2\uFE0F Categories");
 
-        // dishes
-        menu.addItem(DISH_REGISTER_OPTION, "Register new Dish", new RegisterDishAction());
-        menu.addItem(DISH_LIST_OPTION, "List all Dish", new ListDishAction());
-
-        menu.addItem(DISH_REGISTER_DTO_OPTION, "Register new Dish (via DTO)",
-                new RegisterDishViaDTOUI()::show);
-        menu.addItem(DISH_LIST_DTO_OPTION, "List all Dish (via DTO)", new ListDishViaDTOUI()::show);
-
-        menu.addItem(DISH_ACTIVATE_DEACTIVATE_OPTION, "Activate/Deactivate Dish",
-                new ActivateDeactivateDishAction());
-        final Menu changeDishMenu = buildChangeDishMenu();
-        menu.addSubMenu(DISH_CHANGE_OPTION, changeDishMenu);
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
-
-         */
 
         return menu;
     }
 
+    private Menu buildDronesMenu() {
+        final Menu menu = new Menu("\uD83D\uDEF0\uFE0F Drones");
 
 
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
 }
