@@ -5,12 +5,10 @@ import Shodrone.console.Customer.printer.CustomerRepresentativePrinter;
 import core.Customer.application.ListCustomerRepresentativesController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
-import core.Persistence.PersistenceContext;
-import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.AbstractListUI;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.visitor.Visitor;
-import shodrone.UtilsUI;
+import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;

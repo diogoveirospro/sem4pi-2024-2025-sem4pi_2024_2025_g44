@@ -2,9 +2,8 @@ package Shodrone.console.Figure.actions;
 
 import core.Figure.application.SearchCatalogueController;
 import core.Figure.domain.Entities.Figure;
-import eapli.framework.presentation.console.AbstractUI;
-import eapli.framework.visitor.Visitor;
-import shodrone.UtilsUI;
+import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ import java.util.List;
  * UI for searching figures in the catalogue.
  * This class is responsible for displaying the search results
  */
-public class SearchCatalogueUI extends AbstractUI {
+public class SearchCatalogueUI extends AbstractFancyUI {
 
     /**
      * Controller for searching figures in the catalogue.

@@ -12,7 +12,7 @@ import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ListWidget;
-import shodrone.UtilsUI;
+import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;

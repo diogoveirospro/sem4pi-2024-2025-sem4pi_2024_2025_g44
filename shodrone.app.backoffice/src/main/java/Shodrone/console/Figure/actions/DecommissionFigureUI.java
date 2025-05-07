@@ -2,9 +2,9 @@ package Shodrone.console.Figure.actions;
 
 import core.Figure.application.DecommissionFigureController;
 import core.Figure.domain.Entities.Figure;
-import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ListWidget;
-import shodrone.UtilsUI;
+import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * UI for decommissioning a figure.
  * This class is responsible for displaying the list of figures
  */
-public class DecommissionFigureUI extends AbstractUI {
+public class DecommissionFigureUI extends AbstractFancyUI {
 
     /**
      * Controller for decommissioning figures.

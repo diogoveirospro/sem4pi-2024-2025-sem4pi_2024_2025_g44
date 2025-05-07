@@ -2,15 +2,15 @@ package Shodrone.console.Figure.printer;
 
 import core.Figure.application.ListPublicCatalogueController;
 import core.Figure.domain.Entities.Figure;
-import eapli.framework.presentation.console.AbstractListUI;
 import eapli.framework.visitor.Visitor;
-import shodrone.UtilsUI;
+import shodrone.presentation.AbstractFancyListUI;
+import shodrone.presentation.UtilsUI;
 
 /**
  * UI for listing all public figures in the catalogue.
  * This class is responsible for displaying the list of public figures
  */
-public class ListPublicCatalogueUI extends AbstractListUI {
+public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
 
     /**
      * Controller for listing public figures in the catalogue.

@@ -10,10 +10,10 @@ import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
-import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.time.domain.model.DateInterval;
-import shodrone.UtilsUI;
+import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +24,7 @@ import java.util.*;
  * User Interface for adding a figure to the catalogue.
  * This class extends AbstractUI and implements the doShow method to display the UI.
  */
-public class AddFigureToCatalogueUI extends AbstractUI {
+public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
     //private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final AddFigureToCatalogueController controller = new AddFigureToCatalogueController();
