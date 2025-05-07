@@ -85,10 +85,6 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
         return "Bootstrapping shodrone data ";
     }
 
-    @Override
-    protected String appGoodbye() {
-        return "Bootstrap data done.";
-    }
 
     @Override
     protected void configureAuthz() {
