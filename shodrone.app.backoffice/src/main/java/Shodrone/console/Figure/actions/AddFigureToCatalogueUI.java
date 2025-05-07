@@ -10,6 +10,9 @@ import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
+import core.User.domain.ShodroneRoles;
+import eapli.framework.infrastructure.authz.application.AuthorizationService;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.time.domain.model.DateInterval;
 import shodrone.presentation.AbstractFancyUI;
@@ -26,7 +29,7 @@ import java.util.*;
  */
 public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
-    //private final AuthorizationService authz = AuthzRegistry.authorizationService();
+//    private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final AddFigureToCatalogueController controller = new AddFigureToCatalogueController();
 
     /**
@@ -42,6 +45,17 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         Set<Keyword> keywords = enterValidKeywords();
         Set<Category> categories = showCategoriesAndSelect();
         Exclusivity exclusivity = enterValidExclusivity();
+
+//        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
+//
+//            if (authz.session().isPresent()){
+//                Name name = new Name(authz.session().get().authenticatedUser().name().firstName() + " " +
+//                        authz.session().get().authenticatedUser().name().lastName());
+//                Email email = new Email(authz.session().get().authenticatedUser().email().toString());
+//                ShowDesigner showDesigner = new ShowDesigner(name, null, email);
+//            }
+//
+//        }
 
         ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
                 new PhoneNumber("+351", "912345678"),
