@@ -30,9 +30,9 @@ This task as the objective of concluding the requirements of the us222 of sprint
 
 **Dependencies:**
 
-*Regarding this requirement we understand that it relates to US220, as there needs to be a customer registered in the system before listing a customer representative of a given customer.*
+*Regarding this requirement we understand that it relates to [US220](../../SPRINT_2/US220/readme.md), as there needs to be a customer registered in the system before listing a customer representative of a given customer.*
 <br>
-*Regarding this requirement we understand that it relates to US221, as there needs to be a customer representative registered in the system before listing them.*
+*Regarding this requirement we understand that it relates to [US221](../../SPRINT_2/US221/readme.md), as there needs to be a customer representative registered in the system before listing them.*
 
 ---
 
@@ -52,7 +52,7 @@ It is important that we are able to list all the representatives of a customer. 
 
 This method will be used in the UI to show the list of representatives of a customer.
 
-Check the us221 for more information about the customer representative and the customer.
+Check the US221 for more information about the customer representative and the customer.
 
 ![Relation customer and representative](images/domain_model_us222.svg "Domain Model")
 
@@ -62,7 +62,7 @@ Check the us221 for more information about the customer representative and the c
 
 ### 4.1. Realization
 
-The class diagram as a similar structure to the one presented in US221, as the only difference are the names of the ui and controller and the used functions.
+The class diagram as a similar structure to the one presented in [US221](../../SPRINT_2/US221/readme.md), as the only difference are the names of the ui and controller and the used functions.
 
 ### 5. Tests
 
@@ -103,20 +103,13 @@ void ensureRepresentativeRepresentsACustomer() {
 
 ## 6. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+As said during the design phase, the implementation of this functionality is similar to the one presented in [US221](../../SPRINT_2/US221/readme.md).
+And for these case we are going to use the same thing we said in [US221](../../SPRINT_2/US221/readme.md), as the commits are also the same.
 
 ## 7. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+Please go to the [US221](../../SPRINT_2/US221/readme.md) for the integration and demonstration of the system.
 
 ## 8. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+Please go to the [US221](../../SPRINT_2/US221/readme.md) for the observations of the system.

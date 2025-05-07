@@ -8,8 +8,8 @@ This task as the objective of concluding the requirements of the us221 of sprint
 
 - **Analysis**: Done  
 - **Design**: Done  
-- **Implementation**: To do  
-- **Testing**: To do  
+- **Implementation**: Done 
+- **Testing**: Done  
 
 ---
 
@@ -27,7 +27,7 @@ This task as the objective of concluding the requirements of the us221 of sprint
 
 ### Dependencies
 
-This requirement depends on **US220**, as a customer must be registered in the system before a customer representative can be registered.
+This requirement depends on [US220](../../SPRINT_2/US220/readme.md), as a customer must be registered in the system before a customer representative can be registered.
 
 ---
 
@@ -151,39 +151,32 @@ void ensureCustomerInformationIsCorrect() {
 
 ## 6. Implementation
 
-This section should include evidence that the implementation aligns with the proposed design. Additional artifacts such as configuration files may also be included to help understand the implementation.
+The implementation of US221 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the registration of a new customer representative. And didn't diverge from the design.
 
-### Major Commits (Sample Format)
+The coding Commit messages related to this requirement are as follows:
 
-- `feat(us221): add CustomerRepresentative entity and repository`
-- `feat(us221): implement DTO mapping for representative registration`
-- `test(us221): add unit tests for representative creation and validation`
-- `refactor: adjust Customer aggregate to support representatives`
+- [Added the unit tests for the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/8c673b5543cfdc98a1faad132e06541cc48147cb)
 
----
+- [Added the implementation of the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c649bbf87b8d7c21c9dd30540338cba4c656bbf1)
 
-## 7. Integration / Demonstration
+## 7. Integration/Demonstration
 
-This section describes how the functionality was integrated with the system. It should also provide instructions for running or demonstrating the feature.
+To integrate the new functionality with the existing system, we followed these steps:
 
-### Example:
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `CustomerRepository` were updated to include the necessary methods for the new functionality.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to customer representatives. This includes methods for adding, updating, and retrieving representatives.
+3. **UI Layer**: The user interface was updated to include forms and views for managing customer representatives. This includes input validation and error handling.
+4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
 
-1. Start the application.
-2. Log in with a CRM Collaborator account.
-3. Navigate to the Customer page.
-4. Click on "Add Representative".
-5. Fill in the representative's details and submit.
-6. Verify the representative is added and listed correctly.
+Para rodar o projeto por favor veja o [README.md](../../../readme.md) do projeto.
 
----
 
 ## 8. Observations
 
-- The solution follows a clean architecture separating domain, application, and infrastructure layers.
-- The use of DTOs effectively prevents domain leakage.
-- Alternatives considered included merging representative data into the customer aggregate directly, but this was dismissed to preserve modularity.
-- All third-party libraries used (e.g., validation frameworks, mapping tools) are properly documented in the project repository.
+For the implementation of this project, we used the following sources:
 
----
-
-
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
+- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
+- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
