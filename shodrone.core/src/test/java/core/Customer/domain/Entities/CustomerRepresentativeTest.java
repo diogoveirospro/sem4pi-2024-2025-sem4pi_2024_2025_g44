@@ -112,7 +112,6 @@ public class CustomerRepresentativeTest {
                 customer
         );
 
-        // Verifica se o representante está associado ao cliente
         assertNotNull(representative.representee());
         assertEquals(customer, representative.representee());
     }

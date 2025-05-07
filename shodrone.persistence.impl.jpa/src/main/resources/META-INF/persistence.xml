@@ -4,6 +4,14 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
   <persistence-unit name="shodrone.app">
+    <!-- Framework -->
+
+    <class>eapli.framework.infrastructure.pubsub.impl.simplepersistent.model.EventRecord</class>
+    <class>eapli.framework.infrastructure.pubsub.impl.simplepersistent.model.EventConsumption</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.SystemUser</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.Role</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.RoleSet</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.RoleAssignment</class>
 
     <!-- Category Aggregate -->
     <class>core.Category.domain.Entities.Category</class>

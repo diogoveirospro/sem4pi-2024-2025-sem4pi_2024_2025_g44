@@ -22,10 +22,16 @@
 
 package shodrone;
 
+import core.Persistence.PersistenceContext;
+import core.User.domain.ShodronePasswordPolicy;
 import eapli.framework.collections.util.ArrayPredicates;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.PlainTextEncoder;
 import eapli.framework.infrastructure.pubsub.EventDispatcher;
 import eapli.framework.io.util.Console;
+import shodrone.bootstrappers.Demo.ShodroneDemoBootstrapper;
+import shodrone.bootstrappers.ShodroneBootstrapper;
+import shodrone.bootstrappers.SmokeTests.ShodroneDemoSmokeTester;
 
 /**
  * eCafeteria Bootstrapping data app
@@ -45,7 +51,7 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
     public static void main(final String[] args) {
 
-        //new eapli.ecafeteria.app.bootstrap.ShodroneBootstrap().run(args);
+        new ShodroneBootstrap().run(args);
     }
 
     @Override
@@ -53,15 +59,15 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
         handleArgs(args);
 
         System.out.println("\n\n------- MASTER DATA -------");
-        //new ECafeteriaBootstrapper().execute();
+        new ShodroneBootstrapper().execute();
 
         if (isToBootstrapDemoData) {
             System.out.println("\n\n------- DEMO DATA -------");
-            //new ECafeteriaDemoBootstrapper().execute();
+            new ShodroneDemoBootstrapper().execute();
         }
         if (isToRunSampleE2E) {
             System.out.println("\n\n------- BASIC SCENARIO -------");
-            //new ECafeteriaDemoSmokeTester().execute();
+            new ShodroneDemoSmokeTester().execute();
         }
 
         if (isToWaitInTheEnd) {
@@ -88,7 +94,7 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
     @Override
     protected void configureAuthz() {
-        //AuthzRegistry.configure(PersistenceContext.repositories().users(), new CafeteriaPasswordPolicy(), new PlainTextEncoder());
+        AuthzRegistry.configure(PersistenceContext.repositories().users(), new ShodronePasswordPolicy(), new PlainTextEncoder());
     }
 
     @SuppressWarnings("unchecked")

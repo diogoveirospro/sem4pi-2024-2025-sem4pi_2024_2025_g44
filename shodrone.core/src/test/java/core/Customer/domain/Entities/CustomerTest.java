@@ -177,15 +177,12 @@ public class CustomerTest {
         );
         customer.addCustomerRepresentative(representative);
 
-        // Testa com dados inválidos
         assertThrows(IllegalArgumentException.class, () -> {
             representative.changeInfo(new Email("invalid-email"), new PhoneNumber("+351", "123"));
         });
 
-        // Testa com dados válidos
         representative.changeInfo(new Email("valid@example.com"), new PhoneNumber("+351", "987654321"));
 
-        // Verifica se os dados foram atualizados corretamente
 
         CustomerRepresentative updatedRepresentative = customer.findCustomerRepresentative(representative);
 

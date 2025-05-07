@@ -24,6 +24,10 @@
 package shodrone.bootstrappers;
 
 import core.Persistence.PersistenceContext;
+import core.User.domain.ShodroneRoles;
+import core.User.domain.UserBuilderHelper;
+import eapli.framework.domain.repositories.ConcurrencyException;
+import eapli.framework.domain.repositories.IntegrityViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import eapli.framework.actions.Action;
@@ -44,7 +48,7 @@ import eapli.framework.validations.Invariants;
 public class ShodroneBootstrapper implements Action {
 	private static final Logger LOGGER = LogManager.getLogger(ShodroneBootstrapper.class);
 
-	private static final String POWERUSER_PWD = "poweruserA1";
+	private static final String POWERUSER_PWD = "12345678";
 	private static final String POWERUSER = "poweruser";
 
 	private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -55,8 +59,7 @@ public class ShodroneBootstrapper implements Action {
 	public boolean execute() {
 		// declare bootstrap actions
 		final Action[] actions = {
-				//new MasterUsersBootstrapper(), new AllergenBootstrapper(), new StandardDishImporterPluginsBootstrapper()
-		};
+				new MasterUsersBootstrapper()		};
 
 		registerPowerUser(userRepository);
 		authenticateForBootstrapping();
@@ -75,10 +78,10 @@ public class ShodroneBootstrapper implements Action {
 	 * circumvent authorizations in the Application Layer.
 	 */
 	public static boolean registerPowerUser(final UserRepository userRepository) {
-		/*
+
 		final var userBuilder = UserBuilderHelper.builder();
 		userBuilder.withUsername(POWERUSER).withPassword(POWERUSER_PWD).withName("joe", "power")
-				.withEmail("joe@email.org").withRoles(CafeteriaRoles.POWER_USER);
+				.withEmail("joe@email.org").withRoles(ShodroneRoles.POWER_USER);
 		final var newUser = userBuilder.build();
 
 		try {
@@ -92,9 +95,7 @@ public class ShodroneBootstrapper implements Action {
 			LOGGER.trace("Assuming existing record", e);
 			return false;
 		}
-
-		 */
-		return true;	}
+	}
 
 	/**
 	 * authenticate a super user to be able to register new users

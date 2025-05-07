@@ -1,0 +1,28 @@
+package shodrone.bootstrappers.SmokeTests;
+
+import eapli.framework.actions.Action;
+import eapli.framework.actions.ChainedAction;
+import shodrone.bootstrappers.SmokeTests.Backoffice.CustomerRepresentativeSmokeTester;
+import shodrone.bootstrappers.SmokeTests.Backoffice.CustomerSmokeTester;
+
+/**
+ * Execute simple smoke tests on the application layer. We are assuming that the
+ * bootstrappers mainly test the "register" use cases and some of the "finders"
+ * to support those "register", so these smoke tests will focus mainly on
+ * executing the other application methods.
+ * <p>
+ * "smoke testers" make a walkthrough of the main use cases of the system so that
+ * the system is "smoke tested" in an end-to-end manner.
+ *
+ * @author Paulo Gandra de Sousa
+ */
+@SuppressWarnings({ "squid:S1126", "java:S106" })
+public class ShodroneDemoSmokeTester implements Action {
+
+	@Override
+	public boolean execute() {
+		System.out.println("\n\n------- SPECIFIC FEATURES -------");
+		// Add all the other smoke tests here
+		return ChainedAction.first(new CustomerSmokeTester()).then(new CustomerRepresentativeSmokeTester()).execute();
+	}
+}

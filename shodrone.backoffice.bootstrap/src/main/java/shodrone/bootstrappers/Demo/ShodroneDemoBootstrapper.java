@@ -29,6 +29,9 @@ import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.strings.util.Strings;
 import eapli.framework.validations.Invariants;
+import shodrone.bootstrappers.Demo.Backoffice.BackofficeUsersBootstrapper;
+import shodrone.bootstrappers.Demo.Backoffice.CustomerBootstrapper;
+import shodrone.bootstrappers.Demo.Backoffice.CustomerRepresentativeBootstrapper;
 
 /**
  * eCafeteria Bootstrapping Demo data. This class bootstraps data for demo
@@ -48,12 +51,10 @@ public class ShodroneDemoBootstrapper implements Action {
 
     @Override
     public boolean execute() {
-        /*
+
         // declare bootstrap actions
-        final Action[] actions = { new BackofficeUsersBootstrapper(), new MaterialsBootstrapper(),
-                new DishTypesBootstrapper(), new DishBootstrapper(), new MealBootstrapper(),
-                new CafeteriaUserBootstrapper(), new RechargeUserCardBootstrapper(), new BookingBootstrapper(),
-                new ConcurrentBookingSmokeTester() };
+        final Action[] actions = { new BackofficeUsersBootstrapper(),
+                new CustomerBootstrapper(), new CustomerRepresentativeBootstrapper(),};
 
         authenticateForBootstrapping();
 
@@ -64,8 +65,7 @@ public class ShodroneDemoBootstrapper implements Action {
             ret &= boot.execute();
         }
         return ret;
-        */
-        return true;
+
     }
 
 

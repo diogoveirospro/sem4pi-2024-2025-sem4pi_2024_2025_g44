@@ -147,8 +147,6 @@ void ensureCustomerInformationIsCorrect() {
 }
 ```
 
-
-
 ## 6. Implementation
 
 The implementation of US221 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
@@ -169,7 +167,7 @@ To integrate the new functionality with the existing system, we followed these s
 3. **UI Layer**: The user interface was updated to include forms and views for managing customer representatives. This includes input validation and error handling.
 4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
 
-Para rodar o projeto por favor veja o [README.md](../../../readme.md) do projeto.
+To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
 
 ## 8. Observations
