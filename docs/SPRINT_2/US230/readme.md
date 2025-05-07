@@ -108,16 +108,15 @@ The `Customer` aggregate includes:
 
 
 ## 4. Design
-
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+\
+In this section, the design for **US230 - Register a Show Request** is presented.
+It shows the separation between user interface, controller, domain model and persistence layers.
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US230 Class Diagram](images/class_diagram_us230.svg "US230 Class Diagram")
 
-### 4.3. Applied Patterns
-
-### 4.4. Acceptance Tests
+### 4.2. Acceptance Tests
 
 Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
 
