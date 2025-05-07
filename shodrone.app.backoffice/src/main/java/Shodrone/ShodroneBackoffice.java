@@ -32,12 +32,7 @@ public class ShodroneBackoffice extends ShodroneBaseApplication {
 
     @Override
     protected String appTitle() {
-        return "Welcome to Shodrone Backoffice";
-    }
-
-    @Override
-    protected String appGoodbye() {
-        return "Goodbye";
+        return "Shodrone Backoffice";
     }
 
     @Override

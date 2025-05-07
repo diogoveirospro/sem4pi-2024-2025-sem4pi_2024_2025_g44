@@ -80,6 +80,13 @@
 			<version>5.0.0-B03</version>
 		</dependency>
 
+		<!-- Title: JFiglet -->
+		<dependency>
+			<groupId>com.github.lalyos</groupId>
+			<artifactId>jfiglet</artifactId>
+			<version>0.0.8</version>
+		</dependency>
+
 		<!-- EAPLI framework -->
 		<!-- FRAMEWORK dependencies from Jitpack nexus repository -->
 		<dependency>

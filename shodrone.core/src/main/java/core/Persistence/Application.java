@@ -34,7 +34,7 @@ import eapli.framework.util.Utility;
 public class Application {
 
     public static final String VERSION = "v0.1.0";
-    public static final String COPYRIGHT = "(C) 2025, ISEP's Grupo 44 Lapr4";
+    public static final String COPYRIGHT = "© 2025, ISEP's | Byte Masters: Third Coming";
 
     private static final AppSettings SETTINGS = new AppSettings();
 
