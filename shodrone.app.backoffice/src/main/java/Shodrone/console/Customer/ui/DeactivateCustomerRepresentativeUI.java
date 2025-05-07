@@ -7,19 +7,20 @@ import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.presentation.console.AbstractUI;
+import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.presentation.console.ListWidget;
+import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeactivateCustomerRepresentativeUI extends AbstractUI {
-    private final AuthorizationService authz = AuthzRegistry.authorizationService();
+public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
+    //private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final DeactivateCustomerRepresentativeController controller = new DeactivateCustomerRepresentativeController();
-
     @Override
     protected boolean doShow() {
+        //authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
         Customer customer = selectCustomer();
         if (customer == null) {
             return false;
@@ -78,6 +79,6 @@ public class DeactivateCustomerRepresentativeUI extends AbstractUI {
 
     @Override
     public String headline() {
-        return "";
+        return UtilsUI.generateHeader(UtilsUI.PURPLE, "Deactivate Customer Representative");
     }
 }

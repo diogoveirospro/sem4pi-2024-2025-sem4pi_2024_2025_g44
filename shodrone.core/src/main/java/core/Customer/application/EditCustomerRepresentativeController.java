@@ -18,7 +18,6 @@ import java.util.Map;
 
 @UseCaseController
 public class EditCustomerRepresentativeController {
-    private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
 
     public Iterable<Customer> listCustomers() {
@@ -31,7 +30,6 @@ public class EditCustomerRepresentativeController {
 
     public void changeCustomerRepresentativeInfo(Customer customer, CustomerRepresentative representative, Email newEmail, PhoneNumber newPhone) {
         Preconditions.noneNull(representative);
-        authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
         CustomerRepresentative existingRepresentative = customer.findCustomerRepresentative(representative);
         if (existingRepresentative == null) {
             throw new IllegalArgumentException("Customer representative not found.");

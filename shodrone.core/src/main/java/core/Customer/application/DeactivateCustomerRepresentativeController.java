@@ -4,19 +4,16 @@ import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
-import eapli.framework.infrastructure.authz.application.AuthorizationService;
-import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.infrastructure.authz.domain.model.Role;
+import eapli.framework.application.UseCaseController;
 import eapli.framework.validations.Preconditions;
 
+@UseCaseController
 public class DeactivateCustomerRepresentativeController {
-    private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
 
     public void deactivateCustomerRepresentative(Customer customer, CustomerRepresentative representative) {
 
         Preconditions.noneNull(representative);
-        authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
         CustomerRepresentative existingRepresentative = customer.findCustomerRepresentative(representative);
         if (existingRepresentative == null) {
             throw new IllegalArgumentException("Customer representative not found.");

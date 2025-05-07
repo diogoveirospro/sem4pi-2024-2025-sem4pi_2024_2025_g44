@@ -1,8 +1,8 @@
 package Shodrone.console.Customer.ui;
 
-import eapli.framework.presentation.console.AbstractUI;
+import shodrone.presentation.AbstractFancyUI;
 
-public class RegisterCustomerUI extends AbstractUI {
+public class RegisterCustomerUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         return false;

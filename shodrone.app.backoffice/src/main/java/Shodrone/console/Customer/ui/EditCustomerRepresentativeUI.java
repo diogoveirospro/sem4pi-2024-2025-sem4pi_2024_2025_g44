@@ -9,20 +9,22 @@ import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.presentation.console.AbstractUI;
+import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.presentation.console.ListWidget;
+import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditCustomerRepresentativeUI extends AbstractUI {
+public class EditCustomerRepresentativeUI extends AbstractFancyUI {
 
-    private final AuthorizationService authz = AuthzRegistry.authorizationService();
+    //private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final EditCustomerRepresentativeController controller = new EditCustomerRepresentativeController();
 
     @Override
     protected boolean doShow() {
+        //authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
         Customer customer = selectCustomer();
         if (customer == null) {
             return false;
