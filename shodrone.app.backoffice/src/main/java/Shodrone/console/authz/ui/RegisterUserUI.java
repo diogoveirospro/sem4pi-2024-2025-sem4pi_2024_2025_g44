@@ -11,6 +11,7 @@ import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
 import eapli.framework.presentation.console.menu.MenuRenderer;
 import eapli.framework.presentation.console.menu.VerticalMenuRenderer;
+import shodrone.presentation.UtilsUI;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,11 +25,11 @@ public class RegisterUserUI extends AbstractUI {
     protected boolean doShow() {
 
 
-        final String username = Console.readLine("Username");
-        final String password = Console.readLine("Password");
-        final String firstName = Console.readLine("First Name");
-        final String lastName = Console.readLine("Last Name");
-        final String email = Console.readLine("E-Mail");
+        final String username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Username: " + UtilsUI.RESET);
+        final String password = UtilsUI.readPassword(UtilsUI.BOLD + "Password: " + UtilsUI.RESET);
+        final String firstName = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "First Name: " + UtilsUI.RESET);
+        final String lastName = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Last Name: " + UtilsUI.RESET);
+        final String email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "E-Mail: " + UtilsUI.RESET);
 
         final Set<Role> roleTypes = new HashSet<>();
         boolean show;

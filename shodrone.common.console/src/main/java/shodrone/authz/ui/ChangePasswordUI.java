@@ -27,6 +27,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.io.util.Console;
 import eapli.framework.presentation.console.AbstractUI;
 import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
 /**
  * UI for user login action.
@@ -41,8 +42,8 @@ public class ChangePasswordUI extends AbstractFancyUI {
 
     @Override
     protected boolean doShow() {
-        final String oldPassword = Console.readLine("Old Password:");
-        final String newPassword = Console.readLine("New Password:");
+        final String oldPassword = UtilsUI.readPassword(UtilsUI.BOLD + "Old Password: " + UtilsUI.RESET);
+        final String newPassword = UtilsUI.readPassword(UtilsUI.BOLD + "New Password:" + UtilsUI.RESET);
 
         try {
             boolean toContinue;

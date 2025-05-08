@@ -70,9 +70,9 @@ public class LoginUI extends AbstractFancyUI {
 	protected boolean doShow() {
 		var attempt = 1;
 		while (attempt <= maxAttempts) {
-			final String userName = Console.readNonEmptyLine(UtilsUI.BOLD + "Username:" + UtilsUI.RESET,
+			final String userName = UtilsUI.readNonEmptyLine(UtilsUI.BOLD + "Username: " + UtilsUI.RESET,
 					UtilsUI.RED + UtilsUI.BOLD + "Please provide a Username" + UtilsUI.RESET);
-			final String password = Console.readLine(UtilsUI.BOLD + "Password:" + UtilsUI.RESET);
+			final String password = UtilsUI.readPassword(UtilsUI.BOLD + "Password: " + UtilsUI.RESET);
 
 			if (credentialHandler.authenticated(userName, password, onlyWithThis)) {
 				return true;

@@ -1,14 +1,14 @@
 package shodrone.presentation;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import eapli.framework.strings.util.StringPredicates;
+
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,6 +97,23 @@ public class UtilsUI {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * Reads a line from the console
+     * @param prompt The prompt to show to the user
+     * @param message The message to show to the user if the input is empty
+     * @return The line read from the console
+     */
+    public static String readNonEmptyLine(final String prompt, final String message) {
+        while (true) {
+            String text = readLineFromConsole(prompt);
+            if (!StringPredicates.isNullOrEmpty(text)) {
+                return text;
+            }
+
+            System.out.println(message);
         }
     }
 
@@ -503,5 +520,22 @@ public class UtilsUI {
     public static void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
+    }
+
+    /**
+     * Reads a password from the console.
+     * @param prompt The prompt to show to the user
+     * @return The password read from the console
+     */
+    public static String readPassword(String prompt) {
+        Console console = System.console();
+        if (console != null) {
+            System.out.println();
+            char[] passwordChars = console.readPassword("%s", prompt);
+            return new String(passwordChars);
+        } else {
+            System.out.println(RED + BOLD + "WARNING: Cannot mask password in this environment." + RESET);
+            return readLineFromConsole(prompt);
+        }
     }
 }
