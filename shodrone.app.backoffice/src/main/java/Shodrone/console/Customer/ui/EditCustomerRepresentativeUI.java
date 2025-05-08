@@ -7,9 +7,6 @@ import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.PhoneNumber;
-import eapli.framework.infrastructure.authz.application.AuthorizationService;
-import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -17,28 +14,42 @@ import shodrone.presentation.UtilsUI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User Interface for editing a customer representative's information.
+ * This class extends AbstractFancyUI and implements the doShow method to display the UI.
+ */
 public class EditCustomerRepresentativeUI extends AbstractFancyUI {
 
-    //private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final EditCustomerRepresentativeController controller = new EditCustomerRepresentativeController();
+
 
     @Override
     protected boolean doShow() {
-        //authz.ensureAuthenticatedUserHasAnyOf(Role.valueOf("CRMCOLLABORATOR"));
-        Customer customer = selectCustomer();
-        if (customer == null) {
+        try {
+            Customer customer = selectCustomer();
+            if (customer == null) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer selected. Operation canceled." + UtilsUI.RESET);
+                return false;
+            }
+
+            CustomerRepresentative representative = selectCustomerRepresentative(customer);
+            if (representative == null) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No representative selected. Operation canceled." + UtilsUI.RESET);
+                return false;
+            }
+
+            Email newEmail = enterValidEmail();
+            PhoneNumber newPhone = enterValidPhoneNumber();
+
+            controller.changeCustomerRepresentativeInfo(customer, representative, newEmail, newPhone);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative information updated successfully!" + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return true;
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
-        CustomerRepresentative representative = selectCustomerRepresentative(customer);
-        if (representative == null) {
-            return false;
-        }
-
-        Email newEmail = enterValidEmail();
-        PhoneNumber newPhone = enterValidPhoneNumber();
-
-        controller.changeCustomerRepresentativeInfo(customer, representative, newEmail, newPhone);
-        return true;
     }
 
     @Override
@@ -49,43 +60,59 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
     private Customer selectCustomer() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println("No customers available.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
-        for (Customer customer : customers) {
-            customerList.add(customer);
-        }
+        customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customers, new CustomerPrinter());
+        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, new CustomerPrinter());
         customerListWidget.show();
 
-        int option = UtilsUI.selectsIndex(customerList);
-        if (option == -2) {
-            return null;
-        }
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(customerList);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
+            }
 
-        return customerList.get(option - 1);
+            if (option < 1 || option > customerList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return customerList.get(option - 1);
+            }
+        } while (true);
     }
 
     private CustomerRepresentative selectCustomerRepresentative(Customer customer) {
         Iterable<CustomerRepresentative> representatives = controller.listRepresentativesOfCustomer(customer);
         if (representatives == null || !representatives.iterator().hasNext()) {
-            System.out.println("No customer representatives available.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer representatives available." + UtilsUI.RESET);
             return null;
         }
+
         List<CustomerRepresentative> representativeList = new ArrayList<>();
-        for (CustomerRepresentative representative : representatives) {
-            representativeList.add(representative);
-        }
-        ListWidget<CustomerRepresentative> representativeListWidget = new ListWidget<>("Customer Representatives", representatives, new CustomerRepresentativePrinter());
+        representatives.forEach(representativeList::add);
+
+        ListWidget<CustomerRepresentative> representativeListWidget = new ListWidget<>("Choose a Representative", representativeList, new CustomerRepresentativePrinter());
         representativeListWidget.show();
-        int option = UtilsUI.selectsIndex(representativeList);
-        if (option == -2) {
-            return null;
-        }
-        return representativeList.get(option - 1);
+
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(representativeList);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+
+            if (option < 1 || option > representativeList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return representativeList.get(option - 1);
+            }
+        } while (true);
     }
 
     private PhoneNumber enterValidPhoneNumber() {
@@ -95,11 +122,15 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
         do {
             try {
                 country = selectCountry();
+                if (country == null) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No country selected. Operation canceled." + UtilsUI.RESET);
+                    return null;
+                }
                 countryCode = controller.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole("Enter the new representative's phone number: ");
-                return new PhoneNumber(countryCode,phoneNumber);
+                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new representative's phone number: " + UtilsUI.RESET);
+                return new PhoneNumber(countryCode, phoneNumber);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid phone number. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid phone number. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -107,7 +138,7 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
     private String selectCountry() {
         List<String> countries = controller.availableCountries();
         if (countries == null || countries.isEmpty()) {
-            System.out.println("No countries available.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No countries available." + UtilsUI.RESET);
             return null;
         }
 
@@ -126,10 +157,10 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
         String email;
         do {
             try {
-                email = UtilsUI.readLineFromConsole("Enter the new representative's email: ");
+                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new representative's email: " + UtilsUI.RESET);
                 return new Email(email);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid email. Please try again.");
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid email. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }

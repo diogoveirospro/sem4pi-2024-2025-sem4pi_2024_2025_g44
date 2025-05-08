@@ -39,7 +39,7 @@ public class CustomerRepresentativeBootstrapper implements Action {
                     customer
             );
 
-            controller.addCustomerRepresentative(representative, customer);
+            controller.addCustomerRepresentative(representative, customer, "johndoe", "password123");
             LOGGER.info("Successfully registered customer representative: {}", name);
         } catch (Exception e) {
             LOGGER.error("Error registering customer representative: {}", e.getMessage());

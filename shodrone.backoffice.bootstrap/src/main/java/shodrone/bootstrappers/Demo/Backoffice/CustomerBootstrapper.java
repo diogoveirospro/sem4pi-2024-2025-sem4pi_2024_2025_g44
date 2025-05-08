@@ -21,5 +21,6 @@ public class CustomerBootstrapper implements Action {
         Address addressObj = new Address(address);
         VatNumber taxNumberObj = new VatNumber(taxNumber);
 
+
     }
 }

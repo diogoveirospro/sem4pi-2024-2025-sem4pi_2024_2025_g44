@@ -44,7 +44,7 @@ public class CustomerRepresentativeSmokeTester implements Action {
                 customer
         );
 
-        addController.addCustomerRepresentative(representative, customer);
+        addController.addCustomerRepresentative(representative, customer, "michaelSmith", "password123");
         LOGGER.info("»»» Added customer representative: {}", representative);
     }
 

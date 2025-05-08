@@ -5,8 +5,6 @@ import Shodrone.console.Customer.printer.CustomerRepresentativePrinter;
 import core.Customer.application.ListCustomerRepresentativesController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
-import eapli.framework.infrastructure.authz.application.AuthorizationService;
-import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.visitor.Visitor;
 import shodrone.presentation.AbstractFancyListUI;
@@ -15,60 +13,106 @@ import shodrone.presentation.UtilsUI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * UI for listing all customer representatives.
+ * This class is responsible for displaying the list of customer representatives.
+ */
 public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerRepresentative> {
 
-    //private final AuthorizationService authz = AuthzRegistry.authorizationService();
-    ListCustomerRepresentativesController controller = new ListCustomerRepresentativesController();
+    /**
+     * Controller for listing customer representatives.
+     */
+    private final ListCustomerRepresentativesController controller = new ListCustomerRepresentativesController();
 
+    /**
+     * Method to show the UI.
+     * @return true if the UI was shown successfully
+     */
+    @Override
+    public boolean doShow() {
+        super.doShow();
+        UtilsUI.goBackAndWait();
+        return true;
+    }
+
+    /**
+     * List all customer representatives for a selected customer.
+     * @return Iterable of customer representatives
+     */
     @Override
     protected Iterable<CustomerRepresentative> elements() {
         Customer customer = selectCustomer();
-        return this.controller.listRepresentativesOfCustomer(customer);
+        if (customer == null) {
+            return new ArrayList<>();
+        }
+        return controller.listRepresentativesOfCustomer(customer);
     }
 
+    /**
+     * Prints the details of each customer representative.
+     * @return Visitor that prints the details of each representative
+     */
     @Override
     protected Visitor<CustomerRepresentative> elementPrinter() {
         return new CustomerRepresentativePrinter();
     }
 
+    /**
+     * Returns the name of the element to be printed.
+     * @return the name of the element
+     */
     @Override
     protected String elementName() {
         return "Customer Representative";
     }
 
+    /**
+     * Returns the header for the list of customer representatives.
+     * @return the header for the list
+     */
     @Override
     protected String listHeader() {
         return "List of Customer Representatives";
     }
 
+    /**
+     * Returns the message to be displayed when there are no representatives.
+     * @return the message to be displayed
+     */
     @Override
     protected String emptyMessage() {
         return UtilsUI.RED + UtilsUI.BOLD + "No customer representatives available." + UtilsUI.RESET;
     }
 
+    /**
+     * Returns the title of the UI.
+     * @return the title of the UI
+     */
     @Override
     public String headline() {
         return "List Customer Representatives";
     }
 
+    /**
+     * Allows the user to select a customer.
+     * @return the selected customer
+     */
     private Customer selectCustomer() {
-
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println("No customers available.");
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
-        for (Customer customer : customers) {
-            customerList.add(customer);
-        }
+        customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Customers", customers, new CustomerPrinter());
+        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, new CustomerPrinter());
         customerListWidget.show();
 
         int option = UtilsUI.selectsIndex(customerList);
         if (option == -2) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
             return null;
         }
 
