@@ -1,6 +1,7 @@
 package core.Figure.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class Keyword implements Serializable, ValueObject, Comparable<Keyword> {
      */
     private static final long serialVersionUID = 1L;
 
+    @Column(name = "keyword_value", nullable = false)
     String value;
 
     /**

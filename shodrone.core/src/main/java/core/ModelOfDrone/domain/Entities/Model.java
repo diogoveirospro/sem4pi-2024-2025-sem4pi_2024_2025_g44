@@ -1,18 +1,52 @@
 package core.ModelOfDrone.domain.Entities;
 
 import core.ModelOfDrone.domain.ValueObjects.*;
-public class Model {
-    private final ModelID modelId;
-    private final WindTolerance windTolerance;
-    private final WindSpeed windSpeed;
-    private final PositionTolerance positionTolerance;
-    private final SafetyStatus safetyStatus;
-    public Model(ModelID modelId, WindTolerance windTolerance, WindSpeed windSpeed,
+import core.Shared.domain.ValueObjects.Name;
+import eapli.framework.domain.model.AggregateRoot;
+import eapli.framework.general.domain.model.Designation;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
+
+@Entity
+public class Model implements Serializable, AggregateRoot<Designation> {
+    @Id
+    @GeneratedValue
+    @Column(name = "model_id")
+    private Long id;
+    @Embedded
+    private Name modelName;
+    @Embedded
+    private  WindTolerance windTolerance;
+    @Embedded
+    private  WindSpeed windSpeed;
+    @Embedded
+    private  PositionTolerance positionTolerance;
+    @Enumerated(EnumType.STRING)
+    private  SafetyStatus safetyStatus;
+
+    protected Model() {
+        // for ORM
+    }
+    public Model(Name modelName, WindTolerance windTolerance, WindSpeed windSpeed,
                  PositionTolerance positionTolerance, SafetyStatus safetyStatus) {
-        this.modelId = modelId;
+        this.modelName = modelName;
         this.windTolerance = windTolerance;
         this.windSpeed = windSpeed;
         this.positionTolerance = positionTolerance;
         this.safetyStatus = safetyStatus;
+    }
+
+    @Override
+    public boolean sameAs(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Model model = (Model) other;
+        return modelName != null && modelName.equals(model.modelName);
+    }
+
+    @Override
+    public Designation identity() {
+        return modelName;
     }
 }

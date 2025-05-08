@@ -67,9 +67,15 @@ package Shared {
     class Description <<Value Object>>{
     }
 
+    class Name <<Value Object>>{
+    }
+
     'Maintenance -> x
     Maintenance ----> "1" Date: date
     Maintenance ----> "1" Description: description
+
+    'Model -> x
+    Model ----> "1" Name: modelName
 }
 
 @enduml

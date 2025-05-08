@@ -1,5 +1,6 @@
 package core.Customer.domain.ValueObjects;
 
+import eapli.framework.domain.model.ValueObject;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -10,7 +11,7 @@ import java.util.Objects;
  * Represents a European VAT number with validation based on known country codes.
  */
 @Embeddable
-public class VatNumber implements Comparable<VatNumber>, Serializable {
+public class VatNumber implements Comparable<VatNumber>, Serializable, ValueObject {
 
     private static final long serialVersionUID = 1L;
 

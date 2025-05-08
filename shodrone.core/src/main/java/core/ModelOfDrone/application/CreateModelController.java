@@ -1,25 +1,21 @@
 package core.ModelOfDrone.application;
 
+import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.*;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.*;
+import core.Shared.domain.ValueObjects.Name;
+import eapli.framework.validations.Preconditions;
 
 public class CreateModelController {
-    private final ModelRepository modelRepository;
-    public CreateModelController(ModelRepository modelRepository) {
-        this.modelRepository = modelRepository;
+    private final ModelRepository modelRepository = PersistenceContext.repositories().models();
 
-    }
-    public ModelRepository getModelRepository(){
-        return PersistenceContext.RepositoryFactory.getInstance().getModelRepository;
-    }
-    public boolean createModel(WindTolerance windTolerance, WindSpeed windSpeed,
+    public boolean createModel(Name modelName, WindTolerance windTolerance, WindSpeed windSpeed,
                                PositionTolerance posTolerance, SafetyStatus safetyStatus){
-        ModelID id = modelRepository.getNextId();
-        Model model = new Model(id, windTolerance, windSpeed, posTolerance, safetyStatus);
-        if (modelRepository.validateModel(model)) {
-            return modelRepository.save(model);
-        }
-        return false;
+        Model model = new Model(modelName,windTolerance, windSpeed, posTolerance, safetyStatus);
+        Preconditions.noneNull(model);
+
+        modelRepository.save(model);
+        return true;
     }
 }

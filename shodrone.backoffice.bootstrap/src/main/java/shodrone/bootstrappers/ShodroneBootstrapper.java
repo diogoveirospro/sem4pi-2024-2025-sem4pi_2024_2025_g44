@@ -48,7 +48,7 @@ import eapli.framework.validations.Invariants;
 public class ShodroneBootstrapper implements Action {
 	private static final Logger LOGGER = LogManager.getLogger(ShodroneBootstrapper.class);
 
-	private static final String POWERUSER_PWD = "12345678";
+	private static final String POWERUSER_PWD = "Password123";
 	private static final String POWERUSER = "poweruser";
 
 	private final AuthorizationService authz = AuthzRegistry.authorizationService();

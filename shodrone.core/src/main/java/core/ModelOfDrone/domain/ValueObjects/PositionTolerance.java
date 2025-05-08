@@ -1,4 +1,10 @@
 package core.ModelOfDrone.domain.ValueObjects;
 
-public class PositionTolerance {
+import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+
+@Embeddable
+public class PositionTolerance implements Serializable, ValueObject {
 }

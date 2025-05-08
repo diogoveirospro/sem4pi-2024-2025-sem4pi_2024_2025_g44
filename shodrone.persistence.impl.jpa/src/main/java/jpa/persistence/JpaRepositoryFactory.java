@@ -26,6 +26,7 @@ package jpa.persistence;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
+import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -39,6 +40,7 @@ import core.Persistence.Application;
 import jpa.JpaCategoryRepository;
 import jpa.JpaCustomerRepository;
 import jpa.JpaFigureRepository;
+import jpa.JpaModelRepository;
 
 /**
  * The repository factory for JPA repositories.
@@ -84,6 +86,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public CustomerRepository customers() {
 		return new JpaCustomerRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public ModelRepository models(TransactionalContext autoTx) {
+		return new JpaModelRepository(autoTx);
+	}
+
+	@Override
+	public ModelRepository models() {
+		return new JpaModelRepository(Application.settings().persistenceUnitName());
 	}
 
 	@Override
