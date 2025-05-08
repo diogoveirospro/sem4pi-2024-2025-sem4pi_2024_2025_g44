@@ -22,6 +22,7 @@ package inMemory.persistence;
 
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
@@ -33,6 +34,7 @@ import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventRecordRepository;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryTransactionalContext;
 import inMemory.InMemoryCustomerRepository;
+import inMemory.InMemoryDroneRepository;
 import inMemory.InMemoryModelRepository;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 
@@ -89,6 +91,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public ModelRepository models() {
 		return models(null);
+	}
+
+	@Override
+	public DroneRepository drone(TransactionalContext autoTx) {
+		return new InMemoryDroneRepository();
+	}
+
+	@Override
+	public DroneRepository drone() {
+		return drone(null);
 	}
 
 	@Override

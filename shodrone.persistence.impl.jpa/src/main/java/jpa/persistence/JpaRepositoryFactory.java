@@ -25,6 +25,7 @@ package jpa.persistence;
 
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
@@ -94,6 +95,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public ModelRepository models() {
 		return new JpaModelRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public DroneRepository drone(TransactionalContext autoTx) {
+		return null;
+	}
+
+	@Override
+	public DroneRepository drone() {
+		return null;
 	}
 
 	@Override
