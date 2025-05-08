@@ -10,10 +10,22 @@ import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.validations.Preconditions;
 
 public class CreateModelController {
-    private final ModelRepository modelRepository = PersistenceContext.repositories().models();
-    private final DroneRepository droneRepository = PersistenceContext.repositories().drone();
+    private ModelRepository modelRepository;
+    private DroneRepository droneRepository;
+
+    public CreateModelController(ModelRepository modelRepository) {
+        this.modelRepository = modelRepository;
+        this.droneRepository = droneRepository;
+    }
+
+    public ModelRepository getModelRepository() {
+        return modelRepository= PersistenceContext.repositories().models();
+    }
 
 
+
+
+    //US240
     public boolean createModel(Name modelName, WindTolerance windTolerance, WindSpeed windSpeed,
                                PositionTolerance posTolerance, SafetyStatus safetyStatus){
         Model model = new Model(modelName,windTolerance, windSpeed, posTolerance, safetyStatus);
@@ -23,12 +35,15 @@ public class CreateModelController {
         return true;
     }
 
-    public boolean verifyModel(ModelID modelId) {
-        return modelRepository.verifyModel(modelId);
+    //------------------------------------------------------------------
+    //US241
+    public boolean verifyModel(ModelName modelName) {
+        ModelRepository modelRepo = getModelRepository();
+        return modelRepo.verifyModel(modelName);
     }
 
-    public boolean addDrone(SerialNumber serialNumber, ModelID modelId) {
+    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
         DroneRepository droneRepo = PersistenceContext.repositories().drone();
-        return droneRepo.addDrone(serialNumber, modelId);
+        return droneRepo.addDrone(serialNumber, modelName);
     }
 }

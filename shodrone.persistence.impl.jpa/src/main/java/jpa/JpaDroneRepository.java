@@ -5,8 +5,7 @@ import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelID;
-import core.ModelOfDrone.repositories.ModelRepository;
+import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.general.domain.model.Designation;
@@ -24,12 +23,12 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Model, Designation, 
     }
 
     @Override
-    public boolean addDrone(SerialNumber serialNumber, ModelID modelId) {
+    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
         if (!validateDrone(serialNumber)) {
             return false;
         }
 
-        Drone drone = new Drone(serialNumber, DroneStatus.ACTIVE ,modelId);
+        Drone drone = new Drone(serialNumber, DroneStatus.ACTIVE , modelName);
         entityManager().persist(drone);
         return true;    }
 

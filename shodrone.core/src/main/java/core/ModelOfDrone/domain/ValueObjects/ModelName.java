@@ -1,4 +1,4 @@
 package core.ModelOfDrone.domain.ValueObjects;
 
-public class ModelID {
+public class ModelName {
 }

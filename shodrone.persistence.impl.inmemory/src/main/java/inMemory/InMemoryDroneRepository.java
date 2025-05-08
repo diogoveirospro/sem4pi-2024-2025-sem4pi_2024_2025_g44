@@ -2,11 +2,11 @@ package inMemory;
 
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
-import core.ModelOfDrone.domain.ValueObjects.ModelID;
+import core.ModelOfDrone.domain.ValueObjects.ModelName;
 
 public class InMemoryDroneRepository implements DroneRepository {
     @Override
-    public boolean addDrone(SerialNumber serialNumber, ModelID modelId) {
+    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
         return false;
     }
 

@@ -1,7 +1,7 @@
 package jpa;
 
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelID;
+import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -21,7 +21,7 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
 
 
     @Override
-    public boolean verifyModel(ModelID modelId) {
+    public boolean verifyModel(ModelName modelName) {
         return false;
     }
 }
