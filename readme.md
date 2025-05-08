@@ -38,13 +38,13 @@ To run the tests, run the following script:
 
 To run and compile the project, you need to have the programs said in the previous section *How to Build* and then run the following script:
 
-**Shodrone1:**
-- Linux/Unix/MacOS: ./shodrone1.sh
-- Windows: .\shodrone1.bat
+**ShodroneBackoffice:**
+- Linux/Unix/MacOS: ./shodroneBackoffice.sh
+- Windows: .\shodroneBackoffice.bat
 
-**Shodrone2:**
-- Linux/Unix/MacOS: ./shodrone2.sh
-- Windows: .\shodrone2.bat
+**ShodroneUser:**
+- Linux/Unix/MacOS: ./shodroneUser.sh
+- Windows: .\shodroneUser.bat
 
 
 ## 6. How to Install/Deploy into Another Machine (or Virtual Machine)

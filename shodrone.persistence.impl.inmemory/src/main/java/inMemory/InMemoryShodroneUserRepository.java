@@ -1,5 +1,6 @@
 package inMemory;
 
+import core.Shared.domain.ValueObjects.Email;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.infrastructure.authz.domain.model.Username;
@@ -30,6 +31,18 @@ public class InMemoryShodroneUserRepository extends InMemoryDomainRepository<Sho
             }
         }
 
+        return null;
+    }
+
+    @Override
+    public ShodroneUser findByEmail(Email email) {
+        Iterable<ShodroneUser> users = findAll();
+
+        for (ShodroneUser user : users) {
+            if (user.user().email().equals(email)) {
+                return user;
+            }
+        }
         return null;
     }
 }

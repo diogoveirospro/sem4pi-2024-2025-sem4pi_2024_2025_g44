@@ -6,6 +6,8 @@ import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.PhoneNumber;
+import core.User.domain.Entities.ShodroneUser;
+import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -21,7 +23,7 @@ import java.util.Map;
 @UseCaseController
 public class EditCustomerRepresentativeController {
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
-    private final UserManagementService userSvc = AuthzRegistry.userService();
+    private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
 
     public Iterable<Customer> listCustomers() {
         return customerRepository.findAllCreatedCustomers();
@@ -37,8 +39,11 @@ public class EditCustomerRepresentativeController {
         if (existingRepresentative == null) {
             throw new IllegalArgumentException("Customer representative not found.");
         }
+        ShodroneUser user = userRepository.findByEmail(representative.email());
         existingRepresentative.changeInfo(newEmail, newPhone);
         customerRepository.save(customer);
+        user.changeEmail(newEmail);
+        user.changePhoneNumber(newPhone);
     }
 
     public List<String> availableCountries() {

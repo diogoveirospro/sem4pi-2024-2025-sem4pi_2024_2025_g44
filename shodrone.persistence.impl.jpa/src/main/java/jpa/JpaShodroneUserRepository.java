@@ -1,11 +1,13 @@
 package jpa;
 
 import core.Persistence.Application;
+import core.Shared.domain.ValueObjects.Email;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
+import jakarta.persistence.TypedQuery;
 
 public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser, Long, Username> implements ShodroneUserRepository {
 
@@ -41,5 +43,13 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
         }
 
         return null;
+    }
+
+    @Override
+    public ShodroneUser findByEmail(Email email) {
+        final TypedQuery<ShodroneUser> query = entityManager().createQuery(
+                "SELECT u FROM ShodroneUser u WHERE u.email = :email", ShodroneUser.class);
+        query.setParameter("email", email.toString());
+        return query.getSingleResult();
     }
 }
