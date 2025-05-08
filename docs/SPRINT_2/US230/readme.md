@@ -12,11 +12,11 @@ Requirements: Done
 
 Analysis: Done
 
-Design: In Progress
+Design: Done
 
-Implement: TODO
+Implement: In Progress
 
-Test: TODO
+Test: In Progress
 
 
 ## 2. Requirements
@@ -118,12 +118,8 @@ It shows the separation between user interface, controller, domain model and per
 
 ### 4.2. Acceptance Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
-
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
+**Test 1:** Ensure the CRM Collaborator is a user in the system\
+**Refers to Acceptance Criteria:** AC01
 
 ```
 @Test(expected = IllegalArgumentException.class)
@@ -131,6 +127,44 @@ public void ensureXxxxYyyy() {
 	...
 }
 ````
+
+---
+
+**Test 2:** Ensure the Show Request has a Customer associated\
+**Refers to Acceptance Criteria:** AC02
+
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+````
+
+---
+
+**Test 3:** Ensure the Show Request has a Show Description, a Request Status and a Location\
+**Refers to Acceptance Criteria:** AC03
+
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+````
+
+---
+
+**Test 4:** Ensure the Show Request has a timestamp and the quantity of drones used\
+**Refers to Acceptance Criteria:** AC04
+
+
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+```
+
 
 ## 5. Implementation
 
