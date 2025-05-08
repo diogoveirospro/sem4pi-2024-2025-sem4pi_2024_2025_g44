@@ -18,6 +18,17 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
     ListPublicCatalogueController controller = new ListPublicCatalogueController();
 
     /**
+     * Method to show the UI.
+     * @return true if the UI was shown successfully
+     */
+    @Override
+    public boolean doShow() {
+        super.doShow();
+        UtilsUI.goBackAndWait();
+        return true;
+    }
+
+    /**
      * List all public figures in the catalogue.
      * @return Iterable of figures
      */
@@ -59,7 +70,7 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     protected String emptyMessage() {
-        return UtilsUI.RED + UtilsUI.BOLD + "\nNo Active Public Figures Found!!" + UtilsUI.RESET;
+        return UtilsUI.RED + UtilsUI.BOLD + "No Active Public Figures Found!!" + UtilsUI.RESET;
     }
 
     /**

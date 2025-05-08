@@ -45,6 +45,7 @@ public abstract class AbstractFancyUI {
      * @return {@code true} if the user wants to exit this UI.
      */
     public boolean show() {
+        UtilsUI.clearConsole();
         drawFormTitle();
         final boolean wantsToExit = doShow();
         drawFormBorder();
@@ -64,6 +65,7 @@ public abstract class AbstractFancyUI {
      * Draws the bottom border of the form.
      */
     protected void drawFormBorder() {
+        System.out.println();
         System.out.println(BORDER);
         System.out.println();
     }

@@ -27,6 +27,8 @@ import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.io.util.Console;
 import eapli.framework.presentation.console.AbstractUI;
 import shodrone.infrastructure.authz.CredentialHandler;
+import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
 /**
  * UI for user login action.
@@ -34,7 +36,7 @@ import shodrone.infrastructure.authz.CredentialHandler;
  * @author nuno 21/03/16.
  */
 @SuppressWarnings("squid:S106")
-public class LoginUI extends AbstractUI {
+public class LoginUI extends AbstractFancyUI {
 
 	private Role onlyWithThis;
 	private static final int DEFAULT_MAX_ATTEMPTS = 3;
@@ -68,17 +70,20 @@ public class LoginUI extends AbstractUI {
 	protected boolean doShow() {
 		var attempt = 1;
 		while (attempt <= maxAttempts) {
-			final String userName = Console.readNonEmptyLine("Username:", "Please provide a username");
-			final String password = Console.readLine("Password:");
+			final String userName = Console.readNonEmptyLine(UtilsUI.BOLD + "Username:" + UtilsUI.RESET,
+					UtilsUI.RED + UtilsUI.BOLD + "Please provide a Username" + UtilsUI.RESET);
+			final String password = Console.readLine(UtilsUI.BOLD + "Password:" + UtilsUI.RESET);
 
 			if (credentialHandler.authenticated(userName, password, onlyWithThis)) {
 				return true;
 			}
-			System.out.printf("Wrong username or password. You have %d attempts left.%n%n»»»»»»»»»%n",
+			System.out.printf(UtilsUI.RED + UtilsUI.BOLD +
+							"%nWrong username or password. You have %d attempts left.%n%n" + UtilsUI.RESET,
 					maxAttempts - attempt);
 			attempt++;
 		}
-		System.out.println("Sorry, we are unable to authenticate you. Please contact your system admnistrator.");
+		System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Sorry, we are unable to authenticate you. Please contact your " +
+				"System Administrator." + UtilsUI.RESET);
 		return false;
 	}
 

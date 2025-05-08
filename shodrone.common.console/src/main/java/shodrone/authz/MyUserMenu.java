@@ -36,7 +36,7 @@ import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
 
 public class MyUserMenu extends Menu {
 
-	private static final String MENU_TITLE = "My account >";
+	private static final String MENU_TITLE = "\uD83D\uDC64 My account";
 
 	private static final int EXIT_OPTION = 0;
 

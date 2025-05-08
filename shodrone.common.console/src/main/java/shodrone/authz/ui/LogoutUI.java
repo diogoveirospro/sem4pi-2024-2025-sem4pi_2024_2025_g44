@@ -23,20 +23,26 @@ package shodrone.authz.ui;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.AbstractUI;
+import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
-/**
- *
- * @author mcn
- */
-public class LogoutUI extends AbstractUI {
+import static java.lang.Thread.sleep;
+
+public class LogoutUI {
+
+    public boolean show() {
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nLogout successful!!\nMake a new Login" + UtilsUI.RESET);
+
+        try{
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return doShow();
+    }
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
 
-    @Override
-    public String headline() {
-        return "Logout sucessful!!\n Make a new Login";
-    }
-
-    @Override
     protected boolean doShow() {
         authz.clearSession();
         return true;

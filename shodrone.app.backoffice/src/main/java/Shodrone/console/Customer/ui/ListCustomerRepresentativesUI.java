@@ -48,7 +48,7 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
 
     @Override
     public String headline() {
-        return UtilsUI.generateHeader(UtilsUI.PURPLE, "List Customer Representatives");
+        return "List Customer Representatives";
     }
 
     private Customer selectCustomer() {

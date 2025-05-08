@@ -43,7 +43,7 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
 
     @Override
     public String headline() {
-        return UtilsUI.generateHeader(UtilsUI.PURPLE, "Edit Customer Representative Information");
+        return "Edit Customer Representative Information";
     }
 
     private Customer selectCustomer() {

@@ -26,6 +26,7 @@ import eapli.framework.infrastructure.authz.application.AuthenticationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.io.util.Console;
 import eapli.framework.presentation.console.AbstractUI;
+import shodrone.presentation.AbstractFancyUI;
 
 /**
  * UI for user login action.
@@ -33,7 +34,7 @@ import eapli.framework.presentation.console.AbstractUI;
  * @author nuno 21/03/16.
  */
 @SuppressWarnings("squid:S106")
-public class ChangePasswordUI extends AbstractUI {
+public class ChangePasswordUI extends AbstractFancyUI {
 
     private final AuthenticationService authenticationService = AuthzRegistry
             .authenticationService();
@@ -46,7 +47,7 @@ public class ChangePasswordUI extends AbstractUI {
         try {
             boolean toContinue;
             if (authenticationService.changePassword(oldPassword, newPassword)) {
-                System.out.println("Password Successfuly changed");
+                System.out.println("Password Successfully changed");
                 toContinue = true;
             } else {
                 System.out.println("Invalid authentication");

@@ -36,7 +36,7 @@ public class MainMenu extends AbstractFancyUI {
 
     private static final int EXIT_OPTION = 0;
 
-    //USERS
+    // USERS
     private static final int REGISTER_USER_OPTION = 1;
     private static final int LIST_USERS_OPTION = 2;
     private static final int ACTIVATE_DEACTIVATE_USER_OPTION = 3;
@@ -50,22 +50,30 @@ public class MainMenu extends AbstractFancyUI {
     private static final int HELP_MENU = 8;
 
     // ADMIN MENUS
-    private static final int ADMIN_USERS_MENU = 1;
+    private static final int ADMIN_USERS_MENU = 2;
 
     // CRM COLLABORATOR MENUS
-    private static final int COLLABORATOR_CUSTOMER_MENU = 1;
-    private static final int COLLABORATOR_FIGURE_MENU = 2;
-    private static final int COLLABORATOR_SHOW_REQUEST_MENU = 3;
+    private static final int COLLABORATOR_CUSTOMER_MENU = 2;
+    private static final int COLLABORATOR_FIGURE_MENU = 3;
+    private static final int COLLABORATOR_SHOW_REQUEST_MENU = 4;
 
     // SHOW DESIGNER MENUS
-    private static final int SHOW_DESIGNER_FIGURE_MENU = 1;
-    private static final int FIGURE_CATEGORY_MENU = 2;
+    private static final int SHOW_DESIGNER_FIGURE_MENU = 2;
+    private static final int FIGURE_CATEGORY_MENU = 3;
 
     // CRM MANAGER MENUS
-    private static final int CRM_MANAGER_FIGURE_MENU = 1;
+    private static final int CRM_MANAGER_FIGURE_MENU = 2;
 
     // DRONE TECH MENUS
-    private static final int DRONE_MENU = 1;
+    private static final int DRONE_MENU = 2;
+
+    // POWER USER MENUS
+    private static final int POWER_USER_USERS_MENU = 2;
+    private static final int POWER_USER_CUSTOMER_MENU = 3;
+    private static final int POWER_USER_FIGURE_MENU = 4;
+    private static final int POWER_USER_SHOW_REQUEST_MENU = 5;
+    private static final int POWER_USER_FIGURE_CATEGORY_MENU = 6;
+    private static final int POWER_USER_DRONE_MENU = 7;
 
     // CUSTOMER MENU
     private static final int REGISTER_CUSTOMER_OPTION = 1;
@@ -84,12 +92,18 @@ public class MainMenu extends AbstractFancyUI {
     // FIGURE CRM MANAGER MENU
     private static final int DECOMMISSION_FIGURE_OPTION = 1;
 
+    // FIGURE POWER USER MENU
+    private static final int PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
+    private static final int PU_SEARCH_FIGURE_CATALOGUE_OPTION = 2;
+    private static final int PU_ADD_FIGURE_CATALOGUE_OPTION = 3;
+    private static final int PU_DECOMMISSION_FIGURE_OPTION = 4;
+
     // SHOW REQUEST MENU
     private static final int REGISTER_SHOW_REQUEST_OPTION = 1;
     private static final int LIST_SHOW_REQUESTS_OPTION = 2;
     private static final int EDIT_SHOW_REQUEST_OPTION = 3;
 
-    private static final String SEPARATOR_LABEL = "--------------";
+    private static final String SEPARATOR_LABEL = "----------------------------";
 
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
 
@@ -135,15 +149,13 @@ public class MainMenu extends AbstractFancyUI {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
 
-        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
-                ShodroneRoles.ADMIN)) {
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.ADMIN)) {
             final Menu usersMenu = buildUsersMenu();
             mainMenu.addSubMenu(ADMIN_USERS_MENU, usersMenu);
 
         }
 
-        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
-                ShodroneRoles.COLLABORATOR)) {
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.COLLABORATOR)) {
             final Menu customerMenu = buildCustomersMenu();
             mainMenu.addSubMenu(COLLABORATOR_CUSTOMER_MENU, customerMenu);
 
@@ -154,33 +166,64 @@ public class MainMenu extends AbstractFancyUI {
             mainMenu.addSubMenu(COLLABORATOR_SHOW_REQUEST_MENU, showRequestMenu);
         }
 
-        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
-                ShodroneRoles.SHOWDESIGNER)) {
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.SHOWDESIGNER)) {
             final Menu showDesignerFiguresMenu = buildShowDesignerFiguresMenu();
             mainMenu.addSubMenu(SHOW_DESIGNER_FIGURE_MENU, showDesignerFiguresMenu);
+
             final Menu figureCategoryMenu = buildCategoriesMenu();
             mainMenu.addSubMenu(FIGURE_CATEGORY_MENU, figureCategoryMenu);
         }
 
-        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
-                ShodroneRoles.MANAGER)) {
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.MANAGER)) {
             final Menu managerFiguresMenu = buildManagerFiguresMenu();
             mainMenu.addSubMenu(CRM_MANAGER_FIGURE_MENU, managerFiguresMenu);
         }
 
-        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER,
-                ShodroneRoles.DRONETECH)) {
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.DRONETECH)) {
             final Menu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(DRONE_MENU, dronesMenu);
+        }
+
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)){
+            final Menu usersMenu = buildUsersMenu();
+            mainMenu.addSubMenu(POWER_USER_USERS_MENU, usersMenu);
+
+            final Menu customerMenu = buildCustomersMenu();
+            mainMenu.addSubMenu(POWER_USER_CUSTOMER_MENU, customerMenu);
+
+            final Menu figureMenu = buildFiguresMenu();
+            mainMenu.addSubMenu(POWER_USER_FIGURE_MENU, figureMenu);
+
+            final Menu showRequestMenu = buildShowRequestMenu();
+            mainMenu.addSubMenu(POWER_USER_SHOW_REQUEST_MENU, showRequestMenu);
+
+            final Menu figureCategoryMenu = buildCategoriesMenu();
+            mainMenu.addSubMenu(POWER_USER_FIGURE_CATEGORY_MENU, figureCategoryMenu);
+
+            final Menu dronesMenu = buildDronesMenu();
+            mainMenu.addSubMenu(POWER_USER_DRONE_MENU, dronesMenu);
         }
 
         if (!Application.settings().isMenuLayoutHorizontal()) {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
 
-        mainMenu.addItem(EXIT_OPTION, "Exit", new ExitWithMessageAction("Bye, Bye"));
+        mainMenu.addItem(EXIT_OPTION, "Exit", new ExitWithMessageAction(""));
 
         return mainMenu;
+    }
+
+    private Menu buildFiguresMenu(){
+        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+
+        menu.addItem(PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
+        menu.addItem(PU_SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
+        menu.addItem(PU_ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
+        menu.addItem(PU_DECOMMISSION_FIGURE_OPTION, "Decommission Figure", new DecommissionFigureUI()::show);
+
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
     }
 
     private Menu buildCollaboratorFiguresMenu() {

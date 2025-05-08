@@ -45,7 +45,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
     @Override
     public String headline() {
-        return UtilsUI.generateHeader(UtilsUI.PURPLE, "Add Customer Representative");
+        return "Add Customer Representative";
     }
 
     public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer) {

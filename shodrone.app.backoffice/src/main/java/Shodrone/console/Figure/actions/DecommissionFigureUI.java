@@ -36,6 +36,7 @@ public class DecommissionFigureUI extends AbstractFancyUI {
         } else {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Failed to decommission the figure." + UtilsUI.RESET);
         }
+        UtilsUI.goBackAndWait();
         return true;
     }
 
@@ -66,6 +67,7 @@ public class DecommissionFigureUI extends AbstractFancyUI {
 
         if (figures.isEmpty()) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No active figures available for decommissioning." + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return null;
         }
 

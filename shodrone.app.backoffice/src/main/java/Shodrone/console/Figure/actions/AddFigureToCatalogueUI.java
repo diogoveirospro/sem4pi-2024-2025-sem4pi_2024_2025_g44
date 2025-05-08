@@ -1,5 +1,6 @@
 package Shodrone.console.Figure.actions;
 
+import Shodrone.exceptions.UserCancelledException;
 import core.Category.domain.Entities.Category;
 import core.Customer.domain.Entities.Customer;
 import core.Figure.application.AddFigureToCatalogueController;
@@ -23,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static shodrone.presentation.UtilsUI.readLineFromConsole;
+
 /**
  * User Interface for adding a figure to the catalogue.
  * This class extends AbstractUI and implements the doShow method to display the UI.
@@ -38,15 +41,16 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
      */
     @Override
     protected boolean doShow() {
-        Code code = enterValidCode();
-        Version version = enterValidVersion();
-        Description description = enterValidDescription();
-        DSLDescription dslDescription = enterValidDSLDescription();
-        Set<Keyword> keywords = enterValidKeywords();
-        Set<Category> categories = showCategoriesAndSelect();
-        Exclusivity exclusivity = enterValidExclusivity();
+        try {
+            Code code = enterValidCode();
+            Version version = enterValidVersion();
+            Description description = enterValidDescription();
+            DSLDescription dslDescription = enterValidDSLDescription();
+            Set<Keyword> keywords = enterValidKeywords();
+            Set<Category> categories = showCategoriesAndSelect();
+            Exclusivity exclusivity = enterValidExclusivity();
 
-//        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
+            //        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
 //
 //            if (authz.session().isPresent()){
 //                Name name = new Name(authz.session().get().authenticatedUser().name().firstName() + " " +
@@ -57,16 +61,23 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 //
 //        }
 
-        ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
-                new PhoneNumber("+351", "912345678"),
-                new Email("showdesigner1@shodrone.com"));
+            ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
+                    new PhoneNumber("+351", "912345678"),
+                    new Email("showdesigner1@shodrone.com"));
 
-        if (exclusivity != null) {
-            addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
-        } else {
-            addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+            if (exclusivity != null) {
+                addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+            } else {
+                addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+            }
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Figure added to catalogue successfully!" + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return true;
+
+        } catch (UserCancelledException e){
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation cancelled." + UtilsUI.RESET);
+            return false;
         }
-        return true;
     }
 
     /**
@@ -85,6 +96,13 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     private void addPublicFigureToCatalogue(Code code, Version version, Description description,
                                             DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
                                             ShowDesigner showDesigner) {
+        try{
+            controller.addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            new AddFigureToCatalogueUI().show();
+        }
+
         controller.addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
     }
 
@@ -95,7 +113,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     private void addExclusiveFigureToCatalogue(Code code, Version version, Description description,
                                                DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
                                                ShowDesigner showDesigner, Exclusivity exclusivity) {
-        controller.addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+        try{
+            controller.addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            new AddFigureToCatalogueUI().show();
+        }
     }
 
     /**
@@ -105,7 +128,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     public Set<Category> showCategoriesAndSelect() {
         Iterable<Category> categories = controller.listCategories();
         if (categories == null || !categories.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No categories available." + UtilsUI.RESET);
+            System.out.print(UtilsUI.RED + UtilsUI.BOLD + "\nNo categories available." + UtilsUI.RESET);
             return null;
         }
 
@@ -189,7 +212,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         Set<Keyword> keywords = new HashSet<>();
         String keyword;
         do {
-            keyword = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a keyword (or 'done' to finish): " + UtilsUI.RESET);
+            keyword = readLineFromConsole(UtilsUI.BOLD + "Enter a keyword (type 'done' to finish or 'cancel' to go back):\n: " + UtilsUI.RESET);
+
+            if ("cancel".equalsIgnoreCase(keyword)) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+
             assert keyword != null;
             if (!keyword.equalsIgnoreCase("done")) {
                 try {
@@ -210,7 +238,13 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     private DSLDescription enterValidDSLDescription() {
         while (true) {
             try {
-                final String filePath = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the path to the DSL file (.txt): " + UtilsUI.RESET);
+                final String filePath = readLineFromConsole(UtilsUI.BOLD + "Enter the path to the DSL file " +
+                        "(.txt) (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(filePath)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
                 assert filePath != null;
                 final List<String> dslLines = Files.readAllLines(Paths.get(filePath));
 
@@ -243,7 +277,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         String description;
         do {
             try{
-                description = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a description: " + UtilsUI.RESET);
+                description = readLineFromConsole(UtilsUI.BOLD + "Enter a description (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(description)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
                 return new Description(description);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
@@ -260,7 +299,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         String version;
         do {
             try {
-                version = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a version: " + UtilsUI.RESET);
+                version = readLineFromConsole(UtilsUI.BOLD + "Enter a version (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(version)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
                 return new Version(version);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
@@ -277,7 +321,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         String code;
         do {
             try {
-                code = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter a code: " + UtilsUI.RESET);
+                code = readLineFromConsole(UtilsUI.BOLD + "Enter a code (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(code)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
                 return new Code(code);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);

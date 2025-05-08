@@ -38,6 +38,7 @@ public class SearchCatalogueUI extends AbstractFancyUI {
         }
 
         showSearchCatalogue(category, keyword);
+        UtilsUI.goBackAndWait();
         return true;
     }
 

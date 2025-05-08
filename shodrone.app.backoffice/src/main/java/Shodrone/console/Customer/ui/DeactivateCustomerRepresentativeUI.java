@@ -79,6 +79,6 @@ public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
 
     @Override
     public String headline() {
-        return UtilsUI.generateHeader(UtilsUI.PURPLE, "Deactivate Customer Representative");
+        return "Deactivate Customer Representative";
     }
 }
