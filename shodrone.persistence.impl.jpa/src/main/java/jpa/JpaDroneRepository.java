@@ -30,7 +30,8 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Model, Designation, 
 
         Drone drone = new Drone(serialNumber, DroneStatus.ACTIVE , modelName);
         entityManager().persist(drone);
-        return true;    }
+        return true;
+    }
 
     @Override
     public boolean validateDrone(SerialNumber serialNumber) {

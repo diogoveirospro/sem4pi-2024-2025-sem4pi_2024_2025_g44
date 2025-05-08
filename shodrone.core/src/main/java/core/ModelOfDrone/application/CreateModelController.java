@@ -22,28 +22,13 @@ public class CreateModelController {
         return modelRepository= PersistenceContext.repositories().models();
     }
 
-
-
-
-    //US240
     public boolean createModel(Name modelName, WindTolerance windTolerance, WindSpeed windSpeed,
                                PositionTolerance posTolerance, SafetyStatus safetyStatus){
         Model model = new Model(modelName,windTolerance, windSpeed, posTolerance, safetyStatus);
         Preconditions.noneNull(model);
 
-        modelRepository.save(model);
+        getModelRepository().save(model);
         return true;
     }
 
-    //------------------------------------------------------------------
-    //US241
-    public boolean verifyModel(ModelName modelName) {
-        ModelRepository modelRepo = getModelRepository();
-        return modelRepo.verifyModel(modelName);
-    }
-
-    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
-        DroneRepository droneRepo = PersistenceContext.repositories().drone();
-        return droneRepo.addDrone(serialNumber, modelName);
-    }
 }
