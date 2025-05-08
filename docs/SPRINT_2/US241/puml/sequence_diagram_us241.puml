@@ -6,8 +6,8 @@ skinparam shadowing false
 autonumber
 
 actor "DroneTech" as DT
-participant ":CreateModelUI" as UI
-participant ":CreateModelController" as CTRL
+participant ":AddDroneUI" as UI
+participant ":AddDroneController" as CTRL
 participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS
 participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
@@ -24,7 +24,7 @@ activate UI
     activate UI
     UI --> UI : keepData(serialNumber)
 
-    UI -> CTRL : verifyModel(droneModel)
+    UI -> CTRL : verifyModel(modelname)
     activate CTRL
     CTRL -> CTRL :getModelRepository()
             activate CTRL
@@ -43,9 +43,9 @@ activate UI
             deactivate REPOS_SINGLETON
             CTRL -->CTRL : modelRepository
             deactivate CTRL
-    CTRL -> MDL_REPO : verifyModel(droneModel)
+    CTRL -> MDL_REPO : verifyModel(modelname)
     activate MDL_REPO
-    MDL_REPO -> MDL_REPO : verifyModel(droneModel)
+    MDL_REPO -> MDL_REPO : verifyModel(modelname)
     activate MDL_REPO
     MDL_REPO --> MDL_REPO : true
     deactivate MDL_REPO
@@ -53,13 +53,13 @@ activate UI
     deactivate MDL_REPO
     CTRL --> UI : true
     deactivate CTRL
-    UI --> UI : keepData(droneModel)
+    UI --> UI : keepData(modelname)
 
     UI --> DT : asks for confirmation
     deactivate UI
     DT -> UI : confirms data
     activate UI
-    UI -> CTRL : addDrone(serialNumber, droneModel)
+    UI -> CTRL : addDrone(serialNumber, modelname)
     activate CTRL
         CTRL -> CTRL :getDroneRepository()
         activate CTRL
@@ -78,10 +78,10 @@ activate UI
         deactivate REPOS_SINGLETON
         CTRL -->CTRL : droneRepository
         deactivate CTRL
-            CTRL -> DRN_REPO : addDrone(serialNumbe, droneModelr)
+            CTRL -> DRN_REPO : addDrone(serialNumbe, modelname)
             activate DRN_REPO
 
-        DRN_REPO -> DRN_REPO: addDrone (serialNumber, droneModel)
+        DRN_REPO -> DRN_REPO: addDrone (serialNumber, modelname)
                 activate DRN_REPO
                     DRN_REPO -> DRN_REPO: validateDrone(serialNumber)
                     activate DRN_REPO
