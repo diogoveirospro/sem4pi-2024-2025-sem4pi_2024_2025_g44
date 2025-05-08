@@ -53,7 +53,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             String username = credentials[0];
             String password = credentials[1];
 
-            addCustomerRepresentative(representative, customer, username, password);
+            addCustomerRepresentative(representative, customer, username, password, phoneNumber);
             System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative added successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
@@ -69,9 +69,9 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         return "Add Customer Representative";
     }
 
-    private void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password) {
+    private void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber phoneNumber) {
         try {
-            controller.addCustomerRepresentative(representative, customer, username, password);
+            controller.addCustomerRepresentative(representative, customer, username, password, phoneNumber);
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
         }

@@ -4,8 +4,8 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
   <persistence-unit name="shodrone.app">
-    <!-- Framework -->
 
+    <!-- Framework -->
     <class>eapli.framework.infrastructure.pubsub.impl.simplepersistent.model.EventRecord</class>
     <class>eapli.framework.infrastructure.pubsub.impl.simplepersistent.model.EventConsumption</class>
     <class>eapli.framework.infrastructure.authz.domain.model.SystemUser</class>
@@ -46,6 +46,9 @@
 
     <!-- Show Request Aggregate -->
     <class>core.ShowRequest.domain.Entities.ShowRequest</class>
+
+    <!-- User Aggregate -->
+    <class>core.User.domain.Entities.ShodroneUser</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>

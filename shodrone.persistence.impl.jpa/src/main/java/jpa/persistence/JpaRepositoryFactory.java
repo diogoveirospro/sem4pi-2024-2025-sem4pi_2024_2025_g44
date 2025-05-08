@@ -28,6 +28,7 @@ import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.infrastructure.authz.repositories.impl.jpa.JpaAutoTxUserRepository;
@@ -37,10 +38,7 @@ import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.jpa.JpaAutoTxEventRecordRepository;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import core.Persistence.Application;
-import jpa.JpaCategoryRepository;
-import jpa.JpaCustomerRepository;
-import jpa.JpaFigureRepository;
-import jpa.JpaModelRepository;
+import jpa.*;
 
 /**
  * The repository factory for JPA repositories.
@@ -108,6 +106,15 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 		return new JpaCategoryRepository(Application.settings().persistenceUnitName());
 	}
 
+	@Override
+	public ShodroneUserRepository shodroneUsers(TransactionalContext autoTx) {
+		return new JpaShodroneUserRepository(autoTx);
+	}
+
+	@Override
+	public ShodroneUserRepository shodroneUsers() {
+		return new JpaShodroneUserRepository(Application.settings().persistenceUnitName());
+	}
 
 	@Override
 	public EventConsumptionRepository eventConsumption() {

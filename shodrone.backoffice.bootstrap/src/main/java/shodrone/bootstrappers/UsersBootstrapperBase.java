@@ -20,6 +20,7 @@
  */
 package shodrone.bootstrappers;
 
+import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.User.application.ListUsersController;
 import core.User.application.RegisterUsersController;
 import eapli.framework.domain.repositories.ConcurrencyException;
@@ -51,10 +52,10 @@ public class UsersBootstrapperBase {
      * @param roles
      */
     protected SystemUser registerUser(final String username, final String password, final String firstName,
-                                      final String lastName, final String email, final Set<Role> roles) {
+                                      final String lastName, final String email, final Set<Role> roles, PhoneNumber phoneNumber) {
         SystemUser u = null;
         try {
-            u = userController.addUser(username, password, firstName, lastName, email, roles);
+            u = userController.addUser(username, password, firstName, lastName, email, roles, phoneNumber);
             LOGGER.debug("»»» %s", username);
         } catch (final IntegrityViolationException | ConcurrencyException e) {
             // assuming it is just a primary key violation due to the tentative

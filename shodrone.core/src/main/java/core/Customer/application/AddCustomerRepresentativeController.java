@@ -17,6 +17,7 @@ import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.validations.Preconditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -27,7 +28,7 @@ public class AddCustomerRepresentativeController {
     private final RegisterUsersController userController = new RegisterUsersController();
     private final ListUsersController listUserController = new ListUsersController();
 
-    public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password) {
+    public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber phoneNumber) {
         Preconditions.noneNull(representative);
         customer.addCustomerRepresentative(representative);
         // Register the user
@@ -35,7 +36,7 @@ public class AddCustomerRepresentativeController {
         roles.add(ShodroneRoles.ADMIN);
         roles.add(ShodroneRoles.USER);
         registerUser(username, password, representative.name().toString(), representative.representee().name().toString(),
-                representative.email().toString(), roles);
+                representative.email().toString(), roles, phoneNumber);
         customerRepository.save(customer);
     }
 
@@ -58,11 +59,11 @@ public class AddCustomerRepresentativeController {
     }
 
     protected SystemUser registerUser(final String username, final String password, final String firstName,
-                                      final String lastName, final String email, final Set<Role> roles) {
+                                      final String lastName, final String email, final Set<Role> roles, final PhoneNumber phoneNumber) {
 
         SystemUser u = null;
         try {
-            u = userController.addUser(username, password, firstName, lastName, email, roles);
+            u = userController.addUser(username, password, firstName, lastName, email, roles, phoneNumber);
             LOGGER.debug("»»» {}", username);
         } catch (final IntegrityViolationException | ConcurrencyException e) {
             // assuming it is just a primary key violation due to the tentative

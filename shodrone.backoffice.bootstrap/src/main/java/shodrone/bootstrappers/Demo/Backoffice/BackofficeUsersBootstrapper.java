@@ -1,5 +1,6 @@
 package shodrone.bootstrappers.Demo.Backoffice;
 
+import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.User.domain.ShodroneRoles;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,56 +23,56 @@ public class BackofficeUsersBootstrapper extends UsersBootstrapperBase implement
 
     @Override
     public boolean execute() {
-        registerAdmin("jarvis", PASSWORD, "Tony", "Stark", "tony.stark@avengers.com");
-        registerCollaborator("collaborator", PASSWORD, "Bruce", "Wayne", "bruce.wayne@gotham.com");
-        registerManager("manager", PASSWORD, "Diana", "Prince", "diana.prince@themyscira.com");
-        registerShowDesigner("showdesigner", PASSWORD, "Peter", "Parker", "peter.parker@dailybugle.com");
-        registerDroneTech("dronetech", PASSWORD, "Clark", "Kent", "clark.kent@dailyplanet.com");
+        registerAdmin("jarvis", PASSWORD, "Tony", "Stark", "tony.stark@avengers.com", new PhoneNumber("+351", "123456789"));
+        registerCollaborator("collaborator", PASSWORD, "Bruce", "Wayne", "bruce.wayne@gotham.com", new PhoneNumber("+351", "123456789"));
+        registerManager("manager", PASSWORD, "Diana", "Prince", "diana.prince@themyscira.com", new PhoneNumber("+351", "123456789"));
+        registerShowDesigner("showdesigner", PASSWORD, "Peter", "Parker", "peter.parker@dailybugle.com", new PhoneNumber("+351", "123456789"));
+        registerDroneTech("dronetech", PASSWORD, "Clark", "Kent", "clark.kent@dailyplanet.com", new PhoneNumber("+351", "123456789"));
         return true;
     }
 
     private void registerAdmin(final String username, final String password,
-                               final String firstName, final String lastName, final String email) {
+                               final String firstName, final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.ADMIN);
         roles.add(ShodroneRoles.USER);
 
-        registerUser(username, password, firstName, lastName, email, roles);
+        registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }
 
     private void registerCollaborator(final String username, final String password,
-                                      final String firstName, final String lastName, final String email) {
+                                      final String firstName, final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.COLLABORATOR);
         roles.add(ShodroneRoles.USER);
 
-        registerUser(username, password, firstName, lastName, email, roles);
+        registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }
 
     private void registerManager(final String username, final String password,
-                                 final String firstName, final String lastName, final String email) {
+                                 final String firstName, final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.MANAGER);
         roles.add(ShodroneRoles.USER);
 
-        registerUser(username, password, firstName, lastName, email, roles);
+        registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }
 
     private void registerShowDesigner(final String username, final String password,
-                                      final String firstName, final String lastName, final String email) {
+                                      final String firstName, final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.SHOWDESIGNER);
         roles.add(ShodroneRoles.USER);
 
-        registerUser(username, password, firstName, lastName, email, roles);
+        registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }
 
     private void registerDroneTech(final String username, final String password,
-                                   final String firstName, final String lastName, final String email) {
+                                   final String firstName, final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.DRONETECH);
         roles.add(ShodroneRoles.USER);
 
-        registerUser(username, password, firstName, lastName, email, roles);
+        registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }
 }

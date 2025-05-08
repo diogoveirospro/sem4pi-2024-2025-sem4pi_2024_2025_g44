@@ -6,12 +6,14 @@ import core.Customer.domain.Entities.Customer;
 import core.Figure.application.AddFigureToCatalogueController;
 import core.Figure.domain.Entities.Exclusivity;
 import core.Figure.domain.ValueObjects.*;
+import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Description;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
 import core.User.domain.ShodroneRoles;
+import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
@@ -32,8 +34,9 @@ import static shodrone.presentation.UtilsUI.readLineFromConsole;
  */
 public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
-//    private final AuthorizationService authz = AuthzRegistry.authorizationService();
+    private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final AddFigureToCatalogueController controller = new AddFigureToCatalogueController();
+    private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
 
     /**
      * Show the UI for adding a figure to the catalogue.
@@ -49,30 +52,31 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             Set<Keyword> keywords = enterValidKeywords();
             Set<Category> categories = showCategoriesAndSelect();
             Exclusivity exclusivity = enterValidExclusivity();
+            ShowDesigner showDesigner = null;
 
-            //        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
-//
-//            if (authz.session().isPresent()){
-//                Name name = new Name(authz.session().get().authenticatedUser().name().firstName() + " " +
-//                        authz.session().get().authenticatedUser().name().lastName());
-//                Email email = new Email(authz.session().get().authenticatedUser().email().toString());
-//                ShowDesigner showDesigner = new ShowDesigner(name, null, email);
-//            }
-//
-//        }
+            if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
 
-            ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
-                    new PhoneNumber("+351", "912345678"),
-                    new Email("showdesigner1@shodrone.com"));
+                if (authz.session().isPresent()){
+                    Name name = new Name(authz.session().get().authenticatedUser().name().firstName() + " " +
+                            authz.session().get().authenticatedUser().name().lastName());
+                    Email email = new Email(authz.session().get().authenticatedUser().email().toString());
+                    PhoneNumber phoneNumber = userRepository.findByUsername(authz.session().get().authenticatedUser().
+                            identity()).phoneNumber();
+                    showDesigner = new ShowDesigner(name, phoneNumber, email);
+                }
 
-            if (exclusivity != null) {
-                addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
-            } else {
-                addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+                if (exclusivity != null) {
+                    addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+                } else {
+                    addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+                }
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Figure added to catalogue successfully!" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return true;
+
             }
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Figure added to catalogue successfully!" + UtilsUI.RESET);
-            UtilsUI.goBackAndWait();
-            return true;
+
+            return false;
 
         } catch (UserCancelledException e){
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation cancelled." + UtilsUI.RESET);

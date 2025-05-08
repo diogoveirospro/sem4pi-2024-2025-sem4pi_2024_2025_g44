@@ -25,6 +25,7 @@ import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.infrastructure.authz.repositories.impl.inmemory.InMemoryUserRepository;
@@ -97,6 +98,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 
 	@Override
 	public CategoryRepository categories() {
+		return null;
+	}
+
+	@Override
+	public ShodroneUserRepository shodroneUsers(TransactionalContext autoTx) {
+		return null;
+	}
+
+	@Override
+	public ShodroneUserRepository shodroneUsers() {
 		return null;
 	}
 

@@ -20,6 +20,7 @@
  */
 package shodrone.bootstrappers;
 
+import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.actions.Action;
 import eapli.framework.infrastructure.authz.domain.model.Role;
@@ -32,16 +33,17 @@ public class MasterUsersBootstrapper extends UsersBootstrapperBase implements Ac
 
     @Override
     public boolean execute() {
-        registerAdmin("admin", TestDataConstants.PASSWORD1, "Jonh", "M Admin", "john.M@email.local");
+        registerAdmin("admin", TestDataConstants.PASSWORD1, "Jonh", "M Admin", "john.M@email.local",
+                new PhoneNumber("+351", "123456789"));
         return true;
     }
 
     private void registerAdmin(final String username, final String password, final String firstName,
-                               final String lastName, final String email) {
+                               final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.ADMIN);
 
-        registerUser(username, password, firstName, lastName, email, roles);
+        registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }
 
 

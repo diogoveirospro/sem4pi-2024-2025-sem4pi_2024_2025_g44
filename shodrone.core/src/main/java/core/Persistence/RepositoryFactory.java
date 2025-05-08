@@ -28,6 +28,7 @@ import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
+import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventConsumptionRepository;
@@ -73,6 +74,10 @@ public interface RepositoryFactory {
     CategoryRepository categories(TransactionalContext autoTx);
 
     CategoryRepository categories();
+
+    ShodroneUserRepository shodroneUsers(TransactionalContext autoTx);
+
+    ShodroneUserRepository shodroneUsers();
 
     EventConsumptionRepository eventConsumption();
 
