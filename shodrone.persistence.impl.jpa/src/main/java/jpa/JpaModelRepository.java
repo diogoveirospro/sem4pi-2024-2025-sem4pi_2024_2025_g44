@@ -1,6 +1,7 @@
 package jpa;
 
 import core.ModelOfDrone.domain.Entities.Model;
+import core.ModelOfDrone.domain.ValueObjects.ModelID;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -16,5 +17,11 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
 
     public JpaModelRepository(String persistenceUnitName) {
         super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "modelName");
+    }
+
+
+    @Override
+    public boolean verifyModel(ModelID modelId) {
+        return false;
     }
 }

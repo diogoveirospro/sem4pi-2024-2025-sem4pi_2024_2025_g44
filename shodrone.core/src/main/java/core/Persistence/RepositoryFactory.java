@@ -26,6 +26,9 @@ package core.Persistence;
 
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.ModelOfDrone.repositories.ModelRepository;
+import core.Drone.repositories.DroneRepository;
+
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.User.repositories.ShodroneUserRepository;
@@ -82,4 +85,12 @@ public interface RepositoryFactory {
     EventConsumptionRepository eventConsumption();
 
     EventRecordRepository eventRecord();
+
+    ModelRepository models(TransactionalContext autoTx);
+
+    ModelRepository models();
+
+    DroneRepository drone(TransactionalContext autoTx);
+
+    DroneRepository drone();
 }
