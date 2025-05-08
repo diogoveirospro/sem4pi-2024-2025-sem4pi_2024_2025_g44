@@ -70,10 +70,6 @@ public interface RepositoryFactory {
 
     CustomerRepository customers();
 
-    ModelRepository models(TransactionalContext autoTx);
-
-    ModelRepository models();
-
     CategoryRepository categories(TransactionalContext autoTx);
 
     CategoryRepository categories();

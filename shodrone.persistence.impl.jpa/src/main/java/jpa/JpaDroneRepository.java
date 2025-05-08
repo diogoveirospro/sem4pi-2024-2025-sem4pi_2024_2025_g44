@@ -1,6 +1,7 @@
 package jpa;
 
 import core.Drone.domain.Entities.Drone;
+import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
 import core.ModelOfDrone.domain.Entities.Model;
@@ -28,7 +29,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Model, Designation, 
             return false;
         }
 
-        Drone drone = new Drone(serialNumber, modelId);
+        Drone drone = new Drone(serialNumber, DroneStatus.ACTIVE ,modelId);
         entityManager().persist(drone);
         return true;    }
 
