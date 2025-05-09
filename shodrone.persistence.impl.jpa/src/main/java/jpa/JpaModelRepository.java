@@ -1,5 +1,6 @@
 package jpa;
 
+import core.Drone.domain.Entities.Drone;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import core.ModelOfDrone.repositories.ModelRepository;
@@ -24,7 +25,7 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
     //US241
     @Override
     public boolean verifyModel(ModelName modelName) {
-        return false;
+        return entityManager().find(Drone.class, modelName) != null;
     }
     //----------------------------------------------------------------------
 

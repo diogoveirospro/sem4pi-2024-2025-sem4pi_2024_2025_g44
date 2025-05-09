@@ -20,6 +20,13 @@ public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Des
     //US241
     @Override
     public boolean verifyModel(ModelName modelName) {
+        Iterable<Model> models = findAll();
+
+        for (Model model : models){
+            if (model.sameAs(modelName)){
+                return true;
+            }
+        }
         return false;
     }
 
