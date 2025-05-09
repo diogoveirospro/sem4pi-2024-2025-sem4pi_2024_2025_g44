@@ -48,7 +48,6 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
             CustomerRepresentative representative = new CustomerRepresentative(name, email, phoneNumber, position, customer);
 
-            // Verifica e obtém username e password
             String[] credentials = enterUsernameAndPassword();
             String username = credentials[0];
             String password = credentials[1];
