@@ -25,9 +25,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
     //US241
     @Override
     public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
-        Iterable<Drone> drones = findAll();
-
-        if (!validateDrone(serialNumber, drones)) {
+        if (!validateDrone(serialNumber)) {
             return false;
         }
 
@@ -36,7 +34,8 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         return true;
     }
 
-    public boolean validateDrone(SerialNumber serialNumber, Iterable<Drone> drones) {
+    public boolean validateDrone(SerialNumber serialNumber) {
+        Iterable<Drone> drones = findAll();
         for (Drone drone : drones) {
             if (drone.identity() == serialNumber) {
                 return false;
@@ -51,16 +50,16 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
 
     @Override
     public boolean removeDrone(SerialNumber serialNumber, String removReason) {
-        Iterable<Drone> drones = findAll();
-        if (!validateRemoval(serialNumber, drones)) {
+        if (!validateRemoval(serialNumber)) {
             return false;
         }
         addDrnRemovData(serialNumber, removReason);
-        changeDrnStatRemv(serialNumber, drones);
+        changeDrnStatRemv(serialNumber);
         return true;
     }
 
-    public boolean validateRemoval(SerialNumber serialNumber, Iterable<Drone> drones) {
+    public boolean validateRemoval(SerialNumber serialNumber) {
+        Iterable<Drone> drones = findAll();
         for (Drone drone : drones) {
             if (drone.identity() == serialNumber) {
                 return true;
@@ -76,7 +75,8 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         }*/
     }
 
-    public void changeDrnStatRemv(SerialNumber serialNumber, Iterable<Drone> drones) {
+    public void changeDrnStatRemv(SerialNumber serialNumber) {
+        Iterable<Drone> drones = findAll();
         for (Drone drone : drones) {
             if (drone.identity() == serialNumber) {
                 drone.setStatus(DroneStatus.REMOVED);
@@ -93,7 +93,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         List<Drone> drnModelList = new ArrayList<>();
         Iterable<Drone> drones = findAll();
         for (Drone drone: drones){
-            if (drone.getModelName() == droneModel.identity()){
+            if ((drone.getModelName() == droneModel.identity()) && (drone.getDroneStatus() == DroneStatus.ACTIVE)){
                 drnModelList.add(drone);
             }
         }

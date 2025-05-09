@@ -10,27 +10,19 @@ import eapli.framework.application.UseCaseController;
 @UseCaseController
 public class AddDroneController {
 
-    private ModelRepository modelRepository;
-    private DroneRepository droneRepository;
+    private ModelRepository modelRepository= PersistenceContext.repositories().models();
+    private DroneRepository droneRepository= PersistenceContext.repositories().drone();
 
     public AddDroneController(ModelRepository modelRepository) {
         this.modelRepository = modelRepository;
         this.droneRepository = droneRepository;
     }
 
-    public ModelRepository getModelRepository() {
-        return modelRepository= PersistenceContext.repositories().models();
-    }
-
-    public DroneRepository getDroneRepository() {
-        return droneRepository= PersistenceContext.repositories().drone();
-    }
-
     public boolean verifyModel(ModelName modelName) {
-        return getModelRepository().verifyModel(modelName);
+        return modelRepository.verifyModel(modelName);
     }
 
     public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
-        return getDroneRepository().addDrone(serialNumber, modelName);
+        return droneRepository.addDrone(serialNumber, modelName);
     }
 }

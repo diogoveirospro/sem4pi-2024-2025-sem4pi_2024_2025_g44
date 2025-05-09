@@ -41,6 +41,10 @@ public class Drone implements AggregateRoot<Designation> {
         return modelName;
     }
 
+    public DroneStatus getDroneStatus(){
+        return droneStatus;
+    }
+
     @Override
     public boolean sameAs(Object other) {
         return false;
