@@ -30,6 +30,9 @@ public class AddCustomerRepresentativeController {
 
     public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber phoneNumber) {
         Preconditions.noneNull(representative);
+        if (customer.representativesOfCustomer().contains(representative)) {
+            throw new IllegalArgumentException("Customer already has this representative");
+        }
         customer.addCustomerRepresentative(representative);
         // Register the user
         final Set<Role> roles = new HashSet<>();

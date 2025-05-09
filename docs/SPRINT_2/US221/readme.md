@@ -169,6 +169,15 @@ To integrate the new functionality with the existing system, we followed these s
 
 To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
+### Demonstration Instructions
+
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application**. 
+2. **Log in as a CRM Collaborator**.
+3. Navigate to the **Customers** section.
+4. Select the corresponding option to what you want to do.
+5. Follow the instructions in the UI.
 
 ## 8. Observations
 
