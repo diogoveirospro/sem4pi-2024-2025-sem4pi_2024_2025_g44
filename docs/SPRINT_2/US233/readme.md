@@ -149,27 +149,62 @@ void ensureFigureIncludesAllRequiredParameters() {
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the
-design. It should also describe and explain other important artifacts necessary to fully understand the implementation
-like, for instance, configuration files.*
+The implementation of **US233** involved the creation of all necessary components to support the addition of both 
+public and exclusive figures to the catalogue. The `Figure` aggregate was extended with two constructors to differentiate 
+between public and exclusive figures.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+The DSL description and keywords were handled as value objects, while `Exclusivity` was introduced as a domain entity 
+associated with a `Customer` and a `DateInterval`. The `AddFigureToCatalogueController` was responsible for orchestrating 
+the process, and its methods were exposed through a dedicated UI.
 
+All persistence-related configurations were updated to support the creation of figures with their respective relationships. 
+Unit tests were created to validate the creation of both figure types.
+
+Relevant commit messages:
+
+- [Correction of method names and the variable name of figure categories in the design of some USs](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/64c740bfbfb2f21b63ab700395b1d24eeac5160d)
+- [Correction of the Value Object Description of the Maintenance, Category, Figure and ShowRequest classes in the domain model, as well as the Name of the Category. Correction of the domain and class models of USs 231, 232, 233, 234.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/05f67a8c27becdce7b5aedaa69c97ff3021cf5e0)
+- [Addition of the Value Object DateInterval for the link with Exclusivity.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/6db2f1f0c4b02cf515bce84e0b437c6c3a39d81b)
+- [Start of implementation of US233](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c652d3ded025f84fa4968f718b89b4bc01a963b5)
+- [Start of implementation of US233](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/fb9252f7e50da05dfc85e1f217841a8b732e9c60)
+- [Addition of the possibility of choosing the customer when creating the figure if it is exclusive.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/eabaef6074a1b6f26d2d22fab5fdd6804c9be245)
+- [Small fixes to the add figure us](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/ddde1124c959859b119086f059abfa0931c6553a)
+- [Possible completion of the US233 implementation, already properly tested with JUnit.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/dd35b6925f0881e685c05899091affb37b9058e5)
+- [Minor corrections to designs, tests and UIs](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/5b3ac69021584fc281c3a9f8fa07c818765e5ef2)
+- [Addition of the ShowDesigner save in the AddFigureToCatalogueUI, still in commentary because the Authentication implementation is missing.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/d6e1fdca0be33359efb961f7f2c805a782d1c811)
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other
-parts/components of the system*
+The functionality implemented in **US233** was successfully integrated into the system, enabling **Show Designers** to 
+add new figures to the catalogue, with optional exclusivity for a specific customer.
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+The `AddFigureToCatalogueUI` provides an interactive interface to collect all required data, including DSL code, 
+description, keywords, and associated categories. For exclusive figures, the UI also allows selection of the customer 
+who will hold the exclusivity rights.
 
+The `AddFigureToCatalogueController` orchestrates the process, handling domain validation and delegating persistence to 
+the `FigureRepository`, which is dynamically obtained via the `PersistenceContext`. Both JPA and in-memory implementations 
+of the repository are supported, ensuring compatibility across production and testing environments.
+
+### Demonstration Instructions
+
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application** (either via the provided script, as explained in the [readme.md](readme.md) file).
+2. **Log in as a Show Designer**.
+3. Navigate to the **Figures** section.
+4. Choose **Add Figure to the Catalogue**.
+5. Provide the required data (code, version, description, DSL code, etc.).
+6. Select one or more categories from the list.
+7. (Optional) Indicate the customer for exclusivity.
+8. Upon confirmation, the figure will be persisted and available for use in show proposals.
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+For the implementation of this project, I used the following sources:
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of
-alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the
-development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
