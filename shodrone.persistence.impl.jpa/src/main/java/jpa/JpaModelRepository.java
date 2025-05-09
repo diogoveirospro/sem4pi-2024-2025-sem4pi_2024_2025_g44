@@ -9,6 +9,7 @@ import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, Designation> implements ModelRepository {
@@ -33,7 +34,14 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
     //US243
     @Override
     public List<Model> getModelList() {
-        return null;
+
+        Iterable<Model> models = findAll();
+        List<Model> modelList = new ArrayList<>();
+
+        for (Model model : models){
+            modelList.add(model);
+        }
+        return modelList;
     }
     //----------------------------------------------------------------------
 }

@@ -11,6 +11,9 @@ import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, Designation> implements DroneRepository {
 
 
@@ -70,4 +73,20 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
     public void changeDrnStatRemv(Drone drone) {
         drone.setStatus(DroneStatus.REMOVED);
     }
+
+    //US243
+    @Override
+    public List<Drone> getDrnModelList(Model droneModel){
+        List<Drone> drnModelList = new ArrayList<>();
+        Iterable<Drone> drones = findAll();
+        for (Drone drone: drones){
+            if (drone.getModelName() == droneModel.identity()){
+                drnModelList.add(drone);
+            }
+        }
+        return drnModelList;
+    }
+
+    //----------------------------------------------------------------------
+
 }

@@ -1,5 +1,6 @@
 package core.Drone.application;
 
+import core.Drone.domain.Entities.Drone;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
 import core.ModelOfDrone.domain.Entities.Model;
@@ -13,8 +14,8 @@ import java.util.List;
 @UseCaseController
 public class ListDroneController {
 
-    private ModelRepository modelRepository;
-    private DroneRepository droneRepository;
+    private ModelRepository modelRepository = PersistenceContext.repositories().models();
+    private DroneRepository droneRepository = PersistenceContext.repositories().drone();
 
     public ListDroneController(ModelRepository modelRepository) {
         this.modelRepository = modelRepository;
@@ -22,18 +23,18 @@ public class ListDroneController {
     }
 
     public ModelRepository getModelRepository() {
-        return modelRepository = PersistenceContext.repositories().models();
+        return modelRepository;
     }
 
     public DroneRepository getDroneRepository() {
-        return droneRepository = PersistenceContext.repositories().drone();
+        return droneRepository;
     }
 
     public List<Model> getModelList() {
-        return getModelRepository().getModelList();
+        return modelRepository.getModelList();
     }
 
-    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
-        return getDroneRepository().addDrone(serialNumber, modelName);
+    public List<Drone> getDrnModelList(Model droneModel) {
+        return droneRepository.getDrnModelList(droneModel);
     }
 }

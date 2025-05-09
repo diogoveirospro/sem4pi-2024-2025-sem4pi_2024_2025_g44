@@ -1,7 +1,6 @@
 package core.ModelOfDrone.domain.Entities;
 
 import core.ModelOfDrone.domain.ValueObjects.*;
-import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.*;
@@ -15,7 +14,7 @@ public class Model implements Serializable, AggregateRoot<Designation> {
     @Column(name = "model_id")
     private Long id;
     @Embedded
-    private Name modelName;
+    private ModelName modelName;
     @Embedded
     private  WindTolerance windTolerance;
     @Embedded
@@ -28,7 +27,7 @@ public class Model implements Serializable, AggregateRoot<Designation> {
     protected Model() {
         // for ORM
     }
-    public Model(Name modelName, WindTolerance windTolerance, WindSpeed windSpeed,
+    public Model(ModelName modelName, WindTolerance windTolerance, WindSpeed windSpeed,
                  PositionTolerance positionTolerance, SafetyStatus safetyStatus) {
         this.modelName = modelName;
         this.windTolerance = windTolerance;
@@ -46,7 +45,7 @@ public class Model implements Serializable, AggregateRoot<Designation> {
     }
 
     @Override
-    public Designation identity() {
+    public ModelName identity() {
         return modelName;
     }
 }

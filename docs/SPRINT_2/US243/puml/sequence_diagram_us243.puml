@@ -19,8 +19,6 @@ activate EDT
 
         EDT -> UI : asks to list all active \ndrones from a model in the inventory
         activate UI
-            UI --> CTRL** : create()
-
             UI -> CTRL : getDroneModelList()
                         activate CTRL
                             CTRL -> PERS : getRepositoryFactory
@@ -55,10 +53,8 @@ activate EDT
     deactivate UI
     EDT -> UI : confirms
     activate UI
-        UI -> CTRL : listDrn(droneModel)
+        UI -> CTRL : getDrnModelList(droneModel)
         activate CTRL
-             CTRL -> CTRL: getDrnModelList()
-                                    activate CTRL
                                         CTRL -> PERS : getRepositoryFactory
                                                                     activate PERS
                                                                     PERS --> CTRL : reposirotyFactory
@@ -79,25 +75,11 @@ activate EDT
                                                         activate DRN_REPO
                                                         DRN_REPO --> CTRL: drnModelList
                                                         deactivate DRN_REPO
-                                    CTRL --> CTRL: drnModelList
-
-                                    |||
-                                                                        deactivate CTRL
-
-                                    CTRL -> DRN_REPO : listDrone(drnModelList)
-            activate DRN_REPO
-                DRN_REPO -> DRN_REPO: listDrone(drnModelList)
-                    DRN_REPO -> DRN_REPO: validateDroneList(drnModelList)
-                    activate DRN_REPO
-                        DRN_REPO --> DRN_REPO : true
-                    deactivate DRN_REPO
-
-                DRN_REPO --> CTRL : true
             deactivate DRN_REPO
 
-            CTRL --> UI: true
+            CTRL --> UI: drnModelList
             deactivate CTRL
-            UI --> EDT: displays operation success
+            UI --> EDT: show drone model list and displays operation success
     deactivate UI
 
 deactivate EDT

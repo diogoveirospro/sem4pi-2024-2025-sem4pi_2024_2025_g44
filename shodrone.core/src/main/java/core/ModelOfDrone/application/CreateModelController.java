@@ -22,7 +22,7 @@ public class CreateModelController {
         return modelRepository= PersistenceContext.repositories().models();
     }
 
-    public boolean createModel(Name modelName, WindTolerance windTolerance, WindSpeed windSpeed,
+    public boolean createModel(ModelName modelName, WindTolerance windTolerance, WindSpeed windSpeed,
                                PositionTolerance posTolerance, SafetyStatus safetyStatus){
         Model model = new Model(modelName,windTolerance, windSpeed, posTolerance, safetyStatus);
         Preconditions.noneNull(model);

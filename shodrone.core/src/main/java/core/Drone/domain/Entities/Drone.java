@@ -31,10 +31,14 @@ public class Drone implements AggregateRoot<Designation> {
     public SerialNumber serialnumber(){return serialnumber();}
     public DroneStatus droneStatus(){return droneStatus();}
 
-    public ModelName modelID(){return modelID();}
+    public ModelName modelName(){return modelName();}
 
     public void setStatus(DroneStatus newStatus) {
         this.droneStatus = newStatus;
+    }
+
+    public ModelName getModelName(){
+        return modelName;
     }
 
     @Override
