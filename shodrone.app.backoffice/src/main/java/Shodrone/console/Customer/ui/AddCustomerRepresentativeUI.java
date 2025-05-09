@@ -1,6 +1,7 @@
 package Shodrone.console.Customer.ui;
 
 import Shodrone.console.Customer.printer.CustomerPrinter;
+import Shodrone.exceptions.UserCancelledException;
 import core.Customer.application.AddCustomerRepresentativeController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
@@ -83,15 +84,22 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         ShodronePasswordPolicy passwordPolicy = new ShodronePasswordPolicy();
 
         do {
-            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's username: " + UtilsUI.RESET);
+            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's username (or type 'cancel' to go back): " + UtilsUI.RESET);
 
+            if ("cancel".equalsIgnoreCase(username)) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
             java.io.Console console = System.console();
             if (console != null) {
-                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "Enter the representative's password (at least 8 characters, including a number): " + UtilsUI.RESET);
+                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 8 characters, including a number): " + UtilsUI.RESET);
                 password = passwordChars;
             } else {
                 // Fallback in case console is not available
-                password = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's password (at least 8 characters, including a number): " + UtilsUI.RESET);
+                password = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 8 characters, including a number): " + UtilsUI.RESET);
+            }
+
+            if ("cancel".equalsIgnoreCase(password)) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
 
             Iterable<SystemUser> allUsers = userSvc.allUsers();
@@ -141,11 +149,10 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
                 return null;
             }
-
-            if (option < 1 || option > customerList.size()) {
+            if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return customerList.get(option - 1);
+                return customerList.get(option);
             }
         } while (true);
     }
@@ -154,7 +161,10 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         String name;
         do {
             try {
-                name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's name: " + UtilsUI.RESET);
+                name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's name (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(name)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
                 return new Name(name);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid name. Please try again." + UtilsUI.RESET);
@@ -166,7 +176,12 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         String email;
         do {
             try {
-                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's email: " + UtilsUI.RESET);
+                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's email (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(email)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
                 return new Email(email);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid email. Please try again." + UtilsUI.RESET);
@@ -186,7 +201,10 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
                     return null;
                 }
                 countryCode = controller.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's phone number: " + UtilsUI.RESET);
+                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's phone number (No spaces)(or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(phoneNumber)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
                 return new PhoneNumber(countryCode, phoneNumber);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid phone number. Please try again." + UtilsUI.RESET);
@@ -201,22 +219,32 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>("Countries", countries, String::toString);
+        ListWidget<String> countryListWidget = new ListWidget<>("Choose a Country", countries);
         countryListWidget.show();
 
-        int option = UtilsUI.selectsIndex(countries);
-        if (option == -2) {
-            return null;
-        }
-
-        return countries.get(option - 1);
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(countries);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return countries.get(option);
+            }
+        } while (true);
     }
 
     private Position enterValidPosition() {
         String position;
         do {
             try {
-                position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's position: " + UtilsUI.RESET);
+                position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's position (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(position)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
                 return new Position(position);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid position. Please try again." + UtilsUI.RESET);

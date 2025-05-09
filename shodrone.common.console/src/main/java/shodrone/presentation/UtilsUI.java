@@ -272,7 +272,7 @@ public class UtilsUI {
         String input;
         int value;
         do {
-            input = UtilsUI.readLineFromConsole("Type your option: ");
+            input = UtilsUI.readLineFromConsole("Type your option (or type '0' to go back): ");
 
             try {
                 value = Integer.valueOf(input);

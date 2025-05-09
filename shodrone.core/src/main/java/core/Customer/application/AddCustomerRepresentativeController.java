@@ -36,11 +36,14 @@ public class AddCustomerRepresentativeController {
         customer.addCustomerRepresentative(representative);
         // Register the user
         final Set<Role> roles = new HashSet<>();
-        roles.add(ShodroneRoles.ADMIN);
+        roles.add(ShodroneRoles.CUSTOMERREPRESENTATIVE);
         roles.add(ShodroneRoles.USER);
+        System.out.println("Error is here");
         registerUser(username, password, representative.name().toString(), representative.representee().name().toString(),
                 representative.email().toString(), roles, phoneNumber);
+        System.out.println("User registered: " + username);
         customerRepository.save(customer);
+        System.out.println("Customer representative added: " + representative.name());
     }
 
     public Iterable<Customer> listCustomers() {

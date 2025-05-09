@@ -78,10 +78,10 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
                 return null;
             }
 
-            if (option < 1 || option > customerList.size()) {
+            if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return customerList.get(option - 1);
+                return customerList.get(option);
             }
         } while (true);
     }
@@ -107,10 +107,10 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
                 return null;
             }
 
-            if (option < 1 || option > representativeList.size()) {
+            if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return representativeList.get(option - 1);
+                return representativeList.get(option);
             }
         } while (true);
     }
@@ -142,15 +142,22 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>("Countries", countries, String::toString);
+        ListWidget<String> countryListWidget = new ListWidget<>("Choose a Country", countries, String::toString);
         countryListWidget.show();
 
-        int option = UtilsUI.selectsIndex(countries);
-        if (option == -2) {
-            return null;
-        }
-
-        return countries.get(option - 1);
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(countries);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return countries.get(option);
+            }
+        } while (true);
     }
 
     private Email enterValidEmail() {

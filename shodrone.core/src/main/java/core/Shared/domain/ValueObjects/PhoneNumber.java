@@ -4,7 +4,7 @@ import eapli.framework.domain.model.ValueObject;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a phone number with a country code and national number.
@@ -218,6 +218,9 @@ public class PhoneNumber implements Serializable, ValueObject {
      *
      */
     public static Map<String, String> countryCodes() {
-        return COUNTRY_CODES;
+        Map<String, String> sortedMap = new TreeMap<>(Comparator.comparing(COUNTRY_CODES::get, String.CASE_INSENSITIVE_ORDER));
+        sortedMap.putAll(COUNTRY_CODES);
+
+        return sortedMap;
     }
 }

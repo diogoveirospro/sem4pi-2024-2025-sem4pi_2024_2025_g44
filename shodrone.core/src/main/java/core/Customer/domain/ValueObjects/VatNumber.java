@@ -82,7 +82,12 @@ public class VatNumber implements Comparable<VatNumber>, Serializable, ValueObje
 
         fullVat = fullVat.trim().toUpperCase();
 
-        if (fullVat.length() < 3) {
+        for (char c : fullVat.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                throw new IllegalArgumentException("VAT Number can only contain letters and digits, and no spaces");
+            }
+        }
+        if (fullVat.length() < 5) {
             throw new IllegalArgumentException("VAT Number is too short");
         }
 
@@ -102,6 +107,8 @@ public class VatNumber implements Comparable<VatNumber>, Serializable, ValueObje
         if (numberPart.length() > 13) {
             throw new IllegalArgumentException("VAT number is too long");
         }
+
+
 
         this.countryCode = prefix;
         this.countryName = VAT_COUNTRY_CODES.get(prefix);

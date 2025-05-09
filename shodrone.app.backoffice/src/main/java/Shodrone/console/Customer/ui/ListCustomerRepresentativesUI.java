@@ -2,6 +2,7 @@ package Shodrone.console.Customer.ui;
 
 import Shodrone.console.Customer.printer.CustomerPrinter;
 import Shodrone.console.Customer.printer.CustomerRepresentativePrinter;
+import Shodrone.exceptions.UserCancelledException;
 import core.Customer.application.ListCustomerRepresentativesController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
@@ -110,12 +111,18 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
         ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, new CustomerPrinter());
         customerListWidget.show();
 
-        int option = UtilsUI.selectsIndex(customerList);
-        if (option == -2) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
-            return null;
-        }
-
-        return customerList.get(option - 1);
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(customerList);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return customerList.get(option);
+            }
+        } while (true);
     }
 }

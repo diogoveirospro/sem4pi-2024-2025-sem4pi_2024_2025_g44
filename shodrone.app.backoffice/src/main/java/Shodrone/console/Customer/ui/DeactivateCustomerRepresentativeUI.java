@@ -72,10 +72,10 @@ public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
                 return null;
             }
 
-            if (option < 1 || option > customerList.size()) {
+            if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return customerList.get(option - 1);
+                return customerList.get(option);
             }
         } while (true);
     }
@@ -101,10 +101,10 @@ public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
                 return null;
             }
 
-            if (option < 1 || option > representativeList.size()) {
+            if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return representativeList.get(option - 1);
+                return representativeList.get(option);
             }
         } while (true);
     }
