@@ -5,10 +5,7 @@ import core.Category.domain.ValueObjects.CategoryStatus;
 import core.Shared.domain.ValueObjects.Description;
 import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.model.AggregateRoot;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.Objects;
@@ -31,13 +28,11 @@ public class Category implements AggregateRoot<Long> {
     @Embedded
     public Description description;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
     public CategoryStatus status;
 
-    @Embedded
     public Date creationDate;
 
-    @Embedded
     public Date lastUpdateDate;
 
     /**

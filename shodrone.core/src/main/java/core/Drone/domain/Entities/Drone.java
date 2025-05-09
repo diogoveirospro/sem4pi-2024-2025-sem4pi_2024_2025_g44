@@ -5,12 +5,20 @@ import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 @Entity
 public class Drone implements AggregateRoot<Designation> {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Embedded
     private SerialNumber serialnumber;
+    @Enumerated(EnumType.STRING)
     private DroneStatus droneStatus;
+    @Embedded
     private ModelName modelName;
     public Drone (SerialNumber serialnumber, ModelName modelName){
         this.serialnumber = serialnumber;
@@ -19,6 +27,7 @@ public class Drone implements AggregateRoot<Designation> {
 
     }
 
+    protected Drone () {}
     public SerialNumber serialnumber(){return serialnumber();}
     public DroneStatus droneStatus(){return droneStatus();}
 
