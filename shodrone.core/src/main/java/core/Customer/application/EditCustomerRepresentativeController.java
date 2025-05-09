@@ -44,6 +44,7 @@ public class EditCustomerRepresentativeController {
         customerRepository.save(customer);
         user.changeEmail(newEmail);
         user.changePhoneNumber(newPhone);
+        userRepository.save(user);
     }
 
     public List<String> availableCountries() {

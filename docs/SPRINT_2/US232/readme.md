@@ -167,27 +167,63 @@ void ensureSearchIgnoresCaseAndAccents() {
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the
-design. It should also describe and explain other important artifacts necessary to fully understand the implementation
-like, for instance, configuration files.*
+The implementation of **US232** followed the previously defined design and analysis. The code is structured across the 
+domain, application, and presentation layers, respecting the modular and layered architecture of the system.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+Filtering logic based on `Category` and `Keyword` was encapsulated within the `Figure` aggregate through methods such as
+`matchesCategory(...)` and `matchesKeyword(...)`. These methods were designed to be case-insensitive and 
+accent-insensitive, using string normalization to improve the robustness of the search feature.
 
+The `FigureRepository` interface was extended with the `searchCatalogue(...)` method, and its corresponding 
+implementations (JPA and In-Memory) support filtering based on the provided parameters. The controller and UI were 
+updated to enable optional filtering by category and/or keyword, in line with client expectations.
+
+Relevant commit messages:
+
+- [Correction of method names and the variable name of figure categories in the design of some USs](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/64c740bfbfb2f21b63ab700395b1d24eeac5160d)
+- [Correction of the Value Object Description of the Maintenance, Category, Figure and ShowRequest classes in the domain model, as well as the Name of the Category. Correction of the domain and class models of USs 231, 232, 233, 234.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/05f67a8c27becdce7b5aedaa69c97ff3021cf5e0)
+- [Addition of the Value Object DateInterval for the link with Exclusivity.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/6db2f1f0c4b02cf515bce84e0b437c6c3a39d81b)
+- [Possible completion of the US232 implementation, already properly tested with JUnit.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/146acc67926093101a53b63a503c3496c421ccc2)
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other
-parts/components of the system*
+The functionality developed in **US232** was successfully integrated into the overall application, enabling 
+**CRM Collaborators** to search the figure catalogue using flexible criteria such as **category** and **keyword**.
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+The `SearchCatalogueUI` provides an intuitive interface that prompts users to input a category, a keyword, or both. 
+The UI forwards the request to the `SearchCatalogueController`, which coordinates the filtering logic using the `FigureRepository`.
 
+The controller delegates the actual search operation to the repository via `searchCatalogue(category, keyword)`, 
+which returns a list of active figures that match the criteria. Exclusive figures are included in the results, but are 
+clearly identified in the UI, as clarified by the client.
+
+This feature integrates seamlessly with the existing catalogue, which is populated through **US233 – Add Figure to Catalogue**. 
+It also respects constraints introduced by **US234 – Decommission Figure**, ensuring that only active figures are 
+included in the results.
+
+### Demonstration Instructions
+
+To test this functionality:
+
+1. **Launch the application** (either via the provided script, as explained in the [readme.md](readme.md) file).
+2. **Log in as a CRM Collaborator**.
+3. Navigate to the **Figures** section.
+4. Navigate to the **Search Figures in the Catalogue** option under the Figures section.
+5. Enter a category name and/or keyword (case and accents do not matter).
+6. View the results, which:
+    * Only include **active** figures.
+    * Display **exclusive figures** with a clear indicator and their associated customer.
+7. Try different combinations:
+    * Only category
+    * Only keyword
+    * Both
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+For the implementation of this project, I used the following sources:
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of
-alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the
-development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.

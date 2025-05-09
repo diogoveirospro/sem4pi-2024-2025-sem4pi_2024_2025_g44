@@ -133,9 +133,9 @@ public class MainMenu extends AbstractFancyUI {
         return authz.session()
                 .map(session -> {
                     final String username = session.authenticatedUser().identity().toString();
-                    return String.format("🛰️  SHODRONE // Logged in as @%s", username.toUpperCase());
+                    return String.format("SHODRONE // Logged in as @%s", username.toUpperCase());
                 })
-                .orElse("🛰️  SHODRONE // == ANONYMOUS USER ==");
+                .orElse("SHODRONE // == ANONYMOUS USER ==");
     }
 
 
@@ -214,7 +214,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildFiguresMenu(){
-        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+        final Menu menu = new Menu("Figures");
 
         menu.addItem(PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
         menu.addItem(PU_SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
@@ -227,7 +227,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildCollaboratorFiguresMenu() {
-        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+        final Menu menu = new Menu("Figures");
 
         menu.addItem(LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
         menu.addItem(SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
@@ -238,7 +238,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildShowDesignerFiguresMenu() {
-        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+        final Menu menu = new Menu("Figures");
 
         menu.addItem(ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
 
@@ -248,7 +248,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildManagerFiguresMenu() {
-        final Menu menu = new Menu("\uD83D\uDDBC\uFE0F Figures");
+        final Menu menu = new Menu("Figures");
 
         menu.addItem(DECOMMISSION_FIGURE_OPTION, "Decommission Figure", new DecommissionFigureUI()::show);
 
@@ -258,7 +258,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildShowRequestMenu() {
-        final Menu menu = new Menu("\uD83C\uDF9F\uFE0F Show Requests");
+        final Menu menu = new Menu("Show Requests");
 
         menu.addItem(REGISTER_SHOW_REQUEST_OPTION, "Register new Show Request", new RegisterShowRequestUI()::show);
         menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List all Show Requests", new ListShowRequestsUI()::show);
@@ -269,7 +269,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildCustomersMenu() {
-        final Menu menu = new Menu("\uD83E\uDD1D Customers");
+        final Menu menu = new Menu("Customers");
 
         menu.addItem(REGISTER_CUSTOMER_OPTION, "Register new Customer", new RegisterCustomerUI()::show);
         menu.addItem(ADD_CUSTOMER_REPRESENTATIVE_OPTION, "Add a Representative to a Customer", new AddCustomerRepresentativeUI()::show);
@@ -282,7 +282,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildUsersMenu() {
-        final Menu menu = new Menu("\uD83E\uDDD1\u200D\uD83D\uDCBC Users");
+        final Menu menu = new Menu("Users");
 
         menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
         menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
@@ -293,7 +293,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildCategoriesMenu() {
-        final Menu menu = new Menu("\uD83D\uDDC2\uFE0F Categories");
+        final Menu menu = new Menu("Categories");
 
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
@@ -302,7 +302,7 @@ public class MainMenu extends AbstractFancyUI {
     }
 
     private Menu buildDronesMenu() {
-        final Menu menu = new Menu("\uD83D\uDEF0\uFE0F Drones");
+        final Menu menu = new Menu("Drones");
 
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);

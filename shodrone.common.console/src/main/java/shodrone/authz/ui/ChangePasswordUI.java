@@ -48,15 +48,15 @@ public class ChangePasswordUI extends AbstractFancyUI {
         try {
             boolean toContinue;
             if (authenticationService.changePassword(oldPassword, newPassword)) {
-                System.out.println("Password Successfully changed");
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Password Successfully changed" + UtilsUI.RESET);
                 toContinue = true;
             } else {
-                System.out.println("Invalid authentication");
+                System.out.println(UtilsUI.RED + UtilsUI.RED + "Invalid authentication" + UtilsUI.RESET);
                 toContinue = false;
             }
             return toContinue;
         } catch (ConcurrencyException | IntegrityViolationException e) {
-            System.out.println("An error has occurred> " + e.getLocalizedMessage());
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "An error has occurred> " + e.getLocalizedMessage() + UtilsUI.RESET);
             return false;
         }
     }

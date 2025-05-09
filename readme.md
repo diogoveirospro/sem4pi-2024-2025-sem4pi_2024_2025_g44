@@ -23,8 +23,8 @@ If you want to build the project, you need to have the following tools installed
 Make sure `JAVA_HOME` is set to the JDK folder and Maven is on the system `PATH`. [How to set JAVA_HOME](https://confluence.atlassian.com/doc/setting-the-java_home-variable-in-windows-8895.html)
 
 To build the project, run the following script:
-- **Linux/Unix/MacOS:** ./build-all.sh
-- **Windows:** .\build-all.bat
+- **Linux/Unix/MacOS:** ./build-all.sh or ./quickbuild.sh
+- **Windows:** .\build-all.bat or .\quickbuild.bat
 
 ## 4. How to Execute Tests
 
@@ -39,6 +39,7 @@ To run the tests, run the following script:
 To run and compile the project, you need to have the programs said in the previous section *How to Build* and then run the following script:
 
 **ShodroneBackoffice:**
+
 - Linux/Unix/MacOS: ./shodroneBackoffice.sh
 - Windows: .\shodroneBackoffice.bat
 

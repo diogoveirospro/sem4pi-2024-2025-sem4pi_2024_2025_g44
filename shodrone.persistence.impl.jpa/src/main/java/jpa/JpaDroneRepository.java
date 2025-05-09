@@ -11,7 +11,7 @@ import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 
-public class JpaDroneRepository extends JpaAutoTxRepository<Model, Designation, Designation> implements DroneRepository {
+public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, Designation> implements DroneRepository {
 
 
     public JpaDroneRepository(TransactionalContext autoTx) {
@@ -22,25 +22,52 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Model, Designation, 
         super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "modelName");
     }
 
+
+    //US241
     @Override
     public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
         if (!validateDrone(serialNumber)) {
             return false;
         }
 
-        Drone drone = new Drone(serialNumber, DroneStatus.ACTIVE , modelName);
-        entityManager().persist(drone);
+        Drone drone = new Drone(serialNumber, modelName);
+        save(drone);
         return true;
     }
 
+    private boolean validateDrone(SerialNumber serialNumber) {
+        return entityManager().find(Drone.class, serialNumber) == null;
+    }
+
+
+    //---------------------------------------------------------------------
+
+
+    //US242
     @Override
-    public boolean validateDrone(SerialNumber serialNumber) {
-        Drone existing = entityManager().createQuery(
-                        "SELECT d FROM Drone d WHERE d.serialNumber.value = :sn", Drone.class)
-                .setParameter("sn", serialNumber.getValue())
-                .getResultStream()
-                .findFirst()
-                .orElse(null);
-        return existing == null;
+    public boolean removeDrone(SerialNumber serialNumber, String removReason) {
+        if (!validateRemoval(serialNumber)) {
+            return false;
+        }
+        Drone drone = entityManager().find(Drone.class, serialNumber);
+        addDrnRemovData(serialNumber, removReason);
+        changeDrnStatRemv(drone);
+        return true;
+    }
+
+    public boolean validateRemoval(SerialNumber serialNumber) {
+        return entityManager().find(Drone.class, serialNumber) != null;
+    }
+
+    public void addDrnRemovData(SerialNumber serialNumber, String removReason) {
+        /*Drone drone = entityManager().find(Drone.class, serialNumber);
+        if (drone != null) {
+            drone.setRemovalReason(reason);
+            em.merge(drone);
+        }*/
+    }
+
+    public void changeDrnStatRemv(Drone drone) {
+        drone.setStatus(DroneStatus.REMOVED);
     }
 }

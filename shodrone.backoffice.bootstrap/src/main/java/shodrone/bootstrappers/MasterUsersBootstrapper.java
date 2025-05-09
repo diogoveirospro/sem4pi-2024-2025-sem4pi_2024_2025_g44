@@ -42,6 +42,7 @@ public class MasterUsersBootstrapper extends UsersBootstrapperBase implements Ac
                                final String lastName, final String email, final PhoneNumber phoneNumber) {
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.ADMIN);
+        roles.add(ShodroneRoles.USER);
 
         registerUser(username, password, firstName, lastName, email, roles, phoneNumber);
     }

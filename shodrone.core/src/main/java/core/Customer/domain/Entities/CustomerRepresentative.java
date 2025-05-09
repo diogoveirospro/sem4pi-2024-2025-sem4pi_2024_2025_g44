@@ -10,6 +10,7 @@ import eapli.framework.general.domain.model.EmailAddress;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 public class CustomerRepresentative implements Serializable, DomainEntity<EmailAddress> {
@@ -20,6 +21,21 @@ public class CustomerRepresentative implements Serializable, DomainEntity<EmailA
     @Id
     @GeneratedValue
     private Long id;
+
+    @Version
+    private Long version;
+
+    /**
+     * The date and time when the Figure was created
+     */
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    /**
+     * The date and time when the Figure was last updated
+     */
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * The name of the customer representative.
@@ -138,6 +154,20 @@ public class CustomerRepresentative implements Serializable, DomainEntity<EmailA
         return status;
     }
 
+    /**
+     * The date and time when the customer representative was created.
+     * @return the date and time when the customer representative was created
+     */
+    public LocalDateTime createdAt() {
+        return createdAt;
+    }
+    /**
+     * The date and time when the customer representative was last updated.
+     * @return the date and time when the customer representative was last updated
+     */
+    public LocalDateTime updatedAt() {
+        return updatedAt;
+    }
 
     /**
      * Changes the email and phone number of the customer representative.
@@ -195,4 +225,22 @@ public class CustomerRepresentative implements Serializable, DomainEntity<EmailA
     public Email identity() {
         return email;
     }
+
+    /**
+     * Method to update the updatedAt field before updating the entity
+     */
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Method to set the createdAt and updatedAt fields before persisting the entity
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
