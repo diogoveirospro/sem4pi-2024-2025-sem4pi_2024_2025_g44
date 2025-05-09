@@ -128,27 +128,64 @@ void ensureDecommissionedFigureIsMarkedAsDisable() {
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the
-design. It should also describe and explain other important artifacts necessary to fully understand the implementation
-like, for instance, configuration files.*
+The implementation of **US234** required the extension of the `Figure` aggregate with the domain method `decommission()`, 
+which changes the `FigureStatus` to `DISABLE`. This ensures that figures are excluded from future listings and searches 
+while preserving their historical data.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+A new UI (`DecommissionFigureUI`) and controller (`DecommissionFigureController`) were created to allow CRM Managers to 
+perform this operation. The controller interacts with the repository to retrieve available figures and delegates the 
+business logic to the domain model.
 
+The `FigureRepository` continues to provide access to all figures, but only those with an `ACTIVE` status are allowed to
+be decommissioned. Proper validation and exception handling are enforced to prevent re-decommissioning.
+
+Relevant commit messages:
+
+- [Correction of method names and the variable name of figure categories in the design of some USs](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/64c740bfbfb2f21b63ab700395b1d24eeac5160d)
+- [Correction of the Value Object Description of the Maintenance, Category, Figure and ShowRequest classes in the domain model, as well as the Name of the Category. Correction of the domain and class models of USs 231, 232, 233, 234.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/05f67a8c27becdce7b5aedaa69c97ff3021cf5e0)
+- [Addition of the Value Object DateInterval for the link with Exclusivity.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/6db2f1f0c4b02cf515bce84e0b437c6c3a39d81b)
+- [Possible completion of the US234 implementation, already properly tested with JUnit.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/dd2e75092222e8d5f18a05350355902a6726e555)
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other
-parts/components of the system*
+The implementation of **US234 – Decommission Figure** was integrated seamlessly into the existing figure catalogue 
+module. This functionality enables **CRM Managers** to manage the lifecycle of figures by deactivating those that are 
+no longer in use or approved.
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+The user interacts with the `DecommissionFigureUI`, which allows selecting an existing figure from the catalogue. Once 
+a figure is selected, the UI delegates the action to the `DecommissionFigureController`, which retrieves the correct 
+`FigureRepository` via the `PersistenceContext` and invokes the domain method `decommission()` on the selected figure.
 
+This operation modifies the `FigureStatus` to `DISABLE`, making the figure effectively inactive. The system consistently 
+enforces this status throughout the application:
+
+* Inactive figures are excluded from the **search results** (as defined in **US232**).
+* Inactive figures are not eligible for use in any new functionality (e.g., show planning).
+* Attempting to decommission an already disabled figure results in a controlled exception (`IllegalStateException`), 
+ensuring domain consistency.
+
+### Demonstration Instructions
+
+To demonstrate this functionality:
+
+1. **Launch the application** (either via the provided script, as explained in the [readme.md](readme.md) file).
+2. **Log in as a CRM Manager**.
+3. Navigate to the **Figures** section.
+4. Navigate to the **Decommission Figure** option.
+5. Select a figure from the list of active figures.
+6. Verify:
+    * The figure no longer appears in active catalogue listings or search.
+    * Attempting to decommission the same figure again is not allowed.
+    * The figure’s status is correctly updated to `DISABLE` in the persistence layer.
+
+This use case depends on the successful completion of **US233 – Add Figure to Catalogue**, as only existing (and active) figures can be decommissioned.
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+For the implementation of this project, I used the following sources:
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of
-alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the
-development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
