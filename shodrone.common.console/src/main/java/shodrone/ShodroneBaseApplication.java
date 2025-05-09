@@ -72,7 +72,7 @@ public abstract class ShodroneBaseApplication {
      * Prints the footer of the application.
      */
     protected void printFooter() {
-        String footer = "\n" + UtilsUI.BG_BLUE + "✦ " + randomFarewellMessage() + " ✦" + UtilsUI.RESET;
+        String footer = "\n" + UtilsUI.BG_BLUE + randomFarewellMessage() + UtilsUI.RESET;
         animatedPrint(footer);
     }
 
@@ -84,7 +84,7 @@ public abstract class ShodroneBaseApplication {
         String[] messages = {
                 "Thank you for flying with Shodrone!",
                 "Lights out, drones grounded. See you soon!",
-                "You’ve completed your mission. Shodrone signing off.",
+                "You've completed your mission. Shodrone signing off.",
                 "Another flight logged. Until next time!",
                 "Shodrone: where code meets the sky. Goodbye!"
         };
