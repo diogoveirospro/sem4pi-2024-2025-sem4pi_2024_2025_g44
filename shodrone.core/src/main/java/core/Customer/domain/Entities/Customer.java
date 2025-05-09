@@ -12,6 +12,7 @@ import eapli.framework.domain.model.AggregateRoot;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +26,22 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
     @Id
     @GeneratedValue
     private Long id;
+
+
+    @Version
+    private Long version;
+
+    /**
+     * The date and time when the Figure was created
+     */
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    /**
+     * The date and time when the Figure was last updated
+     */
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * The version of the Customer in the database
@@ -132,6 +149,20 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
 
 
     /**
+     * The date and time when the customer was created.
+     * @return the date and time when the customer was created
+     */
+    public LocalDateTime createdAt() {
+        return createdAt;
+    }
+    /**
+     * The date and time when the customer was last updated.
+     * @return the date and time when the customer was last updated
+     */
+    public LocalDateTime updatedAt() {
+        return updatedAt;
+    }
+    /**
      * @param other the object to compare with
      * @return true if the two objects are the same, false otherwise
      */
@@ -206,4 +237,22 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
         }
         return null;
     }
+
+    /**
+     * Method to update the updatedAt field before updating the entity
+     */
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Method to set the createdAt and updatedAt fields before persisting the entity
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }

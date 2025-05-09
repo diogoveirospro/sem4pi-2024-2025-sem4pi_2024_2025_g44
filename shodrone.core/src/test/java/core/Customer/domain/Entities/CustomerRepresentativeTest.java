@@ -70,8 +70,6 @@ public class CustomerRepresentativeTest {
                 customer
         );
 
-        assertTrue(representative.equals(anotherRepresentative));
-
         assertEquals(representative, anotherRepresentative);
     }
 
@@ -147,12 +145,10 @@ public class CustomerRepresentativeTest {
         );
         customer.addCustomerRepresentative(representative);
 
-        // Testa com dados inválidos
         assertThrows(IllegalArgumentException.class, () -> {
             representative.changeInfo(new Email("invalid-email"), new PhoneNumber("+351", "123"));
         });
 
-        // Testa com dados válidos
         representative.changeInfo(new Email("valid@example.com"), new PhoneNumber("+351", "987654321"));
         assertEquals("valid@example.com", representative.email().toString());
         assertEquals("+351 987654321", representative.phoneNumber().toString());
