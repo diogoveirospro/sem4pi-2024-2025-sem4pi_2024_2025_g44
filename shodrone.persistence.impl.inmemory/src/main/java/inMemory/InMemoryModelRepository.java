@@ -6,6 +6,10 @@ import core.ModelOfDrone.repositories.ModelRepository;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainRepository;
 import inMemory.persistence.InMemoryInitializer;
+import org.springframework.boot.Banner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Designation> implements ModelRepository {
 
@@ -13,9 +17,26 @@ public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Des
         InMemoryInitializer.init();
     }
 
-
+    //US241
     @Override
     public boolean verifyModel(ModelName modelName) {
         return false;
     }
+
+    //----------------------------------------------------------------------
+
+
+    //US243
+    @Override
+    public List<Model> getModelList() {
+
+        Iterable<Model> models = findAll();
+        List<Model> modelList = new ArrayList<>();
+
+        for (Model model : models){
+            modelList.add(model);
+        }
+        return modelList;
+    }
+    //----------------------------------------------------------------------
 }

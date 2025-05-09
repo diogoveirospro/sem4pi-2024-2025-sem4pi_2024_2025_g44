@@ -8,6 +8,8 @@ import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 
+import java.util.List;
+
 public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, Designation> implements ModelRepository {
 
 
@@ -19,9 +21,18 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
         super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "modelName");
     }
 
-
+    //US241
     @Override
     public boolean verifyModel(ModelName modelName) {
         return false;
     }
+    //----------------------------------------------------------------------
+
+
+    //US243
+    @Override
+    public List<Model> getModelList() {
+        return null;
+    }
+    //----------------------------------------------------------------------
 }
