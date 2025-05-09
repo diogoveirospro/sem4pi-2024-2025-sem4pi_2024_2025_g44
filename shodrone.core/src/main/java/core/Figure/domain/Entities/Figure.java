@@ -11,6 +11,7 @@ import jakarta.persistence.Version;
 
 import java.io.Serializable;
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -38,6 +39,18 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     @Version
     private Long version;
+
+    /**
+     * The date and time when the Figure was created
+     */
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    /**
+     * The date and time when the Figure was last updated
+     */
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * The ID of the Figure with the code and version
@@ -164,6 +177,23 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
         this.categories = null;
         this.exclusivity = null;
         this.showDesigner = null;
+    }
+
+    /**
+     * Method to update the updatedAt field before updating the entity
+     */
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Method to set the createdAt and updatedAt fields before persisting the entity
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
