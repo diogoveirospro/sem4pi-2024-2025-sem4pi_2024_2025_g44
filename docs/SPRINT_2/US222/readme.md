@@ -52,7 +52,29 @@ It is important that we are able to list all the representatives of a customer. 
 
 This method will be used in the UI to show the list of representatives of a customer.
 
-Check the US221 for more information about the customer representative and the customer.
+The `Customer` aggregate includes:
+
+- **Name** – Customer name (for identification)
+- **Address** – Customer address
+- **VatNumber** – Tax identification number
+- **CustomerStatus** – Current status of the customer (active, inactive, etc.)
+- **CustomerType** – Type of customer (individual, company, etc.)
+- **Representatives** – A list of associated representatives
+
+Non-essential elements were omitted to maintain clarity and focus.
+
+### Customer Representative Aggregate
+
+The `CustomerRepresentative` aggregate includes:
+
+- **Name** – Representative's name
+- **Position** – Job title or role
+- **Email** – Representative’s email address
+- **PhoneNumber** – Contact number
+- **CustomerRepresentativeStatus** – Current status (active, inactive, etc.)
+- **Customer** – Associated customer
+
+Other elements not relevant to this functionality are omitted for simplicity.
 
 ![Relation customer and representative](images/domain_model_us222.svg "Domain Model")
 
@@ -62,7 +84,9 @@ Check the US221 for more information about the customer representative and the c
 
 ### 4.1. Realization
 
-The class diagram as a similar structure to the one presented in [US221](../../SPRINT_2/US221/readme.md), as the only difference are the names of the ui and controller and the used functions.
+![US222 Class Diagram](images/class_diagram_us222.svg "US221 Class Diagram")
+
+---
 
 ### 5. Tests
 

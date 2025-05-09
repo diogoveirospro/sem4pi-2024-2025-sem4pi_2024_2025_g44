@@ -8,24 +8,20 @@ package "Domain" #DDDDDD {
     package "Repository " #DDDDDD {
         Interface CustomerRepository <<Repository>> {
             + findAllCreatedCustomers() : Iterable<Customer>
+            + findAllActiveCustomerRepresentatives() : Iterable<CustomerRepresentative>
+
         }
 
         Interface RepositoryFactory <<Factory>> {
             - RepositoryFactory()
             + customers() : CustomerRepository
-            + shodroneUsers() : ShodroneUserRepository
-        }
-
-        Interface ShodroneUserRepository <<Repository>> {
-            + findByUsername(username) : ShodroneUser
-            + findByEmail(email) : ShodroneUser
         }
 
     }
 
     class Customer <<Entity>> {
         + Customer (name, address, vat, status, type)
-        + addCustomerRepresentative (representative)
+        + addRepresentative (representative)
     }
     class CustomerRepresentative <<Entity>> {
         + CustomerRepresentative (name, position, email, phoneNumber, status, customer)
@@ -58,30 +54,25 @@ package "Domain" #DDDDDD {
 
     enum CustomerRepresentativeStatus <<Value Object>>{
     }
-
-    class ShodroneUser <<Entity>> {
-        + ShodroneUser (phoneNumber, systemUser)
-    }
-
-    class SystemUser <<Entity>> {
-    }
 }
 
 package "UI" #DDDDDD {
-    class AddCustomerRepresentativeUI <<UI>> {
+    class ListCustomerRepresentativesUI <<UI>> {
 
     }
 }
 
 package "Controller" #DDDDDD {
-    class AddCustomerRepresentativeController <<Controller>> {
-        + addCustomerRepresentative(customer, representative, username, password, phoneNumber)
+    class ListCustomerRepresentativesController <<Controller>> {
+        + listRepresentativesOfCustomer(customer)
         + listCustomers()
     }
 }
 
 package "persistence.impl.jpa" #DDDDDD {
     class JpaCustomerRepository <<Repository>> {
+        + findAllCreatedCustomers() : Iterable<Customer>
+        + findAllActiveCustomerRepresentatives() : Iterable<CustomerRepresentative>
     }
 
     class JpaRepositoryFactory <<Factory>> {
@@ -89,25 +80,17 @@ package "persistence.impl.jpa" #DDDDDD {
         + customers() : CustomerRepository
     }
 
-    class JpaShodroneUserRepository <<Repository>> {
-        + findByUsername(username) : ShodroneUser
-        + findByEmail(email) : ShodroneUser
-    }
-
 }
 
 package "persistence.impl.inmemory" #DDDDDD {
     class InMemoryCustomerRepository <<Repository>> {
+        + findAllCreatedCustomers() : Iterable<Customer>
+        + findAllActiveCustomerRepresentatives() : Iterable<CustomerRepresentative>
     }
 
     class InMemoryRepositoryFactory <<Factory>> {
         - InMemoryRepositoryFactory()
         + customers() : CustomerRepository
-    }
-
-    class InMemoryShodroneUserRepository <<Repository>> {
-        + findByUsername(username) : ShodroneUser
-        + findByEmail(email) : ShodroneUser
     }
 }
 
@@ -131,49 +114,33 @@ CustomerRepresentative --> "1" Email : email
 CustomerRepresentative --> "1" PhoneNumber : phoneNumber
 CustomerRepresentative --> "1" CustomerRepresentativeStatus : status
 
-ShodroneUser --> "1" SystemUser : user
-ShodroneUser --> "1" PhoneNumber : phoneNumber
-ShodroneUser ..> "1" CustomerRepresentative
-ShodroneUser --> "1" Email : email
 
 RepositoryFactory ..> CustomerRepository : customers()
-RepositoryFactory ..> ShodroneUserRepository : shodroneUsers()
 
 CustomerRepository --> "0..*" Customer : customers
 
-AddCustomerRepresentativeUI ..> AddCustomerRepresentativeController
-AddCustomerRepresentativeController ..> RepositoryFactory : customers()
-AddCustomerRepresentativeController ..> RepositoryFactory : shodroneUsers()
-AddCustomerRepresentativeController ..> CustomerRepository : customers()
-AddCustomerRepresentativeController ..> PersistenceContext : repositories()
-AddCustomerRepresentativeController ..> ShodroneUserRepository : shodroneUsers()
+ListCustomerRepresentativesUI ..> ListCustomerRepresentativesController
+ListCustomerRepresentativesController ..> RepositoryFactory : customers()
+ListCustomerRepresentativesController ..> CustomerRepository : customers()
+ListCustomerRepresentativesController ..> PersistenceContext : repositories()
 
 
 PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
 PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
 PersistenceContext ..> RepositoryFactory : customers()
-PersistenceContext ..> JpaShodroneUserRepository : JpaShodroneUserRepository()
-PersistenceContext ..> InMemoryShodroneUserRepository : InMemoryShodroneUserRepository()
-PersistenceContext ..> ShodroneUserRepository : shodroneUsers()
 
 JpaRepositoryFactory ...|> RepositoryFactory : customers()
 JpaRepositoryFactory ..> JpaCustomerRepository
 
 JpaCustomerRepository ..|> CustomerRepository : findAllCreatedCustomers()
+JpaCustomerRepository ..|> CustomerRepository : findAllActiveCustomerRepresentatives()
 
 
 InMemoryRepositoryFactory .|> RepositoryFactory : customers()
 InMemoryRepositoryFactory ..> InMemoryCustomerRepository
 
 InMemoryCustomerRepository ..|> CustomerRepository : findAllCreatedCustomers()
-
-
-JpaShodroneUserRepository ..|> ShodroneUserRepository : findByUsername()
-JpaShodroneUserRepository ..|> ShodroneUserRepository : findByEmail()
-InMemoryShodroneUserRepository ..|> ShodroneUserRepository : findByUsername()
-InMemoryShodroneUserRepository ..|> ShodroneUserRepository : findByEmail()
-
-ShodroneUserRepository --> "0..*" ShodroneUser : shodroneUsers
+InMemoryCustomerRepository ..|> CustomerRepository : findAllActiveCustomerRepresentatives()
 
 
 @enduml
