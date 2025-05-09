@@ -1,7 +1,5 @@
 package core.Category.domain.ValueObjects;
 
-
-import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.model.ValueObject;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -21,22 +19,22 @@ public class CategoryName implements Comparable<CategoryName>, ValueObject, Seri
     /**
      * The name of the category.
      */
-    @Column(name = "name")
-    private Name name;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     /**
      * Default constructor for JPA.
      */
     protected CategoryName() {
-        this.name = null;
+        // For ORM only
     }
 
     /**
      * Constructor to create a CategoryName object.
      * @param name the name of the category
      */
-    public CategoryName(Name name) {
-        if (name == null || name.isEmpty()) {
+    public CategoryName(String name) {
+        if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         this.name = name;
@@ -47,7 +45,7 @@ public class CategoryName implements Comparable<CategoryName>, ValueObject, Seri
      */
     @Override
     public String toString() {
-        return String.valueOf(name);
+        return name;
     }
 
     /**

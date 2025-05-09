@@ -1,6 +1,7 @@
 package core.Figure.domain.Entities;
 
 import core.Category.domain.Entities.Category;
+import core.Category.domain.ValueObjects.CategoryName;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.ValueObjects.Address;
 import core.Customer.domain.ValueObjects.CustomerType;
@@ -36,9 +37,9 @@ public class FigureTest {
         keywords.add(new Keyword("keyword3"));
 
         Set<Category> categories = new HashSet<>();
-        categories.add(new Category(new Name("Category1"), new Description("Description1")));
-        categories.add(new Category(new Name("Category2"), new Description("Description2")));
-        categories.add(new Category(new Name("Category3"), new Description("Description3")));
+        categories.add(new Category(new CategoryName("Category1"), new Description("Description1")));
+        categories.add(new Category(new CategoryName("Category2"), new Description("Description2")));
+        categories.add(new Category(new CategoryName("Category3"), new Description("Description3")));
 
         ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
                 new PhoneNumber("+351", "912345678"),
@@ -60,9 +61,13 @@ public class FigureTest {
         keywords.add(new Keyword("keyword3"));
 
         Set<Category> categories = new HashSet<>();
-        categories.add(new Category(new Name("Category1"), new Description("Description1")));
-        categories.add(new Category(new Name("Category2"), new Description("Description2")));
-        categories.add(new Category(new Name("Category3"), new Description("Description3")));
+        categories.add(new Category(new CategoryName("Category1"), new Description("Description1")));
+        categories.add(new Category(new CategoryName("Category2"), new Description("Description2")));
+        categories.add(new Category(new CategoryName("Category3"), new Description("Description3")));
+
+        for (Category category : categories) {
+            System.out.println("Category: " + category.name() + ", Description: " + category.description());
+        }
 
         ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
                 new PhoneNumber("+351", "912345678"),
@@ -230,7 +235,7 @@ public class FigureTest {
         assertThrows(AssertionError.class, () -> {
             new Figure(null, new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                    Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
+                    Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
@@ -238,7 +243,7 @@ public class FigureTest {
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), null,
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                    Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
+                    Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
@@ -246,7 +251,7 @@ public class FigureTest {
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     null, new DSLDescription(List.of("line1"), "1.0.0"),
-                    Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
+                    Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
@@ -254,7 +259,7 @@ public class FigureTest {
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), null,
-                    Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
+                    Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
@@ -262,7 +267,7 @@ public class FigureTest {
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                    null, Set.of(new Category(new Name("C"), new Description("D"))),
+                    null, Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
@@ -278,7 +283,7 @@ public class FigureTest {
         assertThrows(AssertionError.class, () -> {
             new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                    Set.of(new Keyword("test")), Set.of(new Category(new Name("C"), new Description("D"))),
+                    Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     null);
         });
     }
@@ -315,12 +320,12 @@ public class FigureTest {
     void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
         Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                Set.of(new Keyword("fire")), Set.of(new Category(new Name("C"), new Description("D"))),
+                Set.of(new Keyword("fire")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
         Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                Set.of(new Keyword("water")), Set.of(new Category(new Name("C"), new Description("D"))),
+                Set.of(new Keyword("water")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
         assertTrue(figure1.matchesKeyword("fire"));
@@ -331,12 +336,12 @@ public class FigureTest {
     void ensureSearchByCategoryOnlyReturnsMatchingFigures() {
         Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                Set.of(new Keyword("test")), Set.of(new Category(new Name("mythology"), new Description("Description"))),
+                Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("mythology"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
         Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                Set.of(new Keyword("test")), Set.of(new Category(new Name("nature"), new Description("Description"))),
+                Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("nature"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
         assertTrue(figure1.matchesCategory("mythology"));
@@ -347,12 +352,12 @@ public class FigureTest {
     void ensureSearchIgnoresCaseAndAccents() {
         Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                Set.of(new Keyword("Fénix")), Set.of(new Category(new Name("C"), new Description("Description"))),
+                Set.of(new Keyword("Fénix")), Set.of(new Category(new CategoryName("C"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
         Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
-                Set.of(new Keyword("Phoenix")), Set.of(new Category(new Name("C"), new Description("Description"))),
+                Set.of(new Keyword("Phoenix")), Set.of(new Category(new CategoryName("C"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
         assertTrue(figure1.matchesKeyword("fenix"));
