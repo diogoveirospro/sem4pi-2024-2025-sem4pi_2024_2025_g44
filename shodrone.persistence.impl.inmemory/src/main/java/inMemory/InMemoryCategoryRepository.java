@@ -1,37 +1,22 @@
-package jpa;
+package inMemory;
 
 import core.Category.domain.Entities.Category;
 import core.Category.domain.ValueObjects.CategoryName;
 import core.Category.repositories.CategoryRepository;
-import core.Persistence.Application;
-import eapli.framework.domain.repositories.TransactionalContext;
-import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
+import inMemory.persistence.InMemoryInitializer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainRepository;
 
-/**
- * JPA implementation of the Category repository.
- */
-public class JpaCategoryRepository extends JpaAutoTxRepository<Category, Long, Long> implements CategoryRepository {
 
+public class InMemoryCategoryRepository extends InMemoryDomainRepository<Category, Long> implements CategoryRepository {
     /**
-     * Constructor for JPA Category Repository.
-     *
-     * @param autoTx the transactional context
+     * Constructor for InMemoryCategoryRepository.
      */
-    public JpaCategoryRepository(final TransactionalContext autoTx) {
-        super(autoTx, "id");
-    }
-
-    /**
-     * Constructor for JPA Category Repository.
-     *
-     * @param persistenceUnitName the name of the persistence unit
-     */
-    public JpaCategoryRepository(final String persistenceUnitName) {
-        super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "id");
+    static {
+        InMemoryInitializer.init();
     }
 
     /**
