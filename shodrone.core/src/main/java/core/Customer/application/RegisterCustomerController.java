@@ -16,8 +16,7 @@ import eapli.framework.validations.Preconditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @UseCaseController
 public class RegisterCustomerController {
@@ -31,6 +30,16 @@ public class RegisterCustomerController {
         } catch (IntegrityViolationException e) {
             throw new IllegalArgumentException("Error saving the customer: " + e.getMessage());
         }
+    }
+
+    public List<String> availableCountries() {
+        Map<String, String> map;
+        map = PhoneNumber.countryCodes();
+        List<String> countries = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            countries.add(entry.getValue());
+        }
+        return countries;
     }
 
     // Método para listar todos os clientes
