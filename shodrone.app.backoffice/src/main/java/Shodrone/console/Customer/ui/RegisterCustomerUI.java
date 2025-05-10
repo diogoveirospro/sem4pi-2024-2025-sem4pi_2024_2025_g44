@@ -3,10 +3,7 @@ package Shodrone.console.Customer.ui;
 import core.Customer.application.RegisterCustomerController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
-import core.Customer.domain.ValueObjects.Address;
-import core.Customer.domain.ValueObjects.CustomerStatus;
-import core.Customer.domain.ValueObjects.CustomerType;
-import core.Customer.domain.ValueObjects.VatNumber;
+import core.Customer.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
@@ -53,8 +50,9 @@ public class RegisterCustomerUI extends AbstractUI {
             // Criar o Address (Value Object)
             Address address = new Address(fullAddress); // String concatenada
 
-            // Criar o VatNumber (Value Object)
-            final String vatNumber = enterValidVatNumber();
+            final String vatCountry = selectCountry();  // Escolher o país para o VAT Number
+            String vatNumber = enterValidVatNumber(vatCountry);  // Passar o país selecionado para o VAT
+
             VatNumber vat = new VatNumber(vatNumber);
 
             // Definir o CustomerStatus e CustomerType (Value Objects)
@@ -66,6 +64,8 @@ public class RegisterCustomerUI extends AbstractUI {
 
             // Registrar o Cliente no sistema
             addCustomer(customer);
+
+            createCustomerRepresentative(customer);
 
             System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer added successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
@@ -107,6 +107,33 @@ public class RegisterCustomerUI extends AbstractUI {
     public String headline() {
         return "Register Customer";
     }
+
+    // Criar o Representante do Cliente
+    private void createCustomerRepresentative(Customer customer) {
+        String repName = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Name: " + UtilsUI.RESET);
+        Name repFullName = new Name(repName);
+
+
+        String email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Email: " + UtilsUI.RESET);
+        Email repEmail = new Email(email);
+
+        // Seleção do código do país para o telefone
+        String countryCode = selectCountry();  // Seleciona o país para o código de telefone
+
+        // Recolher o número de telefone
+        String phone = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Phone (no spaces): " + UtilsUI.RESET);
+
+        // Criar o PhoneNumber com o país e número
+        PhoneNumber repPhone = new PhoneNumber(countryCode, phone);  // Passar o código do país e o número
+
+        String position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Position: " + UtilsUI.RESET);
+        Position repPosition = new Position(position);
+
+        // Criar o Representante com os parâmetros necessários
+        CustomerRepresentative representative = new CustomerRepresentative(repFullName, repEmail, repPhone, repPosition, customer);
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative created successfully!" + UtilsUI.RESET);
+    }
+
     private String enterValidStreet() {
         String street;
         String streetRegex = "^[A-Za-zÀ-ÿ0-9\\s]+$";  // Aceita letras, números e espaços
@@ -145,11 +172,11 @@ public class RegisterCustomerUI extends AbstractUI {
         } while (true);
     }
 
-    private String enterValidVatNumber() {
+    private String enterValidVatNumber(String vatCountry) {
         String vatNumber;
         do {
             try {
-                vatNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Customer VAT Number: " + UtilsUI.RESET);
+                vatNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Customer VAT Number (" + vatCountry + "): " + UtilsUI.RESET);
                 if (vatNumber.isEmpty()) {
                     throw new IllegalArgumentException("VAT Number cannot be empty");
                 }
