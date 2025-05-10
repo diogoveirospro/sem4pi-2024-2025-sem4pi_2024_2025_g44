@@ -2,6 +2,7 @@ package Shodrone.console.Customer.ui;
 
 import Shodrone.console.Customer.printer.CustomerPrinter;
 import Shodrone.console.Customer.printer.CustomerRepresentativePrinter;
+import Shodrone.exceptions.UserCancelledException;
 import core.Customer.application.EditCustomerRepresentativeController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
@@ -48,6 +49,12 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
 
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            return false;
+        } catch (UserCancelledException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }
@@ -115,6 +122,23 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
         } while (true);
     }
 
+    private Email enterValidEmail() {
+        String email;
+        do {
+            try {
+                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's email (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(email)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
+                return new Email(email);
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid email. Please try again." + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
     private PhoneNumber enterValidPhoneNumber() {
         String phoneNumber;
         String country;
@@ -127,10 +151,13 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
                     return null;
                 }
                 countryCode = controller.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new representative's phone number: " + UtilsUI.RESET);
+                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's phone number (or type 'cancel' to go back) (No spaces): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(phoneNumber)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
                 return new PhoneNumber(countryCode, phoneNumber);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid phone number. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + "Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -142,7 +169,7 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>("Choose a Country", countries, String::toString);
+        ListWidget<String> countryListWidget = new ListWidget<>("Choose a Country", countries);
         countryListWidget.show();
 
         int option;
@@ -156,18 +183,6 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 return countries.get(option);
-            }
-        } while (true);
-    }
-
-    private Email enterValidEmail() {
-        String email;
-        do {
-            try {
-                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new representative's email: " + UtilsUI.RESET);
-                return new Email(email);
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid email. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }

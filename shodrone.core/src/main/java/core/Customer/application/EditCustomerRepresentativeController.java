@@ -39,7 +39,7 @@ public class EditCustomerRepresentativeController {
         if (existingRepresentative == null) {
             throw new IllegalArgumentException("Customer representative not found.");
         }
-        ShodroneUser user = userRepository.findByEmail(representative.email());
+        ShodroneUser user = userRepository.findByEmail(new Email(representative.email().toString()));
         existingRepresentative.changeInfo(newEmail, newPhone);
         customerRepository.save(customer);
         user.changeEmail(newEmail);

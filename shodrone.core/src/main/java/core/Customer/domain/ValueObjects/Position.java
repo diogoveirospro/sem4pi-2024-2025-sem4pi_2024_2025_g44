@@ -11,15 +11,44 @@ public class Position extends Designation implements ValueObject, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String position;
+
     protected Position() {
         // for ORM
     }
 
     public Position(String position) {
         super(validated(position));
+        this.position = position;
     }
 
     private static String validated(String position) {
         return Designation.valueOf(position).toString();
+    }
+
+    public String position() {
+        return position;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Position)) {
+            return false;
+        }
+        final Position that = (Position) o;
+        return this.toString().equals(that.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return position != null ? position.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return position;
     }
 }

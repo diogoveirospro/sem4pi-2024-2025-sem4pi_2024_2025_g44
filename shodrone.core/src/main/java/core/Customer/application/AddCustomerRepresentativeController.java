@@ -27,6 +27,7 @@ public class AddCustomerRepresentativeController {
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
     private final RegisterUsersController userController = new RegisterUsersController();
     private final ListUsersController listUserController = new ListUsersController();
+    private final RegisterUsersController registerUserController = new RegisterUsersController();
 
     public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber phoneNumber) {
         Preconditions.noneNull(representative);
@@ -34,16 +35,14 @@ public class AddCustomerRepresentativeController {
             throw new IllegalArgumentException("Customer already has this representative");
         }
         customer.addCustomerRepresentative(representative);
+
         // Register the user
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.CUSTOMERREPRESENTATIVE);
         roles.add(ShodroneRoles.USER);
-        System.out.println("Error is here");
-        registerUser(username, password, representative.name().toString(), representative.representee().name().toString(),
-                representative.email().toString(), roles, phoneNumber);
-        System.out.println("User registered: " + username);
+        Calendar createdOn = Calendar.getInstance();
+        registerUserController.addUser(username, password, representative.name().toString(), representative.name().toString(), representative.email().toString(), roles, createdOn, representative.phoneNumber());
         customerRepository.save(customer);
-        System.out.println("Customer representative added: " + representative.name());
     }
 
     public Iterable<Customer> listCustomers() {
@@ -64,18 +63,4 @@ public class AddCustomerRepresentativeController {
         return PhoneNumber.countryCodeOfCountry(country);
     }
 
-    protected SystemUser registerUser(final String username, final String password, final String firstName,
-                                      final String lastName, final String email, final Set<Role> roles, final PhoneNumber phoneNumber) {
-
-        SystemUser u = null;
-        try {
-            u = userController.addUser(username, password, firstName, lastName, email, roles, phoneNumber);
-            LOGGER.debug("»»» {}", username);
-        } catch (final IntegrityViolationException | ConcurrencyException e) {
-            // assuming it is just a primary key violation due to the tentative
-            // of inserting a duplicated user. let's just lookup that user
-            u = listUserController.find(Username.valueOf(username)).orElseThrow(() -> e);
-        }
-        return u;
-    }
 }

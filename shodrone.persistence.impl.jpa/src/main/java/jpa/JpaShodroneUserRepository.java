@@ -49,7 +49,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
     public ShodroneUser findByEmail(Email email) {
         final TypedQuery<ShodroneUser> query = entityManager().createQuery(
                 "SELECT u FROM ShodroneUser u WHERE u.email = :email", ShodroneUser.class);
-        query.setParameter("email", email.toString());
+        query.setParameter("email", email);
         return query.getSingleResult();
     }
 }

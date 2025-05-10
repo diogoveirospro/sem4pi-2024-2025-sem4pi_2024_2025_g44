@@ -39,7 +39,7 @@ public class InMemoryShodroneUserRepository extends InMemoryDomainRepository<Sho
         Iterable<ShodroneUser> users = findAll();
 
         for (ShodroneUser user : users) {
-            if (user.user().email().equals(email)) {
+            if (user.email().equals(email)) {
                 return user;
             }
         }

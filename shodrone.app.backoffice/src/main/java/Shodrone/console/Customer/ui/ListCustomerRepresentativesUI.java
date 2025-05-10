@@ -31,9 +31,14 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
      */
     @Override
     public boolean doShow() {
-        super.doShow();
-        UtilsUI.goBackAndWait();
-        return true;
+        try {
+            super.doShow();
+            UtilsUI.goBackAndWait();
+            return true;
+        } catch (UserCancelledException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -115,8 +120,7 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
         do {
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
-                return null;
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
             if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);

@@ -45,6 +45,10 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             Name name = enterValidName();
             Email email = enterValidEmail();
             PhoneNumber phoneNumber = enterValidPhoneNumber();
+            if (phoneNumber == null) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No phone number registered. Operation canceled." + UtilsUI.RESET);
+                return false;
+            }
             Position position = enterValidPosition();
 
             CustomerRepresentative representative = new CustomerRepresentative(name, email, phoneNumber, position, customer);
@@ -60,6 +64,12 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            return false;
+        } catch ( UserCancelledException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }
@@ -91,11 +101,11 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             }
             java.io.Console console = System.console();
             if (console != null) {
-                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 8 characters, including a number): " + UtilsUI.RESET);
+                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
                 password = passwordChars;
             } else {
                 // Fallback in case console is not available
-                password = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 8 characters, including a number): " + UtilsUI.RESET);
+                password = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
             }
 
             if ("cancel".equalsIgnoreCase(password)) {
@@ -201,13 +211,13 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
                     return null;
                 }
                 countryCode = controller.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's phone number (No spaces)(or type 'cancel' to go back): " + UtilsUI.RESET);
+                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's phone number (or type 'cancel' to go back) (No spaces): " + UtilsUI.RESET);
                 if ("cancel".equalsIgnoreCase(phoneNumber)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
                 return new PhoneNumber(countryCode, phoneNumber);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid phone number. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + "Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }

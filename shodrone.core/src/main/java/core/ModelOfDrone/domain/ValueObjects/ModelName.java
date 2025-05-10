@@ -7,18 +7,48 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class ModelName extends Designation implements Serializable, ValueObject {
+public class ModelName extends Designation implements ValueObject, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String modelName;
+
     protected ModelName() {
+        // for ORM
     }
 
-    public ModelName(String name) {
-        super(validated(name));
+    public ModelName(String modelName) {
+        super(validated(modelName));
+        this.modelName = modelName;
     }
 
-    private static String validated(String name) {
-        return Designation.valueOf(name).toString();
+    private static String validated(String modelName) {
+        return Designation.valueOf(modelName).toString();
+    }
+
+    public String modelName() {
+        return modelName;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ModelName)) {
+            return false;
+        }
+        final ModelName that = (ModelName) o;
+        return this.toString().equals(that.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return modelName != null ? modelName.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return modelName;
     }
 }

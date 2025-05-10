@@ -3,29 +3,31 @@ package core.Drone.domain.ValueObjects;
 import eapli.framework.domain.model.ValueObject;
 import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.io.Serializable;
 
 @Embeddable
-public class SerialNumber extends Designation implements ValueObject, Serializable{
+public class SerialNumber extends Designation implements ValueObject, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String serialNumber;
+
     protected SerialNumber() {
+        // for ORM
     }
 
-    public SerialNumber(Integer serialNumber) {
-        super(String.valueOf(validated(serialNumber)));
+    public SerialNumber(String serialNumber) {
+        super(validated(serialNumber));
+        this.serialNumber = serialNumber;
     }
 
-    private static String validated(Integer serialNumber) {
-        return Designation.valueOf(String.valueOf(serialNumber)).toString();
+    private static String validated(String serialNumber) {
+        return Designation.valueOf(serialNumber).toString();
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
+    public String serialNumber() {
+        return serialNumber;
     }
 
     @Override
@@ -33,11 +35,20 @@ public class SerialNumber extends Designation implements ValueObject, Serializab
         if (this == o) {
             return true;
         }
-        if (!(o instanceof core.Shared.domain.ValueObjects.Name)) {
+        if (!(o instanceof SerialNumber)) {
             return false;
         }
-        final core.Shared.domain.ValueObjects.Name that = (core.Shared.domain.ValueObjects.Name) o;
+        final SerialNumber that = (SerialNumber) o;
         return this.toString().equals(that.toString());
     }
 
+    @Override
+    public int hashCode() {
+        return serialNumber != null ? serialNumber.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return serialNumber;
+    }
 }
