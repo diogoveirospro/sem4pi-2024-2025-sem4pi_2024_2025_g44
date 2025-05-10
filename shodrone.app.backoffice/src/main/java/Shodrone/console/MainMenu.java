@@ -9,6 +9,7 @@ import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
 import Shodrone.console.authz.ui.ActivateDeactivateUserUI;
+import Shodrone.console.authz.ui.DisableEnableUserUI;
 import Shodrone.console.authz.ui.ListUsersUI;
 import Shodrone.console.authz.ui.RegisterUserUI;
 import core.User.domain.ShodroneRoles;
@@ -286,7 +287,7 @@ public class MainMenu extends AbstractFancyUI {
 
         menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
         menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
-        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Deactivate User", new ActivateDeactivateUserUI()::show);
+        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Deactivate User", new DisableEnableUserUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
