@@ -21,6 +21,7 @@ import shodrone.presentation.UtilsUI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * User Interface for adding a customer representative.
@@ -65,7 +66,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
             return false;
-        } catch ( UserCancelledException e) {
+        } catch (UserCancelledException e) {
             System.out.println(e.getMessage());
             return false;
         } catch (Exception e) {
@@ -96,9 +97,15 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         do {
             username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's username (or type 'cancel' to go back): " + UtilsUI.RESET);
 
+            if (username == null || username.trim().isEmpty()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Username cannot be empty. Please try again." + UtilsUI.RESET);
+                continue;
+            }
+
             if ("cancel".equalsIgnoreCase(username)) {
                 throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
+
             java.io.Console console = System.console();
             if (console != null) {
                 passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
@@ -108,6 +115,11 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
                 password = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
             }
 
+            if (password == null || password.trim().isEmpty()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty. Please try again." + UtilsUI.RESET);
+                continue;
+            }
+
             if ("cancel".equalsIgnoreCase(password)) {
                 throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
@@ -115,9 +127,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             Iterable<SystemUser> allUsers = userSvc.allUsers();
             boolean found = checkIfUsernameIsInUse(allUsers, username, false);
 
-            if (Objects.requireNonNull(username).isEmpty() || Objects.requireNonNull(password).isEmpty()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Username and/or password cannot be empty. Please try again." + UtilsUI.RESET);
-            } else if (found) {
+            if (found) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Username already exists. Please choose a different one." + UtilsUI.RESET);
             } else if (!passwordPolicy.isSatisfiedBy(password)) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password does not meet the required criteria. Please try again." + UtilsUI.RESET);
@@ -169,15 +179,19 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
     private Name enterValidName() {
         String name;
+        String nameRegex = "^[A-Za-zÀ-ÿ\\s]+$";
         do {
             try {
                 name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's name (or type 'cancel' to go back): " + UtilsUI.RESET);
                 if ("cancel".equalsIgnoreCase(name)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
+                if (!Pattern.matches(nameRegex, name)) {
+                    throw new IllegalArgumentException("Name can only contain letters and spaces.");
+                }
                 return new Name(name);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid name. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
             }
         } while (true);
     }

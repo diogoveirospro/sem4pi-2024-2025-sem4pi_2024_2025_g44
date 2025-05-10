@@ -1,5 +1,6 @@
 package Shodrone.console.Customer.ui;
 
+import Shodrone.exceptions.UserCancelledException;
 import core.Customer.application.RegisterCustomerController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
@@ -7,75 +8,195 @@ import core.Customer.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
-import core.User.application.RegisterUsersController;
-import eapli.framework.actions.Actions;
-import eapli.framework.actions.menu.Menu;
-import eapli.framework.actions.menu.MenuItem;
-import eapli.framework.domain.repositories.IntegrityViolationException;
-import eapli.framework.infrastructure.authz.domain.model.Role;
-import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ListWidget;
-import eapli.framework.presentation.console.menu.MenuItemRenderer;
-import eapli.framework.presentation.console.menu.MenuRenderer;
-import eapli.framework.presentation.console.menu.VerticalMenuRenderer;
+import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-
 @SuppressWarnings("java:S106")
-public class RegisterCustomerUI extends AbstractUI {
+public class RegisterCustomerUI extends AbstractFancyUI {
     private final RegisterCustomerController controller = new RegisterCustomerController();
 
     @Override
     protected boolean doShow() {
         try {
-            // Entradas para o Cliente
-            final String customerName = enterValidName();
-            // Criar o objeto Name para o cliente
-            Name name = new Name(customerName);
-
-
-            // Entradas para o Endereço do Cliente
-            final String street = enterValidStreet();  // Validando a entrada de rua
-            final String city = enterValidCity();  // Validando a entrada de cidade
-            final String country = selectCountry();  // Validando a seleção de país
-
-            // Concatenacao das partes do endereço em uma única string
+            Name name = enterValidName();
+            String street = enterValidStreet();
+            String city = enterValidCity();
+            String country = selectCountry();
             String fullAddress = street + ", " + city + ", " + country;
-
-            // Criar o Address (Value Object)
-            Address address = new Address(fullAddress); // String concatenada
-
-            final String vatCountry = selectCountry();  // Escolher o país para o VAT Number
-            String vatNumber = enterValidVatNumber(vatCountry);  // Passar o país selecionado para o VAT
-
-            VatNumber vat = new VatNumber(vatNumber);
-
-            // Definir o CustomerStatus e CustomerType (Value Objects)
-            CustomerStatus status = CustomerStatus.CREATED;  // Status padrão
-            CustomerType type = CustomerType.REGULAR;        // Tipo padrão
-
-            // Criar o objeto Customer com todos os parâmetros
+            Address address = new Address(fullAddress);
+            String vatNumber = enterValidVatNumber(country);
+            VatNumber vat = new VatNumber( vatNumber);
+            CustomerType type = selectValidCustomerType();
             Customer customer = new Customer(name, address, vat, type);
-
-            // Registrar o Cliente no sistema
-            addCustomer(customer);
-
             createCustomerRepresentative(customer);
-
+            addCustomer(customer);
             System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer added successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
-
             return true;
-
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
             return false;
+        } catch (UserCancelledException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            return false;
         }
+    }
+
+    private CustomerType selectValidCustomerType() {
+
+        List<String> customerTypes = controller.availableCustomerTypes();
+        if (customerTypes == null || customerTypes.isEmpty()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer types available." + UtilsUI.RESET);
+            return null;
+        }
+
+        ListWidget<String> customerTypeListWidget = new ListWidget<>("Choose a Customer Type", customerTypes);
+        customerTypeListWidget.show();
+
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(customerTypes);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return CustomerType.valueOf(customerTypes.get(option));
+            }
+        } while (true);
+    }
+
+    @Override
+    public String headline() {
+        return "Register Customer";
+    }
+
+    private void createCustomerRepresentative(Customer customer) {
+        Name repFullName = enterValidName();
+        Email repEmail = enterValidEmail();
+        PhoneNumber repPhone = enterValidPhoneNumber();
+        if (repPhone == null) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No phone number registered. Operation canceled." + UtilsUI.RESET);
+            return;
+        }
+        String position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Position: " + UtilsUI.RESET);
+        Position repPosition = new Position(position);
+
+        CustomerRepresentative representative = new CustomerRepresentative(repFullName, repEmail, repPhone, repPosition, customer);
+        customer.addCustomerRepresentative(representative);
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative created successfully!" + UtilsUI.RESET);
+    }
+
+    private Name enterValidName() {
+        String name;
+        String nameRegex = "^[A-Za-zÀ-ÿ\\s]+$";
+        do {
+            try {
+                name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the name (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(name)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                if (!Pattern.matches(nameRegex, name)) {
+                    throw new IllegalArgumentException("Name can only contain letters and spaces.");
+                }
+                return new Name(name);
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private Email enterValidEmail() {
+        String email;
+        do {
+            try {
+                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the email (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(email)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                return new Email(email);
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid email. Please try again." + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private PhoneNumber enterValidPhoneNumber() {
+        String phoneNumber;
+        String country;
+        String countryCode;
+        do {
+            try {
+                country = selectCountry();
+                if (country == null) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No country selected. Operation canceled." + UtilsUI.RESET);
+                    return null;
+                }
+                countryCode = controller.countryCode(country);
+                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the phone number (or type 'cancel' to go back) (No spaces): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(phoneNumber)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                return new PhoneNumber(countryCode, phoneNumber);
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + "Please try again." + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private String enterValidStreet() {
+        String street;
+        do {
+            try {
+                street = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the street (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(street)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                return street;
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private String enterValidCity() {
+        String city;
+        do {
+            try {
+                city = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the city (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(city)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                return city;
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private String enterValidVatNumber(String vatCountry) {
+        String vatNumber;
+        do {
+            try {
+                vatNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the VAT Number (" + vatCountry + ") (or type 'cancel' to go back): " + UtilsUI.RESET);
+                if ("cancel".equalsIgnoreCase(vatNumber)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                String vatCountryCode = controller.countryCodeVatNumber(vatCountry);
+                return vatCountryCode + vatNumber;
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
+            }
+        } while (true);
     }
 
     private String selectCountry() {
@@ -92,116 +213,13 @@ public class RegisterCustomerUI extends AbstractUI {
         do {
             option = UtilsUI.selectsIndex(countries);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled. Please try again." + UtilsUI.RESET);
-                continue;  // Permite tentar novamente
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                return null;
             }
-
             if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return countries.get(option); // Retorna o país selecionado
-            }
-        } while (true);
-    }
-    @Override
-    public String headline() {
-        return "Register Customer";
-    }
-
-    // Criar o Representante do Cliente
-    private void createCustomerRepresentative(Customer customer) {
-        String repName = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Name: " + UtilsUI.RESET);
-        Name repFullName = new Name(repName);
-
-
-        String email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Email: " + UtilsUI.RESET);
-        Email repEmail = new Email(email);
-
-        // Seleção do código do país para o telefone
-        String countryCode = selectCountry();  // Seleciona o país para o código de telefone
-
-        // Recolher o número de telefone
-        String phone = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Phone (no spaces): " + UtilsUI.RESET);
-
-        // Criar o PhoneNumber com o país e número
-        PhoneNumber repPhone = new PhoneNumber(countryCode, phone);  // Passar o código do país e o número
-
-        String position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Position: " + UtilsUI.RESET);
-        Position repPosition = new Position(position);
-
-        // Criar o Representante com os parâmetros necessários
-        CustomerRepresentative representative = new CustomerRepresentative(repFullName, repEmail, repPhone, repPosition, customer);
-        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative created successfully!" + UtilsUI.RESET);
-    }
-
-    private String enterValidStreet() {
-        String street;
-        String streetRegex = "^[A-Za-zÀ-ÿ0-9\\s]+$";  // Aceita letras, números e espaços
-        do {
-            try {
-                street = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Customer Street: " + UtilsUI.RESET);
-                if (street.isEmpty()) {
-                    throw new IllegalArgumentException("Street cannot be empty");
-                }
-                if (!Pattern.matches(streetRegex, street)) {
-                    throw new IllegalArgumentException("Street can only contain letters, numbers, and spaces");
-                }
-                return street;
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
-            }
-        } while (true);
-    }
-
-    private String enterValidCity() {
-        String city;
-        String cityRegex = "^[A-Za-zÀ-ÿ\\s]+$";  // Aceita apenas letras e espaços
-        do {
-            try {
-                city = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Customer City: " + UtilsUI.RESET);
-                if (city.isEmpty()) {
-                    throw new IllegalArgumentException("City cannot be empty");
-                }
-                if (!Pattern.matches(cityRegex, city)) {
-                    throw new IllegalArgumentException("City can only contain letters and spaces");
-                }
-                return city;
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
-            }
-        } while (true);
-    }
-
-    private String enterValidVatNumber(String vatCountry) {
-        String vatNumber;
-        do {
-            try {
-                vatNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Customer VAT Number (" + vatCountry + "): " + UtilsUI.RESET);
-                if (vatNumber.isEmpty()) {
-                    throw new IllegalArgumentException("VAT Number cannot be empty");
-                }
-                return vatNumber;
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
-            }
-        } while (true);
-    }
-
-    private String enterValidName() {
-        String name;
-        String nameRegex = "^[A-Za-zÀ-ÿ\\s]+$";  // Aceita apenas letras e espaços
-        do {
-            try {
-                name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Customer Name: " + UtilsUI.RESET);
-                if (name.isEmpty()) {
-                    throw new IllegalArgumentException("Name cannot be empty");
-                }
-                if (!Pattern.matches(nameRegex, name)) {
-                    throw new IllegalArgumentException("Name can only contain letters and spaces");
-                }
-                return name;
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
+                return countries.get(option);
             }
         } while (true);
     }

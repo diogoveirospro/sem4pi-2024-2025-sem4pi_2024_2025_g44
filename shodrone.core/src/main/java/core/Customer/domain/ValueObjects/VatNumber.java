@@ -158,4 +158,13 @@ public class VatNumber implements Comparable<VatNumber>, Serializable, ValueObje
     public static Map<String, String> getVatCountryCodes() {
         return VAT_COUNTRY_CODES;
     }
+
+    public static String VatCode(String country) {
+        for (Map.Entry<String, String> entry : VAT_COUNTRY_CODES.entrySet()) {
+            if (entry.getValue().equalsIgnoreCase(country)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 }

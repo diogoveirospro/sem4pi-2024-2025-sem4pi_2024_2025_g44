@@ -2,6 +2,8 @@ package core.Customer.application;
 
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
+import core.Customer.domain.ValueObjects.CustomerType;
+import core.Customer.domain.ValueObjects.VatNumber;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.PhoneNumber;
@@ -23,10 +25,9 @@ public class RegisterCustomerController {
 
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
 
-    // Método para registrar o cliente
     public void addCustomer(Customer customer) {
         try {
-            customerRepository.save(customer); // Salva o cliente no repositório
+            customerRepository.save(customer);
         } catch (IntegrityViolationException e) {
             throw new IllegalArgumentException("Error saving the customer: " + e.getMessage());
         }
@@ -42,10 +43,23 @@ public class RegisterCustomerController {
         return countries;
     }
 
-    // Método para listar todos os clientes
     public Iterable<Customer> listCustomers() {
         return customerRepository.findAllCreatedCustomers();
     }
 
+    public String countryCode(String country) {
+        return PhoneNumber.countryCodeOfCountry(country);
+    }
 
+    public String countryCodeVatNumber(String vatNumber) {
+        return VatNumber.VatCode(vatNumber);
+    }
+
+    public List<String> availableCustomerTypes() {
+        List<String> customerTypes = new ArrayList<>();
+        for (CustomerType type : CustomerType.values()) {
+            customerTypes.add(type.toString());
+        }
+        return customerTypes;
+    }
 }
