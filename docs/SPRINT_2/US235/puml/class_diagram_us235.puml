@@ -1,0 +1,163 @@
+@startuml
+set separator none
+left to right direction
+
+package "UI" #DDDDDD {
+    class ListShowRequestUI <<UI>> {
+        + listShowRequest(customer)
+        + showCustomersAndSelect()
+    }
+}
+
+package "Controller" #DDDDDD {
+    class ListShowRequestController <<Controller>> {
+        + listShowRequest(customer)
+        + listCustomers(): Iterable<Customer>
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaRepositoryFactory{
+        - JpaRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class JpaShowRequestRepository{
+    }
+
+    class JpaCustomersRepository{
+    }
+
+    class JpaUsersRepository{
+    }
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryRepositoryFactory{
+        - InMemoryRepositoryFactory()
+        + getInstance(): RepositoryFactory
+    }
+
+    class InMemoryShowRequestRepository{
+    }
+
+    class InMemoryCustomersRepository{
+    }
+
+    class InMemoryUsersRepository{
+    }
+}
+
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory() : RepositoryFactory
+    }
+}
+
+package "Domain" #DDDDDD {
+    package "Repository " #DDDDDD {
+        Interface RepositoryFactory {
+            + getShowRequestRepository() : ShowRequestRepository
+            + getCustomerRepository() : CustomerRepository
+            + getUsersRepository() : UsersRepository
+        }
+
+        Interface ShowRequestRepository {
+            + getShowRequest(): Iterable<ShowRequest>
+        }
+
+        Interface CustomerRepository {
+            + getCustomers(): Iterable<Customers>
+        }
+
+        Interface UsersRepository {
+            + getUsers(): Iterable<Users>
+        }
+    }
+
+    class CRMCollaborator <<Entity>>{
+    }
+
+    class Customer <<Entity>>{
+    }
+
+    class Location <<Value Object>>{
+    }
+
+    enum ShowRequestStatus <<Value Object>>{
+    }
+
+    class ShowDescription <<Value Object>>{
+    }
+
+    class ShowRequest <<Entity>>{
+    }
+
+    class Time <<Value Object>>{
+    }
+
+    class Date <<Value Object>>{
+    }
+
+    class QuantityOfDrones <<Value Object>>{
+    }
+}
+
+'ShowRequest -> x
+ShowRequest --> "1" ShowDescription : description
+ShowRequest --> "1" CRMCollaborator : submitted by
+ShowRequest --> "1" Customer: requested by
+ShowRequest --> "1" Location: place
+ShowRequest --> "1" ShowRequestStatus: requestStatus
+ShowRequest --> "1" Time : duration
+ShowRequest --> "1" Date : startTime
+ShowRequest --> "1" QuantityOfDrones: qnt_drones
+
+'UI
+ListShowRequestUI ..> ListShowRequestController
+
+'Controller
+ListShowRequestController ..> PersistenceContext : getRepositoryFactory()
+ListShowRequestController ..> RepositoryFactory : getCustomerRepository()
+ListShowRequestController ..> RepositoryFactory : getCustomers()
+ListShowRequestController ..> RepositoryFactory : getUsers()
+ListShowRequestController ..> ShowRequestRepository : getShowRequest()
+ListShowRequestController ..> CustomerRepository : getCustomers()
+ListShowRequestController ..> UsersRepository : getUsers()
+
+'Repository
+ShowRequestRepository ..> ShowRequest
+CustomerRepository ..> Customer
+UsersRepository ..> CRMCollaborator
+
+'RepositoryFactory
+RepositoryFactory ..> ShowRequestRepository
+RepositoryFactory ..> CustomerRepository
+RepositoryFactory ..> UsersRepository
+
+'PersistenceContext
+PersistenceContext ..> RepositoryFactory : getShowRequestRepository()
+PersistenceContext ..> RepositoryFactory : getCustomerRepository()
+PersistenceContext ..> RepositoryFactory : getUsersRepository()
+PersistenceContext ..> JpaRepositoryFactory
+PersistenceContext ..> InMemoryRepositoryFactory
+
+'PersistenceJPA
+JpaShowRequestRepository --|> ShowRequestRepository
+JpaCustomersRepository --|> CustomerRepository
+JpaUsersRepository --|> UsersRepository
+JpaRepositoryFactory ....|> RepositoryFactory
+JpaRepositoryFactory ..> JpaShowRequestRepository
+JpaRepositoryFactory ..> JpaCustomersRepository
+JpaRepositoryFactory ..> JpaUsersRepository
+
+'PersistenceInMemory
+InMemoryShowRequestRepository --|> ShowRequestRepository
+InMemoryCustomersRepository --|> CustomerRepository
+InMemoryUsersRepository --|> UsersRepository
+InMemoryRepositoryFactory ...|> RepositoryFactory
+InMemoryRepositoryFactory ..> InMemoryShowRequestRepository
+InMemoryRepositoryFactory ..> InMemoryCustomersRepository
+InMemoryRepositoryFactory ..> InMemoryUsersRepository
+
+@enduml

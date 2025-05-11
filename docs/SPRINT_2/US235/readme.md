@@ -103,23 +103,18 @@ The `Customer` aggregate includes:
 
 
 ## 4. Design
-
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+\
+In this section, the design for **US235 - List all Show Request of a Client** is presented.\
+It shows the separation between user interface, controller, domain model and persistence layers.
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US235 Class Diagram](images/class_diagram_us235.svg "US235 Class Diagram")
 
-### 4.3. Applied Patterns
+### 4.2. Acceptance Tests
 
-### 4.4. Acceptance Tests
-
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
-
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
+**Test 1:** Ensure the CRM Collaborator is a user in the system\
+**Refers to Acceptance Criteria:** AC01
 
 ```
 @Test(expected = IllegalArgumentException.class)
@@ -127,6 +122,43 @@ public void ensureXxxxYyyy() {
 	...
 }
 ````
+
+---
+
+**Test 2:** Ensure the CRM Manager is a user in the system\
+**Refers to Acceptance Criteria:** AC02
+
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+````
+
+---
+
+**Test 3:** Ensure the Customer is a user in the system\
+**Refers to Acceptance Criteria:** AC03
+
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+````
+
+---
+
+**Test 4:** Ensure the Show Request status information is provided\
+**Refers to Acceptance Criteria:** AC04
+
+
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+```
 
 ## 5. Implementation
 
