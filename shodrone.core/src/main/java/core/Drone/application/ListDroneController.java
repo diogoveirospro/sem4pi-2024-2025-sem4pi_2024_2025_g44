@@ -17,17 +17,7 @@ public class ListDroneController {
     private ModelRepository modelRepository = PersistenceContext.repositories().models();
     private DroneRepository droneRepository = PersistenceContext.repositories().drone();
 
-    public ListDroneController(ModelRepository modelRepository) {
-        this.modelRepository = modelRepository;
-        this.droneRepository = droneRepository;
-    }
-
-    public ModelRepository getModelRepository() {
-        return modelRepository;
-    }
-
-    public DroneRepository getDroneRepository() {
-        return droneRepository;
+    public ListDroneController() {
     }
 
     public List<Model> getModelList() {

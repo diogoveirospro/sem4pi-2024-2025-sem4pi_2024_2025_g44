@@ -5,6 +5,9 @@ import Shodrone.console.Category.actions.ChangeCategoryStatusUI;
 import Shodrone.console.Category.actions.EditCategoryUI;
 import Shodrone.console.Category.printer.ListExistingCategoriesUI;
 import Shodrone.console.Customer.ui.*;
+import Shodrone.console.Drone.AddDroneUI;
+import Shodrone.console.Drone.ListDroneUI;
+import Shodrone.console.Drone.RemoveDroneUI;
 import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
@@ -317,7 +320,9 @@ public class MainMenu extends AbstractFancyUI {
     private Menu buildDronesMenu() {
         final Menu menu = new Menu("Drones");
 
-
+        menu.addItem(LIST_USERS_OPTION, "Add a drone from inventory", new AddDroneUI()::show);
+            menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Remove a drone from inventory", new RemoveDroneUI()::show);
+        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "List a type of drone", new ListDroneUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;

@@ -7,7 +7,7 @@ skinparam shadowing false
 autonumber
 
 actor "DroneTech" as DT
-participant ":RemoveDronelUI" as UI
+participant ":RemoveDroneUI" as UI
 participant ":RemoveDroneController" as CTRL
 participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS

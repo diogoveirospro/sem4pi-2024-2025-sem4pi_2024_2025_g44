@@ -13,9 +13,7 @@ public class AddDroneController {
     private ModelRepository modelRepository= PersistenceContext.repositories().models();
     private DroneRepository droneRepository= PersistenceContext.repositories().drone();
 
-    public AddDroneController(ModelRepository modelRepository) {
-        this.modelRepository = modelRepository;
-        this.droneRepository = droneRepository;
+    public AddDroneController() {
     }
 
     public boolean verifyModel(ModelName modelName) {

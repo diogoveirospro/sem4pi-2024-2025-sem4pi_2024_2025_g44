@@ -12,8 +12,7 @@ import eapli.framework.application.UseCaseController;
 public class RemoveDroneController {
     private DroneRepository droneRepository= PersistenceContext.repositories().drone();
 
-    public RemoveDroneController(DroneRepository droneRepository) {
-        this.droneRepository = droneRepository;
+    public RemoveDroneController() {
     }
 
 
