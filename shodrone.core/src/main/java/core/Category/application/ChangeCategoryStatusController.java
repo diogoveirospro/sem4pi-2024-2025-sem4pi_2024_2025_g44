@@ -7,6 +7,8 @@ import core.Category.repositories.CategoryRepository;
 import core.Persistence.PersistenceContext;
 import eapli.framework.application.UseCaseController;
 
+import java.util.List;
+
 /**
  * Controller for changing the status of a category.
  * This class is responsible for handling the change of status of categories.
@@ -45,5 +47,14 @@ public class ChangeCategoryStatusController {
         }
         // Return true if the status was changed successfully
         return true;
+    }
+
+    /**
+     * List all categories in the system.
+     *
+     * @return a list of existing categories
+     */
+    public List<Category> listAllCategories() {
+        return categoryRepository.getCategories();
     }
 }
