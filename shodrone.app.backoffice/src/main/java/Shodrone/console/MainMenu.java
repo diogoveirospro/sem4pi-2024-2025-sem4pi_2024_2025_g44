@@ -73,6 +73,9 @@ public class MainMenu extends AbstractFancyUI {
 
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
+    private static final int ADD_DRONE_OPTION = 1;
+    private static final int REMOVE_DRONE_OPTION = 2;
+    private static final int LIST_DRONES_OPTION = 3;
 
     // POWER USER MENUS
     private static final int POWER_USER_USERS_MENU = 2;
@@ -320,9 +323,9 @@ public class MainMenu extends AbstractFancyUI {
     private Menu buildDronesMenu() {
         final Menu menu = new Menu("Drones");
 
-        menu.addItem(LIST_USERS_OPTION, "Add a drone from inventory", new AddDroneUI()::show);
-            menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Remove a drone from inventory", new RemoveDroneUI()::show);
-        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "List a type of drone", new ListDroneUI()::show);
+        menu.addItem(ADD_DRONE_OPTION, "Add a drone from inventory", new AddDroneUI()::show);
+            menu.addItem(REMOVE_DRONE_OPTION, "Remove a drone from inventory", new RemoveDroneUI()::show);
+        menu.addItem(LIST_DRONES_OPTION, "List a type of drone", new ListDroneUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
