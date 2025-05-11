@@ -7,6 +7,7 @@ import core.Shared.domain.ValueObjects.Description;
 import eapli.framework.application.UseCaseController;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -43,7 +44,7 @@ public class EditCategoryController {
             throw new IllegalArgumentException("Category does not exist");
         }
 
-        Category category = (Category) optionalCategory.get();
+        Category category = optionalCategory.get();
 
         // Update the name, description, and lastUpdateDate
         category.name = newCategoryName;
@@ -53,5 +54,13 @@ public class EditCategoryController {
         // Save the updated category
         categoryRepository.save(category);
         return true;
+    }
+
+    /**
+     * List all categories in the system.
+     * @return a list of categories
+     */
+    public List<Category> listAllCategories() {
+        return categoryRepository.getCategories();
     }
 }
