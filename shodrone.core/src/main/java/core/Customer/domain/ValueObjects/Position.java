@@ -12,18 +12,18 @@ public class Position extends Designation implements ValueObject, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Integer> position;
+    private String position;
 
     protected Position() {
         // for ORM
     }
 
-    public Position(List<Integer> position) {
+    public Position(String position) {
         this.position = position;
     }
 
 
-    public List<Integer> position() {
+    public String position() {
         return position;
     }
 
