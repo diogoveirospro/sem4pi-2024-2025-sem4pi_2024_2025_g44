@@ -5,28 +5,25 @@ import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Embeddable
 public class Position extends Designation implements ValueObject, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String position;
+    private List<Integer> position;
 
     protected Position() {
         // for ORM
     }
 
-    public Position(String position) {
-        super(validated(position));
+    public Position(List<Integer> position) {
         this.position = position;
     }
 
-    private static String validated(String position) {
-        return Designation.valueOf(position).toString();
-    }
 
-    public String position() {
+    public List<Integer> position() {
         return position;
     }
 
@@ -47,8 +44,4 @@ public class Position extends Designation implements ValueObject, Serializable {
         return position != null ? position.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
-        return position;
-    }
 }

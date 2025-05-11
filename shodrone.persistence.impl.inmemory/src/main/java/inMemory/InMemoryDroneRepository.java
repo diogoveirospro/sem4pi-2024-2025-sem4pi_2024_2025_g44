@@ -81,6 +81,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         for (Drone drone : drones) {
             if (drone.identity() == serialNumber) {
                 drone.setStatus(DroneStatus.REMOVED);
+                save(drone);
                 break;
             }
         }

@@ -9,26 +9,16 @@ import core.Persistence.*;
 import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.validations.Preconditions;
 
+import java.util.Map;
+
 public class CreateModelController {
-    private ModelRepository modelRepository;
-    private DroneRepository droneRepository;
+    private ModelRepository modelRepository = PersistenceContext.repositories().models();
 
-    public CreateModelController(ModelRepository modelRepository) {
-        this.modelRepository = modelRepository;
-        this.droneRepository = droneRepository;
+    public CreateModelController() {
     }
 
-    public ModelRepository getModelRepository() {
-        return modelRepository= PersistenceContext.repositories().models();
-    }
-
-    public boolean createModel(ModelName modelName, WindTolerance windTolerance, WindSpeed windSpeed,
-                               PositionTolerance posTolerance, SafetyStatus safetyStatus){
-        Model model = new Model(modelName,windTolerance, windSpeed, posTolerance, safetyStatus);
-        Preconditions.noneNull(model);
-
-        getModelRepository().save(model);
-        return true;
+    public boolean createModel(ModelName modelName, Map<Double, int[]> config){
+        return modelRepository.createModel(modelName, config);
     }
 
 }

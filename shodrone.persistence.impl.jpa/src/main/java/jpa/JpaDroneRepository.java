@@ -72,6 +72,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
 
     public void changeDrnStatRemv(Drone drone) {
         drone.setStatus(DroneStatus.REMOVED);
+        save(drone);
     }
 
     //US243

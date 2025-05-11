@@ -11,6 +11,7 @@ import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, Designation> implements ModelRepository {
 
@@ -22,6 +23,31 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
     public JpaModelRepository(String persistenceUnitName) {
         super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "modelName");
     }
+
+    //US240
+    @Override
+    public boolean createModel(ModelName modelName, Map<Double, int[]> config) {
+        if (!validateModel(modelName)){ return false;}
+        /*if ()
+        Model model = new Model(modelName, windTolerance, windSpeed, posTolerance, safetyStatus);
+        save(model);*/
+        return true;
+    }
+
+    @Override
+    public boolean validateModel(ModelName modelName) {
+        Iterable<Model> models = findAll();
+
+        for (Model model : models){
+            if (model.sameAs(modelName)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //----------------------------------------------------------------------
+
 
     //US241
     @Override

@@ -1,23 +1,47 @@
 package inMemory;
 
-import core.Drone.domain.Entities.Drone;
-import core.Drone.domain.ValueObjects.DroneStatus;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
+import core.ModelOfDrone.domain.ValueObjects.*;
 import core.ModelOfDrone.repositories.ModelRepository;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainRepository;
 import inMemory.persistence.InMemoryInitializer;
-import org.springframework.boot.Banner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Designation> implements ModelRepository {
 
     static {
         InMemoryInitializer.init();
     }
+
+
+    //US240
+    @Override
+    public boolean createModel(ModelName modelName, Map<Double, int[]> config) {
+       if (!validateModel(modelName)){ return false;}
+       /*if ()
+        Model model = new Model(modelName, windTolerance, windSpeed, posTolerance, safetyStatus);
+        save(model);*/
+        return true;
+    }
+
+    @Override
+    public boolean validateModel(ModelName modelName) {
+        Iterable<Model> models = findAll();
+
+        for (Model model : models){
+            if (model.sameAs(modelName)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //----------------------------------------------------------------------
+
 
     //US241
     @Override
@@ -59,4 +83,6 @@ public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Des
         }
         return result;
     }
+
+
 }
