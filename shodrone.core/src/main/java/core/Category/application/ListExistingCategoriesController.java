@@ -4,8 +4,10 @@ import core.Category.repositories.CategoryRepository;
 import core.Persistence.PersistenceContext;
 import eapli.framework.application.UseCaseController;
 
+import java.util.List;
+
 @UseCaseController
-public class ListExistingCategories {
+public class ListExistingCategoriesController {
 
     private final CategoryRepository categoryRepository = PersistenceContext.repositories().categories();
 
@@ -14,7 +16,7 @@ public class ListExistingCategories {
      *
      * @return a list of existing categories
      */
-    public Iterable<Category> listExistingCategories() {
+    public List<Category> listExistingCategories() {
         return categoryRepository.getCategories();
     }
 }
