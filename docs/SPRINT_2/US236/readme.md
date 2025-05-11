@@ -12,11 +12,11 @@ Requirements: Done
 
 Analysis: Done
 
-Design: In Progress
+Design: Done
 
-Implement: TODO
+Implement: In Progress
 
-Test: TODO
+Test: In Progress
 
 
 ## 2. Requirements
@@ -115,22 +115,30 @@ The `Customer` aggregate includes:
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+\
+In this section, the design for **US236 - Edit a Show Request** is presented.
+It shows the separation between user interface, controller, domain model and persistence layers.
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US236 Class Diagram](images/class_diagram_us236.svg "US236 Class Diagram")
 
-### 4.3. Applied Patterns
+### 4.2. Acceptance Tests
 
-### 4.4. Acceptance Tests
+**Test 1:** Ensure the CRM Collaborator is a user in the system\
+**Refers to Acceptance Criteria:** AC01
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+```
+@Test(expected = IllegalArgumentException.class)
+public void ensureXxxxYyyy() {
+	...
+}
+````
 
-**Test 1:** *Verifies that it is not possible to ...*
+---
 
-**Refers to Acceptance Criteria:** US101.1
-
+**Test 2:** Ensure the Customer is a user in the system\
+**Refers to Acceptance Criteria:** AC02
 
 ```
 @Test(expected = IllegalArgumentException.class)

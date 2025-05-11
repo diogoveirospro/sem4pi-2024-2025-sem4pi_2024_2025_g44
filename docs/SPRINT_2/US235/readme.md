@@ -12,11 +12,11 @@ Requirements: Done
 
 Analysis: Done
 
-Design: In Progress
+Design: Done
 
-Implement: TODO
+Implement: In Progress
 
-Test: TODO
+Test: In Progress
 
 
 ## 2. Requirements
