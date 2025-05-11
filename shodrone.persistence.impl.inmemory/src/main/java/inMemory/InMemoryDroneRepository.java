@@ -1,6 +1,7 @@
 package inMemory;
 
 import core.Customer.domain.Entities.Customer;
+import core.Customer.domain.ValueObjects.CustomerStatus;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Drone.domain.Entities.Drone;
 import core.Drone.domain.ValueObjects.DroneStatus;
@@ -101,6 +102,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
     }
 
     //----------------------------------------------------------------------
+
 
 }
 

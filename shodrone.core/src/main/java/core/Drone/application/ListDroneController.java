@@ -20,6 +20,10 @@ public class ListDroneController {
     public ListDroneController() {
     }
 
+    public Iterable<Model> listModels() {
+        return modelRepository.findAllModels();
+    }
+
     public List<Model> getModelList() {
         return modelRepository.getModelList();
     }

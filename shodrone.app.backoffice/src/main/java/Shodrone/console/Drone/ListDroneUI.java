@@ -1,56 +1,28 @@
 package Shodrone.console.Drone;
 
+import Shodrone.exceptions.UserCancelledException;
 import core.Drone.application.ListDroneController;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.Drone.domain.Entities.Drone;
-import eapli.framework.presentation.console.AbstractUI;
+import eapli.framework.presentation.console.ListWidget;
+import eapli.framework.visitor.Visitor;
+import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.UtilsUI;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ListDroneUI extends AbstractUI {
-
+public class ListDroneUI extends AbstractFancyListUI<Drone> {
     private final ListDroneController controller = new ListDroneController();
 
     @Override
     protected boolean doShow() {
         try {
-            // Pedir ao controller os modelos disponíveis
-            List<Model> modelList = controller.getModelList();
-            if (modelList.isEmpty()) {
-                System.out.println(UtilsUI.YELLOW + "No drone models found in the system." + UtilsUI.RESET);
-                return false;
-            }
-
-            System.out.println(UtilsUI.BOLD + "\nAvailable Drone Models:" + UtilsUI.RESET);
-            int i = 1;
-            for (Model model : modelList) {
-                System.out.println("  [" + i++ + "] " + model.toString());
-            }
-
-                int selectedIndex = UtilsUI.readInt("\nSelect a model by number: ", 1, modelList.size());
-            Model selectedModel = modelList.get(selectedIndex - 1);
-            System.out.println(UtilsUI.YELLOW + "\nYou selected model: " + selectedModel + UtilsUI.RESET);
-
-            if (!UtilsUI.confirm("Do you want to continue? (y/n)")) {
-                System.out.println(UtilsUI.YELLOW + "Operation cancelled by user." + UtilsUI.RESET);
-                return false;
-            }
-
-            // Obter os drones ativos desse modelo
-            List<Drone> droneList = controller.getDrnModelList(selectedModel);
-            if (droneList.isEmpty()) {
-                System.out.println(UtilsUI.RED + "No active drones found for the selected model." + UtilsUI.RESET);
-            } else {
-                System.out.println(UtilsUI.GREEN + "\nActive Drones of Model: " + selectedModel.identity() + UtilsUI.RESET);
-                droneList.forEach(d -> System.out.println("  -> " + d));
-            }
-
+            super.doShow();
             UtilsUI.goBackAndWait();
             return true;
-
-        } catch (Exception e) {
-            System.out.println(UtilsUI.RED + "Error while listing drones: " + e.getMessage() + UtilsUI.RESET);
+        } catch (UserCancelledException e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -58,5 +30,61 @@ public class ListDroneUI extends AbstractUI {
     @Override
     public String headline() {
         return "List Active Drones by Model";
+    }
+
+    @Override
+    protected Iterable<Drone> elements() {
+        Model model = selectModel();
+        if (model == null) {
+            return new ArrayList<>();
+        }
+        return controller.getDrnModelList(model);
+    }
+
+    @Override
+    protected Visitor<Drone> elementPrinter() {
+        return new DronePrinter();
+    }
+
+    @Override
+    protected String elementName() {
+        return "Drone";
+    }
+
+    @Override
+    protected String listHeader() {
+        return "List of Drone of a type";
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return UtilsUI.RED + UtilsUI.BOLD + "No drones available." + UtilsUI.RESET;
+    }
+
+    private Model selectModel() {
+        Iterable<Model> models = controller.listModels();
+        if (models == null || !models.iterator().hasNext()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No models available." + UtilsUI.RESET);
+            return null;
+        }
+
+        List<Model> modelList = new ArrayList<>();
+        models.forEach(modelList::add);
+
+        ListWidget<Model> modelListWidget = new ListWidget<>("Choose a Model", modelList, new ModelPrinter());
+        modelListWidget.show();
+
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(modelList);
+            if (option == -2) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return modelList.get(option);
+            }
+        } while (true);
     }
 }

@@ -15,4 +15,5 @@ public interface DroneRepository {
     boolean removeDrone(SerialNumber serialNumber, String removReason);
 
     List<Drone> getDrnModelList(Model droneModel);
+
 }

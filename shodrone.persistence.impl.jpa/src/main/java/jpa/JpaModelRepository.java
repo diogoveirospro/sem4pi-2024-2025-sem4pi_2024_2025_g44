@@ -44,4 +44,14 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
         return modelList;
     }
     //----------------------------------------------------------------------
+
+    @Override
+    public Iterable<Model> findAllModels() {
+        Iterable<Model> models = findAll();
+        List<Model> result = new ArrayList<>();
+        for (Model model : models) {
+            result.add(model);
+        }
+        return result;
+    }
 }

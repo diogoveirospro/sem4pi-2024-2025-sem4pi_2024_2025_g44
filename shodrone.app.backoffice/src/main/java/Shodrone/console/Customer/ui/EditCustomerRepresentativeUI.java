@@ -36,6 +36,7 @@ public class EditCustomerRepresentativeUI extends AbstractFancyUI {
             CustomerRepresentative representative = selectCustomerRepresentative(customer);
             if (representative == null) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No representative selected. Operation canceled." + UtilsUI.RESET);
+
                 return false;
             }
 

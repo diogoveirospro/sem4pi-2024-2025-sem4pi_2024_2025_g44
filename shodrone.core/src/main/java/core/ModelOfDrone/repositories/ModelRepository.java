@@ -12,4 +12,6 @@ public interface ModelRepository extends DomainRepository<Designation, Model> {
     boolean verifyModel(ModelName modelName);
 
     List<Model> getModelList();
+
+    Iterable<Model> findAllModels();
 }

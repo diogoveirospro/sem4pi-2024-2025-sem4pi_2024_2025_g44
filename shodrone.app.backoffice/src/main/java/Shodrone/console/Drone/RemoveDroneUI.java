@@ -4,11 +4,12 @@ import Shodrone.exceptions.UserCancelledException;
 import core.Drone.application.RemoveDroneController;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import eapli.framework.presentation.console.AbstractUI;
+import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.regex.Pattern;
 
-public class RemoveDroneUI extends AbstractUI {
+public class RemoveDroneUI extends AbstractFancyUI {
 
     private final RemoveDroneController controller = new RemoveDroneController();
 

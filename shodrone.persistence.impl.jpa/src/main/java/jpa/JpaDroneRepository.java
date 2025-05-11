@@ -88,5 +88,4 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
     }
 
     //----------------------------------------------------------------------
-
 }

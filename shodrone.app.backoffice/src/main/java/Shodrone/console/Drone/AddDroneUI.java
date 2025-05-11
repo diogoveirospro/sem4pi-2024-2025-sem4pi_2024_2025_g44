@@ -5,11 +5,12 @@ import core.Drone.application.AddDroneController;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.presentation.console.AbstractUI;
+import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.regex.Pattern;
 
-public class AddDroneUI extends AbstractUI {
+public class AddDroneUI extends AbstractFancyUI {
 
     private final AddDroneController controller = new AddDroneController();
 

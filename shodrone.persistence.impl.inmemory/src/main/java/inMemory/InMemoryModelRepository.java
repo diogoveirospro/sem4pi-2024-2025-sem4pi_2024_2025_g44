@@ -1,5 +1,7 @@
 package inMemory;
 
+import core.Drone.domain.Entities.Drone;
+import core.Drone.domain.ValueObjects.DroneStatus;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import core.ModelOfDrone.repositories.ModelRepository;
@@ -47,4 +49,14 @@ public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Des
     }
 
     //----------------------------------------------------------------------
+
+    @Override
+    public Iterable<Model> findAllModels() {
+        Iterable<Model> models = findAll();
+        List<Model> result = new ArrayList<>();
+        for (Model model : models) {
+            result.add(model);
+        }
+        return result;
+    }
 }
