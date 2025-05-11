@@ -1,5 +1,9 @@
 package Shodrone.console;
 
+import Shodrone.console.Category.actions.AddCategoryUI;
+import Shodrone.console.Category.actions.ChangeCategoryStatusUI;
+import Shodrone.console.Category.actions.EditCategoryUI;
+import Shodrone.console.Category.printer.ListExistingCategoriesUI;
 import Shodrone.console.Customer.ui.*;
 import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
@@ -8,7 +12,6 @@ import Shodrone.console.Figure.printer.ListPublicCatalogueUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
-import Shodrone.console.authz.ui.ActivateDeactivateUserUI;
 import Shodrone.console.authz.ui.DisableEnableUserUI;
 import Shodrone.console.authz.ui.ListUsersUI;
 import Shodrone.console.authz.ui.RegisterUserUI;
@@ -104,8 +107,13 @@ public class MainMenu extends AbstractFancyUI {
     private static final int LIST_SHOW_REQUESTS_OPTION = 2;
     private static final int EDIT_SHOW_REQUEST_OPTION = 3;
 
-    private static final String SEPARATOR_LABEL = "----------------------------";
+    // FIGURE CATEGORY MENU
+    private static final int ADD_CATEGORY_OPTION = 1;
+    private static final int EDIT_CATEGORY_OPTION = 2;
+    private static final int LIST_CATEGORIES_OPTION = 3;
+    private static final int ACTIVATE_DEACTIVATE_CATEGORY_OPTION = 4;
 
+    private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
 
     @Override
@@ -296,6 +304,10 @@ public class MainMenu extends AbstractFancyUI {
     private Menu buildCategoriesMenu() {
         final Menu menu = new Menu("Categories");
 
+        menu.addItem(ADD_CATEGORY_OPTION, "Add Category", new AddCategoryUI()::show);
+        menu.addItem(EDIT_CATEGORY_OPTION, "List all Categories", new ListExistingCategoriesUI()::show);
+        menu.addItem(LIST_CATEGORIES_OPTION, "Edit Category", new EditCategoryUI()::show);
+        menu.addItem(ACTIVATE_DEACTIVATE_CATEGORY_OPTION, "Activate/Deactivate Category", new ChangeCategoryStatusUI()::show);
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
