@@ -30,7 +30,7 @@ import core.ModelOfDrone.repositories.ModelRepository;
 import core.Drone.repositories.DroneRepository;
 
 import core.Figure.repositories.FigureRepository;
-import core.ModelOfDrone.repositories.ModelRepository;
+import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -89,4 +89,8 @@ public interface RepositoryFactory {
     DroneRepository drone(TransactionalContext autoTx);
 
     DroneRepository drone();
+
+    ShowRequestRepository showRequest(TransactionalContext autoTx);
+
+    ShowRequestRepository showRequest();
 }
