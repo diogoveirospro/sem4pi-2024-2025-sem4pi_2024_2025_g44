@@ -49,6 +49,9 @@ package "Drone " <<aggregate>> {
     class Drone <<Entity>> <<root>>{
     }
 
+    class RemovalReason <<Value Object>>{
+    }
+
     class SerialNumber <<Value Object>>{
     }
 
@@ -58,6 +61,7 @@ package "Drone " <<aggregate>> {
     'Drone -> x
     Drone --> "1" DroneStatus: status
     Drone --> "1" SerialNumber: serialNumber
+    Drone --> "0..*" RemovalReason: removalReason
 }
 
 package "ModelOfDrone " <<aggregate>> {
@@ -65,7 +69,7 @@ package "ModelOfDrone " <<aggregate>> {
     class Model <<Entity>> <<root>>{
     }
 
-    class WindTolerance <<Value Object>>{
+    class Configuration <<Entity>>{
     }
 
     class WindSpeed <<Value Object>>{
@@ -78,9 +82,9 @@ package "ModelOfDrone " <<aggregate>> {
     }
 
     'Model -> x
-    Model --> "1" WindTolerance: windTolerance
-    WindTolerance --> "1..*" WindSpeed: windSpeed
-    WindTolerance --> "1..*" PositionTolerance: positionTolerance
+    Model --> "1" Configuration: configuration
+    Configuration --> "1..*" WindSpeed: windSpeed
+    Configuration --> "1..*" PositionTolerance: positionTolerance
     Model --> "1" SafetyStatus: safetyStatus
 
     'Drone -> x

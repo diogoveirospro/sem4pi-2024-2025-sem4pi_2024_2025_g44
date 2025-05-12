@@ -33,7 +33,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
             return false;
         }
 
-        Drone drone = new Drone(serialNumber, modelName);
+        Drone drone = new Drone(serialNumber, modelName, null);
         save(drone);
         return true;
     }
@@ -63,11 +63,11 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
     }
 
     public void addDrnRemovData(SerialNumber serialNumber, String removReason) {
-        /*Drone drone = entityManager().find(Drone.class, serialNumber);
+        Drone drone = entityManager().find(Drone.class, serialNumber);
         if (drone != null) {
-            drone.setRemovalReason(reason);
-            em.merge(drone);
-        }*/
+            drone.removalReason().addReason(removReason);
+            entityManager().merge(drone);
+        }
     }
 
     public void changeDrnStatRemv(Drone drone) {

@@ -30,7 +30,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
             return false;
         }
 
-        Drone drone = new Drone(serialNumber, modelName);
+        Drone drone = new Drone(serialNumber, modelName, null);
         save(drone);
         return true;
     }
@@ -70,10 +70,15 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
     }
 
     public void addDrnRemovData(SerialNumber serialNumber, String removReason) {
-       /* Drone drone = drones.get(serialNumber);
-        if (drone != null) {
-            drone.setRemovalReason(reason);
-        }*/
+        Iterable<Drone> drones = findAll();
+        for (Drone drone : drones) {
+            if (drone.identity() == serialNumber) {
+                drone.removalReason().addReason(removReason);
+                save(drone);
+                break;
+            }
+        }
+
     }
 
     public void changeDrnStatRemv(SerialNumber serialNumber) {
