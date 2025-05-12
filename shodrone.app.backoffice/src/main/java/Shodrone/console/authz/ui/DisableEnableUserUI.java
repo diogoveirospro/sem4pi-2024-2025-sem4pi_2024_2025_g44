@@ -2,14 +2,13 @@ package Shodrone.console.authz.ui;
 
 import core.User.application.DisableEnableUserController;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
-import eapli.framework.presentation.console.AbstractUI;
-import eapli.framework.presentation.console.ListWidget;
+import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DisableEnableUserUI extends AbstractUI {
+public class DisableEnableUserUI extends AbstractFancyUI {
     private final DisableEnableUserController controller = new DisableEnableUserController();
 
     @Override
@@ -49,6 +48,12 @@ public class DisableEnableUserUI extends AbstractUI {
             System.out.println(UtilsUI.RED + "Invalid option. Operation cancelled." + UtilsUI.RESET);
         }
 
+        // Recarregar a lista de utilizadores para refletir o estado atual
+        users.clear();
+        controller.listAllUsers().forEach(users::add);  // Recarregar a lista de utilizadores
+
+        // Exibir a lista novamente após a atualização
+        displayUsers(users);
         return false;
     }
 
@@ -59,11 +64,11 @@ public class DisableEnableUserUI extends AbstractUI {
 
     private void displayUsers(Iterable<SystemUser> users) {
         System.out.println("+= List Users ================");
-        System.out.printf("%-10s %-20s %-20s %-10s\n", "#", "USERNAME", "F. NAME", "L. NAME", "STATUS");
+        System.out.printf("%-10s %-20s %-20s %-10s %-10s\n", "#", "USERNAME", "F. NAME", "L. NAME", "STATUS");
 
         int index = 1;
         for (SystemUser user : users) {
-            System.out.printf("%-10d %-20s %-20s %-10s\n", index++, user.username(), user.name().firstName(), user.name().lastName(), user.isActive() ? "ACTIVE" : "INACTIVE");
+            System.out.printf("%-10d %-20s %-20s %-10s %-10s\n", index++, user.username(), user.name().firstName(), user.name().lastName(), user.isActive() ? "ACTIVE" : "INACTIVE");
         }
 
         System.out.println("+----------------------------+");

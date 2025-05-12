@@ -2,12 +2,12 @@ package Shodrone.console.authz.ui;
 
 import Shodrone.console.authz.printer.SystemUserPrinter;
 import core.User.application.ListUsersController;
-import eapli.framework.presentation.console.AbstractListUI;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.visitor.Visitor;
+import shodrone.presentation.AbstractFancyListUI;
 
 @SuppressWarnings({ "squid:S106" })
-public class ListUsersUI extends AbstractListUI<SystemUser> {
+public class ListUsersUI extends AbstractFancyListUI<SystemUser> {
     private final ListUsersController theController = new ListUsersController();
 
     @Override

@@ -14,7 +14,7 @@ public class DisableEnableUserController {
 
 
     public Iterable<SystemUser> listAllUsers() {
-        return userRepository.findByActive(true);
+        return userRepository.findAll();
     }
 
 

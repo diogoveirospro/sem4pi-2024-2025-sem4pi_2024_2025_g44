@@ -14,6 +14,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.application.UserManagementService;
 import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.time.util.CurrentTimeCalendars;
 
 @UseCaseController
@@ -43,6 +44,16 @@ public class RegisterUsersController {
                               final String lastName,
                               final String email, final Set<Role> roles, PhoneNumber phoneNumber) {
         return addUser(username, password, firstName, lastName, email, roles, CurrentTimeCalendars.now(), phoneNumber);
+    }
+
+    public boolean isUsernameTaken(String username) {
+        Iterable<SystemUser> allUsers = userSvc.allUsers();
+        for (SystemUser user : allUsers) {
+            if (user.username().equals(Username.valueOf(username))) {
+                return true; // Nome de utilizador já existe
+            }
+        }
+        return false; // Nome de utilizador disponível
     }
 
     public List<String> availableCountries() {
