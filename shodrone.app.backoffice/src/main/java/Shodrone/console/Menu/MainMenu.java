@@ -1,4 +1,4 @@
-package Shodrone.console;
+package Shodrone.console.Menu;
 
 import Shodrone.console.Category.actions.AddCategoryUI;
 import Shodrone.console.Category.actions.ChangeCategoryStatusUI;
@@ -6,6 +6,7 @@ import Shodrone.console.Category.actions.EditCategoryUI;
 import Shodrone.console.Category.printer.ListExistingCategoriesUI;
 import Shodrone.console.Customer.ui.*;
 import Shodrone.console.Drone.AddDroneUI;
+import Shodrone.console.Drone.CreateModelUI;
 import Shodrone.console.Drone.ListDroneUI;
 import Shodrone.console.Drone.RemoveDroneUI;
 import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
@@ -25,13 +26,10 @@ import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ExitWithMessageAction;
-import eapli.framework.presentation.console.menu.HorizontalMenuRenderer;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
-import eapli.framework.presentation.console.menu.MenuRenderer;
-import eapli.framework.presentation.console.menu.VerticalMenuRenderer;
 import core.Persistence.Application;
-import shodrone.authz.MyUserMenu;
 import shodrone.presentation.AbstractFancyUI;
+import shodrone.presentation.UtilsUI;
 
 /**
  * TODO split this class in more specialized classes for each menu
@@ -42,6 +40,56 @@ public class MainMenu extends AbstractFancyUI {
     private static final String RETURN_LABEL = "Return ";
 
     private static final int EXIT_OPTION = 0;
+
+    // BIG TITLES SUBMENUS
+    private static final String USERS_MENU_TITLE = " __    __    _____    _____   ______      _____\n" +
+            " ) )  ( (   / ____\\  / ___/  (   __ \\    / ____\\\n" +
+            "( (    ) ) ( (___   ( (__     ) (__) )  ( (___\n" +
+            " ) )  ( (   \\___ \\   ) __)   (    __/    \\___ \\\n" +
+            "( (    ) )      ) ) ( (       ) \\ \\  _       ) )\n" +
+            " ) \\__/ (   ___/ /   \\ \\___  ( ( \\ \\_))  ___/ /\n" +
+            " \\______/  /____/     \\____\\  )_) \\__/  /____/\n" +
+            "\n";
+    private static final String CUSTOMERS_MENU_TITLE = "   ____   __    __    _____   ________     ____       __    __      _____   ______      _____\n" +
+            "  / ___)  ) )  ( (   / ____\\ (___  ___)   / __ \\      \\ \\  / /     / ___/  (   __ \\    / ____\\\n" +
+            " / /     ( (    ) ) ( (___       ) )     / /  \\ \\     () \\/ ()    ( (__     ) (__) )  ( (___\n" +
+            "( (       ) )  ( (   \\___ \\     ( (     ( ()  () )    / _  _ \\     ) __)   (    __/    \\___ \\\n" +
+            "( (      ( (    ) )      ) )     ) )    ( ()  () )   / / \\/ \\ \\   ( (       ) \\ \\  _       ) )\n" +
+            " \\ \\___   ) \\__/ (   ___/ /     ( (      \\ \\__/ /   /_/      \\_\\   \\ \\___  ( ( \\ \\_))  ___/ /\n" +
+            "  \\____)  \\______/  /____/      /__\\      \\____/   (/          \\)   \\____\\  )_) \\__/  /____/\n" +
+            "\n";
+    private static final String FIGURES_MENU_TITLE = " _________    _____      _____    __    __   ______      _____    _____\n" +
+            "(_   _____)  (_   _)    / ___ \\   ) )  ( (  (   __ \\    / ___/   / ____\\\n" +
+            "  ) (___       | |     / /   \\_) ( (    ) )  ) (__) )  ( (__    ( (___\n" +
+            " (   ___)      | |    ( (  ____   ) )  ( (  (    __/    ) __)    \\___ \\\n" +
+            "  ) (          | |    ( ( (__  ) ( (    ) )  ) \\ \\  _  ( (           ) )\n" +
+            " (   )        _| |__   \\ \\__/ /   ) \\__/ (  ( ( \\ \\_))  \\ \\___   ___/ /\n" +
+            "  \\_/        /_____(    \\____/    \\______/   )_) \\__/    \\____\\ /____/\n" +
+            "\n";
+    private static final String SHOW_REQUEST_MENU_TITLE = "  _____   __    __     ____     ___       ___      ______      _____     ____      __    __    _____    _____   ________    _____\n" +
+            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (   __ \\    / ___/    / __ \\     ) )  ( (   / ___/   / ____\\ (___  ___)  / ____\\\n" +
+            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) (__) )  ( (__     / /  \\ \\   ( (    ) ) ( (__    ( (___       ) )    ( (___\n" +
+            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (    __/    ) __)   ( (    ) )   ) )  ( (   ) __)    \\___ \\     ( (      \\___ \\\n" +
+            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) \\ \\  _  ( (      ( (  /\\) )  ( (    ) ) ( (           ) )     ) )         ) )\n" +
+            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( ( \\ \\_))  \\ \\___   \\ \\_\\ \\/    ) \\__/ (   \\ \\___   ___/ /     ( (      ___/ /\n" +
+            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/         )_) \\__/    \\____\\   \\___\\ \\_   \\______/    \\____\\ /____/      /__\\    /____/\n" +
+            "                                                                             \\__)\n";
+    private static final String CATEGORIES_MENU_TITLE = "   ____     ____     ________    _____      _____      ____     ______      _____    _____    _____\n" +
+            "  / ___)   (    )   (___  ___)  / ___/     / ___ \\    / __ \\   (   __ \\    (_   _)  / ___/   / ____\\\n" +
+            " / /       / /\\ \\       ) )    ( (__      / /   \\_)  / /  \\ \\   ) (__) )     | |   ( (__    ( (___\n" +
+            "( (       ( (__) )     ( (      ) __)    ( (  ____  ( ()  () ) (    __/      | |    ) __)    \\___ \\\n" +
+            "( (        )    (       ) )    ( (       ( ( (__  ) ( ()  () )  ) \\ \\  _     | |   ( (           ) )\n" +
+            " \\ \\___   /  /\\  \\     ( (      \\ \\___    \\ \\__/ /   \\ \\__/ /  ( ( \\ \\_))   _| |__  \\ \\___   ___/ /\n" +
+            "  \\____) /__(  )__\\    /__\\      \\____\\    \\____/     \\____/    )_) \\__/   /_____(   \\____\\ /____/\n" +
+            "\n";
+    private static final String DRONES_MENU_TITLE = " ______     ______       ____        __      _    _____    _____\n" +
+            "(_  __ \\   (   __ \\     / __ \\      /  \\    / )  / ___/   / ____\\\n" +
+            "  ) ) \\ \\   ) (__) )   / /  \\ \\    / /\\ \\  / /  ( (__    ( (___\n" +
+            " ( (   ) ) (    __/   ( ()  () )   ) ) ) ) ) )   ) __)    \\___ \\\n" +
+            "  ) )  ) )  ) \\ \\  _  ( ()  () )  ( ( ( ( ( (   ( (           ) )\n" +
+            " / /__/ /  ( ( \\ \\_))  \\ \\__/ /   / /  \\ \\/ /    \\ \\___   ___/ /\n" +
+            "(______/    )_) \\__/    \\____/   (_/    \\__/      \\____\\ /____/\n" +
+            "\n";
 
     // USERS
     private static final int REGISTER_USER_OPTION = 1;
@@ -73,9 +121,11 @@ public class MainMenu extends AbstractFancyUI {
 
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
-    private static final int ADD_DRONE_OPTION = 1;
-    private static final int REMOVE_DRONE_OPTION = 2;
-    private static final int LIST_DRONES_OPTION = 3;
+    private static final int CREATE_MODEL_OPTION = 1;
+
+    private static final int ADD_DRONE_OPTION = 2;
+    private static final int REMOVE_DRONE_OPTION = 3;
+    private static final int LIST_DRONES_OPTION = 4;
 
     // POWER USER MENUS
     private static final int POWER_USER_USERS_MENU = 2;
@@ -134,17 +184,18 @@ public class MainMenu extends AbstractFancyUI {
     @Override
     public boolean doShow() {
         final Menu menu = buildMainMenu();
-        final MenuRenderer renderer;
+        final MenuRendererShodrone renderer;
         if (Application.settings().isMenuLayoutHorizontal()) {
-            renderer = new HorizontalMenuRenderer(menu, MenuItemRenderer.DEFAULT);
+            renderer = new HorizontalMenuRendererShodrone(menu, MenuItemRenderer.DEFAULT);
         } else {
-            renderer = new VerticalMenuRenderer(menu, MenuItemRenderer.DEFAULT);
+            renderer = new VerticalMenuRendererShodrone(menu, MenuItemRenderer.DEFAULT);
         }
         return renderer.render();
     }
 
     @Override
     public String headline() {
+        UtilsUI.clearConsole();
         return authz.session()
                 .map(session -> {
                     final String username = session.authenticatedUser().identity().toString();
@@ -165,57 +216,57 @@ public class MainMenu extends AbstractFancyUI {
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.ADMIN)) {
-            final Menu usersMenu = buildUsersMenu();
+            final SubMenu usersMenu = buildUsersMenu();
             mainMenu.addSubMenu(ADMIN_USERS_MENU, usersMenu);
 
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.COLLABORATOR)) {
-            final Menu customerMenu = buildCustomersMenu();
+            final SubMenu customerMenu = buildCustomersMenu();
             mainMenu.addSubMenu(COLLABORATOR_CUSTOMER_MENU, customerMenu);
 
-            final Menu figureMenu = buildCollaboratorFiguresMenu();
+            final SubMenu figureMenu = buildCollaboratorFiguresMenu();
             mainMenu.addSubMenu(COLLABORATOR_FIGURE_MENU, figureMenu);
 
-            final Menu showRequestMenu = buildShowRequestMenu();
+            final SubMenu showRequestMenu = buildShowRequestMenu();
             mainMenu.addSubMenu(COLLABORATOR_SHOW_REQUEST_MENU, showRequestMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.SHOWDESIGNER)) {
-            final Menu showDesignerFiguresMenu = buildShowDesignerFiguresMenu();
+            final SubMenu showDesignerFiguresMenu = buildShowDesignerFiguresMenu();
             mainMenu.addSubMenu(SHOW_DESIGNER_FIGURE_MENU, showDesignerFiguresMenu);
 
-            final Menu figureCategoryMenu = buildCategoriesMenu();
+            final SubMenu figureCategoryMenu = buildCategoriesMenu();
             mainMenu.addSubMenu(FIGURE_CATEGORY_MENU, figureCategoryMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.MANAGER)) {
-            final Menu managerFiguresMenu = buildManagerFiguresMenu();
+            final SubMenu managerFiguresMenu = buildManagerFiguresMenu();
             mainMenu.addSubMenu(CRM_MANAGER_FIGURE_MENU, managerFiguresMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.DRONETECH)) {
-            final Menu dronesMenu = buildDronesMenu();
+            final SubMenu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(DRONE_MENU, dronesMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)){
-            final Menu usersMenu = buildUsersMenu();
+            final SubMenu usersMenu = buildUsersMenu();
             mainMenu.addSubMenu(POWER_USER_USERS_MENU, usersMenu);
 
-            final Menu customerMenu = buildCustomersMenu();
+            final SubMenu customerMenu = buildCustomersMenu();
             mainMenu.addSubMenu(POWER_USER_CUSTOMER_MENU, customerMenu);
 
-            final Menu figureMenu = buildFiguresMenu();
+            final SubMenu figureMenu = buildFiguresMenu();
             mainMenu.addSubMenu(POWER_USER_FIGURE_MENU, figureMenu);
 
-            final Menu showRequestMenu = buildShowRequestMenu();
+            final SubMenu showRequestMenu = buildShowRequestMenu();
             mainMenu.addSubMenu(POWER_USER_SHOW_REQUEST_MENU, showRequestMenu);
 
-            final Menu figureCategoryMenu = buildCategoriesMenu();
+            final SubMenu figureCategoryMenu = buildCategoriesMenu();
             mainMenu.addSubMenu(POWER_USER_FIGURE_CATEGORY_MENU, figureCategoryMenu);
 
-            final Menu dronesMenu = buildDronesMenu();
+            final SubMenu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(POWER_USER_DRONE_MENU, dronesMenu);
         }
 
@@ -228,8 +279,8 @@ public class MainMenu extends AbstractFancyUI {
         return mainMenu;
     }
 
-    private Menu buildFiguresMenu(){
-        final Menu menu = new Menu("Figures");
+    private SubMenu buildFiguresMenu(){
+        final SubMenu menu = new SubMenu("Figures", FIGURES_MENU_TITLE);
 
         menu.addItem(PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
         menu.addItem(PU_SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
@@ -241,8 +292,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildCollaboratorFiguresMenu() {
-        final Menu menu = new Menu("Figures");
+    private SubMenu buildCollaboratorFiguresMenu() {
+        final SubMenu menu = new SubMenu("Figures", FIGURES_MENU_TITLE);
 
         menu.addItem(LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
         menu.addItem(SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
@@ -252,8 +303,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildShowDesignerFiguresMenu() {
-        final Menu menu = new Menu("Figures");
+    private SubMenu buildShowDesignerFiguresMenu() {
+        final SubMenu menu = new SubMenu("Figures", FIGURES_MENU_TITLE);
 
         menu.addItem(ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
 
@@ -262,8 +313,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildManagerFiguresMenu() {
-        final Menu menu = new Menu("Figures");
+    private SubMenu buildManagerFiguresMenu() {
+        final SubMenu menu = new SubMenu("Figures", FIGURES_MENU_TITLE);
 
         menu.addItem(DECOMMISSION_FIGURE_OPTION, "Decommission Figure", new DecommissionFigureUI()::show);
 
@@ -272,8 +323,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildShowRequestMenu() {
-        final Menu menu = new Menu("Show Requests");
+    private SubMenu buildShowRequestMenu() {
+        final SubMenu menu = new SubMenu("Show Requests", SHOW_REQUEST_MENU_TITLE);
 
         menu.addItem(REGISTER_SHOW_REQUEST_OPTION, "Register new Show Request", new RegisterShowRequestUI()::show);
         menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List all Show Requests", new ListShowRequestsUI()::show);
@@ -283,8 +334,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildCustomersMenu() {
-        final Menu menu = new Menu("Customers");
+    private SubMenu buildCustomersMenu() {
+        final SubMenu menu = new SubMenu("Customers", CUSTOMERS_MENU_TITLE);
 
         menu.addItem(REGISTER_CUSTOMER_OPTION, "Register new Customer", new RegisterCustomerUI()::show);
         menu.addItem(ADD_CUSTOMER_REPRESENTATIVE_OPTION, "Add a Representative to a Customer", new AddCustomerRepresentativeUI()::show);
@@ -296,8 +347,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildUsersMenu() {
-        final Menu menu = new Menu("Users");
+    private SubMenu buildUsersMenu() {
+        final SubMenu menu = new SubMenu("Users", USERS_MENU_TITLE);
 
         menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
         menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
@@ -307,8 +358,8 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildCategoriesMenu() {
-        final Menu menu = new Menu("Categories");
+    private SubMenu buildCategoriesMenu() {
+        final SubMenu menu = new SubMenu("Categories", CATEGORIES_MENU_TITLE);
 
         menu.addItem(ADD_CATEGORY_OPTION, "Add Category", new AddCategoryUI()::show);
         menu.addItem(EDIT_CATEGORY_OPTION, "List all Categories", new ListExistingCategoriesUI()::show);
@@ -320,11 +371,12 @@ public class MainMenu extends AbstractFancyUI {
         return menu;
     }
 
-    private Menu buildDronesMenu() {
-        final Menu menu = new Menu("Drones");
+    private SubMenu buildDronesMenu() {
+        final SubMenu menu = new SubMenu("Drones", DRONES_MENU_TITLE);
 
+                menu.addItem(CREATE_MODEL_OPTION, "Create an model", new CreateModelUI()::show);
         menu.addItem(ADD_DRONE_OPTION, "Add a drone from inventory", new AddDroneUI()::show);
-            menu.addItem(REMOVE_DRONE_OPTION, "Remove a drone from inventory", new RemoveDroneUI()::show);
+        menu.addItem(REMOVE_DRONE_OPTION, "Remove a drone from inventory", new RemoveDroneUI()::show);
         menu.addItem(LIST_DRONES_OPTION, "List a type of drone", new ListDroneUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 

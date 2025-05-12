@@ -1,6 +1,6 @@
 package Shodrone;
 
-import Shodrone.console.MainMenu;
+import Shodrone.console.Menu.MainMenu;
 import core.Persistence.PersistenceContext;
 import core.User.domain.ShodronePasswordPolicy;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -9,6 +9,7 @@ import eapli.framework.infrastructure.pubsub.EventDispatcher;
 import shodrone.ShodroneBaseApplication;
 import shodrone.authz.ui.LoginUI;
 import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
+import shodrone.presentation.UtilsUI;
 
 public class ShodroneBackoffice extends ShodroneBaseApplication {
     private ShodroneBackoffice () {
