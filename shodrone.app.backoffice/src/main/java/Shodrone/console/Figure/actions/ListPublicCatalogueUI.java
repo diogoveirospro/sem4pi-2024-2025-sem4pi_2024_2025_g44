@@ -23,7 +23,17 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     public boolean doShow() {
-        super.doShow();
+        final Iterable<Figure> figures = elements();
+        if (!figures.iterator().hasNext()) {
+            System.out.println(emptyMessage());
+            return true;
+        }
+
+        System.out.println(listHeader());
+        for (Figure figure : figures) {
+            elementPrinter().visit(figure);
+        }
+
         UtilsUI.goBackAndWait();
         return true;
     }
@@ -43,7 +53,12 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     protected Visitor<Figure> elementPrinter() {
-        return figure -> System.out.printf(figure.toString());
+        return figure -> System.out.printf(
+                "%-15s | %-10s | %-50s\n",
+                figure.identity().code().toString(),
+                figure.identity().version().toString(),
+                figure.description().toString()
+        );
     }
 
     /**
@@ -61,8 +76,12 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     protected String listHeader() {
-        return "All Active Public Figures";
+        return UtilsUI.BOLD
+                + String.format("%-15s | %-10s | %-50s", "CODE", "VERSION", "DESCRIPTION") + "\n"
+                + String.format("%-15s-+-%-10s-+-%-50s", "-".repeat(15), "-".repeat(10), "-".repeat(50))
+                + UtilsUI.RESET;
     }
+
 
     /**
      * Returns the message to be displayed when there are no figures in the catalogue.
