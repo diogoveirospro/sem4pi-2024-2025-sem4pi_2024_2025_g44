@@ -21,10 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package shodrone.authz;
+package Shodrone.console.Menu;
 
 import eapli.framework.actions.Actions;
-import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -34,9 +33,17 @@ import shodrone.authz.ui.LoginUI;
 import shodrone.authz.ui.LogoutUI;
 import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
 
-public class MyUserMenu extends Menu {
+public class MyUserMenu extends SubMenu {
 
 	private static final String MENU_TITLE = "My account";
+	private static final String BIG_TITLE = "   __    __    __      __       ____       ____     ____     ____     __    __      __      _   ________\n" +
+			"   \\ \\  / /    ) \\    / (      (    )     / ___)   / ___)   / __ \\    ) )  ( (     /  \\    / ) (___  ___)\n" +
+			"   () \\/ ()     \\ \\  / /       / /\\ \\    / /      / /      / /  \\ \\  ( (    ) )   / /\\ \\  / /      ) )\n" +
+			"   / _  _ \\      \\ \\/ /       ( (__) )  ( (      ( (      ( ()  () )  ) )  ( (    ) ) ) ) ) )     ( (\n" +
+			"  / / \\/ \\ \\      \\  /         )    (   ( (      ( (      ( ()  () ) ( (    ) )  ( ( ( ( ( (       ) )\n" +
+			" /_/      \\_\\      )(         /  /\\  \\   \\ \\___   \\ \\___   \\ \\__/ /   ) \\__/ (   / /  \\ \\/ /      ( (\n" +
+			"(/          \\)    /__\\       /__(  )__\\   \\____)   \\____)   \\____/    \\______/  (_/    \\__/       /__\\\n" +
+			"\n";
 
 	private static final int EXIT_OPTION = 0;
 
@@ -48,12 +55,12 @@ public class MyUserMenu extends Menu {
 	private final AuthorizationService authz = AuthzRegistry.authorizationService();
 
 	public MyUserMenu() {
-		super(MENU_TITLE);
+		super(MENU_TITLE, BIG_TITLE);
 		buildMyUserMenu(null);
 	}
 
 	public MyUserMenu(final Role onlyWithThis) {
-		super(MENU_TITLE);
+		super(MENU_TITLE, BIG_TITLE);
 		buildMyUserMenu(onlyWithThis);
 	}
 

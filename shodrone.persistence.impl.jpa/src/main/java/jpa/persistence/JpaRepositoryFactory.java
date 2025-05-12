@@ -29,6 +29,7 @@ import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -85,6 +86,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public CustomerRepository customers() {
 		return new JpaCustomerRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public ShowRequestRepository showRequest(TransactionalContext autoTx) {
+		return new JpaShowRequestRepository(autoTx);
+	}
+
+	@Override
+	public ShowRequestRepository showRequest() {
+		return new JpaShowRequestRepository(Application.settings().persistenceUnitName());
 	}
 
 	@Override

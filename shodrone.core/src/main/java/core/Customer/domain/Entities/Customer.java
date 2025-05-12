@@ -255,4 +255,9 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
         this.updatedAt = LocalDateTime.now();
     }
 
+    @Override
+    public String toString() {
+        return name.toString() + " - " + vat.toString();
+    }
+
 }

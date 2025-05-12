@@ -26,6 +26,7 @@ import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
@@ -33,9 +34,7 @@ import eapli.framework.infrastructure.authz.repositories.impl.inmemory.InMemoryU
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventConsumptionRepository;
 import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.EventRecordRepository;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryTransactionalContext;
-import inMemory.InMemoryCustomerRepository;
-import inMemory.InMemoryDroneRepository;
-import inMemory.InMemoryModelRepository;
+import inMemory.*;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 
 /**
@@ -54,7 +53,8 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public UserRepository users(final TransactionalContext tx) {
 		final var repo = new InMemoryUserRepository();
-		ShodroneBootstrapper.registerPowerUser(repo);
+		final var repo2 = new InMemoryShodroneUserRepository();
+		ShodroneBootstrapper.registerPowerUser(repo, repo2);
 		return repo;
 	}
 
@@ -81,6 +81,14 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public CustomerRepository customers() {
 		return customers(null);
+	}
+
+	@Override
+	public ShowRequestRepository showRequest(TransactionalContext autoTx) { return new InMemoryShowRequestRepository(); }
+
+	@Override
+	public ShowRequestRepository showRequest() {
+		return showRequest(null);
 	}
 
 	@Override

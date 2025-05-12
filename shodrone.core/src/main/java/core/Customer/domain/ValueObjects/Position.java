@@ -19,9 +19,14 @@ public class Position extends Designation implements ValueObject, Serializable {
     }
 
     public Position(String position) {
+        super( validated(position));
         this.position = position;
     }
 
+
+    private static String validated(String position) {
+        return Designation.valueOf(position).toString();
+    }
 
     public String position() {
         return position;

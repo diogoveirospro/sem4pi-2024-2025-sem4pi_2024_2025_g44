@@ -6,10 +6,7 @@ import core.Shared.domain.ValueObjects.PhoneNumber;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.domain.model.DomainEntities;
 import eapli.framework.general.domain.model.EmailAddress;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
@@ -29,6 +26,7 @@ public class ShowDesigner implements AggregateRoot<EmailAddress>, Serializable {
      * The ID of the Show Designer
      */
     @Id
+    @GeneratedValue
     private Long id;
 
     /**
