@@ -30,9 +30,9 @@ public class DisableEnableUserController {
     public void disableUser(SystemUser user) {
         Preconditions.nonNull(user, "User cannot be null");
         if (user.isActive()) {
-            // Passando a data atual para a desativação
+            // Passar a data atual para a desativação
             Calendar deactivatedOn = Calendar.getInstance();
-            user.deactivate(deactivatedOn);  // Passando o Calendar para o método deactivate
+            user.deactivate(deactivatedOn);  // Passar o Calendar para o método deactivate
             userRepository.save(user);
         }
     }
