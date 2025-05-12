@@ -48,7 +48,7 @@ public abstract class ShodroneBaseApplication {
      */
     public void run(final String[] args) {
         configure();
-
+        UtilsUI.clearConsole();
         printHeader();
 
         try {
@@ -72,7 +72,7 @@ public abstract class ShodroneBaseApplication {
      * Prints the footer of the application.
      */
     protected void printFooter() {
-        String footer = "\n" + UtilsUI.BG_BLUE + randomFarewellMessage() + UtilsUI.RESET;
+        String footer = "\n" + UtilsUI.BG_BLUE + randomFarewellMessage() + UtilsUI.RESET + "\n";
         animatedPrint(footer);
     }
 
@@ -115,7 +115,6 @@ public abstract class ShodroneBaseApplication {
         try {
             String titulo = FigletFont.convertOneLine(appTitle());
 
-            UtilsUI.clearConsole();
             System.out.flush();
 
             System.out.println(UtilsUI.BLUE + UtilsUI.BOLD + titulo + UtilsUI.RESET);
