@@ -179,7 +179,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
             Category selected = categoryList.get(option);
             if (selectedCategories.contains(selected)) {
-                System.out.println(UtilsUI.YELLOW + "Category already selected." + UtilsUI.RESET);
+                System.out.println(UtilsUI.YELLOW + "\nCategory already selected." + UtilsUI.RESET);
             } else {
                 selectedCategories.add(selected);
             }

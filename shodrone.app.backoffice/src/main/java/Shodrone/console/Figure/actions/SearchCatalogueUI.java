@@ -93,7 +93,7 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     protected String emptyMessage() {
-        return UtilsUI.RED + UtilsUI.BOLD + "No Figures Found for Given Filters!" + UtilsUI.RESET;
+        return UtilsUI.RED + UtilsUI.BOLD + "\nNo Figures Found for Given Filters!" + UtilsUI.RESET;
     }
 
     /**
