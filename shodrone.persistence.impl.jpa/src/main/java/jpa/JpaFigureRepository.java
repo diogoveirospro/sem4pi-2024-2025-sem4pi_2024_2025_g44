@@ -80,7 +80,7 @@ public class JpaFigureRepository extends JpaAutoTxRepository<Figure, Long, Figur
                 }
             }
 
-        } else if (keyword != null) {
+        } else {
             for (Figure figure : allFigures) {
                 if (figure.isActive() && figure.matchesKeyword(keyword)) {
                     foundFigures.add(figure);
