@@ -1,5 +1,6 @@
 package Shodrone.console.Figure.actions;
 
+import Shodrone.console.Figure.printer.FiguresPrinter;
 import core.Figure.application.DecommissionFigureController;
 import core.Figure.domain.Entities.Figure;
 import eapli.framework.presentation.console.ListWidget;
@@ -32,9 +33,9 @@ public class DecommissionFigureUI extends AbstractFancyUI {
 
         boolean decommissioned = decommissionFigure(figure);
         if (decommissioned) {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Figure decommissioned successfully." + UtilsUI.RESET);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure decommissioned successfully." + UtilsUI.RESET);
         } else {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Failed to decommission the figure." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to decommission the figure." + UtilsUI.RESET);
         }
         UtilsUI.goBackAndWait();
         return true;
@@ -62,35 +63,31 @@ public class DecommissionFigureUI extends AbstractFancyUI {
      * Select a figure from the catalogue.
      * @return the selected figure or null if no figure was selected
      */
-    public Figure selectFigure(){
+    public Figure selectFigure() {
         List<Figure> figures = controller.listCatalogue();
-
-        if (figures.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No active figures available for decommissioning." + UtilsUI.RESET);
-            UtilsUI.goBackAndWait();
+        if (figures == null || figures.isEmpty()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo active figures available for decommissioning." + UtilsUI.RESET);
             return null;
         }
 
-        ListWidget<Figure> figureListWidget = new ListWidget<>("Choose a Figure", figures, Figure::toString);
+        FiguresPrinter printer = new FiguresPrinter();
+        ListWidget<Figure> figureListWidget = new ListWidget<>("\nChoose a Figure:\n", figures, printer);
         figureListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(figures);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
                 return null;
             }
 
-            if (option < 1 || option > figures.size()) {
+            if (option < 0 || option >= figures.size()) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                Figure selected = figures.get(option - 1);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected Figure: " + selected + UtilsUI.RESET);
-                return selected;
+                return figures.get(option);
             }
-
         } while (true);
-
     }
+
 }

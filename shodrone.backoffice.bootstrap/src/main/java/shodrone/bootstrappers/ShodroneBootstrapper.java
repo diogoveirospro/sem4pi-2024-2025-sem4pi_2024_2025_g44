@@ -24,8 +24,11 @@
 package shodrone.bootstrappers;
 
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.PhoneNumber;
+import core.User.domain.Entities.ShodroneUser;
 import core.User.domain.ShodroneRoles;
 import core.User.domain.UserBuilderHelper;
+import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.ConcurrencyException;
 import eapli.framework.domain.repositories.IntegrityViolationException;
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +57,7 @@ public class ShodroneBootstrapper implements Action {
 	private final AuthorizationService authz = AuthzRegistry.authorizationService();
 	private final AuthenticationService authenticationService = AuthzRegistry.authenticationService();
 	private final UserRepository userRepository = PersistenceContext.repositories().users();
+	private final ShodroneUserRepository shodroneUserRepository = PersistenceContext.repositories().shodroneUsers();
 
 	@Override
 	public boolean execute() {
@@ -61,7 +65,7 @@ public class ShodroneBootstrapper implements Action {
 		final Action[] actions = {
 				new MasterUsersBootstrapper()		};
 
-		registerPowerUser(userRepository);
+		registerPowerUser(userRepository, shodroneUserRepository);
 		authenticateForBootstrapping();
 
 		// execute all bootstrapping
@@ -77,7 +81,8 @@ public class ShodroneBootstrapper implements Action {
 	 * Register a power user directly in the persistence layer as we need to
 	 * circumvent authorizations in the Application Layer.
 	 */
-	public static boolean registerPowerUser(final UserRepository userRepository) {
+	public static boolean registerPowerUser(final UserRepository userRepository,
+			final ShodroneUserRepository shodroneUserRepository) {
 
 		final var userBuilder = UserBuilderHelper.builder();
 		userBuilder.withUsername(POWERUSER).withPassword(POWERUSER_PWD).withName("joe", "power")
@@ -86,7 +91,10 @@ public class ShodroneBootstrapper implements Action {
 
 		try {
 			final var poweruser = userRepository.save(newUser);
+			ShodroneUser shodroneUser = new ShodroneUser(newUser, new PhoneNumber("+351", "123456789"));
+			final var shodronePowerUser = shodroneUserRepository.save(shodroneUser);
 			assert poweruser != null;
+			assert shodronePowerUser != null;
 			return true;
 		} catch (ConcurrencyException | IntegrityViolationException e) {
 			// ignoring exception. assuming it is just a primary key violation

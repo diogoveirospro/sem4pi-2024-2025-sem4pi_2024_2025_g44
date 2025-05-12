@@ -11,7 +11,7 @@ import Shodrone.console.Drone.RemoveDroneUI;
 import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
-import Shodrone.console.Figure.printer.ListPublicCatalogueUI;
+import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;

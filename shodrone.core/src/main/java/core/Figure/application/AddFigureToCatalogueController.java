@@ -6,10 +6,7 @@ import core.Customer.domain.Entities.Customer;
 import core.Customer.repositories.CustomerRepository;
 import core.Figure.domain.Entities.Exclusivity;
 import core.Figure.domain.Entities.Figure;
-import core.Figure.domain.ValueObjects.Code;
-import core.Figure.domain.ValueObjects.DSLDescription;
-import core.Figure.domain.ValueObjects.Keyword;
-import core.Figure.domain.ValueObjects.Version;
+import core.Figure.domain.ValueObjects.*;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Description;
@@ -94,5 +91,14 @@ public class AddFigureToCatalogueController {
      */
     public Iterable<Customer> listCustomers() {
         return customerRepository.findAll();
+    }
+
+    /**
+     * Check if a figure with the given code and version already exists in the catalogue.
+     * @return true if the figure exists, false otherwise
+     */
+    public boolean checkIfCodeAndVersionAlreadyExists(Code code, Version version){
+        Preconditions.noneNull(code, version);
+        return figureRepository.exists(new FigureID(code, version));
     }
 }

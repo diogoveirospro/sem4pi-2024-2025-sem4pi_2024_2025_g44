@@ -107,4 +107,9 @@ public class Category implements AggregateRoot<Long> {
     public int hashCode() {
         return Objects.hash(name, description);
     }
+
+    @Override
+    public String toString() {
+        return name.toString() + " - " + description.toString();
+    }
 }

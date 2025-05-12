@@ -2,69 +2,102 @@ package Shodrone.console.Figure.actions;
 
 import core.Figure.application.SearchCatalogueController;
 import core.Figure.domain.Entities.Figure;
-import shodrone.presentation.AbstractFancyUI;
+import eapli.framework.visitor.Visitor;
+import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.List;
 
 /**
  * UI for searching figures in the catalogue.
- * This class is responsible for displaying the search results
+ * This class is responsible for displaying the search results.
  */
-public class SearchCatalogueUI extends AbstractFancyUI {
+public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
 
     /**
      * Controller for searching figures in the catalogue.
      */
-    SearchCatalogueController controller = new SearchCatalogueController();
+    private final SearchCatalogueController controller = new SearchCatalogueController();
 
     /**
-     * List all figures in the catalogue with the given category and/or keyword.
-     * @return true if the user wants to continue, false otherwise
+     * List figures by keyword/category and display them.
+     * @return true if UI was shown successfully
      */
     @Override
-    protected boolean doShow() {
-        String category = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the category (or leave blank for " +
-                "all categories): " + UtilsUI.RESET);
-        String keyword = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the keyword (or leave blank for all " +
-                "keywords): " + UtilsUI.RESET);
+    public boolean doShow() {
+        String category = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter category (or leave blank): " + UtilsUI.RESET);
+        String keyword = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter keyword (or leave blank): " + UtilsUI.RESET);
 
-        if (category != null && category.isBlank()) {
-            category = null;
+        if (category != null && category.isBlank()) category = null;
+        if (keyword != null && keyword.isBlank()) keyword = null;
+
+        final Iterable<Figure> figures = controller.listSearchResults(category, keyword);
+        if (!figures.iterator().hasNext()) {
+            System.out.println(emptyMessage());
+            return true;
         }
 
-        if (keyword != null && keyword.isBlank()) {
-            keyword = null;
+        System.out.println(listHeader());
+        for (Figure figure : figures) {
+            elementPrinter().visit(figure);
         }
 
-        showSearchCatalogue(category, keyword);
         UtilsUI.goBackAndWait();
         return true;
     }
 
     /**
-     * Show the search results in the catalogue.
-     * @param category the category to search for or null
-     * @param keyword the keyword to search for or null
+     * Fetches search results using optional filters.
      */
-    private void showSearchCatalogue(String category, String keyword){
-        List<Figure> figures = controller.listSearchResults(category, keyword);
-
-        if (figures.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo figures found with the given category and/or keyword."
-                    + UtilsUI.RESET);
-            return;
-        }
-
-        for (Figure figure : figures) {
-            figure.toString();
-        }
-
+    @Override
+    protected Iterable<Figure> elements() {
+        // Handled directly in doShow
+        return List.of(); // Placeholder, not used
     }
 
     /**
-     * Returns the name of the action.
-     * @return the name of the action
+     * Prints a formatted line for each matching figure.
+     */
+    @Override
+    protected Visitor<Figure> elementPrinter() {
+        return figure -> System.out.printf(
+                "%-15s | %-10s | %-50s | %s\n",
+                figure.identity().code().toString(),
+                figure.identity().version().toString(),
+                figure.description().toString(),
+                figure.isExclusive() ? UtilsUI.RED + "Exclusive" + UtilsUI.RESET : UtilsUI.GREEN + "Public" + UtilsUI.RESET
+        );
+    }
+
+    /**
+     * Returns the name of the printed element.
+     */
+    @Override
+    protected String elementName() {
+        return "Figure";
+    }
+
+    /**
+     * Header for the search result list.
+     */
+    @Override
+    protected String listHeader() {
+        return UtilsUI.BOLD
+                + String.format("\n" + "%-15s | %-10s | %-50s | %-10s", "CODE", "VERSION", "DESCRIPTION", "TYPE") + "\n"
+                + String.format("%-15s-+-%-10s-+-%-50s-+-%-10s", "-".repeat(15), "-".repeat(10), "-".repeat(50), "-".repeat(10))
+                + UtilsUI.RESET;
+    }
+
+    /**
+     * Message when no results match the filters.
+     */
+    @Override
+    protected String emptyMessage() {
+        return UtilsUI.RED + UtilsUI.BOLD + "\nNo Figures Found for Given Filters!" + UtilsUI.RESET;
+    }
+
+    /**
+     * Returns the title of this UI screen.
      */
     @Override
     public String headline() {
