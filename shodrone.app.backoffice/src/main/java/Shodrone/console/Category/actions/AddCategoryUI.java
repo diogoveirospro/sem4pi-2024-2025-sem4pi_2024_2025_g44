@@ -27,7 +27,7 @@ public class AddCategoryUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         if (!isShowDesigner()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Access denied. Only Show Designers can perform this action." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAccess denied. Only Show Designers can perform this action." + UtilsUI.RESET);
             return false;
         }
         try {
@@ -36,7 +36,7 @@ public class AddCategoryUI extends AbstractFancyUI {
 
             controller.addCategory(name, description);
 
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Category added successfully!" + UtilsUI.RESET);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nCategory added successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
 

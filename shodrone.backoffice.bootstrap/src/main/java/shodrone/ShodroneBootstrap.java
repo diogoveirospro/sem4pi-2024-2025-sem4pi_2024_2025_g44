@@ -88,7 +88,7 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
     @Override
     protected String appTitle() {
-        return "Bootstrapping shodrone data ";
+        return "Shodrone Bootstrap";
     }
 
 

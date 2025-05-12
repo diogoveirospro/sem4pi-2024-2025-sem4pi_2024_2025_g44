@@ -1,7 +1,10 @@
 package Shodrone.console.Figure.actions;
 
+import Shodrone.console.Figure.printer.CategoriesPrinter;
+import Shodrone.console.Figure.printer.CustomerPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Category.domain.Entities.Category;
+import core.Category.repositories.CategoryRepository;
 import core.Customer.domain.Entities.Customer;
 import core.Figure.application.AddFigureToCatalogueController;
 import core.Figure.domain.Entities.Exclusivity;
@@ -45,8 +48,20 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         try {
-            Code code = enterValidCode();
-            Version version = enterValidVersion();
+            Code code;
+            Version version;
+            boolean exists;
+
+            do {
+                code = enterValidCode();
+                version = enterValidVersion();
+
+                exists = controller.checkIfCodeAndVersionAlreadyExists(code, version);
+                if (exists) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe figure already exists!" + UtilsUI.RESET);
+                }
+            } while (exists);
+
             Description description = enterValidDescription();
             DSLDescription dslDescription = enterValidDSLDescription();
             Set<Keyword> keywords = enterValidKeywords();
@@ -70,7 +85,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 } else {
                     addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
                 }
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Figure added to catalogue successfully!" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure added to catalogue successfully!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
 
@@ -132,43 +147,51 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     public Set<Category> showCategoriesAndSelect() {
         Iterable<Category> categories = controller.listCategories();
         if (categories == null || !categories.iterator().hasNext()) {
-            System.out.print(UtilsUI.RED + UtilsUI.BOLD + "\nNo categories available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo categories available." + UtilsUI.RESET);
             return null;
         }
 
-        List<Category> categoriesToShow = new ArrayList<>();
-        for (Category category : categories) {
-            categoriesToShow.add(category);
-        }
+        List<Category> categoryList = new ArrayList<>();
+        categories.forEach(categoryList::add);
 
         Set<Category> selectedCategories = new HashSet<>();
+        CategoriesPrinter categoriesPrinter = new CategoriesPrinter();
 
-        ListWidget<Category> categoryListWidget = new ListWidget<>("Choose the Categories", categories,
-                Category::toString);
+        ListWidget<Category> categoryListWidget = new ListWidget<>(
+                UtilsUI.BOLD + "\nChoose the Categories:\n" + UtilsUI.RESET,
+                categoryList,
+                categoriesPrinter
+        );
         categoryListWidget.show();
 
-        int option = 0;
+        int option;
         do {
-            option = UtilsUI.selectsIndex(new ArrayList<>((List) categories));
+            option = UtilsUI.selectsIndex(categoryList);
 
             if (option == -2) {
                 break;
             }
-            if (option < 1 || option > categories.spliterator().estimateSize()) {
+
+            if (option < 0 || option > categoryList.size()) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
                 continue;
             }
 
-            selectedCategories.add(categoriesToShow.get(option - 1));
-        } while(option < 1 || option > categories.spliterator().estimateSize());
+            Category selected = categoryList.get(option);
+            if (selectedCategories.contains(selected)) {
+                System.out.println(UtilsUI.YELLOW + "Category already selected." + UtilsUI.RESET);
+            } else {
+                selectedCategories.add(selected);
+            }
+
+        } while (true);
 
         if (selectedCategories.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No categories selected." + UtilsUI.RESET);
-            showCategoriesAndSelect();
-        } else {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected categories: " + selectedCategories);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo categories selected.\n" + UtilsUI.RESET);
+            return showCategoriesAndSelect();
         }
 
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected categories:\n" + selectedCategories + UtilsUI.RESET);
         return selectedCategories;
     }
 
@@ -179,29 +202,31 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     public Customer showCustomerAndSelect() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
         customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, Customer::toString);
+        CustomerPrinter customerPrinter = new CustomerPrinter();
+
+        ListWidget<Customer> customerListWidget = new ListWidget<>("\nChoose a Customer:\n", customerList, customerPrinter);
         customerListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
                 return null;
             }
 
-            if (option < 1 || option > customerList.size()) {
+            if (option < 0 || option > customerList.size()) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                Customer selected = customerList.get(option - 1);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected customer: " + selected + UtilsUI.RESET);
+                Customer selected = customerList.get(option);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected customer: " + selected.toString() + UtilsUI.RESET);
                 return selected;
             }
 
@@ -216,7 +241,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         Set<Keyword> keywords = new HashSet<>();
         String keyword;
         do {
-            keyword = readLineFromConsole(UtilsUI.BOLD + "Enter a keyword (type 'done' to finish or 'cancel' to go back):\n: " + UtilsUI.RESET);
+            keyword = readLineFromConsole(UtilsUI.BOLD + "Enter a keyword (type 'done' to finish or 'cancel' to go back): " + UtilsUI.RESET);
 
             if ("cancel".equalsIgnoreCase(keyword)) {
                 throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -266,10 +291,10 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             } catch (IOException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError reading file: " + e.getMessage() + UtilsUI.RESET);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid input: " + e.getMessage() + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input: " + e.getMessage() + UtilsUI.RESET);
             }
 
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Please try again." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPlease try again." + UtilsUI.RESET);
         }
     }
 
@@ -350,12 +375,25 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
                     Customer customer = showCustomerAndSelect();
                     if (customer == null) {
-                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer selected. Please try again." + UtilsUI.RESET);
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customer selected. Please try again." + UtilsUI.RESET);
                         continue;
                     }
 
-                    Date startDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "\nEnter the start date (dd-MM-yyyy): " + UtilsUI.RESET);
-                    Date endDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "Enter the end date (dd-MM-yyyy): " + UtilsUI.RESET);
+                    Date startDate;
+                    Date endDate;
+
+                    while (true) {
+                        startDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "\nEnter the start date (dd-MM-yyyy): " + UtilsUI.RESET);
+                        endDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "Enter the end date (dd-MM-yyyy): " + UtilsUI.RESET);
+
+                        if (endDate.before(startDate)) {
+                            System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                                    "\nThe end date cannot be before the start date. Please try again." + UtilsUI.RESET);
+                        } else {
+                            break; // valid dates
+                        }
+                    }
+
 
                     Calendar start = Calendar.getInstance();
                     start.setTime(startDate);

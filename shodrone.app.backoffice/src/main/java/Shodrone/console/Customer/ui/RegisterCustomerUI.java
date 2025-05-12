@@ -34,7 +34,7 @@ public class RegisterCustomerUI extends AbstractFancyUI {
             Customer customer = new Customer(name, address, vat, type);
             createCustomerRepresentative(customer);
             addCustomer(customer);
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer added successfully!" + UtilsUI.RESET);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nCustomer added successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
         } catch (IllegalArgumentException e) {
@@ -53,24 +53,24 @@ public class RegisterCustomerUI extends AbstractFancyUI {
 
         List<String> customerTypes = controller.availableCustomerTypes();
         if (customerTypes == null || customerTypes.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer types available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customer types available." + UtilsUI.RESET);
             return null;
         }
 
-        ListWidget<String> customerTypeListWidget = new ListWidget<>("Choose a Customer Type", customerTypes);
+        ListWidget<String> customerTypeListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Customer Type:\n" + UtilsUI.RESET, customerTypes);
         customerTypeListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(customerTypes);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
                 return null;
             }
             if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return CustomerType.valueOf(customerTypes.get(option));
+                return CustomerType.valueOf(customerTypes.get(option).trim().toUpperCase());
             }
         } while (true);
     }
@@ -81,11 +81,12 @@ public class RegisterCustomerUI extends AbstractFancyUI {
     }
 
     private void createCustomerRepresentative(Customer customer) {
+        System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nCreate Customer Representative:" + UtilsUI.RESET);
         Name repFullName = enterValidName();
         Email repEmail = enterValidEmail();
         PhoneNumber repPhone = enterValidPhoneNumber();
         if (repPhone == null) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No phone number registered. Operation canceled." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo phone number registered. Operation canceled." + UtilsUI.RESET);
             return;
         }
         String position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Position: " + UtilsUI.RESET);
@@ -93,7 +94,7 @@ public class RegisterCustomerUI extends AbstractFancyUI {
 
         CustomerRepresentative representative = new CustomerRepresentative(repFullName, repEmail, repPhone, repPosition, customer);
         customer.addCustomerRepresentative(representative);
-        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative created successfully!" + UtilsUI.RESET);
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nCustomer Representative created successfully!" + UtilsUI.RESET);
     }
 
     private Name enterValidName() {
@@ -106,7 +107,7 @@ public class RegisterCustomerUI extends AbstractFancyUI {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
                 if (!Pattern.matches(nameRegex, name)) {
-                    throw new IllegalArgumentException("Name can only contain letters and spaces.");
+                    throw new IllegalArgumentException("\nName can only contain letters and spaces.");
                 }
                 return new Name(name);
             } catch (IllegalArgumentException e) {
@@ -125,7 +126,7 @@ public class RegisterCustomerUI extends AbstractFancyUI {
                 }
                 return new Email(email);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid email. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid email. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -138,7 +139,7 @@ public class RegisterCustomerUI extends AbstractFancyUI {
             try {
                 country = selectCountry();
                 if (country == null) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No country selected. Operation canceled." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo country selected. Operation canceled." + UtilsUI.RESET);
                     return null;
                 }
                 countryCode = controller.countryCode(country);
@@ -202,18 +203,18 @@ public class RegisterCustomerUI extends AbstractFancyUI {
     private String selectCountry() {
         List<String> countries = controller.availableCountries();
         if (countries == null || countries.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No countries available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo countries available." + UtilsUI.RESET);
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>("Choose a Country", countries);
+        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Country: \n" + UtilsUI.RESET, countries);
         countryListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(countries);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
                 return null;
             }
             if (option == -1) {

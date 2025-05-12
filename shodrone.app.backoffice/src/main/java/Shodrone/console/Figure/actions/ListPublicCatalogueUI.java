@@ -1,4 +1,4 @@
-package Shodrone.console.Figure.printer;
+package Shodrone.console.Figure.actions;
 
 import core.Figure.application.ListPublicCatalogueController;
 import core.Figure.domain.Entities.Figure;
