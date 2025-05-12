@@ -2,6 +2,7 @@ package core.ModelOfDrone.application;
 
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
+import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.*;
 import core.ModelOfDrone.repositories.ModelRepository;
@@ -17,8 +18,9 @@ public class CreateModelController {
     public CreateModelController() {
     }
 
-    public boolean createModel(ModelName modelName, Map<Double, int[]> config){
+    public boolean createModel(ModelName modelName, Configuration config){
         return modelRepository.createModel(modelName, config);
     }
+
 
 }

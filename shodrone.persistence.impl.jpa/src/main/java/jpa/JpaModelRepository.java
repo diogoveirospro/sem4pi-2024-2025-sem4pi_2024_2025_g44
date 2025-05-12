@@ -1,8 +1,11 @@
 package jpa;
 
 import core.Drone.domain.Entities.Drone;
+import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
+import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
+import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -26,11 +29,10 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
 
     //US240
     @Override
-    public boolean createModel(ModelName modelName, Map<Double, int[]> config) {
+    public boolean createModel(ModelName modelName, Configuration config) {
         if (!validateModel(modelName)){ return false;}
-        /*if ()
-        Model model = new Model(modelName, windTolerance, windSpeed, posTolerance, safetyStatus);
-        save(model);*/
+        Model model = new Model(modelName, config);
+        save(model);
         return true;
     }
 

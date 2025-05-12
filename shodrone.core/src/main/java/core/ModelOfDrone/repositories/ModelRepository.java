@@ -1,6 +1,7 @@
 package core.ModelOfDrone.repositories;
 
 
+import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.*;
 import eapli.framework.domain.repositories.DomainRepository;
@@ -18,5 +19,6 @@ public interface ModelRepository extends DomainRepository<Designation, Model> {
 
     Iterable<Model> findAllModels();
 
-    boolean createModel(ModelName modelName, Map<Double, int[]> config);
+    boolean createModel(ModelName modelName, Configuration config);
+
 }

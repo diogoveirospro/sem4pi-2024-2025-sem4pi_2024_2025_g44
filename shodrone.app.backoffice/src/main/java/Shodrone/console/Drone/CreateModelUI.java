@@ -1,12 +1,14 @@
 package Shodrone.console.Drone;
 
 import core.ModelOfDrone.application.CreateModelController;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
+import core.ModelOfDrone.domain.Entities.Configuration;
+import core.ModelOfDrone.domain.ValueObjects.*;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.*;
+
+import static javax.swing.UIManager.put;
 
 public class CreateModelUI extends AbstractFancyUI {
 
@@ -14,8 +16,6 @@ public class CreateModelUI extends AbstractFancyUI {
 
     @Override
     public boolean doShow() {
-        Scanner scanner = new Scanner(System.in);
-        Map<Double, int[]> config = new LinkedHashMap<>();
 
         System.out.println("=== Create Drone Model ===");
         String name = UtilsUI.readLineFromConsole("Enter the model name");
@@ -24,7 +24,11 @@ public class CreateModelUI extends AbstractFancyUI {
         int previousLimit = 0;
         int currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit where the wind speed is 100% safe for the drone, no wind tolerance");
 
-        config.put(0.0, new int[] {previousLimit, currentLimit});
+        WindSpeed windSpeedF = new WindSpeed(previousLimit, currentLimit);
+        PositionTolerance positionToleranceF = new PositionTolerance(0.0);
+        Map<PositionTolerance, WindSpeed> config = new HashMap<>();
+        config.put(positionToleranceF, windSpeedF);
+
         previousLimit = currentLimit;
 
         int choice = 1;
@@ -34,40 +38,52 @@ public class CreateModelUI extends AbstractFancyUI {
 
             if (choice != 1) break;
 
-            double windTolerance = UtilsUI.readDoubleFromConsole("Enter the next wind tolerance");
+            double position = UtilsUI.readDoubleFromConsole("Enter the next wind tolerance");
 
-            currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit to fly with this tolerance: " + windTolerance);
+            currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit to fly with this tolerance: " + position);
 
-            // Cria novo array com intervalo e adiciona ao mapa
-            config.put(windTolerance, new int[] {previousLimit, currentLimit});
+            WindSpeed windSpeed = new WindSpeed(previousLimit, currentLimit);
+
+            PositionTolerance positionTolerance = new PositionTolerance(position);
+
+            config.put(positionTolerance, windSpeed);
+
             previousLimit = currentLimit;
         }
 
         int unsafeLimit = UtilsUI.readIntegerFromConsole("Enter the max limit where it is NOT safe to fly");
-        config.put(-1.0, new int[] {previousLimit, unsafeLimit});
+
+        WindSpeed windSpeed = new WindSpeed(unsafeLimit, 999);
+
+        PositionTolerance positionTolerance = new PositionTolerance(-1);
+
+        config.put(positionTolerance, windSpeed);
 
         System.out.println("\nPlease confirm the data:");
         System.out.println("=== " + modelName + " ===");
 
-        for (Map.Entry<Double, int[]> entry : config.entrySet()) {
-            double tolerance = entry.getKey();
-            int[] range = entry.getValue();
+        for (Map.Entry<PositionTolerance, WindSpeed> entry : config.entrySet()) {
+            double tolerance = entry.getKey().value();
+            int min = entry.getValue().minSpeed();
+            int max = entry.getValue().maxSpeed();
 
             if (tolerance == 0.0) {
-                System.out.println("wind <= " + range[1] + " -> 0m");
+                System.out.println("wind <= " + max + " -> 0m");
             } else if (tolerance == -1.0) {
-                System.out.println(range[0] + " < wind -> Not safe to fly");
+                System.out.println(min + " < wind -> Not safe to fly");
             } else {
-                System.out.println(range[0] + " < wind <= " + range[1] + " -> " + tolerance + "m");
+                System.out.println(min + " < wind <= " + max + " -> " + tolerance + "m");
             }
         }
+
         String confirm = UtilsUI.readLineFromConsole("Confirm (Y/N)? ");
+
         if (!confirm.equalsIgnoreCase("Y")) {
             System.out.println("Operation canceled.");
             return false;
         }
-
-        boolean success = controller.createModel(modelName, config);
+        Configuration configuration = new Configuration(config);
+        boolean success = controller.createModel(modelName, configuration);
         if (success) {
             System.out.println("Model successfully created!");
             return true;

@@ -6,46 +6,63 @@ import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 public class Model implements Serializable, AggregateRoot<Designation> {
+
     @Id
-    @GeneratedValue
-    @Column(name = "model_id")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "model_name")
+
     @Embedded
     private ModelName modelName;
-    @Embedded
-    private  WindTolerance windTolerance;
-    @Embedded
-    private  WindSpeed windSpeed;
-    @Embedded
-    private  PositionTolerance positionTolerance;
-    @Enumerated(EnumType.STRING)
-    private  SafetyStatus safetyStatus;
+
+    private Configuration configuration;
 
     protected Model() {
         // for ORM
     }
-    public Model(ModelName modelName, WindTolerance windTolerance, WindSpeed windSpeed,
-                 PositionTolerance positionTolerance, SafetyStatus safetyStatus) {
+
+    public Model(ModelName modelName, Configuration configuration) {
+        if (modelName == null || configuration == null) {
+            throw new IllegalArgumentException("Model name and wind tolerance must not be null");
+        }
         this.modelName = modelName;
-        this.windTolerance = windTolerance;
-        this.windSpeed = windSpeed;
-        this.positionTolerance = positionTolerance;
-        this.safetyStatus = safetyStatus;
+        this.configuration = configuration;
     }
 
     @Override
     public boolean sameAs(Object other) {
         if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (!(other instanceof Model)) return false;
         Model model = (Model) other;
-        return modelName != null && modelName.equals(model.modelName);
+        return Objects.equals(modelName, model.modelName);
     }
 
     @Override
     public ModelName identity() {
         return modelName;
+    }
+
+    @Override
+    public String toString() {
+        return "Model{" +
+                ", modelName=" + modelName +
+                ", configuration=" + configuration +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(modelName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Model)) return false;
+        Model model = (Model) o;
+        return Objects.equals(modelName, model.modelName);
     }
 }
