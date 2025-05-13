@@ -48,6 +48,7 @@ public class AppSettings {
     private static final String PERSISTENCE_UNIT_KEY = "persistence.persistenceUnit";
     private static final String SCHEMA_GENERATION_KEY = "jakarta.persistence.schema-generation.database.action";
     private static final String USE_EVENTFUL_CONTROLLERS = "UseEventfulControllers";
+    private static final String SHODRONE_DOMAIN = "ShodroneDomain";
 
     private final Properties applicationProperties = new Properties();
 
@@ -74,6 +75,7 @@ public class AppSettings {
                 "jpa.persistence.JpaRepositoryFactory");
         applicationProperties.setProperty(UI_MENU_LAYOUT_KEY, "vertical");
         applicationProperties.setProperty(PERSISTENCE_UNIT_KEY, "shodrone.app");
+        applicationProperties.setProperty(SHODRONE_DOMAIN, "shodrone.app");
     }
 
     public boolean isMenuLayoutHorizontal() {
@@ -86,6 +88,10 @@ public class AppSettings {
 
     public String repositoryFactory() {
         return applicationProperties.getProperty(REPOSITORY_FACTORY_KEY);
+    }
+
+    public String shodroneDomain() {
+        return applicationProperties.getProperty(SHODRONE_DOMAIN);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

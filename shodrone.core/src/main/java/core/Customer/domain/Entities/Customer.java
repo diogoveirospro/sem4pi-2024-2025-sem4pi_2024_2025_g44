@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"vatnumber"})
+})
 public class Customer implements Serializable, AggregateRoot<VatNumber> {
 
     /**
@@ -47,14 +50,14 @@ public class Customer implements Serializable, AggregateRoot<VatNumber> {
      * The version of the Customer in the database
      */
     @Embedded
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private Name name;
 
     /**
      * The address of the Customer
      */
     @Embedded
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private Address address;
 
     /**

@@ -13,11 +13,17 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"email"}),
+    @UniqueConstraint(columnNames = {"countryCode","nationalNumber"})
+})
 public class CustomerRepresentative implements Serializable, DomainEntity<EmailAddress> {
 
     /**
      * Serial version UID for serialization.
      */
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private Long id;
@@ -41,7 +47,7 @@ public class CustomerRepresentative implements Serializable, DomainEntity<EmailA
      * The name of the customer representative.
      */
     @Embedded
-    @Column(unique = true, nullable = false)
+    @Column( nullable = false)
     private Name name;
 
     /**
