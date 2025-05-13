@@ -40,6 +40,8 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
 //                print error msg
 //                return false
 //            }
+           // if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.COLLABORATOR))
+             //   ;
 
 
             ShowDescription showDescription = enterValidShowDescription();

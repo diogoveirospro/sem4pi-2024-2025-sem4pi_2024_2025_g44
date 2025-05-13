@@ -9,4 +9,6 @@ import eapli.framework.domain.repositories.DomainRepository;
 public interface ShowRequestRepository extends DomainRepository<ShowRequestID, ShowRequest> {
 
     Iterable<ShowRequest> findAllCreatedShowRequestsByCustomer(Customer customer);
+
+    Iterable<ShowRequest> findAllCreatedShowRequestsByCustomerWithoutProposal(Customer customer);
 }

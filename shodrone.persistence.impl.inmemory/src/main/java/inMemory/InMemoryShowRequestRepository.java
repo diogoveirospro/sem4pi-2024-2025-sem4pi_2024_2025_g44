@@ -22,6 +22,18 @@ public class InMemoryShowRequestRepository extends InMemoryDomainRepository<Show
         Iterable<ShowRequest> showRequests = findAll();
         List<ShowRequest> result = new ArrayList<>();
         for (ShowRequest showRequest : showRequests) {
+            if (showRequest.getCustomer().equals(customer)) {
+                result.add(showRequest);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Iterable<ShowRequest> findAllCreatedShowRequestsByCustomerWithoutProposal(Customer customer) {
+        Iterable<ShowRequest> showRequests = findAll();
+        List<ShowRequest> result = new ArrayList<>();
+        for (ShowRequest showRequest : showRequests) {
             if (showRequest.getShowRequestStatus() == ShowRequestStatus.CREATED && showRequest.getCustomer().equals(customer)) {
                 result.add(showRequest);
             }
