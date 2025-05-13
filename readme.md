@@ -36,7 +36,14 @@ To run the tests, run the following script:
 
 ## 5. How to Run
 
-To run and compile the project, you need to have the programs said in the previous section *How to Build* and then run the following script:
+To run the project, you need to run the scripts and have the programs said in the previous section *How to Build* and then run the following script:
+
+But first, you need to run the bootstrap script to create the folders and files needed to run the project.
+
+**Bootstrap:**
+
+- **Linux/Unix/MacOS:** ./bootstrap.sh
+- **Windows:** .\bootstrap.bat
 
 **ShodroneBackoffice:**
 

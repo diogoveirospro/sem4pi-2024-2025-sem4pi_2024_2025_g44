@@ -7,6 +7,7 @@ import core.Customer.domain.ValueObjects.CustomerStatus;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.Application;
+import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import jakarta.persistence.TypedQuery;
@@ -37,5 +38,13 @@ public class JpaCustomerRepository extends JpaAutoTxRepository<Customer, VatNumb
         query.setParameter("customer", customer);
         query.setParameter("status", CustomerRepresentativeStatus.ACTIVE);
         return query.getResultList();
+    }
+
+    @Override
+    public Customer findCustomerByName(Name name) {
+        final TypedQuery <Customer> query = entityManager().createQuery(
+                "SELECT c FROM Customer c WHERE c.name = :name", Customer.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
     }
 }

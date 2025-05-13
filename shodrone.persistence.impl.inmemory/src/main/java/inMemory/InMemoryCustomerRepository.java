@@ -6,6 +6,7 @@ import core.Customer.domain.ValueObjects.CustomerRepresentativeStatus;
 import core.Customer.domain.ValueObjects.CustomerStatus;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Customer.repositories.CustomerRepository;
+import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainRepository;
 import inMemory.persistence.InMemoryInitializer;
 
@@ -40,5 +41,16 @@ public class InMemoryCustomerRepository extends InMemoryDomainRepository<Custome
             }
         }
         return result;
+    }
+
+    @Override
+    public Customer findCustomerByName(Name name) {
+        Iterable<Customer> customers = findAll();
+        for (Customer customer : customers) {
+            if (customer.name().equals(name)) {
+                return customer;
+            }
+        }
+        return null;
     }
 }

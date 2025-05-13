@@ -32,6 +32,8 @@ import eapli.framework.io.util.Console;
 import shodrone.bootstrappers.Demo.ShodroneDemoBootstrapper;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 import shodrone.bootstrappers.SmokeTests.ShodroneDemoSmokeTester;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * eCafeteria Bootstrapping data app
@@ -58,6 +60,8 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
     protected void doMain(final String[] args) {
         handleArgs(args);
 
+        ensureDatabaseFileExists();
+
         System.out.println("\n\n------- MASTER DATA -------");
         new ShodroneBootstrapper().execute();
 
@@ -72,6 +76,26 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
         if (isToWaitInTheEnd) {
             Console.readLine("\n\n>>>>>> Enter to finish the program.");
+        }
+    }
+
+    private void ensureDatabaseFileExists() {
+        String dbFilePath = System.getProperty("user.home") + "/DB/shodrone.app.mv.db";
+        File dbFile = new File(dbFilePath);
+
+        if (!dbFile.exists()) {
+            try {
+                File dbDir = dbFile.getParentFile();
+                if (!dbDir.exists()) {
+                    dbDir.mkdirs();
+                }
+                dbFile.createNewFile();
+                System.out.println("Arquivo do banco de dados criado em: " + dbFilePath);
+            } catch (IOException e) {
+                System.err.println("Erro ao criar o arquivo do banco de dados: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Arquivo do banco de dados já existe em: " + dbFilePath);
         }
     }
 
