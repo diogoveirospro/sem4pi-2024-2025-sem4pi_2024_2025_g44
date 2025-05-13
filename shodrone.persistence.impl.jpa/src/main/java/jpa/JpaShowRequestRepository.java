@@ -1,5 +1,6 @@
 package jpa;
 
+import core.Customer.domain.Entities.Customer;
 import core.Persistence.Application;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import core.ShowRequest.domain.ValueObjects.ShowRequestID;
@@ -20,10 +21,11 @@ public class JpaShowRequestRepository extends JpaAutoTxRepository<ShowRequest, S
     }
 
     @Override
-    public Iterable<ShowRequest> findAllCreatedShowRequests() {
+    public Iterable<ShowRequest> findAllCreatedShowRequestsByCustomer(Customer customer) {
         final TypedQuery<ShowRequest> query = entityManager().createQuery(
-                "SELECT s FROM ShowRequest s WHERE s.status = :status", ShowRequest.class);
+                "SELECT s FROM ShowRequest s WHERE s.status = :status AND s.customer = :customer", ShowRequest.class);
         query.setParameter("status", ShowRequestStatus.CREATED);
+        query.setParameter("customer", customer);
         return query.getResultList();
     }
 }

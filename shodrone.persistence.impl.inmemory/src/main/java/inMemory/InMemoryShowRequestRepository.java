@@ -1,5 +1,6 @@
 package inMemory;
 
+import core.Customer.domain.Entities.Customer;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import core.ShowRequest.domain.ValueObjects.ShowRequestID;
 import core.ShowRequest.domain.ValueObjects.ShowRequestStatus;
@@ -17,11 +18,11 @@ public class InMemoryShowRequestRepository extends InMemoryDomainRepository<Show
     }
 
     @Override
-    public Iterable<ShowRequest> findAllCreatedShowRequests() {
+    public Iterable<ShowRequest> findAllCreatedShowRequestsByCustomer(Customer customer) {
         Iterable<ShowRequest> showRequests = findAll();
         List<ShowRequest> result = new ArrayList<>();
         for (ShowRequest showRequest : showRequests) {
-            if (showRequest.getShowRequestStatus() == ShowRequestStatus.CREATED) {
+            if (showRequest.getShowRequestStatus() == ShowRequestStatus.CREATED && showRequest.getCustomer().equals(customer)) {
                 result.add(showRequest);
             }
         }
