@@ -148,19 +148,26 @@ public class RegisterUserUI extends AbstractFancyUI {
     private String selectCountry() {
         List<String> countries = theController.availableCountries();
         if (countries == null || countries.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No countries available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo countries available." + UtilsUI.RESET);
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>("Countries", countries);
+        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Country: \n" + UtilsUI.RESET, countries);
         countryListWidget.show();
 
-        int option = UtilsUI.selectsIndex(countries);
-        if (option == -2) {
-            return null;
-        }
-
-        return countries.get(option - 1);
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(countries);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return countries.get(option);
+            }
+        } while (true);
     }
 
     private boolean showRoles(final Set<Role> roleTypes) {
