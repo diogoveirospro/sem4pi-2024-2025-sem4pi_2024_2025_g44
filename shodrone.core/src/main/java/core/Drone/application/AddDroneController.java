@@ -2,6 +2,7 @@ package core.Drone.application;
 
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
+import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.PersistenceContext;
@@ -15,12 +16,11 @@ public class AddDroneController {
 
     public AddDroneController() {
     }
-
-    public boolean verifyModel(ModelName modelName) {
-        return modelRepository.verifyModel(modelName);
+    public boolean addDrone(SerialNumber serialNumber, Model model) {
+        return droneRepository.addDrone(serialNumber, model);
+    }
+    public Iterable<Model> listModels() {
+        return modelRepository.findAllModels();
     }
 
-    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
-        return droneRepository.addDrone(serialNumber, modelName);
-    }
 }

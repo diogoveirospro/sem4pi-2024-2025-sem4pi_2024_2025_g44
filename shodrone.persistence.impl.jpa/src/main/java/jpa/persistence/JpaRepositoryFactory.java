@@ -110,12 +110,12 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 
 	@Override
 	public DroneRepository drone(TransactionalContext autoTx) {
-		return null;
+		return new JpaDroneRepository(autoTx);
 	}
 
 	@Override
 	public DroneRepository drone() {
-		return null;
+		return new JpaDroneRepository(Application.settings().persistenceUnitName());
 	}
 
 	@Override

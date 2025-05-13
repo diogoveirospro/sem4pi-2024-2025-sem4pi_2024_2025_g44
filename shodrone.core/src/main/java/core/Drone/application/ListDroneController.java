@@ -24,10 +24,6 @@ public class ListDroneController {
         return modelRepository.findAllModels();
     }
 
-    public List<Model> getModelList() {
-        return modelRepository.getModelList();
-    }
-
     public List<Drone> getDrnModelList(Model droneModel) {
         return droneRepository.getDrnModelList(droneModel);
     }

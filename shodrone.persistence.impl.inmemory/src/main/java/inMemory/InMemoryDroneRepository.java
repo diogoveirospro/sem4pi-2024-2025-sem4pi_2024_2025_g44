@@ -5,6 +5,7 @@ import core.Customer.domain.ValueObjects.CustomerStatus;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Drone.domain.Entities.Drone;
 import core.Drone.domain.ValueObjects.DroneStatus;
+import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
 import core.ModelOfDrone.domain.Entities.Model;
@@ -15,9 +16,7 @@ import inMemory.persistence.InMemoryInitializer;
 import org.springframework.boot.Banner;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
@@ -31,7 +30,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
     }
     //US241
     @Override
-    public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
+    public boolean addDrone(SerialNumber serialNumber, Model model) {
         if (!validateDrone(serialNumber)) {
             return false;
         }
@@ -41,9 +40,9 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         Model selectedModel = null;
 
         // Tentar encontrar o modelo correto pelo ModelName
-        for (Model model : models) {
-            if (model.getModelName().equals(modelName)) {
-                selectedModel = model;
+        for (Model modelTest : models) {
+            if (modelTest.sameAs(model)) {
+                selectedModel = modelTest;
                 break;
             }
         }
@@ -53,8 +52,11 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
             return false;
         }
 
-        // Criar o drone com o modelo encontrado
-        Drone drone = new Drone(serialNumber, selectedModel, null);  // Supondo que o Drone tenha um construtor com essas informações
+        Map <Date, String> mapRemovalReason = new HashMap<>();
+        String startingMesg = "Drone Added";
+        mapRemovalReason.put(new Date(), startingMesg);
+        RemovalReason removalReason = new RemovalReason(mapRemovalReason);
+        Drone drone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
         save(drone);  // Salva o drone no repositório
         return true;
     }

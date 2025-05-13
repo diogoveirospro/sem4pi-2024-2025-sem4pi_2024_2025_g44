@@ -26,7 +26,7 @@ public class Drone implements AggregateRoot<Designation> {
 
     @Embedded
     private RemovalReason removalReason;
-    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason){
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus){
         this.serialnumber = serialnumber;
         this.droneStatus = DroneStatus.ACTIVE;
         this.model = model;

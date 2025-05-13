@@ -10,7 +10,7 @@ import core.ModelOfDrone.repositories.ModelRepository;
 import java.util.List;
 
 public interface DroneRepository {
-    boolean addDrone(SerialNumber serialNumber, ModelName modelName);
+    boolean addDrone(SerialNumber serialNumber, Model model);
 
     boolean removeDrone(SerialNumber serialNumber, String removReason);
 
