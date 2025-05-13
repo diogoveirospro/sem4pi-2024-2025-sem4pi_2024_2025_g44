@@ -23,6 +23,7 @@
  */
 package shodrone.bootstrappers.Demo;
 
+import core.ModelOfDrone.application.CreateModelController;
 import eapli.framework.actions.Action;
 import eapli.framework.infrastructure.authz.application.AuthenticationService;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -31,6 +32,7 @@ import eapli.framework.strings.util.Strings;
 import eapli.framework.validations.Invariants;
 import shodrone.bootstrappers.Demo.Backoffice.BackofficeUsersBootstrapper;
 import shodrone.bootstrappers.Demo.Backoffice.CustomerBootstrapper;
+import shodrone.bootstrappers.Demo.Backoffice.ModelBootstrapper;
 import shodrone.bootstrappers.Demo.Backoffice.CustomerRepresentativeBootstrapper;
 
 /**
@@ -55,6 +57,7 @@ public class ShodroneDemoBootstrapper implements Action {
         // declare bootstrap actions
         final Action[] actions = { new BackofficeUsersBootstrapper(),
                 new CustomerBootstrapper(), new CustomerRepresentativeBootstrapper(),};
+                new ModelBootstrapper();
 
         authenticateForBootstrapping();
 

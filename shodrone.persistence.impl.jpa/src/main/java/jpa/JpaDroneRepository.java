@@ -32,8 +32,8 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
         if (!validateDrone(serialNumber)) {
             return false;
         }
-
-        Drone drone = new Drone(serialNumber, modelName, null);
+        Model model = entityManager().find(Model.class, modelName);
+        Drone drone = new Drone(serialNumber, model, null);
         save(drone);
         return true;
     }
@@ -81,7 +81,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
         List<Drone> drnModelList = new ArrayList<>();
         Iterable<Drone> drones = findAll();
         for (Drone drone: drones){
-            if (drone.getModelName() == droneModel.identity()){
+            if (drone.getModel().sameAs(droneModel.identity())){
                 drnModelList.add(drone);
             }
         }

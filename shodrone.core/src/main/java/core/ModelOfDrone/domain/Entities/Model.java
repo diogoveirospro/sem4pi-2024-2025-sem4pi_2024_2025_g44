@@ -9,15 +9,19 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
+@Table(name = "t_model")
 public class Model implements Serializable, AggregateRoot<Designation> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "model_name")
+    @GeneratedValue()
+    private Long id;
 
     @Embedded
+    @AttributeOverride(name = "modelName", column = @Column(name = "model_name"))
     private ModelName modelName;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "configuration")
     private Configuration configuration;
 
     protected Model() {
@@ -64,5 +68,9 @@ public class Model implements Serializable, AggregateRoot<Designation> {
         if (!(o instanceof Model)) return false;
         Model model = (Model) o;
         return Objects.equals(modelName, model.modelName);
+    }
+
+    public ModelName getModelName() {
+        return modelName;
     }
 }

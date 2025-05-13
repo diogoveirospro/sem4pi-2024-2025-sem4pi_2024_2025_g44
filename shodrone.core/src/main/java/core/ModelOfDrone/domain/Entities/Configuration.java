@@ -13,12 +13,13 @@ import java.util.*;
 public class Configuration implements Serializable, ValueObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     @ElementCollection
-    @CollectionTable(name = "wind_tolerance_config", joinColumns = @JoinColumn(name = "wind_tolerance_id"))
+    @CollectionTable(name = "wind_tolerance_config", joinColumns = @JoinColumn(name = "configuration_id"))
     @MapKeyColumn(name = "position_tolerance")
+    @Column(name = "wind_speed")
     private Map<PositionTolerance, WindSpeed> config = new LinkedHashMap<>();
 
     protected Configuration() {
@@ -29,11 +30,11 @@ public class Configuration implements Serializable, ValueObject {
         if (config == null || config.isEmpty()) {
             throw new IllegalArgumentException("Configuration cannot be null or empty");
         }
-        this.config = new HashMap<>(config);
+        this.config = new LinkedHashMap<>(config); // Preserve order
     }
 
     public Map<PositionTolerance, WindSpeed> config() {
-        return new HashMap<>(config);
+        return new LinkedHashMap<>(config);
     }
 
     @Override

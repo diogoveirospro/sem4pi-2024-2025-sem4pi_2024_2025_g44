@@ -35,6 +35,7 @@
 
     <!-- ModelOfDrone Aggregate -->
     <class>core.ModelOfDrone.domain.Entities.Model</class>
+    <class>core.ModelOfDrone.domain.Entities.Configuration</class>
 
     <!-- Show Designer Aggregate -->
     <class>core.ShowDesigner.domain.Entities.ShowDesigner</class>
@@ -55,7 +56,7 @@
       <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/DB/shodrone.app"/>
       <property name="jakarta.persistence.jdbc.user" value="user"/>
       <property name="jakarta.persistence.jdbc.password" value="password"/>
-      <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
     </properties>
 
   </persistence-unit>

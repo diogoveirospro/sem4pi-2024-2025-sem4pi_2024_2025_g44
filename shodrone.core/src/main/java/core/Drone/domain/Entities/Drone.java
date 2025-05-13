@@ -3,6 +3,7 @@ package core.Drone.domain.Entities;
 import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
+import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
@@ -19,15 +20,16 @@ public class Drone implements AggregateRoot<Designation> {
     private SerialNumber serialnumber;
     @Enumerated(EnumType.STRING)
     private DroneStatus droneStatus;
-    @Embedded
-    private ModelName modelName;
+
+    @OneToOne
+    private Model model;
 
     @Embedded
     private RemovalReason removalReason;
-    public Drone (SerialNumber serialnumber, ModelName modelName, RemovalReason removalReason){
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason){
         this.serialnumber = serialnumber;
         this.droneStatus = DroneStatus.ACTIVE;
-        this.modelName = modelName;
+        this.model = model;
         this.removalReason = removalReason;
 
     }
@@ -40,14 +42,14 @@ public class Drone implements AggregateRoot<Designation> {
         return removalReason;
     }
 
-    public ModelName modelName(){return modelName();}
+    public Model model(){return model();}
 
     public void setStatus(DroneStatus newStatus) {
         this.droneStatus = newStatus;
     }
 
-    public ModelName getModelName(){
-        return modelName;
+    public Model getModel(){
+        return model;
     }
 
     public DroneStatus getDroneStatus(){

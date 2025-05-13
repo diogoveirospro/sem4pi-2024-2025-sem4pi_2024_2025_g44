@@ -12,6 +12,7 @@ import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainRepository;
 import inMemory.persistence.InMemoryInitializer;
+import org.springframework.boot.Banner;
 
 
 import java.util.ArrayList;
@@ -22,7 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Designation> implements DroneRepository {
+    private final InMemoryModelRepository modelRepository;
 
+    public InMemoryDroneRepository() {
+        // Inicializa o repositório de modelos em memória
+        this.modelRepository = new InMemoryModelRepository();
+    }
     //US241
     @Override
     public boolean addDrone(SerialNumber serialNumber, ModelName modelName) {
@@ -30,8 +36,26 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
             return false;
         }
 
-        Drone drone = new Drone(serialNumber, modelName, null);
-        save(drone);
+        // Buscar todos os modelos no repositório de Model
+        Iterable<Model> models = modelRepository.findAll();  // Obtém todos os modelos em memória
+        Model selectedModel = null;
+
+        // Tentar encontrar o modelo correto pelo ModelName
+        for (Model model : models) {
+            if (model.getModelName().equals(modelName)) {
+                selectedModel = model;
+                break;
+            }
+        }
+
+        // Se não encontrar o modelo, retorna false
+        if (selectedModel == null) {
+            return false;
+        }
+
+        // Criar o drone com o modelo encontrado
+        Drone drone = new Drone(serialNumber, selectedModel, null);  // Supondo que o Drone tenha um construtor com essas informações
+        save(drone);  // Salva o drone no repositório
         return true;
     }
 
@@ -100,7 +124,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         List<Drone> drnModelList = new ArrayList<>();
         Iterable<Drone> drones = findAll();
         for (Drone drone: drones){
-            if ((drone.getModelName() == droneModel.identity()) && (drone.getDroneStatus() == DroneStatus.ACTIVE)){
+            if ((drone.getModel().sameAs(droneModel.identity())) && (drone.getDroneStatus() == DroneStatus.ACTIVE)){
                 drnModelList.add(drone);
             }
         }
