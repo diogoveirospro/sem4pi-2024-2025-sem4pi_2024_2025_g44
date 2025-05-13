@@ -49,14 +49,14 @@ package "Drone " <<aggregate>> {
     class Drone <<Entity>> <<root>>{
     }
 
-    class RemovalReason <<Value Object>>{
-    }
-
     class SerialNumber <<Value Object>>{
     }
 
     enum DroneStatus <<Value Object>>{
     }
+
+     class RemovalReason <<Value Object>>{
+        }
 
     'Drone -> x
     Drone --> "1" DroneStatus: status
