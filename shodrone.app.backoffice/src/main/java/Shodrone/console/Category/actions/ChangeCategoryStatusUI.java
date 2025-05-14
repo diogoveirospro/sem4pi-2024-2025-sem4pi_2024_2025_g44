@@ -24,6 +24,7 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
 
     /**
      * Show the UI for changing a category's status.
+     *
      * @return true if the status was changed successfully, false otherwise.
      */
     @Override
@@ -49,12 +50,20 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
             int choice = enterValidChoice(categories.size());
             Category selectedCategory = categories.get(choice - 1);
 
-            System.out.println(UtilsUI.BOLD + "Select the new status for the category:" + UtilsUI.RESET);
-            System.out.println("1- Active");
-            System.out.println("2- Inactive");
+            CategoryStatus newStatus;
+            do {
+                System.out.println(UtilsUI.BOLD + "Select the new status for the category:" + UtilsUI.RESET);
+                System.out.println("1- Active");
+                System.out.println("2- Inactive");
 
-            int statusChoice = enterValidChoice(2);
-            CategoryStatus newStatus = (statusChoice == 1) ? CategoryStatus.ACTIVE : CategoryStatus.INACTIVE;
+                int statusChoice = enterValidChoice(2);
+                newStatus = (statusChoice == 1) ? CategoryStatus.ACTIVE : CategoryStatus.INACTIVE;
+
+                if (isValidStatus(selectedCategory, newStatus)) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe selected status is the same as the current status. Please choose a different status." + UtilsUI.RESET);
+                }
+            } while (isValidStatus(selectedCategory, newStatus));
+
 
             controller.changeCategoryStatus(selectedCategory.name(), newStatus);
 
@@ -72,7 +81,19 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
     }
 
     /**
+     * Validate if the selected status is different from the current status.
+     *
+     * @param category  the selected category.
+     * @param newStatus the new status to validate.
+     * @return true if the new status is valid, false otherwise.
+     */
+    private boolean isValidStatus(Category category, CategoryStatus newStatus) {
+        return category.status().equals(newStatus);
+    }
+
+    /**
      * Prompt the user to enter a valid choice from the list.
+     *
      * @param max the maximum valid choice.
      * @return the selected choice as an integer.
      */
@@ -97,6 +118,7 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
 
     /**
      * Check if the current user is a Show Designer.
+     *
      * @return true if the user is a Show Designer, false otherwise.
      */
     private boolean isShowDesigner() {
@@ -105,6 +127,7 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
 
     /**
      * Display the headline for the UI.
+     *
      * @return the headline string.
      */
     @Override

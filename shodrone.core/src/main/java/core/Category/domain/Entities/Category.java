@@ -3,7 +3,6 @@ package core.Category.domain.Entities;
 import core.Category.domain.ValueObjects.CategoryName;
 import core.Category.domain.ValueObjects.CategoryStatus;
 import core.Shared.domain.ValueObjects.Description;
-import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.model.AggregateRoot;
 import jakarta.persistence.*;
 
@@ -11,6 +10,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 public class Category implements AggregateRoot<Long> {
 
     /**
@@ -23,9 +23,11 @@ public class Category implements AggregateRoot<Long> {
     private Long id;
 
     @Embedded
+    @Column(name = "name", nullable = false)
     public CategoryName name;
 
     @Embedded
+    @Column(name = "description", nullable = false)
     public Description description;
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +51,9 @@ public class Category implements AggregateRoot<Long> {
      * @param description the description of the category
      */
     public Category(CategoryName name, Description description) {
+        if (name == null || description == null) {
+            throw new IllegalArgumentException("Name and description cannot be null");
+        }
         this.name = name;
         this.description = description;
         this.status = CategoryStatus.ACTIVE;

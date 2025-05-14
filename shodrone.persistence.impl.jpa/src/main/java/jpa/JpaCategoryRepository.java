@@ -36,16 +36,6 @@ public class JpaCategoryRepository extends JpaAutoTxRepository<Category, Long, L
     }
 
     /**
-     * Returns a list of all categories in the system.
-     *
-     * @return a list of categories
-     */
-    @Override
-    public List<Category> getCategories() {
-        return (List<Category>) findAll();
-    }
-
-    /**
      * Returns a list of all categories in the system with the given name.
      *
      * @param categoryName the name of the category to search for

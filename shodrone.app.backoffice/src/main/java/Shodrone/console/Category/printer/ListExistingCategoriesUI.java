@@ -16,6 +16,7 @@ public class ListExistingCategoriesUI extends AbstractFancyUI {
 
     /**
      * Show the UI for listing categories.
+     *
      * @return true if the operation was successful, false otherwise.
      */
     @Override
@@ -44,6 +45,7 @@ public class ListExistingCategoriesUI extends AbstractFancyUI {
 
     /**
      * Display the headline for the UI.
+     *
      * @return the headline string.
      */
     @Override
@@ -53,13 +55,15 @@ public class ListExistingCategoriesUI extends AbstractFancyUI {
 
     /**
      * Format a category for display.
+     *
      * @param category the category to format.
      * @return a formatted string representing the category.
      */
     private String formatCategory(Category category) {
-        return UtilsUI.BOLD + "Name: " + UtilsUI.RESET + category.name().toString() + "\n" +
-               UtilsUI.BOLD + "Description: " + UtilsUI.RESET + category.description().toString() + "\n" +
-               UtilsUI.BOLD + "Creation Date: " + UtilsUI.RESET + category.creationDate.toString() + "\n" +
-               UtilsUI.BOLD + "Last Update Date: " + UtilsUI.RESET + (category.lastUpdateDate != null ? category.lastUpdateDate.toString() : "N/A") + "\n";
+        return  UtilsUI.BOLD + "Name: " + UtilsUI.RESET + category.name().toString() + "\n" +
+                UtilsUI.BOLD + "Description: " + UtilsUI.RESET + category.description().toString() + "\n" +
+                UtilsUI.BOLD + "Creation Date: " + UtilsUI.RESET + category.creationDate.toString() + "\n" +
+                UtilsUI.BOLD + "Last Update Date: " + UtilsUI.RESET + (category.lastUpdateDate != null ? category.lastUpdateDate.toString() : "N/A") + "\n" +
+                UtilsUI.BOLD + "---------------------------------------------------" + UtilsUI.RESET;
     }
 }

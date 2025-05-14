@@ -23,18 +23,15 @@ public class AddCategoryController {
      * Add a new category to the system.
      * @param categoryName name of the category
      * @param description description of the category
-     * @return true if the category was added successfully, false otherwise
      */
-    public boolean addCategory(CategoryName categoryName, Description description) {
-        if (categoryName == null || categoryName.toString().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be null or empty");
-        }
+
+    public void addCategory(CategoryName categoryName, Description description) {
         Category category = new Category(categoryName, description);
         // Check if the category already exists
-        if (categoryRepository.findByName(categoryName).isPresent()) {
-            throw new IllegalArgumentException("Category already exists");
-        }
         categoryRepository.save(category);
-        return true;
+    }
+
+    public boolean categoryExists(CategoryName name) {
+        return categoryRepository.findByName(name).isPresent();
     }
 }

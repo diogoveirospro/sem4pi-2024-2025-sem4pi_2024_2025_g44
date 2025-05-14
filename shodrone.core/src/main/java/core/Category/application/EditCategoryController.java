@@ -25,25 +25,14 @@ public class EditCategoryController {
 
     /**
      * Edit an existing category in the system.
+     *
      * @param oldCategoryName name of the category
      * @param newCategoryName new name of the category
-     * @param description new description of the category
-     * @return true if the category was edited successfully, false otherwise
+     * @param description     new description of the category
      */
-    public boolean editCategory(CategoryName oldCategoryName, CategoryName newCategoryName, Description description) {
-        if (oldCategoryName == null || oldCategoryName.toString().isEmpty()) {
-            throw new IllegalArgumentException("Current category name cannot be null or empty");
-        }
-        if (newCategoryName == null || newCategoryName.toString().isEmpty()) {
-            throw new IllegalArgumentException("New category name cannot be null or empty");
-        }
-
+    public void editCategory(CategoryName oldCategoryName, CategoryName newCategoryName, Description description) {
         // Retrieve the existing category
         Optional<Category> optionalCategory = categoryRepository.findByName(oldCategoryName);
-        if (optionalCategory.isEmpty()) {
-            throw new IllegalArgumentException("Category does not exist");
-        }
-
         Category category = optionalCategory.get();
 
         // Update the name, description, and lastUpdateDate
@@ -53,7 +42,6 @@ public class EditCategoryController {
 
         // Save the updated category
         categoryRepository.save(category);
-        return true;
     }
 
     /**
@@ -61,6 +49,11 @@ public class EditCategoryController {
      * @return a list of categories
      */
     public List<Category> listAllCategories() {
-        return categoryRepository.getCategories();
+        return (List<Category>) categoryRepository.findAll();
+    }
+
+    public boolean categoryExists(CategoryName newName) {
+        // Check if a category with the same name already exists
+        return categoryRepository.findByName(newName).isPresent();
     }
 }

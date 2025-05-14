@@ -17,6 +17,6 @@ public class ListExistingCategoriesController {
      * @return a list of existing categories
      */
     public List<Category> listExistingCategories() {
-        return categoryRepository.getCategories();
+        return (List<Category>) categoryRepository.findAll();
     }
 }

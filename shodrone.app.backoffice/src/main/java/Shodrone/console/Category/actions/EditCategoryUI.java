@@ -25,6 +25,7 @@ public class EditCategoryUI extends AbstractFancyUI {
 
     /**
      * Show the UI for editing a category.
+     *
      * @return true if the category was edited successfully, false otherwise.
      */
     @Override
@@ -51,11 +52,11 @@ public class EditCategoryUI extends AbstractFancyUI {
             Category selectedCategory = categories.get(choice - 1);
 
             CategoryName oldName = selectedCategory.name();
+
             CategoryName newName = enterValidCategoryName("Enter the new category name (or type 'cancel' to go back): ");
             Description description = enterValidDescription();
 
             controller.editCategory(oldName, newName, description);
-
             System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Category edited successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
@@ -66,14 +67,12 @@ public class EditCategoryUI extends AbstractFancyUI {
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
             return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            return false;
         }
     }
 
-    /**
-     * Prompt the user to enter a valid choice from the list.
-     * @param max the maximum valid choice.
-     * @return the selected choice as an integer.
-     */
     private int enterValidChoice(int max) {
         int choice;
         do {
@@ -86,14 +85,17 @@ public class EditCategoryUI extends AbstractFancyUI {
                 }
 
                 return choice;
+            } catch (NumberFormatException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please enter a valid number." + UtilsUI.RESET);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
             }
         } while (true);
     }
 
     /**
      * Display the headline for the UI.
+     *
      * @return the headline string.
      */
     @Override
@@ -103,6 +105,7 @@ public class EditCategoryUI extends AbstractFancyUI {
 
     /**
      * Enter a valid category name.
+     *
      * @param prompt the prompt message to display.
      * @return a CategoryName object.
      */
@@ -116,7 +119,15 @@ public class EditCategoryUI extends AbstractFancyUI {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
 
-                return new CategoryName(name);
+                CategoryName newName = new CategoryName(name);
+
+                // Check if the new name already exists and is not the same as the old name
+                if (controller.categoryExists(newName)) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nA category with this name already exists. Please choose a different name." + UtilsUI.RESET);
+                    continue;
+                }
+
+                return newName;
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
             }
@@ -125,6 +136,7 @@ public class EditCategoryUI extends AbstractFancyUI {
 
     /**
      * Enter a valid description for the category.
+     *
      * @return a Description object.
      */
     private Description enterValidDescription() {
@@ -146,6 +158,7 @@ public class EditCategoryUI extends AbstractFancyUI {
 
     /**
      * Check if the current user is a Show Designer.
+     *
      * @return true if the user is a Show Designer, false otherwise.
      */
     private boolean isShowDesigner() {

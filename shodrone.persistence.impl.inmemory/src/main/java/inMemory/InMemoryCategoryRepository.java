@@ -13,21 +13,9 @@ import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainR
 
 
 public class InMemoryCategoryRepository extends InMemoryDomainRepository<Category, Long> implements CategoryRepository {
-    /**
-     * Constructor for InMemoryCategoryRepository.
-     */
+
     static {
         InMemoryInitializer.init();
-    }
-
-    /**
-     * Returns a list of all categories in the system.
-     *
-     * @return a list of categories
-     */
-    @Override
-    public List<Category> getCategories() {
-        return (List<Category>) findAll();
     }
 
     /**
