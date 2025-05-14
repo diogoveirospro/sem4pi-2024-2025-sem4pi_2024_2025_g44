@@ -3,6 +3,9 @@ package Shodrone.console.Figure.actions;
 import Shodrone.console.Figure.printer.FiguresPrinter;
 import core.Figure.application.DecommissionFigureController;
 import core.Figure.domain.Entities.Figure;
+import core.User.domain.ShodroneRoles;
+import eapli.framework.infrastructure.authz.application.AuthorizationService;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -15,6 +18,8 @@ import java.util.List;
  */
 public class DecommissionFigureUI extends AbstractFancyUI {
 
+    private final AuthorizationService authz = AuthzRegistry.authorizationService();
+
     /**
      * Controller for decommissioning figures.
      */
@@ -26,19 +31,23 @@ public class DecommissionFigureUI extends AbstractFancyUI {
      */
     @Override
     protected boolean doShow() {
-        Figure figure = selectFigure();
-        if (figure == null) {
-            return false;
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.MANAGER)){
+            Figure figure = selectFigure();
+            if (figure == null) {
+                return false;
+            }
+
+            boolean decommissioned = decommissionFigure(figure);
+            if (decommissioned) {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure decommissioned successfully." + UtilsUI.RESET);
+            } else {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to decommission the figure." + UtilsUI.RESET);
+            }
+            UtilsUI.goBackAndWait();
+            return true;
         }
 
-        boolean decommissioned = decommissionFigure(figure);
-        if (decommissioned) {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure decommissioned successfully." + UtilsUI.RESET);
-        } else {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to decommission the figure." + UtilsUI.RESET);
-        }
-        UtilsUI.goBackAndWait();
-        return true;
+        return false;
     }
 
     /**

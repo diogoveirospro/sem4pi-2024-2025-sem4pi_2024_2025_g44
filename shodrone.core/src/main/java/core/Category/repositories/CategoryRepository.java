@@ -21,4 +21,10 @@ public interface CategoryRepository extends DomainRepository<Long, Category> {
      * @return a list of categories
      */
     Optional<Category> findByName(CategoryName categoryName);
+
+    /**
+     * Returns a list of all active categories in the system.
+     * @return a list of active categories
+     */
+    Iterable<Category> findAllActiveCategories();
 }

@@ -294,6 +294,37 @@ public class UtilsUI {
     }
 
     /**
+     * Reads a line from the console with Different prompt
+     *
+     * @param list The list to show to the user
+     * @return The index selected by the user
+     */
+    static public int selectsIndexWithDifferentPrompt(List list, String prompt) {
+        String input;
+        int value;
+        do {
+            input = UtilsUI.readLineFromConsole(prompt);
+
+            try {
+                value = Integer.valueOf(input);
+
+                if (value == 0) {
+                    return -2;
+                }
+
+                if (value < 0 || value > list.size()) {
+                    return -1;
+                }
+
+            } catch (NumberFormatException ex) {
+                value = -1;
+            }
+        } while (value < 0 || value > list.size());
+
+        return value - 1;
+    }
+
+    /**
      * Reads a line from the console
      */
     static public void goBackAndWait() {

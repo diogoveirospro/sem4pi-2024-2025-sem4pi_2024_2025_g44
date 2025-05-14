@@ -38,7 +38,15 @@ import static shodrone.presentation.UtilsUI.readLineFromConsole;
 public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
+
+    /**
+     * Controller
+     */
     private final AddFigureToCatalogueController controller = new AddFigureToCatalogueController();
+
+    /**
+     * User Repository
+     */
     private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
 
     /**
@@ -48,28 +56,16 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         try {
-            Code code;
-            Version version;
-            boolean exists;
-
-            do {
-                code = enterValidCode();
-                version = enterValidVersion();
-
-                exists = controller.checkIfCodeAndVersionAlreadyExists(code, version);
-                if (exists) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe figure already exists!" + UtilsUI.RESET);
-                }
-            } while (exists);
-
-            Description description = enterValidDescription();
-            DSLDescription dslDescription = enterValidDSLDescription();
-            Set<Keyword> keywords = enterValidKeywords();
-            Set<Category> categories = showCategoriesAndSelect();
-            Exclusivity exclusivity = enterValidExclusivity();
-            ShowDesigner showDesigner = null;
-
             if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
+
+                Code code = enterValidCode();
+                Version version = enterValidVersion();
+                Description description = enterValidDescription();
+                DSLDescription dslDescription = enterValidDSLDescription();
+                Set<Keyword> keywords = enterValidKeywords();
+                Set<Category> categories = showCategoriesAndSelect();
+                Exclusivity exclusivity = enterValidExclusivity();
+                ShowDesigner showDesigner = null;
 
                 if (authz.session().isPresent()){
                     Name name = new Name(authz.session().get().authenticatedUser().name().firstName() + " " +
@@ -211,7 +207,8 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
         CustomerPrinter customerPrinter = new CustomerPrinter();
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("\nChoose a Customer:\n", customerList, customerPrinter);
+        ListWidget<Customer> customerListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Customer:\n" +
+                UtilsUI.RESET, customerList, customerPrinter);
         customerListWidget.show();
 
         int option;
@@ -328,7 +325,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         String version;
         do {
             try {
-                version = readLineFromConsole(UtilsUI.BOLD + "Enter a version (or type 'cancel' to go back): " + UtilsUI.RESET);
+                version = readLineFromConsole(UtilsUI.BOLD + "Enter a version in the format X.Y.Z (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(version)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -350,7 +347,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         String code;
         do {
             try {
-                code = readLineFromConsole(UtilsUI.BOLD + "Enter a code (or type 'cancel' to go back): " + UtilsUI.RESET);
+                code = readLineFromConsole(UtilsUI.BOLD + "Enter a code in the format FIG-XXXX (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(code)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -389,6 +386,9 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                         if (endDate.before(startDate)) {
                             System.out.println(UtilsUI.RED + UtilsUI.BOLD +
                                     "\nThe end date cannot be before the start date. Please try again." + UtilsUI.RESET);
+                        } else if (startDate.before(new Date()) || endDate.before(new Date())) {
+                            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe start and end dates cannot be in the " +
+                                    "past. Please try again." + UtilsUI.RESET);
                         } else {
                             break; // valid dates
                         }

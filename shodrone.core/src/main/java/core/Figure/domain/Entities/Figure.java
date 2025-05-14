@@ -19,6 +19,9 @@ import java.util.Set;
  * This class is immutable and implements AggregateRoot and Serializable interfaces.
  */
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"code", "figureVersion"})
+})
 public class Figure implements AggregateRoot<FigureID>, Serializable {
 
     /**

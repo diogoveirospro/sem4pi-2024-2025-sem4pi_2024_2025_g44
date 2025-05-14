@@ -23,11 +23,4 @@ public interface FigureRepository extends DomainRepository<FigureID, Figure> {
      * @return a list of figures
      */
     List<Figure> searchCatalogue(String category, String keyword);
-
-    /**
-     * Returns true if the figure with the given ID exists in the catalogue.
-     * @param figureID the ID of the figure to check
-     * @return true if the figure exists, false otherwise
-     */
-    boolean exists(FigureID figureID);
 }
