@@ -4,7 +4,11 @@ import java.util.*;
 
 
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.Email;
+import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
+import core.ShowDesigner.domain.Entities.ShowDesigner;
+import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.domain.ShodroneRoles;
 import core.User.repositories.ShodroneUserRepository;
@@ -22,6 +26,7 @@ public class RegisterUsersController {
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final UserManagementService userSvc = AuthzRegistry.userService();
     private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
+    private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
 
     public Role[] getRoleTypes() {
         return ShodroneRoles.nonUserValues();
@@ -36,6 +41,11 @@ public class RegisterUsersController {
                 createdOn);
         ShodroneUser shodroneUser = new ShodroneUser(user, phoneNumber);
         userRepository.save(shodroneUser);
+
+        if (user.hasAny(ShodroneRoles.SHOWDESIGNER, ShodroneRoles.POWER_USER)){
+            showDesignerRepository.save(new ShowDesigner(new Name(user.name().firstName() + " " + user.name().lastName()),
+                    phoneNumber, new Email(user.email().toString())));
+        }
 
         return user;
     }

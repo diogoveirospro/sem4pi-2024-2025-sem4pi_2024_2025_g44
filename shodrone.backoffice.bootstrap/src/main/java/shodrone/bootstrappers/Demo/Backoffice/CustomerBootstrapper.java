@@ -1,5 +1,6 @@
 package shodrone.bootstrappers.Demo.Backoffice;
 
+import core.Customer.application.RegisterCustomerController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
 import core.Customer.domain.ValueObjects.Address;
@@ -17,21 +18,23 @@ import eapli.framework.infrastructure.authz.domain.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import shodrone.bootstrappers.Demo.UsersBootstrapperBase;
+import shodrone.presentation.UtilsUI;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class CustomerBootstrapper extends UsersBootstrapperBase implements Action {
     private static final Logger LOGGER = LogManager.getLogger(CustomerBootstrapper.class);
-    private static final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
+    private static final RegisterCustomerController controller = new RegisterCustomerController();
 
     @Override
     public boolean execute() {
-        register("EA Sports", "209 Redwood Shores Parkway, Redwood City, CA 94065, USA", "PT13872527904", CustomerType.VIP, "Andrew Wilson", "andrewwilson@gmail.com", "+351", "910222312", "CEO", "eaUser", "PasswordEA");
-        register("Ubisoft", "28 Rue Armand Carrel, 93100 Montreuil, France", "FR12345678901", CustomerType.REGULAR, "Yves Guillemot", "yves.guillemot@ubisoft.com", "+33", "123456789", "CEO", "ubisoftUser", "PasswordUBI");
-        register("Nintendo", "11-1 Hokotate-cho, Kamitoba, Minami-ku, Kyoto 601-8501, Japan", "AD98765432109", CustomerType.VIP, "Shuntaro Furukawa", "shuntaro.furukawa@nintendo.com", "+81", "987654321", "President", "nintendoUser", "PasswordNIN");
-        register("Sony", "1-7-1 Konan, Minato-ku, Tokyo 108-0075, Japan", "CZ12398765432", CustomerType.REGULAR, "Kenichiro Yoshida", "kenichiro.yoshida@sony.com", "+81", "876543210", "CEO", "sonyUser", "PasswordSONY");
-        register("Microsoft", "One Microsoft Way, Redmond, WA 98052, USA", "MC123456789", CustomerType.VIP, "Satya Nadella", "satya.nadella@microsoft.com", "+1", "123456789", "CEO", "microsoftUser", "PasswordMS");
+        register("EA Sports", "209 Redwood Shores Parkway, Redwood City, CA 94065, USA", "PT13872527904", CustomerType.VIP, "Andrew Wilson", "andrewwilson@gmail.com", "+351", "910222312", "CEO", "eaUser", "PasswordEA123");
+        register("Ubisoft", "28 Rue Armand Carrel, 93100 Montreuil, France", "FR12345678901", CustomerType.REGULAR, "Yves Guillemot", "yves.guillemot@ubisoft.com", "+33", "123456789", "CEO", "ubisoftUser", "PasswordUBI123");
+        register("Nintendo", "11-1 Hokotate-cho, Kamitoba, Minami-ku, Kyoto 601-8501, Japan", "RS98765432109", CustomerType.VIP, "Shuntaro Furukawa", "shuntaro.furukawa@nintendo.com", "+381", "987654321", "President", "nintendoUser", "PasswordNIN123");
+        register("Sony", "1-7-1 Konan, Minato-ku, Tokyo 108-0075, Japan", "RS12398765432", CustomerType.REGULAR, "Kenichiro Yoshida", "kenichiro.yoshida@sony.com", "+381", "876543210", "CEO", "sonyUser", "PasswordSONY123");
+        register("Microsoft", "One Microsoft Way, Redmond, WA 98052, USA", "AT123456789", CustomerType.VIP, "Satya Nadella", "satya.nadella@microsoft.com", "+43", "123456789", "CEO", "microsoftUser", "PasswordMS123");
         return true;
     }
     private void register(final String nameCustomer, final String address, final String taxNumber, final CustomerType customerType, String nameRepresentative, String email, String countryCode, String nationalNumber, String position, String username, String password) {
@@ -39,9 +42,12 @@ public class CustomerBootstrapper extends UsersBootstrapperBase implements Actio
         Address addressObj = new Address(address);
         VatNumber taxNumberObj = new VatNumber(taxNumber);
         Customer customer = new Customer(name, addressObj, taxNumberObj, customerType);
+        controller.addCustomer(customer);
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Customer registered: {}" + UtilsUI.RESET, customer.toString());
+
         Email emailObj = new Email(email);
         Name nameRep = new Name(nameRepresentative);
-        Position positionObj = new Position(nationalNumber);
+        Position positionObj = new Position(position);
         PhoneNumber phoneNumberObj = new PhoneNumber(countryCode, nationalNumber);
         CustomerRepresentative customerRepresentative = new CustomerRepresentative(nameRep, emailObj, phoneNumberObj, positionObj, customer);
         customer.addCustomerRepresentative(customerRepresentative);
@@ -52,5 +58,7 @@ public class CustomerBootstrapper extends UsersBootstrapperBase implements Actio
         roles.add(ShodroneRoles.USER);
         registerUser(username, password, firstName, lastName, email, roles, phoneNumberObj);
 
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Registered Customer Representative {} with name {}" +
+                UtilsUI.RESET, nameCustomer, nameRepresentative);
     }
 }

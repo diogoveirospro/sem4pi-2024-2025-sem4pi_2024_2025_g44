@@ -111,6 +111,9 @@ package "Figure " <<aggregate>> {
     class Figure <<Entity>> <<root>>{
     }
 
+    class FigureID <<Value Object>> <<ID>> {
+    }
+
     class Code <<Value Object>>{
     }
 
@@ -132,14 +135,16 @@ package "Figure " <<aggregate>> {
     class DSLValidate <<Service>>{
     }
 
-
     'Figure -> x
     Figure --> "1" DSLDescription: DSLDescription
     Figure --> "1..*" Keyword: keywords
     Figure --> "0..1" Exclusivity: exclusivity
-    Figure --> "1" Code: code
-    Figure --> "1" Version: version
+    Figure --> "1" FigureID: figureID
     Figure --> "1" FigureStatus: figureStatus
+
+    'FigureID -> x
+    FigureID --> "1" Code: code
+    FigureID --> "1" Version: version
 
     'DSLValidate -> x
     DSLValidate ..> "1" DSLDescription: validates

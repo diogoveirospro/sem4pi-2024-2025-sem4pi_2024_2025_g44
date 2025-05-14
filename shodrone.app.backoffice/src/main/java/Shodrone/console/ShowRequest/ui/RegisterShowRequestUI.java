@@ -4,15 +4,18 @@ import Shodrone.console.Customer.printer.CustomerPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.Customer.domain.Entities.Customer;
-import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.Email;
+import core.Shared.domain.ValueObjects.Name;
+import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowRequest.application.RegisterShowRequestController;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import core.ShowRequest.domain.ValueObjects.Location;
 import core.ShowRequest.domain.ValueObjects.ShowDescription;
-import core.User.repositories.ShodroneUserRepository;
+import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -27,22 +30,16 @@ import java.util.List;
 public class RegisterShowRequestUI extends AbstractFancyUI {
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final RegisterShowRequestController controller = new RegisterShowRequestController();
-    private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
     private final CustomerPrinter printer = new CustomerPrinter();
 
     @Override
     protected boolean doShow() {
         try {
-
-            //TODO: Understand how to get current user and check information
-//            if (authenticatedUser is not a Collaborator)
-//            {
-//                print error msg
-//                return false
-//            }
-           // if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.COLLABORATOR))
-             //   ;
-
+            if (!authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: Unauthorized User" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return false;
+            }
 
             ShowDescription showDescription = enterValidShowDescription();
             Location location = enterValidLocation();
@@ -62,13 +59,16 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         } catch (
         UserCancelledException e) {
             System.out.println(e.getMessage());
+            UtilsUI.goBackAndWait();
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
@@ -199,8 +199,8 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
     }
     private CRMCollaborator getCrmCollaborator()
     {
-        //TODO: get CRM Collaborator and return it
-        return null;
+        SystemUser user = authz.session().get().authenticatedUser();
+        return new CRMCollaborator(new Name(user.name().firstName()), new PhoneNumber("+351", "999999999"), new Email(user.email().toString()));
     }
 
     @Override

@@ -32,6 +32,8 @@ import eapli.framework.io.util.Console;
 import shodrone.bootstrappers.Demo.ShodroneDemoBootstrapper;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 import shodrone.bootstrappers.SmokeTests.ShodroneDemoSmokeTester;
+import shodrone.presentation.UtilsUI;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -41,7 +43,7 @@ import java.io.IOException;
 @SuppressWarnings("squid:S106")
 public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
-    private boolean isToBootstrapDemoData;
+    private boolean isToBootstrapDemoData = true;
     private boolean isToRunSampleE2E;
     private boolean isToWaitInTheEnd;
 
@@ -65,10 +67,9 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
         System.out.println("\n\n------- MASTER DATA -------");
         new ShodroneBootstrapper().execute();
 
-        if (isToBootstrapDemoData) {
-            System.out.println("\n\n------- DEMO DATA -------");
-            new ShodroneDemoBootstrapper().execute();
-        }
+        System.out.println("\n\n------- DEMO DATA -------");
+        new ShodroneDemoBootstrapper().execute();
+
         if (isToRunSampleE2E) {
             System.out.println("\n\n------- BASIC SCENARIO -------");
             new ShodroneDemoSmokeTester().execute();
@@ -90,12 +91,12 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
                     dbDir.mkdirs();
                 }
                 dbFile.createNewFile();
-                System.out.println("Arquivo do banco de dados criado em: " + dbFilePath);
+                System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nDatabase file created in: " + dbFilePath + UtilsUI.RESET);
             } catch (IOException e) {
-                System.err.println("Erro ao criar o arquivo do banco de dados: " + e.getMessage());
+                System.err.println(UtilsUI.BOLD + UtilsUI.RED + "\nError creating the database file: " + e.getMessage() + UtilsUI.RESET);
             }
         } else {
-            System.out.println("Arquivo do banco de dados já existe em: " + dbFilePath);
+            System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nDatabase file already exists in: " + dbFilePath + UtilsUI.RESET);
         }
     }
 

@@ -1,5 +1,7 @@
 package core.Figure.application;
 
+import core.Category.domain.Entities.Category;
+import core.Category.repositories.CategoryRepository;
 import core.Figure.domain.Entities.Figure;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.PersistenceContext;
@@ -20,6 +22,11 @@ public class SearchCatalogueController {
     FigureRepository repository = PersistenceContext.repositories().figures();
 
     /**
+     * Repository of Categories
+     */
+    CategoryRepository categoryRepository = PersistenceContext.repositories().categories();
+
+    /**
      * Search figures in the catalogue with keyword and/or category
      * @param category category
      * @param keyword keyword
@@ -27,6 +34,14 @@ public class SearchCatalogueController {
      */
     public List<Figure> listSearchResults(String category, String keyword){
         return repository.searchCatalogue(category, keyword);
+    }
+
+    /**
+     * List all categories in the system.
+     * @return an iterable of categories
+     */
+    public Iterable<Category> listCategories(){
+        return categoryRepository.findAllActiveCategories();
     }
 
 }

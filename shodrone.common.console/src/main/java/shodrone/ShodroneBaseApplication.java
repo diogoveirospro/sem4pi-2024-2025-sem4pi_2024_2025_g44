@@ -57,7 +57,7 @@ public abstract class ShodroneBaseApplication {
 
             printFooter();
         } catch (final Exception e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Something unexpected has happened and the application will " +
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSomething unexpected has happened and the application will " +
                     "terminate. Please check the logs.\n" + UtilsUI.RESET);
             LOGGER.error(e);
         } finally {

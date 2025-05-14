@@ -10,6 +10,7 @@ import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -80,29 +81,16 @@ public class JpaFigureRepository extends JpaAutoTxRepository<Figure, Long, Figur
                 }
             }
 
-        } else {
+        } else if (keyword != null) {
             for (Figure figure : allFigures) {
                 if (figure.isActive() && figure.matchesKeyword(keyword)) {
                     foundFigures.add(figure);
                 }
             }
+        } else {
+            throw new IllegalArgumentException("At least one filter must be provided");
         }
 
         return foundFigures;
-    }
-
-    /**
-     * Returns true if the figure with the given ID exists in the catalogue.
-     * @param figureID the ID of the figure to check
-     * @return true if the figure exists, false otherwise
-     */
-    @Override
-    public boolean exists(FigureID figureID) {
-        for (Figure figure : findAll()) {
-            if (figure.identity().equals(figureID)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

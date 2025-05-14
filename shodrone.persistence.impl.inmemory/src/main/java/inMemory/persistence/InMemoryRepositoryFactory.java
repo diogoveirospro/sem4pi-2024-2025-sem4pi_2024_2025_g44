@@ -26,6 +26,7 @@ import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -71,6 +72,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public FigureRepository figures() {
 		return figures(null);
+	}
+
+	@Override
+	public ShowDesignerRepository showDesigners(TransactionalContext autoTx) {
+		return new InMemoryShowDesignerRepository();
+	}
+
+	@Override
+	public ShowDesignerRepository showDesigners() {
+		return showDesigners(null);
 	}
 
 	@Override

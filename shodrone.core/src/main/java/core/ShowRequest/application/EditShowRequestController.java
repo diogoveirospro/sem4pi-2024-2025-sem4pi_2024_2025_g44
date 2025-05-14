@@ -3,8 +3,15 @@ package core.ShowRequest.application;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowRequest.domain.Entities.ShowRequest;
+import core.ShowRequest.domain.ValueObjects.Location;
+import core.ShowRequest.domain.ValueObjects.ShowDescription;
 import core.ShowRequest.repositories.ShowRequestRepository;
+import eapli.framework.validations.Preconditions;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class EditShowRequestController {
 
@@ -20,17 +27,10 @@ public class EditShowRequestController {
         return customerRepository.findAllCreatedCustomers();
     }
 
-//    public void editShowRequest(Customer customer, CustomerRepresentative representative, Email newEmail, PhoneNumber newPhone) {
-//        Preconditions.noneNull(representative);
-//        CustomerRepresentative existingRepresentative = customer.findCustomerRepresentative(representative);
-//        if (existingRepresentative == null) {
-//            throw new IllegalArgumentException("Customer representative not found.");
-//        }
-//        ShodroneUser user = userRepository.findByEmail(new Email(representative.email().toString()));
-//        existingRepresentative.changeInfo(newEmail, newPhone);
-//        customerRepository.save(customer);
-//        user.changeEmail(newEmail);
-//        user.changePhoneNumber(newPhone);
-//        userRepository.save(user);
-//    }
+
+    public void editShowRequest(ShowRequest showRequest, Location location, ShowDescription showDescription, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones) {
+        Preconditions.noneNull(showRequest);
+        showRequest.editInformation(location, showDescription, date, time, quantityOfDrones);
+        showRequestRepository.save(showRequest);
+    }
 }

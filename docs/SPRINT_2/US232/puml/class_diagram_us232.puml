@@ -16,6 +16,9 @@ package "persistence.impl.jpa" #DDDDDD {
     class JpaFigureRepository {
     }
 
+    class JpaCategoryRepository {
+    }
+
 }
 
 package "persistence.impl.inmemory" #DDDDDD {
@@ -25,6 +28,9 @@ package "persistence.impl.inmemory" #DDDDDD {
     }
 
     class InMemoryFigureRepository {
+    }
+
+    class InMemoryCategoryRepository {
     }
 }
 
@@ -48,6 +54,10 @@ package "Domain" #DDDDDD {
             - If only one is provided, the search filters using that parameter only.
             - To ignore a criterion, pass null for that parameter.
         end note
+
+        interface CategoryRepository {
+            + findAllActiveCategories: Iterable<Category>
+        }
 
     }
 
@@ -93,12 +103,14 @@ package "Domain" #DDDDDD {
 package "UI" #DDDDDD {
     class SearchCatalogueUI <<UI>> {
         + showSearchCatalogue(category, keyword)
+        + showCategoriesAndSelect(): String
     }
 }
 
 package "Controller" #DDDDDD {
     class SearchCatalogueController <<Controller>> {
         + listSearchResults(category, keyword): List<Figure>
+        + listCategories(): Iterable<Category>
     }
 }
 
@@ -111,14 +123,21 @@ package "Controller" #DDDDDD {
 
 'persistence.impl.jpa
 
+    'JpaCategoryRepository -> x
+    JpaCategoryRepository --|> CategoryRepository
+
     'JpaFigureRepository -> x
     JpaFigureRepository --|> FigureRepository
 
     'JpaRepositoryFactory -> x
     JpaRepositoryFactory ..|> RepositoryFactory
     JpaRepositoryFactory ..> JpaFigureRepository
+    JpaRepositoryFactory ..> JpaCategoryRepository
 
 'persistence.impl.inmemory
+
+    'InMemoryCategoryRepository ->
+    InMemoryCategoryRepository ..|> CategoryRepository
 
     'InMemoryFigureRepository -> x
     InMemoryFigureRepository ..|> FigureRepository
@@ -126,8 +145,12 @@ package "Controller" #DDDDDD {
     'InMemoryRepositoryFactory -> x
     InMemoryRepositoryFactory ..|> RepositoryFactory
     InMemoryRepositoryFactory ..> InMemoryFigureRepository
+    InMemoryCategoryRepository ..> InMemoryCategoryRepository
 
 'Repository
+
+    'CategoryRepository ->
+    CategoryRepository ...> Category
 
     'FigureRepository -> x
     FigureRepository ...> Figure
@@ -165,6 +188,7 @@ package "Controller" #DDDDDD {
     'SearchCatalogueController -> x
     SearchCatalogueController ..> PersistenceContext : getRepositoryFactory()
     SearchCatalogueController ..> RepositoryFactory : getFigureRepository()
+    SearchCatalogueController ..> CategoryRepository : getCategoryRepository()
     SearchCatalogueController ..> FigureRepository : searchCatalogue(category, keywords)
 
 

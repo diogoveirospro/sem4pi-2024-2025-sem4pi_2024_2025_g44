@@ -67,34 +67,42 @@ omitted from the diagram for simplicity.
 
 ## 4. Design
 
-In this section, we describe the design approach adopted for implementing **US232 – Search Figure Catalogue**. The 
-class diagram defines the main components involved in the search operation, showcasing a clear separation of concerns 
-between the UI, application logic, domain model, and persistence infrastructure.
+This section presents the design approach adopted for implementing **US232 – Search Figure Catalogue**, following a 
+layered architecture with clear separation of concerns between the UI, application, domain model, and persistence 
+infrastructure.
 
 ### 4.1. Realization
 
-The class diagram below illustrates the realization of **US232 – Search Figure Catalogue**. The `SearchCatalogueUI` 
-component allows the user to initiate a search by providing a category and/or keyword. This request is forwarded to 
-the `SearchCatalogueController`, which orchestrates the use case.
+The following class diagram illustrates the realization of the use case. The interaction begins in the 
+`SearchCatalogueUI`, where the user provides a category and/or keyword. These inputs are passed to the 
+`SearchCatalogueController`, which orchestrates the search operation.
 
-The controller retrieves the appropriate `FigureRepository` from the configured `RepositoryFactory` (resolved via the 
-`PersistenceContext`) and delegates the operation using the method `searchCatalogue(category, keyword)`. This method 
-accepts both parameters as optional:
-- If both category and keyword are provided, the results are filtered by both.
-- If only one is provided, the results are filtered accordingly.
-- If a parameter should be ignored, `null` is passed for that argument.
+The controller retrieves the appropriate repositories via the `PersistenceContext`, which resolves the active 
+`RepositoryFactory` implementation. From the factory, it obtains the `FigureRepository` and `CategoryRepository`, 
+which may be backed either by JPA or in-memory implementations, depending on the configuration.
 
-The actual filtering logic is encapsulated in the domain model, particularly within the `Figure` class, which includes 
-methods such as `matchesCategory(category)` and `matchesKeyword(term)` to support expressive and reusable criteria-based 
-filtering.
+The actual filtering logic is delegated to the `searchCatalogue(category, keyword)` method in the `FigureRepository` 
+interface. This method accepts both parameters as optional:
 
-The persistence layer supports two interchangeable implementations—JPA and in-memory—through the use of 
-`JpaFigureRepository` and `InMemoryFigureRepository`, respectively. These implementations conform to the 
-`FigureRepository` interface and are instantiated through their respective factories.
+* If both are provided, the filtering considers both criteria.
+* If only one is provided, the filter is applied accordingly.
+* If a criterion should be ignored, `null` is passed for that argument.
 
-The model also includes domain concepts like `Category`, `Keyword`, `Exclusivity`, and `Customer`, as well as several 
-value objects such as `Code`, `Version`, and `FigureStatus`, ensuring that the domain logic is expressive, consistent, 
-and encapsulated.
+Inside the domain, the `Figure` class encapsulates the filtering behavior with expressive methods like:
+
+* `matchesCategory(category)`
+* `matchesKeyword(term)`
+
+These methods are responsible for handling comparison logic (including case-insensitivity and normalization), allowing 
+reuse and maintainability.
+
+The model includes key domain concepts such as `Figure`, `Category`, `Customer`, and `Exclusivity`, along with value 
+objects like `Code`, `Version`, `Description`, `Keyword`, and `FigureStatus`, ensuring consistency and expressiveness 
+in the domain.
+
+Finally, the persistence layer provides interchangeable implementations (`JpaFigureRepository`, 
+`InMemoryFigureRepository`, etc.) that adhere to the repository interfaces and can be swapped based on the selected 
+factory (`JpaRepositoryFactory` or `InMemoryRepositoryFactory`).
 
 ![Class Diagram US232](images/class_diagram_us232.svg)
 
@@ -209,7 +217,7 @@ To test this functionality:
 2. **Log in as a CRM Collaborator**.
 3. Navigate to the **Figures** section.
 4. Navigate to the **Search Figures in the Catalogue** option under the Figures section.
-5. Enter a category name and/or keyword (case and accents do not matter).
+5. Choose a category name and/or enter a keyword (case and accents do not matter).
 6. View the results, which:
     * Only include **active** figures.
     * Display **exclusive figures** with a clear indicator and their associated customer.

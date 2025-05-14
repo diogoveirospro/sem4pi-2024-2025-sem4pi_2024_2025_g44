@@ -22,7 +22,7 @@ public class DSLDescription implements ValueObject, Serializable {
     /**
      * The lines of the DSL code
      */
-    private List<String> DSLCodeLines;
+    private String DSLCodeLines;
 
     /**
      * The version of the DSL
@@ -56,7 +56,7 @@ public class DSLDescription implements ValueObject, Serializable {
             throw new IllegalArgumentException("Invalid DSL version format. Expected format: X.Y.Z");
         }
 
-        this.DSLCodeLines = List.copyOf(DSLCodeLines); // Imutável
+        this.DSLCodeLines = String.join("\n", DSLCodeLines);
         this.DSLVersion = DSLVersion;
     }
 
@@ -76,7 +76,7 @@ public class DSLDescription implements ValueObject, Serializable {
      * @return the lines of the DSL code
      */
     public List<String> codeLines() {
-        return DSLCodeLines;
+        return List.of(DSLCodeLines.split("\n"));
     }
 
     /**

@@ -2,6 +2,7 @@ package inMemory;
 
 import core.Category.domain.Entities.Category;
 import core.Category.domain.ValueObjects.CategoryName;
+import core.Category.domain.ValueObjects.CategoryStatus;
 import core.Category.repositories.CategoryRepository;
 import inMemory.persistence.InMemoryInitializer;
 
@@ -48,5 +49,23 @@ public class InMemoryCategoryRepository extends InMemoryDomainRepository<Categor
         } else {
             return Optional.of(category.get(0));
         }
+    }
+
+    /**
+     * Returns a list of all active categories in the system.
+     * @return a list of active categories
+     */
+    @Override
+    public Iterable<Category> findAllActiveCategories() {
+        Iterable<Category> categories = findAll();
+        List<Category> activeCategories = new ArrayList<>();
+
+        for (Category c : categories) {
+            if (c.status() == CategoryStatus.ACTIVE) {
+                activeCategories.add(c);
+            }
+        }
+
+        return activeCategories;
     }
 }

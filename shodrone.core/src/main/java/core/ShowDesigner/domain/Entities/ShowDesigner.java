@@ -140,7 +140,7 @@ public class ShowDesigner implements AggregateRoot<EmailAddress>, Serializable {
      * @return the email address of the Show Designer
      */
     @Override
-    public EmailAddress identity() {
+    public Email identity() {
         return this.email;
     }
 

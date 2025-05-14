@@ -82,7 +82,7 @@ public class AddFigureToCatalogueController {
      * @return an iterable of categories
      */
     public Iterable<Category> listCategories() {
-        return categoryRepository.findAll();
+        return categoryRepository.findAllActiveCategories();
     }
 
     /**
@@ -90,15 +90,6 @@ public class AddFigureToCatalogueController {
      * @return an iterable of figures
      */
     public Iterable<Customer> listCustomers() {
-        return customerRepository.findAll();
-    }
-
-    /**
-     * Check if a figure with the given code and version already exists in the catalogue.
-     * @return true if the figure exists, false otherwise
-     */
-    public boolean checkIfCodeAndVersionAlreadyExists(Code code, Version version){
-        Preconditions.noneNull(code, version);
-        return figureRepository.exists(new FigureID(code, version));
+        return customerRepository.findAllCreatedCustomers();
     }
 }
