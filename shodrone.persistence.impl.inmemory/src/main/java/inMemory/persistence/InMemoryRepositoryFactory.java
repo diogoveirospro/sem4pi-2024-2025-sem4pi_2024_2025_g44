@@ -65,12 +65,12 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 
 	@Override
 	public FigureRepository figures(TransactionalContext autoTx) {
-		return null;
+		return new InMemoryFigureRepository();
 	}
 
 	@Override
 	public FigureRepository figures() {
-		return null;
+		return figures(null);
 	}
 
 	@Override
@@ -113,22 +113,22 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 
 	@Override
 	public CategoryRepository categories(TransactionalContext autoTx) {
-		return null;
+		return new InMemoryCategoryRepository();
 	}
 
 	@Override
 	public CategoryRepository categories() {
-		return null;
+		return categories(null);
 	}
 
 	@Override
 	public ShodroneUserRepository shodroneUsers(TransactionalContext autoTx) {
-		return null;
+		return new InMemoryShodroneUserRepository();
 	}
 
 	@Override
 	public ShodroneUserRepository shodroneUsers() {
-		return null;
+		return shodroneUsers(null);
 	}
 
 	@Override
