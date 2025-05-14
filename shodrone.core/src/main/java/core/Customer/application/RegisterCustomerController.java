@@ -24,6 +24,7 @@ import java.util.*;
 public class RegisterCustomerController {
 
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
+    private final RegisterUsersController registerUserController = new RegisterUsersController();
 
     public void addCustomer(Customer customer) {
         try {
@@ -61,5 +62,14 @@ public class RegisterCustomerController {
             customerTypes.add(type.toString());
         }
         return customerTypes;
+    }
+
+    public void makeCustomerRepresentativeUser(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber repPhone) {
+        Preconditions.noneNull(representative);
+        final Set<Role> roles = new HashSet<>();
+        roles.add(ShodroneRoles.CUSTOMERREPRESENTATIVE);
+        roles.add(ShodroneRoles.USER);
+        Calendar createdOn = Calendar.getInstance();
+        registerUserController.addUser(username, password, representative.name().toString(), representative.name().toString(), representative.email().toString(), roles, createdOn, representative.phoneNumber());
     }
 }

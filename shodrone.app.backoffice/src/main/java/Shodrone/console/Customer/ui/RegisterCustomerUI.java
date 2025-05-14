@@ -8,6 +8,11 @@ import core.Customer.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
+import core.User.domain.ShodronePasswordPolicy;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
+import eapli.framework.infrastructure.authz.application.UserManagementService;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -18,6 +23,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("java:S106")
 public class RegisterCustomerUI extends AbstractFancyUI {
     private final RegisterCustomerController controller = new RegisterCustomerController();
+    private final UserManagementService userSvc = AuthzRegistry.userService();
 
     @Override
     protected boolean doShow() {
@@ -91,12 +97,77 @@ public class RegisterCustomerUI extends AbstractFancyUI {
         }
         String position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Representative Position: " + UtilsUI.RESET);
         Position repPosition = new Position(position);
-
         CustomerRepresentative representative = new CustomerRepresentative(repFullName, repEmail, repPhone, repPosition, customer);
         customer.addCustomerRepresentative(representative);
+
+        String[] credentials = enterUsernameAndPassword();
+        String username = credentials[0];
+        String password = credentials[1];
+
+        controller.makeCustomerRepresentativeUser(representative, customer, username, password, repPhone);
         System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nCustomer Representative created successfully!" + UtilsUI.RESET);
     }
 
+    private String[] enterUsernameAndPassword() {
+        String username;
+        String passwordChars;
+        String password;
+        ShodronePasswordPolicy passwordPolicy = new ShodronePasswordPolicy();
+
+        do {
+            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's username (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+            if (username == null || username.trim().isEmpty()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Username cannot be empty. Please try again." + UtilsUI.RESET);
+                continue;
+            }
+
+            if ("cancel".equalsIgnoreCase(username)) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+
+            java.io.Console console = System.console();
+            if (console != null) {
+                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
+                password = passwordChars;
+            } else {
+                // Fallback in case console is not available
+                password = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty. Please try again." + UtilsUI.RESET);
+                continue;
+            }
+
+            if ("cancel".equalsIgnoreCase(password)) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+
+            Iterable<SystemUser> allUsers = userSvc.allUsers();
+            boolean found = checkIfUsernameIsInUse(allUsers, username, false);
+
+            if (found) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Username already exists. Please choose a different one." + UtilsUI.RESET);
+            } else if (!passwordPolicy.isSatisfiedBy(password)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password does not meet the required criteria. Please try again." + UtilsUI.RESET);
+            } else {
+                break;
+            }
+        } while (true);
+
+        return new String[]{username, password};
+    }
+
+    private static boolean checkIfUsernameIsInUse(Iterable<SystemUser> allUsers, String username, boolean found) {
+        for (SystemUser user : allUsers) {
+            if (user.username().equals(Username.valueOf(username))) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
     private Name enterValidName() {
         String name;
         String nameRegex = "^[A-Za-zÀ-ÿ\\s]+$";
