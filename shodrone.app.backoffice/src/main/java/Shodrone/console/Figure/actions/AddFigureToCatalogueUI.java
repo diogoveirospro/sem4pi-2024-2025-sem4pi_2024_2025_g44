@@ -22,6 +22,7 @@ import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.time.domain.model.DateInterval;
+import jakarta.persistence.PersistenceException;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
@@ -68,7 +69,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 Exclusivity exclusivity = enterValidExclusivity();
                 ShowDesigner showDesigner = null;
 
-                if (authz.session().isPresent()){
+                if (authz.session().isPresent()) {
                     Email email = new Email(authz.session().get().authenticatedUser().email().toString());
                     showDesigner = showDesignerRepository.findByEmail(email);
                 }
@@ -113,9 +114,17 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
             new AddFigureToCatalogueUI().show();
+        } catch (PersistenceException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Unique index or primary key violation")) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                        "\nError: A picture with this code and version already exists!" + UtilsUI.RESET);
+            } else {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                        "\nError saving to the database!" + UtilsUI.RESET);
+            }
+            new AddFigureToCatalogueUI().show();
         }
-
-        controller.addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
     }
 
     /**
