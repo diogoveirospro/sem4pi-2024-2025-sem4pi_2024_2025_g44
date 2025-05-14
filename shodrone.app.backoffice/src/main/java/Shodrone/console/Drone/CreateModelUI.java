@@ -8,8 +8,6 @@ import shodrone.presentation.UtilsUI;
 
 import java.util.*;
 
-import static javax.swing.UIManager.put;
-
 public class CreateModelUI extends AbstractFancyUI {
 
     private final CreateModelController controller = new CreateModelController();
@@ -26,8 +24,8 @@ public class CreateModelUI extends AbstractFancyUI {
 
         WindSpeed windSpeedF = new WindSpeed(previousLimit, currentLimit);
         PositionTolerance positionToleranceF = new PositionTolerance(0.0);
-        Map<PositionTolerance, WindSpeed> config = new HashMap<>();
-        config.put(positionToleranceF, windSpeedF);
+        Map<WindSpeed, PositionTolerance> config = new HashMap<>();
+        config.put(windSpeedF, positionToleranceF);
 
         previousLimit = currentLimit;
 
@@ -43,10 +41,9 @@ public class CreateModelUI extends AbstractFancyUI {
             currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit to fly with this tolerance: " + position);
 
             WindSpeed windSpeed = new WindSpeed(previousLimit, currentLimit);
-
             PositionTolerance positionTolerance = new PositionTolerance(position);
 
-            config.put(positionTolerance, windSpeed);
+            config.put(windSpeed, positionTolerance);
 
             previousLimit = currentLimit;
         }
@@ -54,18 +51,17 @@ public class CreateModelUI extends AbstractFancyUI {
         int unsafeLimit = UtilsUI.readIntegerFromConsole("Enter the max limit where it is NOT safe to fly");
 
         WindSpeed windSpeed = new WindSpeed(unsafeLimit, 999);
-
         PositionTolerance positionTolerance = new PositionTolerance(-1);
 
-        config.put(positionTolerance, windSpeed);
+        config.put(windSpeed, positionTolerance);
 
         System.out.println("\nPlease confirm the data:");
         System.out.println("=== " + modelName + " ===");
 
-        for (Map.Entry<PositionTolerance, WindSpeed> entry : config.entrySet()) {
-            double tolerance = entry.getKey().value();
-            int min = entry.getValue().minSpeed();
-            int max = entry.getValue().maxSpeed();
+        for (Map.Entry<WindSpeed, PositionTolerance> entry : config.entrySet()) {
+            int min = entry.getKey().minSpeed();
+            int max = entry.getKey().maxSpeed();
+            double tolerance = entry.getValue().value();
 
             if (tolerance == 0.0) {
                 System.out.println("wind <= " + max + " -> 0m");
@@ -82,17 +78,18 @@ public class CreateModelUI extends AbstractFancyUI {
             System.out.println("Operation canceled.");
             return false;
         }
-        Configuration configuration = new Configuration(config);
+
+        Configuration configuration = new Configuration(config, SafetyStatus.SAFE);
         boolean success = controller.createModel(modelName, configuration);
+
         if (success) {
             System.out.println("Model successfully created!");
-            return true;
         } else {
             System.out.println("Failed to create model.");
-            return true;
         }
-    }
 
+        return true;
+    }
 
     @Override
     public String headline() {
