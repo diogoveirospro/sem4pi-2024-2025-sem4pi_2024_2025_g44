@@ -9,6 +9,7 @@ import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
 import eapli.framework.actions.Action;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import shodrone.presentation.UtilsUI;
 
 import java.sql.Array;
 import java.util.HashMap;
@@ -71,9 +72,9 @@ public class ModelBootstrapper implements Action {
             ModelName modelName = new ModelName(modelNameStr);
             Model model = new Model(modelName, config);
             controller.createModel(modelName, config);
-            LOGGER.info("Successfully registered drone model: {}", modelNameStr);
+            LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully registered drone model: {}" + UtilsUI.RESET, modelNameStr);
         } catch (Exception e) {
-            LOGGER.error("Error registering drone model '{}': {}", modelNameStr, e.getMessage());
+            LOGGER.error(UtilsUI.BOLD + UtilsUI.RED + "Error registering drone model '{}': {}" + UtilsUI.RESET, modelNameStr, e.getMessage());
         }
     }
 }

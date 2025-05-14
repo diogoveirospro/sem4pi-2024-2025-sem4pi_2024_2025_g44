@@ -29,6 +29,7 @@ import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -148,6 +149,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	public EventRecordRepository eventRecord() {
 		return new JpaAutoTxEventRecordRepository(Application.settings().persistenceUnitName(),
 				Application.settings().extendedPersistenceProperties());
+	}
+
+	@Override
+	public ShowDesignerRepository showDesigners(TransactionalContext autoTx) {
+		return new JpaShowDesignerRepository(autoTx);
+	}
+
+	@Override
+	public ShowDesignerRepository showDesigners() {
+		return new JpaShowDesignerRepository(Application.settings().persistenceUnitName());
 	}
 
 

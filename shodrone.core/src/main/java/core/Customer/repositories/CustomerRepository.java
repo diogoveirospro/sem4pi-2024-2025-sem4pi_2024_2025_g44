@@ -5,6 +5,7 @@ import core.Customer.domain.Entities.CustomerRepresentative;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.repositories.DomainRepository;
+import jakarta.persistence.EntityManager;
 
 public interface CustomerRepository extends DomainRepository<VatNumber,Customer> {
     Iterable<Customer> findAllCreatedCustomers();

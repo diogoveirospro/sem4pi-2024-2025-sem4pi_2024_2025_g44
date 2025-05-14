@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class Email extends EmailAddress implements ValueObject, Serializable {
+public class Email extends EmailAddress implements ValueObject, Serializable, Comparable<EmailAddress> {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,5 +50,10 @@ public class Email extends EmailAddress implements ValueObject, Serializable {
     @Override
     public String toString() {
         return email;
+    }
+
+    @Override
+    public int compareTo(EmailAddress o) {
+        return this.email.compareTo(o.toString());
     }
 }

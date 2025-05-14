@@ -15,6 +15,7 @@ import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
+import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.User.domain.ShodroneRoles;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -47,7 +48,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     /**
      * User Repository
      */
-    private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
+    private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
 
     /**
      * Show the UI for adding a figure to the catalogue.
@@ -68,12 +69,8 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 ShowDesigner showDesigner = null;
 
                 if (authz.session().isPresent()){
-                    Name name = new Name(authz.session().get().authenticatedUser().name().firstName() + " " +
-                            authz.session().get().authenticatedUser().name().lastName());
                     Email email = new Email(authz.session().get().authenticatedUser().email().toString());
-                    PhoneNumber phoneNumber = userRepository.findByUsername(authz.session().get().authenticatedUser().
-                            identity()).phoneNumber();
-                    showDesigner = new ShowDesigner(name, phoneNumber, email);
+                    showDesigner = showDesignerRepository.findByEmail(email);
                 }
 
                 if (exclusivity != null) {

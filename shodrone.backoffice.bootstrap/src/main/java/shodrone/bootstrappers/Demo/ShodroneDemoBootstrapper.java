@@ -23,17 +23,15 @@
  */
 package shodrone.bootstrappers.Demo;
 
-import core.ModelOfDrone.application.CreateModelController;
+import core.User.domain.ShodroneRoles;
 import eapli.framework.actions.Action;
 import eapli.framework.infrastructure.authz.application.AuthenticationService;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.strings.util.Strings;
 import eapli.framework.validations.Invariants;
-import shodrone.bootstrappers.Demo.Backoffice.BackofficeUsersBootstrapper;
-import shodrone.bootstrappers.Demo.Backoffice.CustomerBootstrapper;
-import shodrone.bootstrappers.Demo.Backoffice.ModelBootstrapper;
-import shodrone.bootstrappers.Demo.Backoffice.CustomerRepresentativeBootstrapper;
+import shodrone.bootstrappers.Demo.Backoffice.*;
+import shodrone.presentation.UtilsUI;
 
 /**
  * eCafeteria Bootstrapping Demo data. This class bootstraps data for demo
@@ -45,8 +43,8 @@ import shodrone.bootstrappers.Demo.Backoffice.CustomerRepresentativeBootstrapper
 @SuppressWarnings("squid:S106")
 public class ShodroneDemoBootstrapper implements Action {
 
-    private static final String POWERUSER_A1 = "poweruserA1";
     private static final String POWERUSER = "poweruser";
+    private static final String POWERUSER_PASS = "Poweruser123";
 
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final AuthenticationService authenticationService = AuthzRegistry.authenticationService();
@@ -56,15 +54,15 @@ public class ShodroneDemoBootstrapper implements Action {
 
         // declare bootstrap actions
         final Action[] actions = { new BackofficeUsersBootstrapper(),
-                new CustomerBootstrapper(), new CustomerRepresentativeBootstrapper(),};
-                new ModelBootstrapper();
+                new CustomerBootstrapper(), new CustomerRepresentativeBootstrapper(), new CategoryBootstrapper(),
+                new FigureBootstrapper(), new ModelBootstrapper()};
 
         authenticateForBootstrapping();
 
         // execute all bootstrapping
         boolean ret = true;
         for (final Action boot : actions) {
-            System.out.println("Bootstrapping " + nameOfEntity(boot) + "...");
+            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nBootstrapping " + nameOfEntity(boot) + "..." + UtilsUI.RESET);
             ret &= boot.execute();
         }
         return ret;
@@ -76,7 +74,7 @@ public class ShodroneDemoBootstrapper implements Action {
      * authenticate a super user to be able to register new users
      */
     protected void authenticateForBootstrapping() {
-        authenticationService.authenticate(POWERUSER, POWERUSER_A1);
+        authenticationService.authenticate(POWERUSER, POWERUSER_PASS, ShodroneRoles.POWER_USER);
         Invariants.ensure(authz.hasSession());
     }
 
