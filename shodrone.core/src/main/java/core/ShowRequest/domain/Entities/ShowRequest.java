@@ -8,20 +8,47 @@ import core.ShowRequest.domain.ValueObjects.ShowDescription;
 import core.ShowRequest.domain.ValueObjects.ShowRequestID;
 import core.ShowRequest.domain.ValueObjects.ShowRequestStatus;
 import eapli.framework.domain.model.AggregateRoot;
+import eapli.framework.domain.model.DomainEntities;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Entity
 public class ShowRequest implements AggregateRoot<ShowRequestID> {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Version
+    private Long version;
+
+    @Embedded
     private ShowRequestID showRequestID;
+
+    @Enumerated(EnumType.STRING)
     private ShowRequestStatus showRequestStatus;
+
+    @Embedded
     private ShowDescription showDescription;
+
     private LocalDate dateOfShow;
+
     private LocalTime timeOfShow;
+
+    @Embedded
     private Location location;
+
+    @Embedded
     private QuantityOfDrones quantityOfDrones;
+
     private Customer customer;
+
     private CRMCollaborator crmCollaborator;
+
+    protected ShowRequest(){}
 
     public ShowRequest(ShowDescription showDescription, LocalDate dateOfShow, LocalTime timeOfShow, Location location, QuantityOfDrones quantityOfDrones, Customer customer, CRMCollaborator crmCollaborator) {
         this.showDescription = showDescription;
@@ -31,6 +58,8 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         this.quantityOfDrones = quantityOfDrones;
         this.customer = customer;
         this.crmCollaborator = crmCollaborator;
+
+        this.showRequestID = new ShowRequestID(customer.identity().toString(), crmCollaborator.identity().toString(), dateOfShow.toString(), timeOfShow.toString());
     }
 
     public ShowRequestID getShowRequestID() {
@@ -69,18 +98,53 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         return crmCollaborator;
     }
 
-
-    @Override
-    public boolean sameAs(Object other) {
-
-        //TODO: implement
-        return true;
+    public void editInformation(Location location, ShowDescription showDescription, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones)
+    {
+        this.location = location;
+        this.showDescription = showDescription;
+        this.dateOfShow = date;
+        this.timeOfShow = time;
+        this.quantityOfDrones = quantityOfDrones;
     }
 
     @Override
-    public ShowRequestID identity() {
+    public boolean sameAs(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof ShowRequest)) return false;
+        ShowRequest that = (ShowRequest) other;
+        return this.customer.equals(that.customer) &&
+                this.crmCollaborator.equals(that.crmCollaborator) &&
+                this.timeOfShow.equals(that.timeOfShow) &&
+                this.dateOfShow.equals(that.dateOfShow);
+    }
 
-        //TODO: implement
-        return null;
+    @Override
+    public int compareTo(ShowRequestID other) {
+        if (other == null) {
+            return 1;
+        }
+        return this.showRequestID.compareTo(other);
+    }
+
+    public ShowRequestID identity() {
+        return this.showRequestID;
+    }
+
+    @Override
+    public boolean hasIdentity(ShowRequestID id) {
+        if (id == null) {
+            return false;
+        }
+        return this.showRequestID.equals(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return DomainEntities.areEqual(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return DomainEntities.hashCode(this);
     }
 }

@@ -1,10 +1,19 @@
 package core.Shared.domain.ValueObjects;
 
+import eapli.framework.domain.model.ValueObject;
 import eapli.framework.validations.Preconditions;
+import jakarta.persistence.Embeddable;
 
-public class QuantityOfDrones {
+import java.io.Serializable;
+
+@Embeddable
+public class QuantityOfDrones implements Serializable, ValueObject {
+
+    private static final long serialVersionUID = 1L;
 
     private Integer quantityOfDrones;
+
+    protected QuantityOfDrones(){}
 
     public QuantityOfDrones(String quantityOfDrones) {
         int n = Integer.parseInt(quantityOfDrones);

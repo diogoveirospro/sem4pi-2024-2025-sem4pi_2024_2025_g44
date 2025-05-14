@@ -26,6 +26,7 @@ public class ListShowRequestsUI extends AbstractFancyListUI<ShowRequest> {
            return true;
        } catch (UserCancelledException e) {
            System.out.println(e.getMessage());
+           UtilsUI.goBackAndWait();
            return false;
        }
     }
@@ -56,7 +57,7 @@ public class ListShowRequestsUI extends AbstractFancyListUI<ShowRequest> {
 
     @Override
     protected String emptyMessage() {
-        return UtilsUI.RED + UtilsUI.BOLD + "No show request available." + UtilsUI.RESET;
+        return (UtilsUI.RED + UtilsUI.BOLD + "No show request available." + UtilsUI.RESET);
     }
 
     @Override
