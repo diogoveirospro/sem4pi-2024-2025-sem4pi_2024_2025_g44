@@ -101,7 +101,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
     public List<Drone> getDrnModelList(Model droneModel) {
         List<Drone> drnModelList = new ArrayList<>();
         for (Drone drone : findAll()) {
-            if (drone.getModel().sameAs(droneModel)) {
+            if (drone.getModel().sameAs(droneModel) && drone.getDroneStatus() == DroneStatus.ACTIVE) {
                 drnModelList.add(drone);
             }
         }
