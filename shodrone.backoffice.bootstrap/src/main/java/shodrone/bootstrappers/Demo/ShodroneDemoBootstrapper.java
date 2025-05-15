@@ -64,6 +64,7 @@ public class ShodroneDemoBootstrapper implements Action {
         for (final Action boot : actions) {
             System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nBootstrapping " + nameOfEntity(boot) + "..." + UtilsUI.RESET);
             ret &= boot.execute();
+
         }
         return ret;
 
