@@ -24,7 +24,7 @@ public class CreateModelUI extends AbstractFancyUI {
 
         WindSpeed windSpeedF = new WindSpeed(previousLimit, currentLimit);
         PositionTolerance positionToleranceF = new PositionTolerance(0.0);
-        Map<WindSpeed, PositionTolerance> config = new HashMap<>();
+        Map<WindSpeed, PositionTolerance> config = new LinkedHashMap<>();
         config.put(windSpeedF, positionToleranceF);
 
         previousLimit = currentLimit;
