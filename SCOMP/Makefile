@@ -7,20 +7,22 @@ DRONE_EXEC=drone
 CC=gcc
 FLAGS=
 
-RM=rm
+RM=rm -f
 
-all: parent drone run
+all: run
 
-run:
-	@./$(PARENT_EXEC)
+run: $(PARENT_EXEC) $(DRONE_EXEC)
+	@./$<
 
-parent: $(PARENT_FILE) 
-	@$(CC) $(FLAGS) -o $(PARENT_EXEC) $^
+$(PARENT_EXEC): $(PARENT_FILE) 
+	@$(CC) $(FLAGS) $^ -o $@
 
-drone: $(DRONE_FILE) 
-	@$(CC) $(FLAGS) -o $(DRONE_EXEC) $^
+$(DRONE_EXEC): $(DRONE_FILE) 
+	@$(CC) $(FLAGS) $^ -o $@
 
 clean:
 	@$(RM) $(PARENT_EXEC) $(DRONE_EXEC)
 
-.PHONY: run parent drone clean
+re: clean all
+
+.PHONY: run clean re

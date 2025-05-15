@@ -26,14 +26,15 @@ typedef struct data {
   //config file info
   int max_collisions;
   int num_drones;
+  char *inp_dir;
+  char *out_dir;
 
   //signals
   struct sigaction sa;
 
   //pipes
   int up[2];
-  int down[2];
-  int **fd;
+  int **down;
 
   //childs info
   char *state;
