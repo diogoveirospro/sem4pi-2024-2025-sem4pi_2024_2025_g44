@@ -15,7 +15,7 @@ public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, V
     protected ShowRequestID() {}
 
     public ShowRequestID(String customer, String collaborator, String date, String time) {
-        this.identifier = customer + collaborator + date + time;
+        this.identifier = "customer email = " + customer + " | collaborator email = " + collaborator + " | date = " + date + " | time = " + time;
     }
 
     @Override
@@ -24,6 +24,11 @@ public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, V
         if (o == null) return 1;
 
         return this.identifier.compareTo(o.identifier);
+    }
+
+    @Override
+    public String toString() {
+        return identifier;
     }
 }
 

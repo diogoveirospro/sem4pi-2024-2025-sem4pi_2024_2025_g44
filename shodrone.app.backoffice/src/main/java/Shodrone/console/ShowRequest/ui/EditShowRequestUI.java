@@ -67,7 +67,7 @@ public class EditShowRequestUI extends AbstractFancyUI {
 
     @Override
     public String headline() {
-        return null;
+        return "Edit Show Request";
     }
 
     private Customer getCustomer() {
