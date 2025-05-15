@@ -1,0 +1,9 @@
+(PXI,PYI,PZI);(PX1,PY1,PZ1);(PX2,PY2,PZ2);(PX3,PY3,PZ3)...;(PXN,PYN,PZN);V
+
+
+
+
+
+
+
+
