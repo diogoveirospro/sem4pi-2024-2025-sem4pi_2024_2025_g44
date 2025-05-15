@@ -1,7 +1,9 @@
 package core.Drone.application;
 
+import core.Drone.domain.Entities.Drone;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
+import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.PersistenceContext;
@@ -16,7 +18,12 @@ public class RemoveDroneController {
     }
 
 
-    public boolean removeDrone(SerialNumber serialNumber, String removReason) {
-        return droneRepository.removeDrone(serialNumber, removReason);
+    public boolean removeDrone(Drone drone, String removReason) {
+        return droneRepository.removeDrone(drone, removReason);
     }
+
+    public Iterable<Drone> listDrones() {
+        return droneRepository.findAllDronesInventory();
+    }
+
 }

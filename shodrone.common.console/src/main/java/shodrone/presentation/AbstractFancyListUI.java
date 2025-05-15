@@ -60,7 +60,7 @@ public abstract class AbstractFancyListUI<T> extends AbstractFancyUI {
     protected boolean doShow() {
         final Iterable<T> elems = elements();
         if (!elems.iterator().hasNext()) {
-            System.out.println(emptyMessage() + elementName());
+            System.out.println(emptyMessage());
         } else {
             new ListWidget<>(listHeader(), elems, elementPrinter()).show();
         }

@@ -1,32 +1,35 @@
-package Shodrone.console.Drone;
+package Shodrone.console.Drone.ui;
 
+import Shodrone.console.Drone.printer.DronePrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Drone.application.RemoveDroneController;
-import core.Drone.domain.ValueObjects.SerialNumber;
-import eapli.framework.presentation.console.AbstractUI;
+import core.Drone.domain.Entities.Drone;
+import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RemoveDroneUI extends AbstractFancyUI {
-
     private final RemoveDroneController controller = new RemoveDroneController();
 
     @Override
     protected boolean doShow() {
         try {
-            SerialNumber serialNumber = enterValidSerialNumber();
+            Drone drone = selectDrone();
+            if (drone == null) return false;
+
             String removalReason = enterValidRemovalReason();
 
             System.out.println(UtilsUI.YELLOW + "\nConfirm removal of drone with:");
-            System.out.println("Serial Number: " + serialNumber);
+            System.out.println("Serial Number: " + drone.identity());
             System.out.println("Reason: " + removalReason);
             if (!UtilsUI.confirm("Do you want to proceed? (y/n)")) {
                 throw new UserCancelledException(UtilsUI.YELLOW + "Operation cancelled by user." + UtilsUI.RESET);
             }
 
-            boolean success = controller.removeDrone(serialNumber, removalReason);
+            boolean success = controller.removeDrone(drone, removalReason);
             if (success) {
                 System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Drone removed successfully!" + UtilsUI.RESET);
             } else {
@@ -48,21 +51,34 @@ public class RemoveDroneUI extends AbstractFancyUI {
         }
     }
 
-    private SerialNumber enterValidSerialNumber() {
-        String input;
-        String serialRegex = "^[A-Z0-9-]{3,30}$"; // Ajusta conforme necessário
+    @Override
+    public String headline() {
+        return "Remove a Drone from the inventory";
+    }
+
+    private Drone selectDrone() {
+        Iterable<Drone> drones = controller.listDrones();
+        if (drones == null || !drones.iterator().hasNext()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No drones available." + UtilsUI.RESET);
+            return null;
+        }
+
+        List<Drone> droneList = new ArrayList<>();
+        drones.forEach(droneList::add);
+
+        ListWidget<Drone> droneListWidget = new ListWidget<>(headline(), droneList, new DronePrinter());
+        droneListWidget.show();
+
+        int option;
         do {
-            try {
-                input = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter Serial Number (or 'cancel' to abort): " + UtilsUI.RESET);
-                if ("cancel".equalsIgnoreCase(input)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + "Action cancelled by user." + UtilsUI.RESET);
-                }
-                if (!Pattern.matches(serialRegex, input)) {
-                    throw new IllegalArgumentException("Invalid serial number format.");
-                }
-                return new SerialNumber(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
+            option = UtilsUI.selectsIndex(droneList);
+            if (option == -2) {
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                return droneList.get(option);
             }
         } while (true);
     }
@@ -83,10 +99,5 @@ public class RemoveDroneUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
             }
         } while (true);
-    }
-
-    @Override
-    public String headline() {
-        return "Remove Drone from Inventory";
     }
 }

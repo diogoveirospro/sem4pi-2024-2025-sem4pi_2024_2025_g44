@@ -12,8 +12,10 @@ import java.util.List;
 public interface DroneRepository {
     boolean addDrone(SerialNumber serialNumber, Model model);
 
-    boolean removeDrone(SerialNumber serialNumber, String removReason);
+    boolean removeDrone(Drone drone, String removReason);
 
     List<Drone> getDrnModelList(Model droneModel);
+
+    Iterable<Drone> findAllDronesInventory();
 
 }

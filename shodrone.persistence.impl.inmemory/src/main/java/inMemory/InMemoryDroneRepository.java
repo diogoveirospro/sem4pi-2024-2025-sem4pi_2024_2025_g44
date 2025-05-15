@@ -76,46 +76,47 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
     //US242
 
     @Override
-    public boolean removeDrone(SerialNumber serialNumber, String removReason) {
-        if (!validateRemoval(serialNumber)) {
+    public boolean removeDrone(Drone drone, String removReason) {
+
+        Iterable<Drone> drones = findAllDronesInventory();
+
+        if (!validateRemoval(drone, drones)) {
             return false;
         }
-        addDrnRemovData(serialNumber, removReason);
-        changeDrnStatRemv(serialNumber);
+        addDrnRemovData(drone, removReason);
+        changeDrnStatRemv(drone);
         return true;
     }
 
-    public boolean validateRemoval(SerialNumber serialNumber) {
-        Iterable<Drone> drones = findAll();
-        for (Drone drone : drones) {
-            if (drone.identity() == serialNumber) {
+    public boolean validateRemoval(Drone drone, Iterable<Drone> drones) {
+        for ( Drone droneTest : drones) {
+            if (drone.sameAs(droneTest) && drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
                 return true;
             }
         }
         return false;
     }
-
-    public void addDrnRemovData(SerialNumber serialNumber, String removReason) {
+    @Override
+    public Iterable<Drone> findAllDronesInventory() {
         Iterable<Drone> drones = findAll();
-        for (Drone drone : drones) {
-            if (drone.identity() == serialNumber) {
-                drone.removalReason().addReason(removReason);
-                save(drone);
-                break;
+        List<Drone> droneList = new ArrayList<>();
+
+        for (Drone drone : drones){
+            if (drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
+                droneList.add(drone);
             }
         }
-
+        return droneList;
     }
 
-    public void changeDrnStatRemv(SerialNumber serialNumber) {
-        Iterable<Drone> drones = findAll();
-        for (Drone drone : drones) {
-            if (drone.identity() == serialNumber) {
-                drone.setStatus(DroneStatus.REMOVED);
-                save(drone);
-                break;
-            }
-        }
+    public void addDrnRemovData(Drone drone, String removReason) {
+        drone.removalReason().addReason(removReason);
+        save(drone);
+    }
+
+    public void changeDrnStatRemv(Drone drone) {
+        drone.setStatus(DroneStatus.REMOVED);
+        save(drone);
     }
     //----------------------------------------------------------------------
 

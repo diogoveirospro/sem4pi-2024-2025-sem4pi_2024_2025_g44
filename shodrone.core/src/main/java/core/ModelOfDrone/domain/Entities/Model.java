@@ -70,7 +70,7 @@ public class Model implements Serializable, AggregateRoot<Designation> {
         return Objects.equals(modelName, model.modelName);
     }
 
-    public ModelName getModelName() {
-        return modelName;
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }

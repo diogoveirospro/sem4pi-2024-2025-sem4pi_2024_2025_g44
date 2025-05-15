@@ -1,15 +1,11 @@
-package Shodrone.console.Drone;
+package Shodrone.console.Drone.ui;
 
+import Shodrone.console.Model.printer.ModelPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Drone.application.AddDroneController;
-import core.Drone.domain.Entities.Drone;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import eapli.framework.presentation.console.AbstractUI;
 import eapli.framework.presentation.console.ListWidget;
-import eapli.framework.visitor.Visitor;
-import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
@@ -72,16 +68,14 @@ public class AddDroneUI extends AbstractFancyUI {
     }
 
     private SerialNumber enterValidSerialNumber() {
-        String input;
+        int input;
         String serialRegex = "^[A-Z0-9-]{3,30}$"; // adjust as needed
         do {
             try {
-                input = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter Serial Number: " + UtilsUI.RESET);
-                if ("cancel".equalsIgnoreCase(input)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + "Action cancelled by user." + UtilsUI.RESET);
-                }
-                if (!Pattern.matches(serialRegex, input)) {
-                    throw new IllegalArgumentException("Serial number format invalid.");
+                input = UtilsUI.readIntegerFromConsole(UtilsUI.BOLD + "Enter Serial Number: " + UtilsUI.RESET);
+
+                if (input <= 0) {
+                    throw new IllegalArgumentException("Serial number must be a positive integer.");
                 }
                 return new SerialNumber(input);
             } catch (IllegalArgumentException e) {

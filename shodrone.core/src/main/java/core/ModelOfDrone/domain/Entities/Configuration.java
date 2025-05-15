@@ -68,12 +68,30 @@ public class Configuration implements Serializable, ValueObject {
         return safetyStatus;
     }
 
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Wind Tolerance:\n");
-        for (Map.Entry<WindSpeed, PositionTolerance> entry : config.entrySet()) {
-            sb.append(entry.getKey()).append(" -> ").append(entry.getValue()).append("\n");
-        }
-        sb.append("Safety Status: ").append(safetyStatus);
+        StringBuilder sb = new StringBuilder("Configuration:\n");
+
+        config.entrySet().stream()
+                .sorted(Comparator.comparingInt(e -> e.getKey().minSpeed()))
+                .forEach(entry -> {
+                    int min = entry.getKey().minSpeed();
+                    int max = entry.getKey().maxSpeed();
+                    double tolerance = entry.getValue().value();
+
+                    if (tolerance == 0.0) {
+                        if (min == 0) {
+                            sb.append("wind <= ").append(max).append(" -> 0m\n");
+                        } else {
+                            sb.append(min).append(" < wind <= ").append(max).append(" -> 0m\n");
+                        }
+                    } else if (tolerance == -1.0) {
+                        sb.append(min).append(" < wind -> Not safe to fly\n");
+                        sb.append("Safety Status: Safe when wind speed is less than ").append(min).append("m/s\n");
+                    } else {
+                        sb.append(min).append(" < wind <= ").append(max).append(" -> ").append(tolerance).append("m\n");
+                    }
+                });
         return sb.toString();
     }
 

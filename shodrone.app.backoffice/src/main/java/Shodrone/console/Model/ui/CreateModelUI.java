@@ -1,4 +1,4 @@
-package Shodrone.console.Drone;
+package Shodrone.console.Model.ui;
 
 import core.ModelOfDrone.application.CreateModelController;
 import core.ModelOfDrone.domain.Entities.Configuration;
@@ -16,11 +16,19 @@ public class CreateModelUI extends AbstractFancyUI {
     public boolean doShow() {
 
         System.out.println("=== Create Drone Model ===");
-        String name = UtilsUI.readLineFromConsole("Enter the model name");
+        String name = UtilsUI.readLineFromConsole("Enter the model name: ");
         ModelName modelName = new ModelName(name);
 
         int previousLimit = 0;
-        int currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit where the wind speed is 100% safe for the drone, no wind tolerance");
+        int currentLimit;
+
+        // Input da zona segura
+        do {
+            currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit where the wind speed is 100% safe for the drone, no wind tolerance: ");
+            if (currentLimit <= previousLimit) {
+                System.out.println("The max limit must be greater than " + previousLimit + ". Try again: ");
+            }
+        } while (currentLimit <= previousLimit);
 
         WindSpeed windSpeedF = new WindSpeed(previousLimit, currentLimit);
         PositionTolerance positionToleranceF = new PositionTolerance(0.0);
@@ -29,32 +37,51 @@ public class CreateModelUI extends AbstractFancyUI {
 
         previousLimit = currentLimit;
 
-        int choice = 1;
+        int choice;
+        double lastPosition = 0.0;
 
-        while (choice == 1) {
-            choice = UtilsUI.readIntegerFromConsole("Press 1 to continue configuration, or 0 to stop and declare the next range as unsafe");
+        do {
+            do {
+                choice = UtilsUI.readIntegerFromConsole("Press 1 to continue configuration, or 0 to stop and declare when (" + previousLimit + "m/s < windspeed) as unsafe: ");
+                if (choice != 0 && choice != 1) {
+                    System.out.println("Invalid choice. Please enter 1 to continue or 0 to stop: ");
+                }
+            } while (choice != 0 && choice != 1);
 
-            if (choice != 1) break;
+            if (choice == 0) break;
 
-            double position = UtilsUI.readDoubleFromConsole("Enter the next wind tolerance");
+            double position;
 
-            currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit to fly with this tolerance: " + position);
+            do {
+                position = UtilsUI.readDoubleFromConsole("Enter the next wind tolerance (must be > " + lastPosition + "): ");
+                if (position <= lastPosition) {
+                    System.out.println("Position tolerance must be non-negative. Try again: ");
+                }
+            } while (position < 0);
+
+            do {
+                currentLimit = UtilsUI.readIntegerFromConsole("Enter the max limit to fly with this tolerance, " + position + ": ");
+                if (currentLimit <= previousLimit) {
+                    System.out.println("The max limit must be greater than " + previousLimit + ". Try again: ");
+                }
+            } while (currentLimit <= previousLimit);
 
             WindSpeed windSpeed = new WindSpeed(previousLimit, currentLimit);
             PositionTolerance positionTolerance = new PositionTolerance(position);
 
             config.put(windSpeed, positionTolerance);
-
             previousLimit = currentLimit;
-        }
+            lastPosition = position;
 
-        int unsafeLimit = UtilsUI.readIntegerFromConsole("Enter the max limit where it is NOT safe to fly");
+        } while (true);
 
-        WindSpeed windSpeed = new WindSpeed(unsafeLimit, 999);
+
+        WindSpeed windSpeed = new WindSpeed(previousLimit, 999);
         PositionTolerance positionTolerance = new PositionTolerance(-1);
 
         config.put(windSpeed, positionTolerance);
 
+        // Confirm
         System.out.println("\nPlease confirm the data:");
         System.out.println("=== " + modelName + " ===");
 
@@ -72,7 +99,13 @@ public class CreateModelUI extends AbstractFancyUI {
             }
         }
 
-        String confirm = UtilsUI.readLineFromConsole("Confirm (Y/N)? ");
+        String confirm;
+        do {
+            confirm = UtilsUI.readLineFromConsole("Confirm (Y/N)? \n");
+            if (!confirm.equalsIgnoreCase("Y") && !confirm.equalsIgnoreCase("N")) {
+                System.out.println("Please enter Y or N.");
+            }
+        } while (!confirm.equalsIgnoreCase("Y") && !confirm.equalsIgnoreCase("N"));
 
         if (!confirm.equalsIgnoreCase("Y")) {
             System.out.println("Operation canceled.");

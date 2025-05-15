@@ -5,50 +5,46 @@ import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class SerialNumber extends Designation implements ValueObject, Serializable {
 
+
     private static final long serialVersionUID = 1L;
 
-    private String serialNumber;
+    private int serialNumber;
 
     protected SerialNumber() {
         // for ORM
     }
 
-    public SerialNumber(String serialNumber) {
-        super(validated(serialNumber));
+    public SerialNumber(int serialNumber) {
+        if (serialNumber <= 0) {
+            throw new IllegalArgumentException("Serial number must be a positive integer.");
+        }
         this.serialNumber = serialNumber;
     }
 
-    private static String validated(String serialNumber) {
-        return Designation.valueOf(serialNumber).toString();
-    }
-
-    public String serialNumber() {
+    public int value() {
         return serialNumber;
     }
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof SerialNumber)) {
-            return false;
-        }
-        final SerialNumber that = (SerialNumber) o;
-        return this.toString().equals(that.toString());
+        if (this == o) return true;
+        if (!(o instanceof SerialNumber)) return false;
+        SerialNumber that = (SerialNumber) o;
+        return serialNumber == that.serialNumber;
     }
 
     @Override
     public int hashCode() {
-        return serialNumber != null ? serialNumber.hashCode() : 0;
+        return Objects.hash(serialNumber);
     }
 
     @Override
     public String toString() {
-        return serialNumber;
+        return String.valueOf(serialNumber);
     }
 }
