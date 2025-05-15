@@ -2,9 +2,9 @@
 #define POSITION_H
 
 typedef struct {
-    float x;
-    float y;
-    float z;
+    int x;
+    int y;
+    int z;
 } Position;
 
 #endif
