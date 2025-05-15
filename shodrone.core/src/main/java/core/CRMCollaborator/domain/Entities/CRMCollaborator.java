@@ -11,9 +11,6 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"email"})
-})
 public class CRMCollaborator implements AggregateRoot<EmailAddress>, Serializable {
 
     private static final long serialVersionUID = 1L;
