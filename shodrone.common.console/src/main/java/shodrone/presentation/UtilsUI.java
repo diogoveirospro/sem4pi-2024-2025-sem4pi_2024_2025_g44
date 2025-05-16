@@ -93,10 +93,7 @@ public class UtilsUI {
             InputStreamReader converter = new InputStreamReader(System.in);
             BufferedReader in = new BufferedReader(converter);
 
-            String input = in.readLine();
-            System.out.println("\n");
-
-            return input;
+            return in.readLine();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
