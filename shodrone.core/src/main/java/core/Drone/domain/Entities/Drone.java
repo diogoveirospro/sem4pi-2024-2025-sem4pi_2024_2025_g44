@@ -35,24 +35,37 @@ public class Drone implements AggregateRoot<Designation> {
     }
 
     protected Drone () {}
-    public DroneStatus droneStatus(){return droneStatus;}
+    public SerialNumber getSerialNumber() {
+        return serialnumber;
+    }
+
+    public DroneStatus droneStatus() {
+        return droneStatus;
+    }
+
+    public Model model() {
+        return model;
+    }
 
     public RemovalReason removalReason() {
         return removalReason;
     }
 
-    public Model model(){return model;}
+    // === Setters ===
+    public void setSerialNumber(SerialNumber serialnumber) {
+        this.serialnumber = serialnumber;
+    }
 
-    public void setStatus(DroneStatus newStatus) {
+    public void setDroneStatus(DroneStatus newStatus) {
         this.droneStatus = newStatus;
     }
 
-    public Model getModel(){
-        return model;
+    public void setModel(Model model) {
+        this.model = model;
     }
 
-    public DroneStatus getDroneStatus(){
-        return droneStatus;
+    public void setRemovalReason(RemovalReason removalReason) {
+        this.removalReason = removalReason;
     }
 
     @Override

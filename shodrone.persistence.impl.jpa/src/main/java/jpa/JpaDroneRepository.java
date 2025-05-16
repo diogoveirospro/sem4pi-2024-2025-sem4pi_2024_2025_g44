@@ -49,7 +49,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
 
     private boolean validateDrone(SerialNumber serialNumber) {
         for (Drone drone : findAll()) {
-            if (drone.identity().equals(serialNumber) && drone.getDroneStatus() == DroneStatus.ACTIVE) {
+            if (drone.identity().equals(serialNumber) && drone.droneStatus() == DroneStatus.ACTIVE) {
                 return false;
             }
         }
@@ -76,7 +76,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
 
     public boolean validateRemoval(Drone drone, Iterable<Drone> drones) {
         for ( Drone droneTest : drones) {
-            if (drone.equals(droneTest) && drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
+            if (drone.equals(droneTest) && drone.droneStatus().equals(DroneStatus.ACTIVE)) {
                 return true;
             }
         }
@@ -88,7 +88,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
         List<Drone> droneList = new ArrayList<>();
 
         for (Drone drone : drones){
-            if (drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
+            if (drone.droneStatus().equals(DroneStatus.ACTIVE)) {
                 droneList.add(drone);
             }
         }
@@ -101,7 +101,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
     }
 
     public void changeDrnStatRemv(Drone drone) {
-        drone.setStatus(DroneStatus.REMOVED);
+        drone.setDroneStatus(DroneStatus.REMOVED);
         save(drone);
     }
 
@@ -110,7 +110,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
     public List<Drone> getDrnModelList(Model droneModel) {
         List<Drone> drnModelList = new ArrayList<>();
         for (Drone drone : findAll()) {
-            if (drone.getModel().sameAs(droneModel) && drone.getDroneStatus() == DroneStatus.ACTIVE) {
+            if (drone.model().sameAs(droneModel) && drone.droneStatus() == DroneStatus.ACTIVE) {
                 drnModelList.add(drone);
             }
         }

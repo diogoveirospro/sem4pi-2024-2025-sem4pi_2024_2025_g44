@@ -29,7 +29,7 @@ public class RemoveDroneUI extends AbstractFancyUI {
             System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nConfirm removal of drone with:" + UtilsUI.RESET);
             System.out.println("Serial Number: " + drone.identity());
             System.out.println("Reason: " + removalReason);
-            System.out.println("Safety Status: " + drone.getDroneStatus());
+            System.out.println("Safety Status: " + drone.droneStatus());
 
             if (!UtilsUI.confirm("Do you want to proceed? (Y/N)")) {
                 throw new UserCancelledException(UtilsUI.RED + "Operation cancelled by user." + UtilsUI.RESET);

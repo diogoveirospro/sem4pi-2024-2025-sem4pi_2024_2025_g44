@@ -90,7 +90,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
 
     public boolean validateRemoval(Drone drone, Iterable<Drone> drones) {
         for ( Drone droneTest : drones) {
-            if (drone.sameAs(droneTest) && drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
+            if (drone.sameAs(droneTest) && drone.droneStatus().equals(DroneStatus.ACTIVE)) {
                 return true;
             }
         }
@@ -102,7 +102,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         List<Drone> droneList = new ArrayList<>();
 
         for (Drone drone : drones){
-            if (drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
+            if (drone.droneStatus().equals(DroneStatus.ACTIVE)) {
                 droneList.add(drone);
             }
         }
@@ -115,7 +115,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
     }
 
     public void changeDrnStatRemv(Drone drone) {
-        drone.setStatus(DroneStatus.REMOVED);
+        drone.setDroneStatus(DroneStatus.REMOVED);
         save(drone);
     }
     //----------------------------------------------------------------------
@@ -127,7 +127,7 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         List<Drone> drnModelList = new ArrayList<>();
         Iterable<Drone> drones = findAll();
         for (Drone drone: drones){
-            if ((drone.getModel().sameAs(droneModel.identity())) && (drone.getDroneStatus() == DroneStatus.ACTIVE)){
+            if ((drone.model().sameAs(droneModel.identity())) && (drone.droneStatus() == DroneStatus.ACTIVE)){
                 drnModelList.add(drone);
             }
         }

@@ -40,7 +40,11 @@ public class Configuration implements Serializable, ValueObject {
     }
 
     public Map<WindSpeed, PositionTolerance> config() {
-        return new LinkedHashMap<>(config);
+        return config;
+    }
+
+    public void setConfig(Map<WindSpeed, PositionTolerance> configuration) {
+        this.config = configuration;
     }
 
     public PositionTolerance getToleranceForWindSpeed(int windSpeed) {
@@ -56,16 +60,20 @@ public class Configuration implements Serializable, ValueObject {
         for (WindSpeed windSpeedTest : config.keySet()) {
             if (windSpeedTest.maxSpeed() == 999) {
                 if (windSpeed > windSpeedTest.minSpeed()) {
-                    this.safetyStatus = SafetyStatus.UNSAFE;
-                    break;
+                     setStatus(SafetyStatus.UNSAFE);
+                }else {
+                    setStatus(SafetyStatus.SAFE);
                 }
             }
         }
-        this.safetyStatus = SafetyStatus.SAFE;
     }
 
     public SafetyStatus getSafetyStatus() {
         return safetyStatus;
+    }
+
+    public void setStatus(SafetyStatus safetyStatus) {
+        this.safetyStatus = safetyStatus;
     }
 
     @Override

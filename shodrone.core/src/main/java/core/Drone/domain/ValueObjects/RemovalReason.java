@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,9 +12,9 @@ import java.util.Objects;
 public class RemovalReason implements Serializable {
 
     @ElementCollection
-    private Map<Date, String> reasons = new HashMap<>();
+    private Map<Date, String> reasons = new LinkedHashMap<>();
 
-    protected RemovalReason() {
+    protected RemovalReason(String put) {
     }
 
     public RemovalReason(Map<Date, String> reasons) {

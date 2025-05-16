@@ -4,6 +4,7 @@ import core.ModelOfDrone.domain.ValueObjects.*;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.*;
+import org.springframework.boot.Banner;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -34,6 +35,17 @@ public class Model implements Serializable, AggregateRoot<Designation> {
         }
         this.modelName = modelName;
         this.configuration = configuration;
+    }
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Configuration configuration){
+        this.configuration = configuration;
+    }
+
+    public void setModelName(ModelName modelName){
+        this.modelName = modelName;
     }
 
     @Override
@@ -70,7 +82,5 @@ public class Model implements Serializable, AggregateRoot<Designation> {
         return Objects.equals(modelName, model.modelName);
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
-    }
+
 }

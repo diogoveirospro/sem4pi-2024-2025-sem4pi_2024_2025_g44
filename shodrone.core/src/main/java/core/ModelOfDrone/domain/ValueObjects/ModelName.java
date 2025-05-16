@@ -26,7 +26,7 @@ public class ModelName extends Designation implements ValueObject, Serializable 
         return Designation.valueOf(modelName).toString();
     }
 
-    public String modelName() {
+    public String value() {
         return modelName;
     }
 
