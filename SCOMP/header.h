@@ -15,6 +15,8 @@
 // Defines
 #define CONFIG_FILE "./config.txt"
 #define DRONE_FILE "./drone"
+#define INPUT_FILENAME "file_drone_"
+#define INPUT_FILE_EXTENSION ".txt"
 
 #define CONFIG_FILE_MAX_SIZE 10000
 

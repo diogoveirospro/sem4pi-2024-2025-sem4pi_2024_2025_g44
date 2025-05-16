@@ -85,7 +85,6 @@ void process_config_file()
 
 void handler_sigint(int sig)
 {
-	//write(1, "INT\n", 4);
 	(void) sig;
 
 	if (s.childs_created)
@@ -176,12 +175,15 @@ void set_up_childs()
 			close(s.up[0]);		// child doesnt need read side on up pipe
 
 			dup2(down[i][0], 0);	// child reads from fd 0 to get info from pipe down
+      
+			dup2(s.up[1], 1);	// child writes to fd 1 to write info to pipe up
 
 			close(down[i][1]);	// child doesnt need write side on down pipe
 
 			snprintf(str_i, sizeof(str_i), "%d", i);
 
 			execl(DRONE_FILE, DRONE_FILE, str_i, s.inp_dir, NULL);
+      printf("aa");
 			kill(getppid(), SIGINT);
 		}
 		close(down[i][0]);		// parent doesnt need read side on down pipe
@@ -245,7 +247,7 @@ int main(int argc, char **argv){
   else
     end();
 
-  printf("inp_dir: %s, out_dir: %s, num_drones: %d, max_collisions: %d\n", s.inp_dir, s.out_dir, s.num_drones, s.max_collisions);
+  fprintf(stderr, "inp_dir: %s, out_dir: %s, num_drones: %d, max_collisions: %d\n", s.inp_dir, s.out_dir, s.num_drones, s.max_collisions);
 
   start();
 }

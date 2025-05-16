@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
   // drone code here
 	
-  printf("index: %d, input_dir: %s\n", atoi(argv[1]), argv[2]);
+  fprintf(stderr, "index: %d, input_dir: %s\n", atoi(argv[1]), argv[2]);
 
   exit(0);
 }
