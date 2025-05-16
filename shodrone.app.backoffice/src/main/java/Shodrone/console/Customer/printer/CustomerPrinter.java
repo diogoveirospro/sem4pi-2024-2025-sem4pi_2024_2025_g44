@@ -6,6 +6,6 @@ import eapli.framework.visitor.Visitor;
 public class CustomerPrinter implements Visitor<Customer> {
     @Override
     public void visit(Customer visitee) {
-        System.out.printf("%s - %s\n", visitee.name(), visitee.vat());
+        System.out.printf("%s - %s", visitee.name(), visitee.vat());
     }
 }

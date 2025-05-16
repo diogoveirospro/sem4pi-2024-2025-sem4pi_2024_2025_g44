@@ -14,6 +14,7 @@ import eapli.framework.application.UseCaseController;
 import eapli.framework.domain.repositories.IntegrityViolationException;
 import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.validations.Preconditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,12 +65,25 @@ public class RegisterCustomerController {
         return customerTypes;
     }
 
+    public boolean checkIfUsernameIsInUse(Iterable<SystemUser> allUsers, String username, boolean found) {
+        for (SystemUser user : allUsers) {
+            if (user.username().equals(Username.valueOf(username))) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
     public void makeCustomerRepresentativeUser(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber repPhone) {
         Preconditions.noneNull(representative);
         final Set<Role> roles = new HashSet<>();
         roles.add(ShodroneRoles.CUSTOMERREPRESENTATIVE);
         roles.add(ShodroneRoles.USER);
         Calendar createdOn = Calendar.getInstance();
-        registerUserController.addUser(username, password, representative.name().toString(), representative.name().toString(), representative.email().toString(), roles, createdOn, representative.phoneNumber());
+        String[] nameParts = representative.name().toString().trim().split(" ");
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : "Representative";
+        registerUserController.addUser(username, password, firstName, lastName, representative.email().toString(), roles, createdOn, representative.phoneNumber());
     }
 }

@@ -6,6 +6,9 @@ import Shodrone.exceptions.UserCancelledException;
 import core.Customer.application.ListCustomerRepresentativesController;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.Entities.CustomerRepresentative;
+import core.User.domain.ShodroneRoles;
+import eapli.framework.infrastructure.authz.application.AuthorizationService;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.visitor.Visitor;
 import shodrone.presentation.AbstractFancyListUI;
@@ -24,6 +27,8 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
      * Controller for listing customer representatives.
      */
     private final ListCustomerRepresentativesController controller = new ListCustomerRepresentativesController();
+    private final CustomerPrinter printer = new CustomerPrinter();
+    private final AuthorizationService authz = AuthzRegistry.authorizationService();
 
     /**
      * Method to show the UI.
@@ -32,11 +37,20 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
     @Override
     public boolean doShow() {
         try {
-            super.doShow();
-            UtilsUI.goBackAndWait();
-            return true;
+            if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
+                super.doShow();
+                UtilsUI.goBackAndWait();
+                return true;
+            }
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            return false;
         } catch (UserCancelledException e) {
             System.out.println(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }
@@ -106,24 +120,24 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
     private Customer selectCustomer() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
         customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, new CustomerPrinter());
-        customerListWidget.show();
-
         int option;
         do {
+            ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer\n", customerList, printer);
+            customerListWidget.show();
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled.\n" + UtilsUI.RESET);
+                return null;
             }
             if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again.\n" + UtilsUI.RESET);
             } else {
                 return customerList.get(option);
             }

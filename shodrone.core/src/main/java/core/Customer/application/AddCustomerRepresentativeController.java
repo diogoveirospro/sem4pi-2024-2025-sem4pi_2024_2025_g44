@@ -9,6 +9,8 @@ import core.User.application.RegisterUsersController;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.infrastructure.authz.domain.model.Role;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.validations.Preconditions;
 
 import java.util.*;
@@ -29,8 +31,9 @@ public class AddCustomerRepresentativeController {
         roles.add(ShodroneRoles.USER);
         Calendar createdOn = Calendar.getInstance();
 
-        String firstName = representative.name().toString().trim().split(" ")[0];
-        String lastName = representative.name().toString().trim().split(" ")[1];
+        String[] nameParts = representative.name().toString().trim().split(" ");
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : "Representative";
 
         registerUserController.addUser(username, password, firstName, lastName, representative.email().toString(), roles, createdOn, representative.phoneNumber());
         customerRepository.save(customer);
@@ -54,4 +57,13 @@ public class AddCustomerRepresentativeController {
         return PhoneNumber.countryCodeOfCountry(country);
     }
 
+    public boolean checkIfUsernameIsInUse(Iterable<SystemUser> allUsers, String username, boolean found) {
+        for (SystemUser user : allUsers) {
+            if (user.username().equals(Username.valueOf(username))) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
 }

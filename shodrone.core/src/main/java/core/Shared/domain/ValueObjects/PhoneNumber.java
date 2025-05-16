@@ -104,16 +104,16 @@ public class PhoneNumber implements Serializable, ValueObject {
      */
     public PhoneNumber(final String countryCode, final String nationalNumber) {
         if (countryCode == null || countryCode.isEmpty()) {
-            throw new IllegalArgumentException("Country code cannot be null or empty");
+            throw new IllegalArgumentException("\nCountry code cannot be null or empty! ");
         }
         if (nationalNumber == null || nationalNumber.isEmpty()) {
-            throw new IllegalArgumentException("National number cannot be null or empty");
+            throw new IllegalArgumentException("\nNational number cannot be null or empty! ");
         }
         if (!isValidCountryCode(countryCode)) {
-            throw new IllegalArgumentException("Invalid country code");
+            throw new IllegalArgumentException("\nInvalid country code! ");
         }
         if (!isValidNationalNumber(nationalNumber)) {
-            throw new IllegalArgumentException("Invalid national number");
+            throw new IllegalArgumentException("\nInvalid national number! ");
         }
         this.countryCode = countryCode;
         this.nationalNumber = nationalNumber;
