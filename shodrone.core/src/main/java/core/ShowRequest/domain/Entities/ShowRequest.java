@@ -153,4 +153,9 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
     public int hashCode() {
         return DomainEntities.hashCode(this);
     }
+
+    @Override
+    public String toString() {
+        return ("Show -> " + this.showRequestID.toString() + "\nStatus - " + this.status + "\n");
+    }
 }
