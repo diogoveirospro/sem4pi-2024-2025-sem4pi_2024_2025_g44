@@ -83,13 +83,22 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     protected Visitor<Figure> elementPrinter() {
-        return figure -> System.out.printf(
-                "%-15s | %-10s | %-50s | %s\n",
-                figure.identity().code().toString(),
-                figure.identity().version().toString(),
-                figure.description().toString(),
-                figure.isExclusive() ? UtilsUI.RED + "Exclusive" + UtilsUI.RESET : UtilsUI.GREEN + "Public" + UtilsUI.RESET
-        );
+        return figure -> {
+            String typePlain = String.format("%-10s", figure.isExclusive() ? "Exclusive" : "Public");
+            String typeColored = figure.isExclusive()
+                    ? UtilsUI.RED + typePlain + UtilsUI.RESET
+                    : UtilsUI.GREEN + typePlain + UtilsUI.RESET;
+
+            System.out.printf(
+                    "%-15s | %-10s | %-50s | %s | %-20s | %-20s |\n",
+                    figure.identity().code().toString(),
+                    figure.identity().version().toString(),
+                    figure.description().toString(),
+                    typeColored,
+                    figure.createdAt(),
+                    figure.updatedAt()
+            );
+        };
     }
 
     /**
@@ -106,8 +115,10 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
     @Override
     protected String listHeader() {
         return UtilsUI.BOLD
-                + String.format("\n" + "%-15s | %-10s | %-50s | %-10s", "CODE", "VERSION", "DESCRIPTION", "TYPE") + "\n"
-                + String.format("%-15s-+-%-10s-+-%-50s-+-%-10s", "-".repeat(15), "-".repeat(10), "-".repeat(50), "-".repeat(10))
+                + String.format("%-15s | %-10s | %-50s | %-10s | %-20s | %-20s |", "CODE", "VERSION",
+                "DESCRIPTION", "TYPE", "CREATION DATE", "LAST UPDATE DATE") + "\n"
+                + String.format("%-15s-+-%-10s-+-%-50s-+-%-10s-+-%-20s-+-%-20s-+",
+                "-".repeat(15), "-".repeat(10), "-".repeat(50), "-".repeat(10), "-".repeat(20), "-".repeat(20))
                 + UtilsUI.RESET;
     }
 
@@ -116,7 +127,7 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
      */
     @Override
     protected String emptyMessage() {
-        return UtilsUI.RED + UtilsUI.BOLD + "\nNo Figures Found for Given Filters!" + UtilsUI.RESET;
+        return UtilsUI.RED + UtilsUI.BOLD + "No Figures Found for Given Filters!" + UtilsUI.RESET;
     }
 
     /**
@@ -134,7 +145,7 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
     public String showCategoriesAndSelect() {
         Iterable<Category> categories = controller.listCategories();
         if (categories == null || !categories.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo categories available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No categories available." + UtilsUI.RESET);
             return null;
         }
 
@@ -143,7 +154,7 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
 
         CategoriesPrinter categoriesPrinter = new CategoriesPrinter();
 
-        ListWidget<Category> categoryListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Category:\n" +
+        ListWidget<Category> categoryListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Category:\n" +
                 UtilsUI.RESET, categoriesList, categoriesPrinter);
         categoryListWidget.show();
 
@@ -156,10 +167,10 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
             }
 
             if (option < 0 || option > categoriesList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
             } else {
                 Category selected = categoriesList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Category: " + selected.toString() + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected Category: " + selected.toString() + "\n" + UtilsUI.RESET);
                 return selected.name().toString();
             }
 

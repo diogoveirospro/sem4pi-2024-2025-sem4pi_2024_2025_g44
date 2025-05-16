@@ -39,9 +39,9 @@ public class DecommissionFigureUI extends AbstractFancyUI {
 
             boolean decommissioned = decommissionFigure(figure);
             if (decommissioned) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure decommissioned successfully." + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Figure decommissioned successfully." + UtilsUI.RESET);
             } else {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to decommission the figure." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Failed to decommission the figure." + UtilsUI.RESET);
             }
             UtilsUI.goBackAndWait();
             return true;
@@ -75,24 +75,24 @@ public class DecommissionFigureUI extends AbstractFancyUI {
     public Figure selectFigure() {
         List<Figure> figures = controller.listCatalogue();
         if (figures == null || figures.isEmpty()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo active figures available for decommissioning." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No active figures available for decommissioning." + UtilsUI.RESET);
             return null;
         }
 
         FiguresPrinter printer = new FiguresPrinter();
-        ListWidget<Figure> figureListWidget = new ListWidget<>("\nChoose a Figure:\n", figures, printer);
+        ListWidget<Figure> figureListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Figure:\n"
+                + UtilsUI.RESET, figures, printer);
         figureListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(figures);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
                 return null;
             }
 
             if (option < 0 || option >= figures.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
             } else {
                 return figures.get(option);
             }

@@ -57,6 +57,8 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
      */
     @Override
     protected boolean doShow() {
+        boolean success;
+
         try {
             if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
 
@@ -75,20 +77,44 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 }
 
                 if (exclusivity != null) {
-                    addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+                    success = addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
                 } else {
-                    addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+                    success = addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
                 }
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure added to catalogue successfully!" + UtilsUI.RESET);
-                UtilsUI.goBackAndWait();
-                return true;
+
+                if (success){
+                    System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigure added to catalogue successfully!\n" + UtilsUI.RESET);
+                    UtilsUI.goBackAndWait();
+                    return true;
+                } else {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to add figure to catalogue.\n" + UtilsUI.RESET);
+                    UtilsUI.goBackAndWait();
+                    return false;
+                }
 
             }
 
             return false;
 
         } catch (UserCancelledException e){
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation cancelled." + UtilsUI.RESET);
+            try {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation cancelled.\n" + UtilsUI.RESET);
+                Thread.sleep(2000);
+                return false;
+            } catch (InterruptedException e1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation interrupted.\n" + UtilsUI.RESET);
+                Thread.currentThread().interrupt();
+                return false;
+            } catch (Exception e1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e1.getMessage() + UtilsUI.RESET);
+                return false;
+            }
+        } catch (InterruptedException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation interrupted.\n" + UtilsUI.RESET);
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }
@@ -106,40 +132,57 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
      * Add a public figure to the catalogue.
      *
      */
-    private void addPublicFigureToCatalogue(Code code, Version version, Description description,
+    private boolean addPublicFigureToCatalogue(Code code, Version version, Description description,
                                             DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
-                                            ShowDesigner showDesigner) {
+                                            ShowDesigner showDesigner) throws InterruptedException {
         try{
-            controller.addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+            return controller.addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
         } catch (IllegalArgumentException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
             new AddFigureToCatalogueUI().show();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
             if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Unique index or primary key violation")) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD +
                         "\nError: A picture with this code and version already exists!" + UtilsUI.RESET);
+                Thread.sleep(2000);
             } else {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD +
                         "\nError saving to the database!" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                Thread.sleep(2000);
             }
             new AddFigureToCatalogueUI().show();
         }
+        return false;
     }
 
     /**
      * Add an exclusive figure to the catalogue.
      *
      */
-    private void addExclusiveFigureToCatalogue(Code code, Version version, Description description,
+    private boolean addExclusiveFigureToCatalogue(Code code, Version version, Description description,
                                                DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
-                                               ShowDesigner showDesigner, Exclusivity exclusivity) {
+                                               ShowDesigner showDesigner, Exclusivity exclusivity) throws InterruptedException {
         try{
-            controller.addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+            return controller.addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
         } catch (IllegalArgumentException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
+            new AddFigureToCatalogueUI().show();
+        } catch (PersistenceException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Unique index or primary key violation")) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                        "\nError: A picture with this code and version already exists!" + UtilsUI.RESET);
+                Thread.sleep(2000);
+            } else {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                        "\nError saving to the database!" + UtilsUI.RESET);
+                Thread.sleep(2000);
+            }
             new AddFigureToCatalogueUI().show();
         }
+        return false;
     }
 
     /**
@@ -149,7 +192,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     public Set<Category> showCategoriesAndSelect() {
         Iterable<Category> categories = controller.listCategories();
         if (categories == null || !categories.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo categories available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No categories available." + UtilsUI.RESET);
             return null;
         }
 
@@ -160,7 +203,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         CategoriesPrinter categoriesPrinter = new CategoriesPrinter();
 
         ListWidget<Category> categoryListWidget = new ListWidget<>(
-                UtilsUI.BOLD + "\nChoose the Categories:\n" + UtilsUI.RESET,
+                UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose the Categories:\n" + UtilsUI.RESET,
                 categoryList,
                 categoriesPrinter
         );
@@ -175,13 +218,13 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             }
 
             if (option < 0 || option > categoryList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
                 continue;
             }
 
             Category selected = categoryList.get(option);
             if (selectedCategories.contains(selected)) {
-                System.out.println(UtilsUI.YELLOW + "\nCategory already selected." + UtilsUI.RESET);
+                System.out.println(UtilsUI.YELLOW + "Category already selected." + UtilsUI.RESET);
             } else {
                 selectedCategories.add(selected);
             }
@@ -204,7 +247,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     public Customer showCustomerAndSelect() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customers available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
             return null;
         }
 
@@ -213,7 +256,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
         CustomerPrinter customerPrinter = new CustomerPrinter();
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Customer:\n" +
+        ListWidget<Customer> customerListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Customer:\n" +
                 UtilsUI.RESET, customerList, customerPrinter);
         customerListWidget.show();
 
@@ -221,15 +264,16 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         do {
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
                 return null;
             }
 
             if (option < 0 || option > customerList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
             } else {
                 Customer selected = customerList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected customer: " + selected.toString() + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected customer: " + selected.toString()  + "\n"
+                        + UtilsUI.RESET);
                 return selected;
             }
 
@@ -247,7 +291,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             keyword = readLineFromConsole(UtilsUI.BOLD + "Enter a keyword (type 'done' to finish or 'cancel' to go back): " + UtilsUI.RESET);
 
             if ("cancel".equalsIgnoreCase(keyword)) {
-                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
             }
 
             assert keyword != null;
@@ -256,10 +300,16 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                     Keyword keywordObj = new Keyword(keyword);
                     keywords.add(keywordObj);
                 } catch (IllegalArgumentException e) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid keyword. Please try again." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid keyword. Please try again." + UtilsUI.RESET);
                 }
             }
         } while (!keyword.equalsIgnoreCase("done"));
+
+        if (keywords.isEmpty()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No keywords entered. Please try again." + UtilsUI.RESET);
+            return enterValidKeywords();
+        }
+
         return keywords;
     }
 
@@ -274,7 +324,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                         "(.txt) (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(filePath)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
                 }
 
                 assert filePath != null;
@@ -292,9 +342,9 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 return new DSLDescription(dslLines, dslVersion);
 
             } catch (IOException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError reading file: " + e.getMessage() + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error reading file: " + e.getMessage() + UtilsUI.RESET);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input: " + e.getMessage() + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid input: " + e.getMessage() + UtilsUI.RESET);
             }
 
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPlease try again." + UtilsUI.RESET);
@@ -312,12 +362,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 description = readLineFromConsole(UtilsUI.BOLD + "Enter a description (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(description)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
                 }
 
                 return new Description(description);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -334,12 +384,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 version = readLineFromConsole(UtilsUI.BOLD + "Enter a version in the format X.Y.Z (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(version)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
                 }
 
                 return new Version(version);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -356,12 +406,12 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 code = readLineFromConsole(UtilsUI.BOLD + "Enter a code in the format FIG-XXXX (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(code)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
                 }
 
                 return new Code(code);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -378,7 +428,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
                     Customer customer = showCustomerAndSelect();
                     if (customer == null) {
-                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customer selected. Please try again." + UtilsUI.RESET);
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer selected. Please try again." + UtilsUI.RESET);
                         continue;
                     }
 
@@ -386,14 +436,14 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                     Date endDate;
 
                     while (true) {
-                        startDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "\nEnter the start date (dd-MM-yyyy): " + UtilsUI.RESET);
+                        startDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "Enter the start date (dd-MM-yyyy): " + UtilsUI.RESET);
                         endDate = UtilsUI.readDateFromConsole(UtilsUI.BOLD + "Enter the end date (dd-MM-yyyy): " + UtilsUI.RESET);
 
                         if (endDate.before(startDate)) {
                             System.out.println(UtilsUI.RED + UtilsUI.BOLD +
-                                    "\nThe end date cannot be before the start date. Please try again." + UtilsUI.RESET);
+                                    "The end date cannot be before the start date. Please try again." + UtilsUI.RESET);
                         } else if (startDate.before(new Date()) || endDate.before(new Date())) {
-                            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe start and end dates cannot be in the " +
+                            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "The start and end dates cannot be in the " +
                                     "past. Please try again." + UtilsUI.RESET);
                         } else {
                             break; // valid dates

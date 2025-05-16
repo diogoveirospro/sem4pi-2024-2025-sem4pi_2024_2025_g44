@@ -78,7 +78,7 @@ public class LoginUI extends AbstractFancyUI {
 				return true;
 			}
 			System.out.printf(UtilsUI.RED + UtilsUI.BOLD +
-							"%nWrong username or password. You have %d attempts left.%n%n" + UtilsUI.RESET,
+							"%nWrong username or password. You have %d attempts left.%n" + UtilsUI.RESET,
 					maxAttempts - attempt);
 			attempt++;
 		}

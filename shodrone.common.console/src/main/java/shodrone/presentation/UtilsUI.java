@@ -93,7 +93,10 @@ public class UtilsUI {
             InputStreamReader converter = new InputStreamReader(System.in);
             BufferedReader in = new BufferedReader(converter);
 
-            return in.readLine();
+            String input = in.readLine();
+            System.out.println("\n");
+
+            return input;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -177,7 +180,7 @@ public class UtilsUI {
 
                 return date;
             } catch (ParseException ex) {
-                Logger.getLogger(UtilsUI.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(BOLD + RED + "Invalid date format. Please use dd-MM-yyyy." + RESET);
             }
         } while (true);
     }
@@ -561,7 +564,6 @@ public class UtilsUI {
     public static String readPassword(String prompt) {
         Console console = System.console();
         if (console != null) {
-            System.out.println();
             char[] passwordChars = console.readPassword("%s", prompt);
             return new String(passwordChars);
         } else {

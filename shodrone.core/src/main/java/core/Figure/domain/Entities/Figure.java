@@ -12,6 +12,8 @@ import jakarta.persistence.Version;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -81,7 +83,6 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
     /**
      * The status of the Figure
      */
-    @Embedded
     @Enumerated(EnumType.STRING)
     @Column(name = "figureStatus")
     private FigureStatus figureStatus;
@@ -261,6 +262,24 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     public ShowDesigner showDesigner() {
         return showDesigner;
+    }
+
+    /**
+     * Get the creation date and time of the Figure
+     * @return the creation date and time
+     */
+    public String createdAt() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return createdAt.format(formatter);
+    }
+
+    /**
+     * Get the last update date and time of the Figure
+     * @return the last update date and time
+     */
+    public String updatedAt() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return updatedAt.format(formatter);
     }
 
     /**
