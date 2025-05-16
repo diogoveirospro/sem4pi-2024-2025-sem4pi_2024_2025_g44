@@ -43,20 +43,23 @@ public class ChangePasswordUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         final String oldPassword = UtilsUI.readPassword(UtilsUI.BOLD + "Old Password: " + UtilsUI.RESET);
-        final String newPassword = UtilsUI.readPassword(UtilsUI.BOLD + "New Password:" + UtilsUI.RESET);
+        final String newPassword = UtilsUI.readPassword(UtilsUI.BOLD + "\nNew Password: " + UtilsUI.RESET);
 
         try {
             boolean toContinue;
             if (authenticationService.changePassword(oldPassword, newPassword)) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Password Successfully changed" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nPassword Successfully changed" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
                 toContinue = true;
             } else {
-                System.out.println(UtilsUI.RED + UtilsUI.RED + "Invalid authentication" + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.RED + "\nInvalid authentication" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
                 toContinue = false;
             }
             return toContinue;
         } catch (ConcurrencyException | IntegrityViolationException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "An error has occurred> " + e.getLocalizedMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
