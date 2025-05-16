@@ -146,7 +146,7 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
 
     @Override
     public boolean equals(Object o) {
-        return DomainEntities.areEqual(this, o);
+        return this.sameAs(o);
     }
 
     @Override

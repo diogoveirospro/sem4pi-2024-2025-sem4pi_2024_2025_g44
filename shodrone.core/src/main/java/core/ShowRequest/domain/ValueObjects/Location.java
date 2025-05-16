@@ -5,6 +5,7 @@ import eapli.framework.validations.Preconditions;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class Location implements Serializable, ValueObject {
@@ -21,6 +22,24 @@ public class Location implements Serializable, ValueObject {
     }
 
     public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location1 = (Location) o;
+        return Objects.equals(location, location1.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(location);
+    }
+
+    @Override
+    public String toString() {
         return location;
     }
 }

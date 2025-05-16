@@ -24,4 +24,9 @@ public class QuantityOfDrones implements Serializable, ValueObject {
     public Integer getQuantityOfDrones() {
         return quantityOfDrones;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(quantityOfDrones);
+    }
 }

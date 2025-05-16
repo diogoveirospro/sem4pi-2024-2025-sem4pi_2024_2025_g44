@@ -1,9 +1,11 @@
 package core.ShowRequest.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
+import eapli.framework.validations.Preconditions;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, ValueObject {
@@ -15,6 +17,10 @@ public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, V
     protected ShowRequestID() {}
 
     public ShowRequestID(String customer, String collaborator, String date, String time) {
+        Preconditions.nonEmpty(customer);
+        Preconditions.nonEmpty(collaborator);
+        Preconditions.nonEmpty(date);
+        Preconditions.nonEmpty(time);
         this.identifier = "customer email = " + customer + " | collaborator email = " + collaborator + " | date = " + date + " | time = " + time;
     }
 
@@ -24,6 +30,19 @@ public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, V
         if (o == null) return 1;
 
         return this.identifier.compareTo(o.identifier);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShowRequestID that = (ShowRequestID) o;
+        return Objects.equals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identifier);
     }
 
     @Override
