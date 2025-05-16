@@ -11,7 +11,11 @@ import shodrone.presentation.UtilsUI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User Interface for removing a drone from the inventory.
+ */
 public class RemoveDroneUI extends AbstractFancyUI {
+
     private final RemoveDroneController controller = new RemoveDroneController();
 
     @Override
@@ -22,20 +26,20 @@ public class RemoveDroneUI extends AbstractFancyUI {
 
             String removalReason = enterValidRemovalReason();
 
-            System.out.println(UtilsUI.YELLOW + "\nConfirm removal of drone with:");
+            System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nConfirm removal of drone with:" + UtilsUI.RESET);
             System.out.println("Serial Number: " + drone.identity());
             System.out.println("Reason: " + removalReason);
             System.out.println("Safety Status: " + drone.getDroneStatus());
 
-            if (!UtilsUI.confirm("Do you want to proceed? (y/n)")) {
-                throw new UserCancelledException(UtilsUI.YELLOW + "Operation cancelled by user." + UtilsUI.RESET);
+            if (!UtilsUI.confirm("Do you want to proceed? (Y/N)")) {
+                throw new UserCancelledException(UtilsUI.RED + "Operation cancelled by user." + UtilsUI.RESET);
             }
 
             boolean success = controller.removeDrone(drone, removalReason);
             if (success) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Drone removed successfully!" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nDrone removed successfully!" + UtilsUI.RESET);
             } else {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Drone not found or could not be removed." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nDrone not found or could not be removed." + UtilsUI.RESET);
             }
 
             UtilsUI.goBackAndWait();
@@ -43,41 +47,58 @@ public class RemoveDroneUI extends AbstractFancyUI {
 
         } catch (UserCancelledException e) {
             System.out.println(e.getMessage());
+            UtilsUI.goBackAndWait();
             return false;
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + "Invalid input: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + "Unexpected error: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
 
     @Override
     public String headline() {
-        return "Remove a Drone from the inventory";
+        return "Remove a Drone from the Inventory";
     }
 
+    /**
+     * Allow the user to select a drone from the list.
+     *
+     * @return the selected Drone or null if none selected.
+     */
     private Drone selectDrone() {
         Iterable<Drone> drones = controller.listDrones();
         if (drones == null || !drones.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No drones available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo drones available!" + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return null;
         }
 
         List<Drone> droneList = new ArrayList<>();
-        drones.forEach(droneList::add);
+        int index = 1;
 
-        ListWidget<Drone> droneListWidget = new ListWidget<>(headline(), droneList, new DronePrinter());
-        droneListWidget.show();
+        System.out.println(UtilsUI.BOLD
+                + String.format("%-5s | %-20s | %-20s | %-10s |", "INDEX", "SERIAL", "MODEL", "STATUS") + "\n"
+                + String.format("%-5s-+-%-20s-+-%-20s-+-%-10s-+", "-".repeat(5), "-".repeat(20), "-".repeat(20), "-".repeat(10))
+                + UtilsUI.RESET);
+
+        for (Drone drone : drones) {
+            System.out.printf("%-5d | ", index++);
+            new DronePrinter().visit(drone);
+            droneList.add(drone);
+        }
 
         int option;
         do {
             option = UtilsUI.selectsIndex(droneList);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
-            if (option == -1) {
+            if (option < 0 || option >= droneList.size()) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 return droneList.get(option);
@@ -85,15 +106,20 @@ public class RemoveDroneUI extends AbstractFancyUI {
         } while (true);
     }
 
+    /**
+     * Prompt the user to enter a valid reason for removal.
+     *
+     * @return the reason string
+     */
     private String enterValidRemovalReason() {
         String reason;
         do {
             try {
-                reason = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter Reason for Removal (or 'cancel' to abort): " + UtilsUI.RESET);
+                reason = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter reason for removal (or 'cancel' to abort): " + UtilsUI.RESET);
                 if ("cancel".equalsIgnoreCase(reason)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + "Action cancelled by user." + UtilsUI.RESET);
                 }
-                if (reason.length() < 5) {
+                if (reason.trim().length() < 5) {
                     throw new IllegalArgumentException("Reason must be at least 5 characters long.");
                 }
                 return reason;

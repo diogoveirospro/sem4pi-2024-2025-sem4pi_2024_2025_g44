@@ -3,7 +3,7 @@ package core.Drone.domain.ValueObjects;
 public enum DroneStatus {
 
     ACTIVE("Active"),
-    MAINTENACE("Maintenace"),
+    MAINTENANCE("Maintenance"),
     REMOVED("Removed"),
     BROKEN ("Broken");
 

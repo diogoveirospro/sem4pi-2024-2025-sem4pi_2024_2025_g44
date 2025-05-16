@@ -11,7 +11,6 @@ import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class AddDroneUI extends AbstractFancyUI {
 
@@ -19,43 +18,52 @@ public class AddDroneUI extends AbstractFancyUI {
 
     @Override
     protected boolean doShow() {
-        SerialNumber serialNumber = enterValidSerialNumber();
+        try {
+            SerialNumber serialNumber = enterValidSerialNumber();
 
-        Model selectedModel = selectModel();
+            Model selectedModel = selectModel();
+            if (selectedModel == null) return false;
 
-        if (selectedModel == null){
-            return false;
-        }
-        if (controller.addDrone(serialNumber, selectedModel)){
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n Drone added successfully!" + UtilsUI.RESET);
-            return true;
-        }else {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n Drone already exists!" + UtilsUI.RESET);
+            if (controller.addDrone(serialNumber, selectedModel)) {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nDrone added successfully!" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return true;
+            } else {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nDrone already exists!" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return false;
+            }
+
+        } catch (UserCancelledException e) {
+            System.out.println(UtilsUI.BOLD + UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }
 
     @Override
     public String headline() {
-        return "List Active Drones by Model";
+        return "Add a Drone to the Inventory";
     }
 
     private Model selectModel() {
         Iterable<Model> models = controller.listModels();
+
         if (models == null || !models.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No models available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo models available." + UtilsUI.RESET);
             return null;
         }
 
         List<Model> modelList = new ArrayList<>();
         models.forEach(modelList::add);
 
-        ListWidget<Model> modelListWidget = new ListWidget<>("Choose a Model", modelList, new ModelPrinter());
+        ListWidget<Model> modelListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Model: \n" +
+                UtilsUI.RESET, modelList, new ModelPrinter());
         modelListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(modelList);
+
             if (option == -2) {
                 throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
@@ -68,22 +76,29 @@ public class AddDroneUI extends AbstractFancyUI {
     }
 
     private SerialNumber enterValidSerialNumber() {
-        int input;
-        String serialRegex = "^[A-Z0-9-]{3,30}$"; // adjust as needed
-        do {
-            try {
-                input = UtilsUI.readIntegerFromConsole(UtilsUI.BOLD + "Enter Serial Number: " + UtilsUI.RESET);
+        String serialRegex = "^[0-9]{3,30}$";
 
-                if (input <= 0) {
-                    throw new IllegalArgumentException("Serial number must be a positive integer.");
+        while (true) {
+            try {
+                String input = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Serial number (3-30 digits): " + UtilsUI.RESET).trim();
+
+                if (!input.matches(serialRegex)) {
+                    throw new IllegalArgumentException("\nMust be 3 to 30 digits (only numbers).");
                 }
-                return new SerialNumber(input);
+
+                int serial = Integer.parseInt(input);
+
+                if (serial <= 0) {
+                    throw new IllegalArgumentException("\nSerial number must be a positive integer.");
+                }
+
+                return new SerialNumber(serial);
+
+            } catch (NumberFormatException e) {
+                System.out.println(UtilsUI.RED + "\nInvalid number format." + UtilsUI.RESET);
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
             }
-        } while (true);
+        }
     }
-
-
 }
-

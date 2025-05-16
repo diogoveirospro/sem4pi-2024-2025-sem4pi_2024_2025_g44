@@ -70,7 +70,7 @@ public class Configuration implements Serializable, ValueObject {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Configuration:\n");
+        StringBuilder sb = new StringBuilder();
 
         config.entrySet().stream()
                 .sorted(Comparator.comparingInt(e -> e.getKey().minSpeed()))

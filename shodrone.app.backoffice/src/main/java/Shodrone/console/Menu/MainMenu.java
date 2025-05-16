@@ -374,10 +374,10 @@ public class MainMenu extends AbstractFancyUI {
     private SubMenu buildDronesMenu() {
         final SubMenu menu = new SubMenu("Drones", DRONES_MENU_TITLE);
 
-                menu.addItem(CREATE_MODEL_OPTION, "Create an model", new CreateModelUI()::show);
-        menu.addItem(ADD_DRONE_OPTION, "Add a drone to the inventory", new AddDroneUI()::show);
-        menu.addItem(REMOVE_DRONE_OPTION, "Remove a drone from inventory", new RemoveDroneUI()::show);
-        menu.addItem(LIST_DRONES_OPTION, "List a model of drone", new ListDroneUI()::show);
+        menu.addItem(CREATE_MODEL_OPTION, "Create a Model", new CreateModelUI()::show);
+        menu.addItem(ADD_DRONE_OPTION, "Add a Drone to the Inventory", new AddDroneUI()::show);
+        menu.addItem(REMOVE_DRONE_OPTION, "Remove a Drone from Inventory", new RemoveDroneUI()::show);
+        menu.addItem(LIST_DRONES_OPTION, "List a Model of Drone", new ListDroneUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
