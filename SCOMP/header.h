@@ -20,9 +20,6 @@
 
 #define CONFIG_FILE_MAX_SIZE 10000
 
-typedef struct config {
-} Config;
-
 typedef struct data {
 
   //config file info
@@ -56,7 +53,7 @@ typedef struct position {
 
 typedef struct message {
   int id;
-  char *msg;
+  Position pos;
 } Message;
 
 

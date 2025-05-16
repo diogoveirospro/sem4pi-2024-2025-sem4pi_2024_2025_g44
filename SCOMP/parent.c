@@ -51,7 +51,6 @@ void parse_data(char *str)
 	strtok(NULL, d);
 	s.out_dir = strdup(strtok(NULL, d));
 
-
 	strtok(NULL, d);
 	s.max_collisions = atoi(strtok(NULL, d));
 
@@ -180,10 +179,9 @@ void set_up_childs()
 
 			close(down[i][1]);	// child doesnt need write side on down pipe
 
-			snprintf(str_i, sizeof(str_i), "%d", i);
+			snprintf(str_i, sizeof(str_i), "%d", i + 1);
 
 			execl(DRONE_FILE, DRONE_FILE, str_i, s.inp_dir, NULL);
-      printf("aa");
 			kill(getppid(), SIGINT);
 		}
 		close(down[i][0]);		// parent doesnt need read side on down pipe

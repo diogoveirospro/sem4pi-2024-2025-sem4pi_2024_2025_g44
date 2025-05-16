@@ -29,8 +29,7 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
     private ShowRequestID showRequestID;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "showrequest_status")
-    private ShowRequestStatus showRequestStatus;
+    private ShowRequestStatus status;
 
     @Embedded
     private ShowDescription showDescription;
@@ -63,7 +62,7 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         this.customer = customer;
         this.crmCollaborator = crmCollaborator;
 
-        this.showRequestStatus = ShowRequestStatus.CREATED;
+        this.status = ShowRequestStatus.CREATED;
         this.showRequestID = new ShowRequestID(customer.identity().toString(), crmCollaborator.identity().toString(), dateOfShow.toString(), timeOfShow.toString());
     }
 
@@ -71,8 +70,8 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         return showRequestID;
     }
 
-    public ShowRequestStatus getShowRequestStatus() {
-        return showRequestStatus;
+    public ShowRequestStatus getStatus() {
+        return status;
     }
 
     public ShowDescription getShowDescription() {
@@ -110,6 +109,8 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         this.dateOfShow = date;
         this.timeOfShow = time;
         this.quantityOfDrones = quantityOfDrones;
+
+        this.showRequestID = new ShowRequestID(customer.identity().toString(), crmCollaborator.identity().toString(), dateOfShow.toString(), timeOfShow.toString());
     }
 
     @Override

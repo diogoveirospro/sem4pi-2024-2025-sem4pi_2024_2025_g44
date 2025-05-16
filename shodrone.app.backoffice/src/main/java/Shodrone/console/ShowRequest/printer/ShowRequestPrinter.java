@@ -6,6 +6,6 @@ import eapli.framework.visitor.Visitor;
 public class ShowRequestPrinter implements Visitor<ShowRequest> {
     @Override
     public void visit(ShowRequest visitee) {
-        System.out.printf("Show -> %s\nStatus - %s\n", visitee.getShowRequestID().toString(), visitee.getShowRequestStatus());
+        System.out.printf("Show -> %s\nStatus - %s\n", visitee.getShowRequestID().toString(), visitee.getStatus());
     }
 }

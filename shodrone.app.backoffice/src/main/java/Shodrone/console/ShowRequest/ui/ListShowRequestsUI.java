@@ -47,7 +47,7 @@ public class ListShowRequestsUI extends AbstractFancyListUI<ShowRequest> {
 
     @Override
     protected String elementName() {
-        return "Show Request";
+        return "";
     }
 
     @Override

@@ -34,7 +34,7 @@ public class InMemoryShowRequestRepository extends InMemoryDomainRepository<Show
         Iterable<ShowRequest> showRequests = findAll();
         List<ShowRequest> result = new ArrayList<>();
         for (ShowRequest showRequest : showRequests) {
-            if (showRequest.getShowRequestStatus() == ShowRequestStatus.CREATED && showRequest.getCustomer().equals(customer)) {
+            if (showRequest.getStatus() == ShowRequestStatus.CREATED && showRequest.getCustomer().equals(customer)) {
                 result.add(showRequest);
             }
         }

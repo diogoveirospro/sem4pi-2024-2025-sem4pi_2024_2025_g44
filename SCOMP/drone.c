@@ -28,7 +28,7 @@ void set_up_signals()
 	sigaction(SIGINT, &sa, NULL);
 }
 
-// argv[1] index of drone in arr of parent
+// argv[1] index of drone in arr of parent + 1
 // argv[2] input_directory
 
 int main(int argc, char **argv)
