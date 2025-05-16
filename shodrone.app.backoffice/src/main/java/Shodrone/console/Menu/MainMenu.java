@@ -364,7 +364,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(ADD_CATEGORY_OPTION, "Add Category", new AddCategoryUI()::show);
         menu.addItem(EDIT_CATEGORY_OPTION, "List All Categories", new ListExistingCategoriesUI()::show);
         menu.addItem(LIST_CATEGORIES_OPTION, "Edit Category", new EditCategoryUI()::show);
-        menu.addItem(ACTIVATE_DEACTIVATE_CATEGORY_OPTION, "Activate/Deactivate Category", new ChangeCategoryStatusUI()::show);
+        menu.addItem(ACTIVATE_DEACTIVATE_CATEGORY_OPTION, "Activate and Deactivate Category", new ChangeCategoryStatusUI()::show);
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 

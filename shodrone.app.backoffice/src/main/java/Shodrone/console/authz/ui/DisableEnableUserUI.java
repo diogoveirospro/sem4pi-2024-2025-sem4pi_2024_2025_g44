@@ -38,7 +38,7 @@ public class DisableEnableUserUI extends AbstractFancyListUI<SystemUser> {
             option = UtilsUI.selectsIndex(userList);
 
             if (option == -2) {
-                break;
+                return false;
             }
 
             if (option < 0 || option > userList.size()) {

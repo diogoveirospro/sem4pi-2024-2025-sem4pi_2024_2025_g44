@@ -1,5 +1,6 @@
 package Shodrone.console.Category.actions;
 
+import Shodrone.console.Category.printer.CategoryPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Category.application.ChangeCategoryStatusController;
 import core.Category.domain.Entities.Category;
@@ -7,9 +8,13 @@ import core.Category.domain.ValueObjects.CategoryStatus;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.visitor.Visitor;
+import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static shodrone.presentation.UtilsUI.readLineFromConsole;
@@ -17,10 +22,38 @@ import static shodrone.presentation.UtilsUI.readLineFromConsole;
 /**
  * User Interface for changing the status of a category.
  */
-public class ChangeCategoryStatusUI extends AbstractFancyUI {
+public class ChangeCategoryStatusUI extends AbstractFancyListUI<Category> {
 
     private final ChangeCategoryStatusController controller = new ChangeCategoryStatusController();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
+
+    @Override
+    protected Iterable<Category> elements() {
+        return controller.listAllCategories();
+    }
+
+    @Override
+    protected Visitor<Category> elementPrinter() {
+        return new CategoryPrinter();
+    }
+
+    @Override
+    protected String elementName() {
+        return "";
+    }
+
+    @Override
+    protected String listHeader() {
+        return UtilsUI.BOLD
+                + String.format("%-5s | %-15s | %-10s |", "INDEX", "CATEGORY NAME", "STATUS") + "\n"
+                + String.format("%-5s-+-%-15s-+-%-10s-+", "-".repeat(5),"-".repeat(15), "-".repeat(10))
+                + UtilsUI.RESET;
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return UtilsUI.RED + UtilsUI.BOLD + "\nNo Categories Found!!" + UtilsUI.RESET;
+    }
 
     /**
      * Show the UI for changing a category's status.
@@ -34,87 +67,56 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
             return false;
         }
 
-        try {
-            List<Category> categories = controller.listAllCategories();
+        final Iterable<Category> categories = elements();
+        if (!categories.iterator().hasNext()) {
+            System.out.println(emptyMessage());
+            UtilsUI.goBackAndWait();
+            return true;
+        }
 
-            if (categories.isEmpty()) {
-                System.out.println(UtilsUI.YELLOW + "No categories found." + UtilsUI.RESET);
+        List<Category> categoryList = new ArrayList<>();
+        int index = 1;
+        System.out.println(listHeader());
+        for (Category category : categories) {
+            System.out.printf("%-5d | ", index++);
+            elementPrinter().visit(category);
+            categoryList.add(category);
+        }
+
+        int option = 0;
+
+        do {
+            option = UtilsUI.selectsIndex(categoryList);
+
+            if (option == -2) {
                 return false;
             }
 
-            System.out.println(UtilsUI.BOLD + "Select a category to change its status:" + UtilsUI.RESET);
-            for (int i = 0; i < categories.size(); i++) {
-                System.out.println((i + 1) + ". " + categories.get(i).name().toString() + " (Status: " + categories.get(i).status().toString() + ")");
+            if (option < 0 || option > categoryList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             }
 
-            int choice = enterValidChoice(categories.size());
-            Category selectedCategory = categories.get(choice - 1);
+        } while (option < 0 || option > categoryList.size());
 
-            CategoryStatus newStatus;
-            do {
-                System.out.println(UtilsUI.BOLD + "Select the new status for the category:" + UtilsUI.RESET);
-                System.out.println("1- Active");
-                System.out.println("2- Inactive");
+        Category selectedCategory = categoryList.get(option);
 
-                int statusChoice = enterValidChoice(2);
-                newStatus = (statusChoice == 1) ? CategoryStatus.ACTIVE : CategoryStatus.INACTIVE;
-
-                if (isValidStatus(selectedCategory, newStatus)) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe selected status is the same as the current status. Please choose a different status." + UtilsUI.RESET);
-                }
-            } while (isValidStatus(selectedCategory, newStatus));
-
-
-            controller.changeCategoryStatus(selectedCategory.name(), newStatus);
-
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Category status changed successfully!" + UtilsUI.RESET);
+        if (selectedCategory == null) {
+            System.out.println(UtilsUI.RED + "\nInvalid category selection." + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
-
-        } catch (UserCancelledException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation cancelled." + UtilsUI.RESET);
-            return false;
-        } catch (IllegalArgumentException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
-            return false;
         }
+
+        if (selectedCategory.status().equals(CategoryStatus.INACTIVE)) {
+            controller.changeCategoryStatus(selectedCategory.name(), CategoryStatus.ACTIVE);
+            System.out.println(UtilsUI.GREEN + "\nCategory ENABLED successfully!" + UtilsUI.RESET);
+        } else {
+            controller.changeCategoryStatus(selectedCategory.name(), CategoryStatus.INACTIVE);
+            System.out.println(UtilsUI.GREEN + "\nCategory DISABLED successfully!" + UtilsUI.RESET);
+        }
+
+        UtilsUI.goBackAndWait();
+        return true;
     }
-
-    /**
-     * Validate if the selected status is different from the current status.
-     *
-     * @param category  the selected category.
-     * @param newStatus the new status to validate.
-     * @return true if the new status is valid, false otherwise.
-     */
-    private boolean isValidStatus(Category category, CategoryStatus newStatus) {
-        return category.status().equals(newStatus);
-    }
-
-    /**
-     * Prompt the user to enter a valid choice from the list.
-     *
-     * @param max the maximum valid choice.
-     * @return the selected choice as an integer.
-     */
-    private int enterValidChoice(int max) {
-        int choice;
-        do {
-            try {
-                String input = readLineFromConsole(UtilsUI.BOLD + "Enter the number of the category to change its status: " + UtilsUI.RESET);
-                choice = Integer.parseInt(input);
-
-                if (choice < 1 || choice > max) {
-                    throw new IllegalArgumentException("Invalid choice. Please select a number between 1 and " + max + ".");
-                }
-
-                return choice;
-            } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
-            }
-        } while (true);
-    }
-
 
     /**
      * Check if the current user is a Show Designer.
@@ -132,6 +134,6 @@ public class ChangeCategoryStatusUI extends AbstractFancyUI {
      */
     @Override
     public String headline() {
-        return "Change Category Status";
+        return "Activate and Deactivate Category";
     }
 }

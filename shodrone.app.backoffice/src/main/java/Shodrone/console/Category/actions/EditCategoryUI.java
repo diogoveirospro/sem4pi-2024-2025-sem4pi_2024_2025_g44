@@ -31,7 +31,7 @@ public class EditCategoryUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         if (!isShowDesigner()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Access denied. Only Show Designers can perform this action." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAccess denied. Only Show Designers can perform this action." + UtilsUI.RESET);
             return false;
         }
 
@@ -39,11 +39,11 @@ public class EditCategoryUI extends AbstractFancyUI {
             List<Category> categories = controller.listAllCategories();
 
             if (categories.isEmpty()) {
-                System.out.println(UtilsUI.YELLOW + "No categories found." + UtilsUI.RESET);
+                System.out.println(UtilsUI.YELLOW + "\nNo categories found." + UtilsUI.RESET);
                 return false;
             }
 
-            System.out.println(UtilsUI.BOLD + "Select a category to edit:" + UtilsUI.RESET);
+            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "Select a category to edit:\n" + UtilsUI.RESET);
             for (int i = 0; i < categories.size(); i++) {
                 System.out.println((i + 1) + ". " + categories.get(i).name().toString());
             }
@@ -57,7 +57,7 @@ public class EditCategoryUI extends AbstractFancyUI {
             Description description = enterValidDescription();
 
             controller.editCategory(oldName, newName, description);
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Category edited successfully!" + UtilsUI.RESET);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nCategory edited successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
 
