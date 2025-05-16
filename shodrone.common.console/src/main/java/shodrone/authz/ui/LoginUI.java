@@ -72,13 +72,13 @@ public class LoginUI extends AbstractFancyUI {
 		while (attempt <= maxAttempts) {
 			final String userName = UtilsUI.readNonEmptyLine(UtilsUI.BOLD + "Username: " + UtilsUI.RESET,
 					UtilsUI.RED + UtilsUI.BOLD + "Please provide a Username" + UtilsUI.RESET);
-			final String password = UtilsUI.readPassword(UtilsUI.BOLD + "Password: " + UtilsUI.RESET);
+			final String password = UtilsUI.readPassword(UtilsUI.BOLD + "\nPassword: " + UtilsUI.RESET);
 
 			if (credentialHandler.authenticated(userName, password, onlyWithThis)) {
 				return true;
 			}
 			System.out.printf(UtilsUI.RED + UtilsUI.BOLD +
-							"%nWrong username or password. You have %d attempts left.%n%n" + UtilsUI.RESET,
+							"%nWrong username or password. You have %d attempts left.%n" + UtilsUI.RESET,
 					maxAttempts - attempt);
 			attempt++;
 		}

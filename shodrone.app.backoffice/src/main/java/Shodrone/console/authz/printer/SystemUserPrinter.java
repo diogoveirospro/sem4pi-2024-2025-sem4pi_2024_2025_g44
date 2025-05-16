@@ -22,13 +22,23 @@ package Shodrone.console.authz.printer;
 
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.visitor.Visitor;
+import shodrone.presentation.UtilsUI;
 
 @SuppressWarnings({ "squid:S106" })
 public class SystemUserPrinter implements Visitor<SystemUser> {
     @Override
-    public void visit(final SystemUser visitee) {
-        final String status = visitee.isActive() ? "ACTIVE" : "INACTIVE";
-        System.out.printf("%-10s%-30s%-30s%-10s%n", visitee.username(), visitee.name().firstName(),
-                visitee.name().lastName(),status );
+    public void visit(final SystemUser systemUser) {
+        String typePlain = String.format("%-10s", systemUser.isActive() ? "Active" : "Inactive");
+        String typeColored = systemUser.isActive()
+                ? UtilsUI.GREEN + typePlain + UtilsUI.RESET
+                : UtilsUI.RED + typePlain + UtilsUI.RESET;
+
+        System.out.printf(
+                "%-15s | %-15s | %-15s | %s |\n",
+                systemUser.username(),
+                systemUser.name().firstName(),
+                systemUser.name().lastName(),
+                typeColored
+        );
     }
 }

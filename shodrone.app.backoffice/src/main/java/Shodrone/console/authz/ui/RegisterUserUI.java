@@ -1,6 +1,9 @@
 package Shodrone.console.authz.ui;
 
+import Shodrone.console.Figure.printer.CategoriesPrinter;
+import Shodrone.console.authz.printer.RolesPrinter;
 import Shodrone.exceptions.UserCancelledException;
+import core.Category.domain.Entities.Category;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.User.application.RegisterUsersController;
@@ -10,6 +13,7 @@ import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.domain.repositories.IntegrityViolationException;
 import eapli.framework.infrastructure.authz.domain.model.Role;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.presentation.console.ListWidget;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
 import eapli.framework.presentation.console.menu.MenuRenderer;
@@ -17,9 +21,7 @@ import eapli.framework.presentation.console.menu.VerticalMenuRenderer;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("java:S106")
@@ -38,24 +40,31 @@ public class RegisterUserUI extends AbstractFancyUI {
             final Email email = enterValidEmail();
             final PhoneNumber phoneNumber = enterValidPhoneNumber();
 
-            final Set<Role> roleTypes = new HashSet<>();
-            boolean show;
-            do {
-                show = showRoles(roleTypes);
-            } while (!show);
+            final Set<Role> roleTypes = showRolesAndSelect();
 
-            this.theController.addUser(username, password, firstName, lastName, email.toString(), roleTypes, phoneNumber);
+            SystemUser user = this.theController.addUser(username, password, firstName, lastName, email.toString(), roleTypes, phoneNumber);
 
-            return true;
+            if (user == null) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nUser registration failed." + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return false;
+            } else {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nUser registered successfully" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return true;
+            }
 
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
             System.out.println(e.getMessage());
+            UtilsUI.goBackAndWait();
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
@@ -69,7 +78,6 @@ public class RegisterUserUI extends AbstractFancyUI {
                 continue;
             }
 
-            // Verificar se o nome de utilizador já está em uso
             if (isUsernameTaken(username)) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "That username is already in use. Please choose another one." + UtilsUI.RESET);
             } else {
@@ -80,13 +88,11 @@ public class RegisterUserUI extends AbstractFancyUI {
     }
 
     private boolean isUsernameTaken(String username) {
-        // Verifica se o nome de utilizador já existe no sistema
         return theController.isUsernameTaken(username);
     }
 
     private Email enterValidEmail() {
         String email;
-        // Expressão regular simples para validar email (pode ser ajustada para requisitos específicos)
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
 
         do {
@@ -94,30 +100,30 @@ public class RegisterUserUI extends AbstractFancyUI {
                 email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the email (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(email)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                    throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
 
                 if (!Pattern.matches(emailRegex, email)) {
-                    throw new IllegalArgumentException("Invalid email format. Please try again.");
+                    throw new IllegalArgumentException("\nInvalid email format. Please try again.");
                 }
 
-                return new Email(email); // Se o email for válido, cria e retorna o objeto Email.
+                return new Email(email);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET); // Exibe a mensagem de erro.
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
             }
         } while (true);
     }
     private String enterValidPassword() {
         String password;
         do {
-            password = UtilsUI.readPassword(UtilsUI.BOLD + "Password (at least 6 characters, including a number): " + UtilsUI.RESET);
+            password = UtilsUI.readPassword(UtilsUI.BOLD + "\nPassword (at least 6 characters, including a number): " + UtilsUI.RESET);
             if (password == null || password.trim().isEmpty()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty. Please try again.\n" + UtilsUI.RESET);
                 continue;
             }
 
             if (!passwordPolicy.isSatisfiedBy(password)) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password does not meet the required criteria. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPassword does not meet the required criteria. Please try again.\n" + UtilsUI.RESET);
             } else {
                 break;
             }
@@ -133,7 +139,7 @@ public class RegisterUserUI extends AbstractFancyUI {
             try {
                 country = selectCountry();
                 if (country == null) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No country selected. Operation canceled." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No country selected. Operation canceled.\n" + UtilsUI.RESET);
                     return null;
                 }
                 countryCode = theController.countryCode(country);
@@ -152,40 +158,74 @@ public class RegisterUserUI extends AbstractFancyUI {
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + "\nChoose a Country: \n" + UtilsUI.RESET, countries);
+        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Country: \n" + UtilsUI.RESET, countries);
         countryListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(countries);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
                 return null;
             }
             if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
             } else {
                 return countries.get(option);
             }
         } while (true);
     }
 
-    private boolean showRoles(final Set<Role> roleTypes) {
-
-        final Menu rolesMenu = buildRolesMenu(roleTypes);
-        final MenuRenderer renderer = new VerticalMenuRenderer(rolesMenu, MenuItemRenderer.DEFAULT);
-        return renderer.render();
-    }
-
-    private Menu buildRolesMenu(final Set<Role> roleTypes) {
-        final Menu rolesMenu = new Menu();
-        int counter = 0;
-        rolesMenu.addItem(MenuItem.of(counter++, "No Role", Actions.SUCCESS));
-        for (final Role roleType : theController.getRoleTypes()) {
-            rolesMenu.addItem(
-                    MenuItem.of(counter++, roleType.toString(), () -> roleTypes.add(roleType)));
+    public Set<Role> showRolesAndSelect() {
+        Role[] roles = theController.getRoleTypes();
+        if (roles == null) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No roles available." + UtilsUI.RESET);
+            return null;
         }
-        return rolesMenu;
+
+        List<Role> roleList = new ArrayList<>(Arrays.asList(roles));
+        roleList.add(Role.valueOf("None"));
+
+        Set<Role> selectedRoles = new HashSet<>();
+        RolesPrinter rolesPrinter = new RolesPrinter();
+
+        ListWidget<Role> roleListWidget = new ListWidget<>(
+                UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose the Roles:\n" + UtilsUI.RESET,
+                roleList,
+                rolesPrinter
+        );
+        roleListWidget.show();
+
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(roleList);
+
+            if (option == -2) {
+                break;
+            }
+
+            if (option < 0 || option > roleList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
+                continue;
+            }
+
+            Role selected = roleList.get(option);
+            if (selected.toString().equals("None")){
+                return selectedRoles;
+            } else if (selectedRoles.contains(selected)) {
+                System.out.println(UtilsUI.YELLOW + "Role already selected." + UtilsUI.RESET);
+            } else {
+                selectedRoles.add(selected);
+            }
+
+        } while (true);
+
+        if (selectedRoles.isEmpty()) {
+            throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+        }
+
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected roles:\n" + selectedRoles + UtilsUI.RESET);
+        return selectedRoles;
     }
 
     @Override

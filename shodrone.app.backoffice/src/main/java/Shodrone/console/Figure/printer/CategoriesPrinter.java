@@ -7,6 +7,6 @@ public class CategoriesPrinter implements Visitor<Category> {
 
     @Override
     public void visit(Category visitee) {
-        System.out.printf("%s - %s\n", visitee.name(), visitee.description());
+        System.out.printf("%s - %s", visitee.name(), visitee.description());
     }
 }

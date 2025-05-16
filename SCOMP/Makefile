@@ -1,22 +1,28 @@
-prog: main.o
-	gcc -z noexecstack ex.o -o prog
+PARENT_FILE=parent.c
+DRONE_FILE=drone.c
 
-main.o: main.c
-	gcc -g -Wall -Wextra -fanalyzer -c main.c -o main.o -lrt
+PARENT_EXEC=parent
+DRONE_EXEC=drone
+
+CC=gcc
+FLAGS=
+
+RM=rm -f
+
+all: run
+
+run: $(PARENT_EXEC) $(DRONE_EXEC)
+	@./$<
+
+$(PARENT_EXEC): $(PARENT_FILE) 
+	@$(CC) $(FLAGS) $^ -o $@
+
+$(DRONE_EXEC): $(DRONE_FILE) 
+	@$(CC) $(FLAGS) $^ -o $@
 
 clean:
-	rm -vf *.o prog
+	@$(RM) $(PARENT_EXEC) $(DRONE_EXEC)
 
-run: prog
-	./prog
+re: clean all
 
-debug: prog
-	gdb -tui ./prog
-
-vg: prog
-	valgrind ./prog
-
-ddd: prog
-	ddd ./prog
-
-.PHONY: clean run debug vg ddd
+.PHONY: run clean re

@@ -1,87 +1,103 @@
 package Shodrone.console.authz.ui;
 
+import Shodrone.console.authz.printer.SystemUserPrinter;
+import core.Category.domain.Entities.Category;
 import core.User.application.DisableEnableUserController;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
-import shodrone.presentation.AbstractFancyUI;
+import eapli.framework.visitor.Visitor;
+import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DisableEnableUserUI extends AbstractFancyUI {
+public class DisableEnableUserUI extends AbstractFancyListUI<SystemUser> {
     private final DisableEnableUserController controller = new DisableEnableUserController();
 
     @Override
     protected boolean doShow() {
-        List<SystemUser> users = new ArrayList<>();
-        controller.listAllUsers().forEach(users::add);
-
-        if (users == null || !users.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + "No users available." + UtilsUI.RESET);
-            return false;
+        final Iterable<SystemUser> users = elements();
+        if (!users.iterator().hasNext()) {
+            System.out.println(emptyMessage());
+            UtilsUI.goBackAndWait();
+            return true;
         }
 
-        displayUsers(users);
-
-        int option = UtilsUI.selectsIndex(users);
-        if (option == -2) {
-            System.out.println(UtilsUI.RED + "Selection cancelled." + UtilsUI.RESET);
-            return false;
+        List<SystemUser> userList = new ArrayList<>();
+        int index = 1;
+        System.out.println(listHeader());
+        for (SystemUser user : users) {
+            System.out.printf("%-5d | ", index++);
+            elementPrinter().visit(user);
+            userList.add(user);
         }
 
-        SystemUser selectedUser = getUserAtIndex(users, option);
+        int option = 0;
+
+        do {
+            option = UtilsUI.selectsIndex(userList);
+
+            if (option == -2) {
+                break;
+            }
+
+            if (option < 0 || option > userList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            }
+
+        } while (option < 0 || option > userList.size());
+
+        SystemUser selectedUser = userList.get(option);
+
         if (selectedUser == null) {
-            System.out.println(UtilsUI.RED + "Invalid user selection." + UtilsUI.RESET);
-            return false;
+            System.out.println(UtilsUI.RED + "\nInvalid user selection." + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return true;
         }
 
-        System.out.println("Current status: " + (selectedUser.isActive() ? "Active" : "Inactive"));
-        String action = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Do you want to enable or disable this user? (enter 'enable' or 'disable'): " + UtilsUI.RESET);
-
-        if ("enable".equalsIgnoreCase(action)) {
+        if (!selectedUser.isActive()) {
             controller.enableUser(selectedUser);
-            System.out.println(UtilsUI.GREEN + "User enabled successfully!" + UtilsUI.RESET);
-        } else if ("disable".equalsIgnoreCase(action)) {
-            controller.disableUser(selectedUser);
-            System.out.println(UtilsUI.RED + "User disabled successfully!" + UtilsUI.RESET);
+            System.out.println(UtilsUI.GREEN + "\nUser ENABLED successfully!" + UtilsUI.RESET);
         } else {
-            System.out.println(UtilsUI.RED + "Invalid option. Operation cancelled." + UtilsUI.RESET);
+            controller.disableUser(selectedUser);
+            System.out.println(UtilsUI.GREEN + "\nUser DISABLED successfully!" + UtilsUI.RESET);
         }
 
-        // Recarregar a lista de utilizadores para refletir o estado atual
-        users.clear();
-        controller.listAllUsers().forEach(users::add);  // Recarregar a lista de utilizadores
+        UtilsUI.goBackAndWait();
+        return true;
+    }
 
-        // Exibir a lista novamente após a atualização
-        displayUsers(users);
-        return false;
+    @Override
+    protected Iterable<SystemUser> elements() {
+        return controller.listAllUsers();
+    }
+
+    @Override
+    protected Visitor<SystemUser> elementPrinter() {
+        return new SystemUserPrinter();
+    }
+
+    @Override
+    protected String elementName() {
+        return "";
+    }
+
+    @Override
+    protected String listHeader() {
+        return UtilsUI.BOLD
+                + String.format("%-5s | %-15s | %-15s | %-15s | %-10s |", "INDEX", "USERNAME", "F. NAME", "L. NAME", "STATUS") + "\n"
+                + String.format("%-5s-+-%-15s-+-%-15s-+-%-15s-+-%-10s-+", "-".repeat(5),"-".repeat(15), "-".repeat(15),
+                "-".repeat(15), "-".repeat(10))
+                + UtilsUI.RESET;
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return UtilsUI.RED + UtilsUI.BOLD + "\nNo Users Found!!" + UtilsUI.RESET;
     }
 
     @Override
     public String headline() {
-        return "Disable/Enable Users";
-    }
-
-    private void displayUsers(Iterable<SystemUser> users) {
-        System.out.println("+= List Users ================");
-        System.out.printf("%-10s %-20s %-20s %-10s %-10s\n", "#", "USERNAME", "F. NAME", "L. NAME", "STATUS");
-
-        int index = 1;
-        for (SystemUser user : users) {
-            System.out.printf("%-10d %-20s %-20s %-10s %-10s\n", index++, user.username(), user.name().firstName(), user.name().lastName(), user.isActive() ? "ACTIVE" : "INACTIVE");
-        }
-
-        System.out.println("+----------------------------+");
-    }
-
-    private SystemUser getUserAtIndex(Iterable<SystemUser> users, int index) {
-        int currentIndex = 0;
-        for (SystemUser user : users) {
-            if (currentIndex == index) {
-                return user;
-            }
-            currentIndex++;
-        }
-        return null;
+        return "Disable and Enable Users";
     }
 }

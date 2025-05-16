@@ -282,9 +282,9 @@ public class MainMenu extends AbstractFancyUI {
     private SubMenu buildFiguresMenu(){
         final SubMenu menu = new SubMenu("Figures", FIGURES_MENU_TITLE);
 
+        menu.addItem(PU_ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
         menu.addItem(PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION, "List Public Catalogue", new ListPublicCatalogueUI()::show);
         menu.addItem(PU_SEARCH_FIGURE_CATALOGUE_OPTION, "Search Figures in the Catalogue", new SearchCatalogueUI()::show);
-        menu.addItem(PU_ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
         menu.addItem(PU_DECOMMISSION_FIGURE_OPTION, "Decommission Figure", new DecommissionFigureUI()::show);
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
@@ -327,7 +327,7 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Show Requests", SHOW_REQUEST_MENU_TITLE);
 
         menu.addItem(REGISTER_SHOW_REQUEST_OPTION, "Register new Show Request", new RegisterShowRequestUI()::show);
-        menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List all Show Requests", new ListShowRequestsUI()::show);
+        menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List All Show Requests", new ListShowRequestsUI()::show);
         menu.addItem(EDIT_SHOW_REQUEST_OPTION, "Edit a Show Request", new EditShowRequestUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
@@ -351,8 +351,8 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Users", USERS_MENU_TITLE);
 
         menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
-        menu.addItem(LIST_USERS_OPTION, "List all Users", new ListUsersUI()::show);
-        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Deactivate User", new DisableEnableUserUI()::show);
+        menu.addItem(LIST_USERS_OPTION, "List All Users", new ListUsersUI()::show);
+        menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Disable and Enable Users", new DisableEnableUserUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -362,7 +362,7 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Categories", CATEGORIES_MENU_TITLE);
 
         menu.addItem(ADD_CATEGORY_OPTION, "Add Category", new AddCategoryUI()::show);
-        menu.addItem(EDIT_CATEGORY_OPTION, "List all Categories", new ListExistingCategoriesUI()::show);
+        menu.addItem(EDIT_CATEGORY_OPTION, "List All Categories", new ListExistingCategoriesUI()::show);
         menu.addItem(LIST_CATEGORIES_OPTION, "Edit Category", new EditCategoryUI()::show);
         menu.addItem(ACTIVATE_DEACTIVATE_CATEGORY_OPTION, "Activate/Deactivate Category", new ChangeCategoryStatusUI()::show);
 

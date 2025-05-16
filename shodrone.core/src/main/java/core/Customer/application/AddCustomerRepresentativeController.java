@@ -28,7 +28,11 @@ public class AddCustomerRepresentativeController {
         roles.add(ShodroneRoles.CUSTOMERREPRESENTATIVE);
         roles.add(ShodroneRoles.USER);
         Calendar createdOn = Calendar.getInstance();
-        registerUserController.addUser(username, password, representative.name().toString(), representative.name().toString(), representative.email().toString(), roles, createdOn, representative.phoneNumber());
+
+        String firstName = representative.name().toString().trim().split(" ")[0];
+        String lastName = representative.name().toString().trim().split(" ")[1];
+
+        registerUserController.addUser(username, password, firstName, lastName, representative.email().toString(), roles, createdOn, representative.phoneNumber());
         customerRepository.save(customer);
     }
 

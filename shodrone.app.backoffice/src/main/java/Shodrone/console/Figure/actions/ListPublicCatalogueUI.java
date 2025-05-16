@@ -64,10 +64,12 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
     @Override
     protected Visitor<Figure> elementPrinter() {
         return figure -> System.out.printf(
-                "%-15s | %-10s | %-50s\n",
+                "%-15s | %-10s | %-50s | %-20s | %-20s |\n",
                 figure.identity().code().toString(),
                 figure.identity().version().toString(),
-                figure.description().toString()
+                figure.description().toString(),
+                figure.createdAt(),
+                figure.updatedAt()
         );
     }
 
@@ -87,8 +89,10 @@ public class ListPublicCatalogueUI extends AbstractFancyListUI<Figure> {
     @Override
     protected String listHeader() {
         return UtilsUI.BOLD
-                + String.format("%-15s | %-10s | %-50s", "CODE", "VERSION", "DESCRIPTION") + "\n"
-                + String.format("%-15s-+-%-10s-+-%-50s", "-".repeat(15), "-".repeat(10), "-".repeat(50))
+                + String.format("%-15s | %-10s | %-50s | %-20s | %-20s |", "CODE", "VERSION", "DESCRIPTION",
+                "CREATION DATE", "LAST UPDATE DATE") + "\n"
+                + String.format("%-15s-+-%-10s-+-%-50s-+-%-20s-+-%-20s-+", "-".repeat(15), "-".repeat(10),
+                "-".repeat(50), "-".repeat(20), "-".repeat(20))
                 + UtilsUI.RESET;
     }
 
