@@ -2,12 +2,21 @@
 'https://plantuml.com/sequence-diagram
 
 
-   class Drone <<Entity>> <<root>>{
-     }
+  class Drone <<Entity>> <<root>>{
+      }
 
-     class SerialNumber <<Value Object>>{
-     }
+      class SerialNumber <<Value Object>>{
+      }
 
-    Drone --> "1" SerialNumber: serialNumber
+      enum DroneStatus <<Value Object>>{
+      }
+
+       class RemovalReason <<Value Object>>{
+          }
+
+      'Drone -> x
+      Drone --> "1" DroneStatus: status
+      Drone --> "1" SerialNumber: serialNumber
+      Drone --> "0..*" RemovalReason: removalReason
 
 @enduml

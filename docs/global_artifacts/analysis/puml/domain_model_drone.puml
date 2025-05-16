@@ -42,6 +42,8 @@ package "ModelOfDrone " <<aggregate>> {
     Configuration --> "1..*" WindSpeed: windSpeed
     Configuration --> "1..*" PositionTolerance: positionTolerance
     Model --> "1" SafetyStatus: safetyStatus
+        SafetyStatus -->  Configuration: depends
+
 
     'Drone -> x
     Drone --> "1" Model: uses

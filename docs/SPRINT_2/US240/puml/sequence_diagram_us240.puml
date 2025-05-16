@@ -19,16 +19,15 @@ activate DT
 
 DT -> UI : requests to create a new drone model
 activate UI
-    UI --> DT : asks for model data
+    UI --> DT : asks for model name and configuration data
     deactivate UI
     DT -> UI : submits data
     activate UI
-    UI --> UI : keepData(windTolerance, \nwindSpeed, posTolerance, safetyStatus)
     UI --> DT : asks for confirmation
     deactivate UI
     DT -> UI : confirms data
     activate UI
-    UI -> CTRL : createModel(windTolerance, \nwindSpeed, posTolerance, safetyStatus)
+    UI -> CTRL : createModel(modelName, configuration)
     activate CTRL
         CTRL --> CTRL :getModelRepository()
         activate CTRL
@@ -44,26 +43,22 @@ activate UI
         CTRL -> REPOS_SINGLETON : getModelRepository()
         activate REPOS_SINGLETON
             REPOS_SINGLETON --> CTRL : modelRepository
+            deactivate REPOS_SINGLETON
         CTRL -->CTRL : modelRepository
-        deactivate REPOS_SINGLETON
+
         deactivate CTRL
-            CTRL -> MOD_REPO : createModel(windTolerance, \nwindSpeed, posTolerance, safetyStatus)
+            CTRL -> MOD_REPO : createModel(modelName, configuration)
 
             activate MOD_REPO
-        MOD_REPO -> MOD_REPO : getNextId()
-        activate MOD_REPO
-        MOD_REPO --> MOD_REPO : modelID
-        deactivate MOD_REPO
 
-        MOD_REPO -> MODEL : create(modelID, windTolerance, windSpeed, posTolerance, safetyStatus)
-        activate MODEL
-        MODEL -->MOD_REPO : modelCreated
-        deactivate MODEL
-                    MOD_REPO -> MOD_REPO: validateModel(modelCreated)
+                          MOD_REPO -> MOD_REPO: validateModel(modelName)
                     activate MOD_REPO
                         MOD_REPO --> MOD_REPO : true
                     deactivate MOD_REPO
-
+        MOD_REPO -> MODEL : create(modelID, windTolerance, windSpeed, posTolerance, safetyStatus)
+        activate MODEL
+        MODEL--> MOD_REPO : true
+        deactivate MODEL
                     MOD_REPO --> CTRL : true
 
         deactivate MOD_REPO

@@ -18,16 +18,13 @@ activate DT
 
 DT -> UI : requests to add a drone to the inventory
 activate UI
-    UI --> DT : asks for the drone serial number and model
+    UI --> DT : asks for the drone serial number
         deactivate UI
     DT -> UI : submits data
     activate UI
-    UI --> UI : keepData(serialNumber)
 
-    UI -> CTRL : verifyModel(modelName)
+    UI -> CTRL : listModels()
     activate CTRL
-    CTRL -> CTRL :getModelRepository()
-            activate CTRL
             CTRL -> PERS : getRepositoryFactory
                                         activate PERS
                                         PERS --> CTRL : repositoryFactory
@@ -41,25 +38,25 @@ activate UI
             activate REPOS_SINGLETON
                 REPOS_SINGLETON --> CTRL : modelRepository
             deactivate REPOS_SINGLETON
-            CTRL -->CTRL : modelRepository
-            deactivate CTRL
-    CTRL -> MDL_REPO : verifyModel(modelName)
-    activate MDL_REPO
-    MDL_REPO -> MDL_REPO : verifyModel(modelName)
-    activate MDL_REPO
-    MDL_REPO --> MDL_REPO : true
-    deactivate MDL_REPO
-    MDL_REPO --> CTRL : true
-    deactivate MDL_REPO
-    CTRL --> UI : true
-    deactivate CTRL
-    UI --> UI : keepData(modelName)
 
-    UI --> DT : asks for confirmation
+    CTRL -> MDL_REPO : listModels()
+    activate MDL_REPO
+
+
+
+    MDL_REPO --> CTRL : modelList
+    deactivate MDL_REPO
+    CTRL --> UI : modelList
+    deactivate CTRL
+    UI --> DT : shows a list of all models and asks to select one
+        deactivate UI
+        DT -> UI : selects one
+        activate UI
+    UI --> DT : shows all data asks for confirmation
     deactivate UI
     DT -> UI : confirms data
     activate UI
-    UI -> CTRL : addDrone(serialNumber, modelName)
+    UI -> CTRL : addDrone(serialNumber, selectedModel)
     activate CTRL
         CTRL -> CTRL :getDroneRepository()
         activate CTRL
@@ -78,10 +75,10 @@ activate UI
         deactivate REPOS_SINGLETON
         CTRL -->CTRL : droneRepository
         deactivate CTRL
-            CTRL -> DRN_REPO : addDrone(serialNumbe, modelName)
+            CTRL -> DRN_REPO : addDrone(serialNumbe, selectedModel)
             activate DRN_REPO
 
-        DRN_REPO -> DRN_REPO: addDrone (serialNumber, modelName)
+        DRN_REPO -> DRN_REPO: addDrone (serialNumber, selectedModel)
                 activate DRN_REPO
                     DRN_REPO -> DRN_REPO: validateDrone(serialNumber)
                     activate DRN_REPO

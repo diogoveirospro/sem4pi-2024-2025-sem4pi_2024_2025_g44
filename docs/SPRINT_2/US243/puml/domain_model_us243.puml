@@ -13,9 +13,14 @@
     enum DroneStatus <<Value Object>>{
     }
 
+
+     class RemovalReason <<Value Object>>{
+        }
+
     'Drone -> x
     Drone --> "1" DroneStatus: status
     Drone --> "1" SerialNumber: serialNumber
+    Drone --> "0..*" RemovalReason: removalReason
     Drone --> "1" Model: uses
 
 @enduml

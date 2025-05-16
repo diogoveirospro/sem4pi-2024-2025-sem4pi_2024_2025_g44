@@ -19,12 +19,43 @@ activate DT
 
 DT -> UI : requests to remove a drone in the inventory
 activate UI
-    UI --> DT : asks for drone serial number and the reason for removal
+UI -> CTRL : listDrones()
+    activate CTRL
+            CTRL -> PERS : getRepositoryFactory
+                                        activate PERS
+                                        PERS --> CTRL : repositoryFactory
+                                        deactivate PERS
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_SINGLETON : getModelRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : modelRepository
+            deactivate REPOS_SINGLETON
+
+    CTRL -> DRN_REPO : listDroness()
+    activate DRN_REPO
+
+
+
+    DRN_REPO --> CTRL : droneList
+    deactivate DRN_REPO
+    CTRL --> UI : droneList
+    deactivate CTRL
+    UI --> DT : shows a list of all drones and asks to select one
+        deactivate UI
+
+        DT -> UI : selects one
+        activate UI
+
+    UI --> DT : asks for the reason for removal
     deactivate UI
+
     DT -> UI : submits data
     activate UI
-    UI --> UI : keepData(serialNumber, removReason)
-    UI --> DT : asks for confirmation
+    UI --> DT : shows all data asks for confirmation
     deactivate UI
     DT -> UI : confirms data
     activate UI

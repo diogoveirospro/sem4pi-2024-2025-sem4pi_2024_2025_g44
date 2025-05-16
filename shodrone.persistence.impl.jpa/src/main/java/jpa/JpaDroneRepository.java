@@ -76,7 +76,7 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
 
     public boolean validateRemoval(Drone drone, Iterable<Drone> drones) {
         for ( Drone droneTest : drones) {
-            if (drone.identity().equals(droneTest.identity()) && drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
+            if (drone.sameAs(droneTest) && drone.getDroneStatus().equals(DroneStatus.ACTIVE)) {
                 return true;
             }
         }

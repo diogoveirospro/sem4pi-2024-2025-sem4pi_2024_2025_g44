@@ -19,7 +19,7 @@ activate EDT
 
         EDT -> UI : asks to list all active \ndrones from a model in the inventory
         activate UI
-            UI -> CTRL : getDroneModelList()
+            UI -> CTRL : listModels()
                         activate CTRL
                             CTRL -> PERS : getRepositoryFactory
                             activate PERS
@@ -35,7 +35,7 @@ activate EDT
                                 REPOS_SINGLETON --> CTRL: modelRepository
                             deactivate REPOS_SINGLETON
 
-                            CTRL -> MOD_REPO : getModelList()
+                            CTRL -> MOD_REPO : listModels()
                             activate MOD_REPO
                                 MOD_REPO --> CTRL : modelList
                             deactivate MOD_REPO
@@ -45,14 +45,8 @@ activate EDT
                            deactivate UI
                      EDT -> UI : selets one
                         activate UI
-            UI --> UI : keepData(droneModel)
 
 
-
-    UI --> EDT : requests confirmation
-    deactivate UI
-    EDT -> UI : confirms
-    activate UI
         UI -> CTRL : getDrnModelList(droneModel)
         activate CTRL
                                         CTRL -> PERS : getRepositoryFactory
