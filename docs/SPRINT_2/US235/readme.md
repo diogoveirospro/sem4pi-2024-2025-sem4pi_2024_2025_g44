@@ -14,9 +14,9 @@ Analysis: Done
 
 Design: Done
 
-Implement: In Progress
+Implement: Done
 
-Test: In Progress
+Test: Done
 
 
 ## 2. Requirements
@@ -117,9 +117,11 @@ It shows the separation between user interface, controller, domain model and per
 **Refers to Acceptance Criteria:** AC01
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureCRMCollaboratorIsAUser() {
+    // setup: create and persist a crm collaborator
+    // action: get current user and get user list
+    // assert: crm collaborator is in the list of users
 }
 ````
 
@@ -129,9 +131,11 @@ public void ensureXxxxYyyy() {
 **Refers to Acceptance Criteria:** AC02
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureCRMManagerIsAUser() {
+    // setup: create and persist a crm manager
+    // action: get current user and get user list
+    // assert: crm manager is in the list of users
 }
 ````
 
@@ -141,9 +145,11 @@ public void ensureXxxxYyyy() {
 **Refers to Acceptance Criteria:** AC03
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureCustomerIsAUser() {
+    // setup: create and persist a customer
+    // action: get customer identification and get user list
+    // assert: customer is in the list of users
 }
 ````
 
@@ -154,28 +160,30 @@ public void ensureXxxxYyyy() {
 
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureShowRequestStatusIsProvided() {
+    // setup: create and persist a show request
+    // action: call ui
+    // assert: if status appears
 }
 ```
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+The implementation of US235 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the listing of a show request. And didn't diverge from the design.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+The coding Commit messages related to this requirement are as follows:
+
+- [#59 Implementation: ListShowRequestsUI update
+  ](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/1aabc999460a2dbfc2b7517651f7b3b2c33811b9)
+- [#20 #59 #60 Update on show request classes
+  ](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/220290289afd8bcd9f384685d72e9e16824282b1)
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+Please go to the US230 for the integration and demonstration of the system.
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+Please go to the US230 for the observations of the system.
