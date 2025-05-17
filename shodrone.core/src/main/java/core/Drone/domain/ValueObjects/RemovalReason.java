@@ -21,6 +21,10 @@ public class RemovalReason implements Serializable {
         this.reasons = reasons;
     }
 
+    public RemovalReason() {
+
+    }
+
     public Map<Date, String> value() {
         return reasons;
     }
