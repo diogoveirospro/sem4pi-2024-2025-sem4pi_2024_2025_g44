@@ -66,9 +66,10 @@ typedef struct position {
   int z;
 } Position;
 
-typedef struct message {
+typedef struct {
   int id;
   Position pos;
+  int finished; // 0 = normal message, 1 = drone finished
 } Message;
 
 typedef struct {

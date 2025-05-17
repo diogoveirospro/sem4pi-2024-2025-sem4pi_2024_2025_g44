@@ -43,8 +43,8 @@ void build_filename(char *buffer, size_t size, const char *inp_dir, const char *
 // Helper function to handle Continue_Flag logic
 
 void wait_for_continue_flag() {
-    bool should_continue;
-    if (read(0, &should_continue, sizeof(bool)) != sizeof(bool)) {
+    bool c;
+    if (read(0, &c, 1) != sizeof(bool)) {
         perror("Drone: Failed to read continue flag");
         raise(SIGINT);
     }
@@ -66,6 +66,7 @@ void run_script(const char *filename, int drone_id)
     int lastx, lasty, lastz;
     int first = 1;
 
+    m.finished = 0;
     while (fscanf(f, "%d,%d,%d", &dx, &dy, &dz) == 3) {
         int timestep;
         ssize_t n = read(0, &timestep, sizeof(int));
@@ -95,6 +96,8 @@ void run_script(const char *filename, int drone_id)
     }
 
     fclose(f);
+    m.finished = 1;
+    write(1, &m, sizeof(Message));
 }
 
 // ---------------------

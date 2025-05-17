@@ -25,6 +25,11 @@ Data s;
 SpaceCell ***space;
 DronePosition *drone_positions;
 DroneHistory **histories;
+// remove later
+void do_report(void);
+void terminate(void);
+
+
 
 void end()
 {
@@ -331,18 +336,42 @@ void repeat() {
             if (!terminado[i])
                 send_timestep(i, t);
         }
-        for (int i = 0; i < s.num_drones; i++) {
-            if (terminado[i])
-                continue;
 
+        // Track which drones have sent their message for this timestep
+        int *received = calloc(s.num_drones, sizeof(int));
+        int received_count = 0;
+
+        while (received_count < drones_ativos) {
             ssize_t n = read(s.up[0], &m, sizeof(Message));
-
-            if (n == 0) {
-                terminado[i] = 1;
+            int idx = m.id - 1;
+            if (m.finished == 1) {
+                terminado[idx] = 1;
+                received[idx] = 1;
                 drones_ativos--;
+                received_count++;
+                continue;
+            }
+            if (terminado[idx] || received[idx]) {
+                continue;
+            }
+            if (n == 0) {
+                // EOF: a drone has exited
+                // Find which drone exited and mark as terminated
+                for (int i = 0; i < s.num_drones; i++) {
+                    if (!terminado[i] && !received[i]) {
+                        terminado[i] = 1;
+                        drones_ativos--;
+                        break;
+                    }
+                }
                 continue;
             } else if (n < 0) {
                 perror("read");
+                continue;
+            }
+
+            if (terminado[idx] || received[idx]) {
+                // Already terminated or already received for this timestep
                 continue;
             }
 
@@ -352,17 +381,23 @@ void repeat() {
 
             if (x < 0 || x >= s.max_X || y < 0 || y >= s.max_Y || z < 0 || z >= s.max_Z) {
                 fprintf(stderr, RED "Invalid drone position %d: %d,%d,%d\n" RESET, m.id, x, y, z);
+                received[idx] = 1;
+                received_count++;
                 continue;
             }
 
-            add_position_timestamp(histories[m.id - 1], m.pos, t * s.timestamp);
-            move_drone(space, drone_positions, m.id - 1, m.pos, s.max_X, s.max_Y, s.max_Z);
+            add_position_timestamp(histories[idx], m.pos, t * s.timestamp);
+            move_drone(space, drone_positions, idx, m.pos, s.max_X, s.max_Y, s.max_Z);
+
+            received[idx] = 1;
+            received_count++;
         }
+        free(received);
 
         // Check for collisions
         collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones);
 
-        // debbug num colisoes
+        // debug num colisoes
         fprintf(stderr, "Collisions detected: %d\n", collisions);
 
         // Check if the number of collisions exceeds the limit
