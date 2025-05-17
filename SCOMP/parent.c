@@ -271,11 +271,11 @@ void add_position_timestamp(DroneHistory *history, Position pos, float timestamp
 
 
 // Check number of collisions between drones
-int check_collisions(int COLLISION_DISTANCE, int *pids, DronePosition *drone_positions, int num_drones) {
+int check_collisions(int collision_distance, int *pids, DronePosition *drone_positions, int num_drones) {
     int collisions = 0;
     for (int i = 0; i < num_drones; i++) {
         for (int j = i + 1; j < num_drones; j++) {
-            if (calculate_distance(drone_positions[i].pos, drone_positions[j].pos) <= COLLISION_DISTANCE) {
+            if (calculate_distance(drone_positions[i].pos, drone_positions[j].pos) <= collision_distance) {
                 // Notifica os drones envolvidos via sinal
                 kill(pids[i], SIGUSR1);
                 kill(pids[j], SIGUSR1);
@@ -317,7 +317,7 @@ void repeat() {
     int t = 0;
     int drones_ativos = s.num_drones;
     int *terminado = calloc(s.num_drones, sizeof(int));
-    int COLLISION_DISTANCE = s.raio_drone * 2;
+    int collision_distance = s.raio_drone * 2;
     int collisions = 0;
 
     if (!terminado) {
@@ -364,7 +364,7 @@ void repeat() {
         }
 
         // Check for collisions
-        collisions += check_collisions(COLLISION_DISTANCE, s.pids, drone_positions, s.num_drones);
+        collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones);
 
         // debbug num colisoes
         fprintf(stderr, "Collisions detected: %d\n", collisions);
