@@ -1,35 +1,90 @@
-# US253 - Configuration of a Drone’s Language
+# **US253 - Drone Programming Language Configuration**
 
-**As** a Drone Tech,
-**I want** to specify in the system the programming language for a given drone model,
-**So that** drones of this model can be used in figures/shows.
+## 1. Context
 
-**Note:** A given programming language can be supported by several drone models.
+The goal of this task is to allow the specification of a **programming language** for a **drone model** within the system.
+This functionality is essential to ensure that drones of different models can be used in formations/shows.
 
+### 1.1 List of Issues
+
+* **Analysis:** 🧪 Done
+* **Design:** 🧪 Done
+* **Implementation:** 📌 Backlog
+* **Testing:** 📌 Backlog
+
+---
+
+## 2. Requirements
+
+**As** a Drone Technician,
+**I want** to specify in the system the programming language used for a drone model,
+**So that** drones of this model can be used in formations/shows.
+
+**Note:** A programming language can be supported by multiple drone models.
+
+### **Acceptance Criteria**
+
+* **US253.1** It must be possible to associate a programming language with a drone model.
+* **US253.2** The system must validate available drone models and programming languages.
+* **US253.3** The system must allow the reutilization of programming languages across multiple models.
+
+**Input Templates**
+
+The following proposal templates were used as the basis for the grammar definition:
+
+- [Drone Programming Language model 01 v1.0.txt](files/Drone_Language/DroneOne%20drone%20programming%20language.txt)
+- [Drone Programming Language model 02 v1.0.txt](files/Drone_Language/DroneTwo%20drone%20programming%20language.txt)
+
+---
+
+## 3. Analysis
+
+The grammar is designed to describe the configuration of drone programming languages in a **modular and extensible** way.
+It is composed of two main parts:
+
+1. **Language Definition:**
+   Allows specification of a programming language.
+
+2. **Model Association:**
+   Allows associating drone models to previously defined languages.
+
+The grammar uses terminal categories like `IDENTIFIER` and `STRING` to validate fields.
+Recursive rules are used for lists and associations, ensuring flexibility and accuracy.
+
+---
+
+## 4. Design
+
+The grammar was designed to:
+
+* Represent programming language configurations clearly and modularly.
+* Validate drone models and programming languages.
+* Allow reuse of programming languages across multiple models.
+* Ensure scalability for new models and languages.
 
 ### Grammar
 
 ```
-(* Terminais *)
+(* Terminals *)
 PI = "PI";
 
-(* Programa *)
+(* Program *)
 program ::= { statement } ;
 
-(* Declarações *)
+(* Statements *)
 statement ::= variable_declaration | instruction ;
 
-(* Tipos *)
+(* Types *)
 type ::= "Position" | "Vector" | "LinearVelocity" | "AngularVelocity" | "Distance" | "Time" ;
 
-(* Declaração de Variáveis *)
+(* Variable Declaration *)
 variable_declaration ::= type identifier "=" expression ";" ;
 
-(* Identificadores *)
+(* Identifiers *)
 identifier ::= letter , { letter | digit | "_" } ;
 
-(* Instruções *)
-instruction ::=
+(* Instructions *)
+instruction ::= 
     "takeOff" "(" expression "," expression ")" ";"
   | "land" "(" expression ")" ";"
   | "move" "(" expression "," expression ")" ";"
@@ -40,7 +95,7 @@ instruction ::=
   | "lightsOff" "(" ")" ";"
   | "blink" "(" expression ")" ";" ;
 
-(* Expressões *)
+(* Expressions *)
 expression ::= arithmetic ;
 
 arithmetic ::= term , { ("+" | "-") , term } ;
@@ -53,30 +108,31 @@ factor     ::= number
              | array_of_positions
              | "(" expression ")" ;
 
-(* Literais Position e Vector *)
+(* Literals Position and Vector *)
 position ::= "(" float "," float "," float ")" ;
 vector   ::= "(" float "," float "," float ")" ;
 
-(* Arrays de Positions com par extra de parênteses *)
+(* Arrays of Positions with extra pair of parentheses *)
 array_of_positions ::= "(" "(" position , { "," position } ")" ")" ;
 
-(* Tokens léxicos *)
+(* Lexical Tokens *)
 number  ::= float | integer ;
 float   ::= digit , { digit } , "." , digit , { digit } ;
 integer ::= digit , { digit } ;
 
-(* Caracteres *)
+(* Characters *)
 letter ::= "A".."Z" | "a".."z" ;
 digit  ::= "0".."9" ;
+```
 
-````
+---
 
+### ANTLR Grammar
 
-### Antilr of the grammar
-````
+```antlr
 grammar DroneOne;
 
-// Programa inicial
+// Initial program
 program : statement* EOF ;
 
 statement
@@ -162,11 +218,12 @@ identifier
 
 PI : 'PI' ;
 
-// Tokens léxicos
+// Lexical tokens
 fragment LETTER : [a-zA-Z] ;
 fragment DIGIT  : [0-9] ;
 
-// Ignorar espaços em branco e comentários
+// Ignore whitespace and comments
 WS : [ \t\r\n]+ -> skip ;
 LINE_COMMENT : '//' ~[\r\n]* -> skip ;
-````
+```
+
