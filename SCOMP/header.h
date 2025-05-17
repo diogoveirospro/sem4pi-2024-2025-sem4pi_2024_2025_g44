@@ -18,6 +18,7 @@
 #define INPUT_FILENAME "file_drone_"
 #define INPUT_FILE_EXTENSION ".txt"
 
+
 #define CONFIG_FILE_MAX_SIZE 10000
 
 #define RESET "\033[0m"
@@ -70,9 +71,16 @@ typedef struct message {
 
 typedef struct continue_flag{
   int id;
-  bool should_continue; 
+  bool should_continue;
 } Continue_Flag;
 
+typedef struct {
+    Position *positions;   // dynamic array of drone positions
+    float *timestamps;    // parallel array of timestamps for each position
+    int count;            // number of stored positions
+    int capacity;         // current array capacity (for resizing)
+    int drone_id;         // drone id
+} DroneHistory;
 
 typedef struct space_cell {
     int drone_id; // -1 if empty, else drone id
