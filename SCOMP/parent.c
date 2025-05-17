@@ -24,6 +24,7 @@
 Data s;
 SpaceCell ***space;
 DronePosition *drone_positions;
+DroneHistory **histories;
 
 void end()
 {
@@ -91,7 +92,7 @@ void process_config_file()
 		end();
 
 	fclose(fd);
-	
+
 	parse_data(str);
 
 	free(str);
@@ -155,13 +156,20 @@ void int_free_matrix(int **arr, int row)
 	free(arr);
 }
 
+void free_drone_history(DroneHistory *history) {
+    if (!history) return;
+    free(history->positions);
+    free(history->timestamps);
+    free(history);
+}
+
 void set_up_childs()
 {
   int **down = int_malloc_matrix(s.num_drones, 2);
 
 	char str_i[10];
 	pid_t pid;
-	
+
 	s.state = (char *) malloc(sizeof(char) * s.num_drones);
 
 	if (s.state == NULL)
@@ -173,7 +181,7 @@ void set_up_childs()
 	if (s.pids == NULL)
 		end();
 	memset(s.pids, 0, sizeof(int) * s.num_drones);
-	
+
 	if (pipe(s.up))
 		end();
 
@@ -183,14 +191,14 @@ void set_up_childs()
 			end();
 
 		pid = fork();
-		
+
 
 		if (pid == 0)
 		{
 			close(s.up[0]);		// child doesnt need read side on up pipe
 
 			dup2(down[i][0], 0);	// child reads from fd 0 to get info from pipe down
-      
+
 			dup2(s.up[1], 1);	// child writes to fd 1 to write info to pipe up
 
 			close(down[i][1]);	// child doesnt need write side on down pipe
@@ -210,10 +218,104 @@ void set_up_childs()
 	s.childs_created = 1;
 }
 
-void repeat()
-{
+DroneHistory* init_drone_history(int drone_id, int initial_capacity) {
+    DroneHistory *history = malloc(sizeof(DroneHistory));
+    if (!history) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
 
+    history->positions = malloc(initial_capacity * sizeof(Position));
+    history->timestamps = malloc(initial_capacity * sizeof(float));
+    if (!history->positions || !history->timestamps) {
+        perror("malloc");
+        free(history->positions);
+        free(history->timestamps);
+        free(history);
+        exit(EXIT_FAILURE);
+    }
+
+    history->count = 0;
+    history->capacity = initial_capacity;
+    history->drone_id = drone_id;
+
+    return history;
 }
+
+void add_position_timestamp(DroneHistory *history, Position pos, float timestamp) {
+    if (history->count == history->capacity) {
+        int new_capacity = history->capacity * 2;
+        Position *new_positions = realloc(history->positions, new_capacity * sizeof(Position));
+        float *new_timestamps = realloc(history->timestamps, new_capacity * sizeof(float));
+
+        if (!new_positions || !new_timestamps) {
+            perror("realloc");
+            // In the event of an error, we can continue with the old memory to avoid losses
+            free(new_positions);
+            free(new_timestamps);
+            return;
+        }
+
+        history->positions = new_positions;
+        history->timestamps = new_timestamps;
+        history->capacity = new_capacity;
+    }
+
+    history->positions[history->count] = pos;
+    history->timestamps[history->count] = timestamp;
+    history->count++;
+}
+
+void repeat() {
+    Message m;
+    int t = 0;
+    int drones_ativos = s.num_drones;
+    int *terminado = calloc(s.num_drones, sizeof(int));
+
+    if (!terminado) {
+        perror("calloc");
+        exit(EXIT_FAILURE);
+    }
+
+    while (drones_ativos > 0) {
+        for (int i = 0; i < s.num_drones; i++) {
+            if (terminado[i])
+                continue;
+
+            ssize_t n = read(s.up[0], &m, sizeof(Message));
+            if (n == 0) {
+                // EOF - drone ended
+                terminado[i] = 1;
+                drones_ativos--;
+                continue;
+            } else if (n < 0) {
+                perror("read");
+                continue;
+            }
+
+            int x = m.pos.x;
+            int y = m.pos.y;
+            int z = m.pos.z;
+
+            if (x < 0 || x >= s.max_X || y < 0 || y >= s.max_Y || z < 0 || z >= s.max_Z) {
+                fprintf(stderr, RED "Invalid drone position %d: %d,%d,%d\n" RESET, m.id, x, y, z);
+                continue;
+            }
+
+            // Adds position and timestamp to drone history
+            add_position_timestamp(histories[m.id - 1], m.pos, t * s.timestamp);
+
+            // Update the current position in space
+            move_drone(space, drone_positions, m.id - 1, m.pos, s.max_X, s.max_Y, s.max_Z);
+        }
+
+        usleep((useconds_t)(s.timestamp * 1e6));
+        t++;
+    }
+
+    free(terminado);
+}
+
 
 void do_report()
 {
@@ -224,28 +326,37 @@ void do_report()
 void terminate()
 {
   int_free_matrix(s.down, s.num_drones);
+  // Liberta os históricos
+    for (int i = 0; i < s.num_drones; i++) {
+        free_drone_history(histories[i]);
+    }
+    free(histories);
   free_space(space, s.max_X, s.max_Y);
-  free(drone_positions); 
+  free(drone_positions);
   printf("Done\n");
   exit(0);
 }
 
 void start() {
-  // general functions
-  
-  set_up_signals();
+    set_up_signals();
 
-  space = alloc_space(s.max_X, s.max_Y, s.max_Z);
+    space = alloc_space(s.max_X, s.max_Y, s.max_Z);
 
-  drone_positions = alloc_drone_positions(s.num_drones);
+    drone_positions = alloc_drone_positions(s.num_drones);
 
-  set_up_childs();
+    // Initialises the histories for each drone
+    histories = malloc(s.num_drones * sizeof(DroneHistory*));
+    for (int i = 0; i < s.num_drones; i++) {
+        histories[i] = init_drone_history(i + 1, 100);  // initial capacity 100 positions
+    }
 
-  repeat();
+    set_up_childs();
 
-  do_report();
+    repeat();
 
-  terminate();
+    do_report();
+
+    terminate();
 }
 
 
@@ -282,4 +393,3 @@ int main(int argc, char **argv){
 
   start();
 }
-
