@@ -28,6 +28,7 @@ DronePosition *drone_positions;
 void end()
 {
   raise(SIGINT);
+  exit(EXIT_FAILURE);
 }
 
 int get_file_size(FILE *fd)
@@ -182,6 +183,7 @@ void set_up_childs()
 			end();
 
 		pid = fork();
+		
 
 		if (pid == 0)
 		{
@@ -194,13 +196,13 @@ void set_up_childs()
 			close(down[i][1]);	// child doesnt need write side on down pipe
 
 			snprintf(str_i, sizeof(str_i), "%d", i + 1);
-
 			execl(DRONE_FILE, DRONE_FILE, str_i, s.inp_dir, NULL);
+
 			kill(getppid(), SIGINT);
 		}
 		close(down[i][0]);		// parent doesnt need read side on down pipe
-
 		s.pids[i] = pid;
+		drone_positions[i].drone_id = i + 1;
 	}
 	close(s.up[1]);				// parent doesnt need write side on up pipe
 
@@ -222,6 +224,8 @@ void do_report()
 void terminate()
 {
   int_free_matrix(s.down, s.num_drones);
+  free_space(space, s.max_X, s.max_Y);
+  free(drone_positions); 
   printf("Done\n");
   exit(0);
 }
@@ -230,6 +234,10 @@ void start() {
   // general functions
   
   set_up_signals();
+
+  space = alloc_space(s.max_X, s.max_Y, s.max_Z);
+
+  drone_positions = alloc_drone_positions(s.num_drones);
 
   set_up_childs();
 

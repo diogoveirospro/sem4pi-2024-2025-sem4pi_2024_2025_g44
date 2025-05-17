@@ -38,9 +38,11 @@ int main(int argc, char **argv)
 
 	set_up_signals();
 
-  // drone code here
-	
-  fprintf(stderr, "index: %d, input_dir: %s\n", atoi(argv[1]), argv[2]);
+	while(1) {
+  		// drone code here
+		break;
+	}
+  	fprintf(stderr, "index: %d, input_dir: %s\n", atoi(argv[1]), argv[2]);
 
-  exit(0);
+  	exit(0);
 }

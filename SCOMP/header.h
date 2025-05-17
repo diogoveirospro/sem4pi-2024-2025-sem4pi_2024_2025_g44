@@ -20,6 +20,14 @@
 
 #define CONFIG_FILE_MAX_SIZE 10000
 
+#define RESET "\033[0m"
+#define BOLD "\033[1m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define CYAN "\033[36m"
+
 typedef struct data {
 
   //config file info
@@ -60,16 +68,29 @@ typedef struct message {
   Position pos;
 } Message;
 
+typedef struct continue_flag{
+  int id;
+  bool should_continue; 
+} Continue_Flag;
 
-typedef struct {
-    int id; // -1 if empty, else drone id
+
+typedef struct space_cell {
+    int drone_id; // -1 if empty, else drone id
 } SpaceCell;
 
 // Matrix to map drone index to its Position
-typedef struct {
-    int id;
+typedef struct drone_position {
+    int drone_id;
     Position pos;
 } DronePosition;
+
+typedef struct drone{
+  int id;
+  Position Curr_pos;
+  Position *positions;
+  int num_positions;
+  Continue_Flag *continue_flag;
+} Drone;
 
 
 // Function declarations

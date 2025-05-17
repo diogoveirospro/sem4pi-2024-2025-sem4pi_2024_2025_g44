@@ -1,201 +1,231 @@
-# US 221 – Add a Customer Representative
+# US 255
 
 ## 1. Context
 
-This task aims to conclude the requirements for **US221** of **Sprint 2**, which consists of developing a new functionality for the system. The team will now focus on completing the implementation and testing of this feature, as well as integrating it with the rest of the system.
+The purpose of this task is to provide a context-free grammar to validate Shodrone's Show Proposal templates. 
+This task is included in Sprint 2 and is being implemented for the first time.
 
-### 1.1 List of Issues
+### 1.1 List of issues
 
-- **Analysis**: Done
-- **Design**: Done
-- **Implementation**: To do
-- **Testing**: To do
+Analysis: 🧪 Testing
 
----
+Design: 🧪 Testing
+
+Implement: 📌 Backlog
+
+Test: 📌 Backlog
+
 
 ## 2. Requirements
 
-**As** a CRM Collaborator,  
-**I want** to register a new representative for a customer,  
-**So that** the customer can be represented by another person.
+**As** a CRM Manager,
+<br>
+**I want** to define a language to specify proposal templates,
+<br>
+**So that** the proposal templates are in accord to the CRM team desires.
 
-### Acceptance Criteria
+**Acceptance Criteria:**
 
-- **AC01**: The customer representative must be a system user (restricted to the Customer App). Each representative must be a distinct user.
-- **AC02**: The representative must be associated with a customer.
-- **AC03**: The representative must have a name, email, phone number, position, and status.
-- **AC04**: The data must be retrieved using a dedicated DTO to decouple the internal domain model.
+- **_US255.1_** The grammar must support fixed and variable components in the document.
+- **_US255.2_** It must allow dynamic placeholders (e.g., [Company name], [Date]) that can be replaced with 
+customer-specific values.
+- **_US255.3_** It must support multiple versions of the same document to accommodate different languages and 
+customer tones (e.g., formal/informal, Portuguese/English).
+- **_US255.4_** The grammar must validate structured technical data, including GPS coordinates, time formats, dates, 
+and currency values.
+- **_US255.5_** The grammar must support lists of drones and figures, with flexible repetition structures.
+- **_US255.6_** It must explicitly represent formatting requirements such as line breaks and page breaks.
 
-### Dependencies
+**Input Templates**
 
-This requirement depends on **US220**, as a customer must be registered in the system before a customer representative can be registered.
+The following proposal templates were used as the basis for the grammar definition:
 
----
+- [Show Proposal model 01 v1.0.txt](files/Show_Proposal_Models/Show%20Proposal%20model%2001%20v1.0.txt)
+- [Show Proposal model 02 v1.0.txt](files/Show_Proposal_Models/Show%20Proposal%20model%2002%20v1.0.txt)
+- [Show Proposal model 03 v1.0.txt](files/Show_Proposal_Models/Show%20Proposal%20model%2003%20v1.0.txt)
 
-### Client Clarifications:
-
-> **[Topic: Representantes de um cliente](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35120)**  
-> Os representantes não são partilhados entre clientes.
-
-> **[Topic: Dúvidas sobre regras de negócio](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35121)**  
-> Não faz qualquer sentido atribuir um email da Shodrone a representantes dos clientes.  
-> Um cliente não precisa de ter um domínio próprio e, caso o tenha, não quer dizer que seja igual ao nome, etc.  
-> O cliente é a empresa, natural que todos os representantes vejam as propostas da empresa.
-
-> **[Topic: Identificador de clientes e collaboradores](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=35235)**  
-> Todos os utilizadores devem ter um ID.  
-> O que deve ser esse ID é outra questão. (o id pode ser qualquer elemento que consiga identificar o user)
-
----
 
 ## 3. Analysis
 
-### Customer Aggregate
+The proposal documents share a consistent high-level structure with optional variations in greeting, language, and body 
+content. From the analysis of the sample templates, the document can be broken down into these segments:
 
-The `Customer` aggregate contains multiple domain attributes, but only a subset is relevant for this functionality:
+* **Greeting section**: Offers three variants (formal PT, formal EN, and personalized EN) and includes customer and 
+company identification data.
+* **Reference section**: Displays a proposal number and date, with format rules enforced for each.
+* **Body**: Includes the proposal objective, safety note, insurance value, and a video link. Each body version differs 
+in tone and language but follows a similar flow.
+* **Signature section**: Contains standardized closing messages and role titles, with language-dependent formatting.
+* **Attachment**: A structured block with event details, drone models used, and figures to be displayed. It contains 
+nested information such as coordinates, time formats, and quantities, all subject to syntactic rules.
 
-- **Name** – Customer name (for identification)
-- **Address** – Customer address
-- **VatNumber** – Tax identification number
-- **CustomerStatus** – Current status of the customer (active, inactive, etc.)
-- **CustomerType** – Type of customer (individual, company, etc.)
-- **Representatives** – A list of associated representatives
+Additionally, terminal categories such as `DIGIT`, `LETTER`, and `SYMBOL` were defined to validate the contents of 
+fields like VAT numbers, proposal codes, and placeholders. Recursive definitions (e.g., for lists or variable-length fields) 
+are terminated using `ε` to ensure the grammar produces finite results. Line breaks (`BREAKLINE`) were introduced explicitly 
+to match document formatting requirements.
 
-Non-essential elements were omitted to maintain clarity and focus.
-
-### Customer Representative Aggregate
-
-The `CustomerRepresentative` aggregate includes:
-
-- **Name** – Representative's name
-- **Position** – Job title or role
-- **Email** – Representative’s email address
-- **PhoneNumber** – Contact number
-- **CustomerRepresentativeStatus** – Current status (active, inactive, etc.)
-- **Customer** – Associated customer
-
-Other elements not relevant to this functionality are omitted for simplicity.
-
-![Relation customer and representative](images/domain_model_us221.svg "Domain Model")
-
----
 
 ## 4. Design
 
-In this section, we describe the design approach adopted for implementing **US221 – Add a Customer Representative**. The class diagram defines the main components involved in the addition of a new representative, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
+This section presents the complete grammar developed to support **US255 – Configuration of Proposal Templates**. The 
+grammar is written in context-free notation and captures the structure, flow, and variability of the proposal templates 
+used by Shodrone.
 
-### 4.1 Realization
+The grammar was designed to:
 
-![US221 Class Diagram](images/class_diagram_us221.svg "US221 Class Diagram")
+* Support multiple versions of the template (e.g., Portuguese and English, formal and personalized).
+* Represent dynamic content using placeholders.
+* Enforce the correct structure and sequencing of all document sections.
+* Model lists, formatting (e.g., line breaks and page breaks), and field validation (e.g., dates, times, GPS, currencies).
 
----
+The grammar is modular, with each non-terminal symbol representing a logical part of the document, such as the greeting, 
+reference, body, technical details, or figures. Repetition and optionality are handled through recursive rules and the 
+empty string symbol (`ε`), and terminal categories like `DIGIT`, `LETTER`, `SYMBOL` are used to define the building 
+blocks of variable fields.
 
-## 5. Tests
+The grammar is structured as follows:
 
-The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI, and that DTOs are used properly.
+- **High-level alternatives:** ``S``
+- **Greeting section:** ``A1, A2, A3``
+- **Header and reference:** ``B, C1, C2``
+- **Body content:** ``E1, E2, E3``
+- **Signature:** ``F, G``
+- **Technical attachment:** ``I–O``
 
----
+Below is the complete grammar:
 
-### Test 1: Customer is a user of the system
+```
+S →  A1 B C1 D1 E1 F1 G1 H I1 J1 K1 L1 N1 O1 | A2 B C2 D2 E2 F2 G2 H I2 J2 K2 L2 N2 O2 | A3 B C2 D2 E3 F3 G3 H I2 J2 K2 L2 N2 O2
 
-**Refers to Acceptance Criteria:** AC01  
-**Description:** Ensures that customer representatives are valid system users.
+A1 → Exmos. Senhores BREAKLINE
+A2 → Dear Sirs, BREAKLINE
+A3 → Dear, BREAKLINE CUSTREPNAME BREAKLINE
 
-```java
-@Test
-void ensureCustomerIsAUser() {
-    // setup: create and persist a customer representative
-    // action: call controller.registerNewRepresentativeOfCustomer() and get the users list
-    // assert: customer representative is in the list of users
-}
+B → COMPANYNAME BREAKLINE ADDRESS BREAKLINE VAT BREAKLINE BREAKLINE
+    
+    COMPANYNAME → NAME
+    CUSTREPNAME → NAME
+    ADDRESS → TEXT
+    VAT → DIGIT VAT | ε
+
+C1 → Referência PROPOSALDATE BREAKLINE
+C2 → Reference PROPOSALDATE BREAKLINE
+    
+    PROPOSALDATE → PROPOSALNUMBER / DATE BREAKLINE
+    PROPOSALNUMBER → DIGIT PROPOSALNUMBER | DIGIT | ε
+    DATE → DAY SEPARATOR MONTH SEPARATOR YEAR
+    DAY → 0 DIGITWITHOUT0 | 1 DIGIT | 2 DIGIT | 30 | 31
+    MONTH → 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12
+    YEAR → DIGITWITHOUT0 DIGIT DIGIT DIGIT
+    SEPARATOR → / | - | .
+
+D1 → Proposta de Show BREAKLINE BREAKLINE
+D2 → Show Proposal BREAKLINE BREAKLINE
+
+E1 → A Shodrone tem o prazer de submeter à V/ apreciação uma proposta para execução de um show aéreo com drones, 
+conforme descrição abaixo. BREAKLINE 
+A Shodrone é uma empresa que dá prioridade à segurança, pelo que usa a mais avançada tecnologia de IA para apoiar o 
+desenvolvimento dos seus shows, sendo que todos os shows são prévia e cuidadosamente testados/simulados com a tecnologia 
+AI-Test© antes de serem apresentados ao cliente. No link LINK encontra-se um vídeo com a simulação do show proposto. BREAKLINE BREAKLINE
+Com a aplicação do AI-Test©, um exclusivo da Shodrone, temos a confiança de oferecer um seguro de responsabilidade 
+civil no valor de INSURANCEAMOUNT para o show. Os dados detalhados do show são apresentados em anexo. BREAKLINE BREAKLINE
+
+E2 → Shodrone is pleased to submit for your consideration a proposal for the execution of an aerial show with drones, 
+as described below. BREAKLINE
+Shodrone is a company that prioritizes safety, which is why it uses the most advanced AI technology to support the 
+development of its shows, with all shows being previously and carefully tested/simulated with AI-Test© technology 
+before being presented to the client. In the link LINK there is a video with a simulation of the 
+proposed show. BREAKLINE BREAKLINE
+With the application of AI-Test©, a Shodrone exclusive, we are confident in offering liability insurance in the amount 
+of INSURANCEAMOUNT for the show. Detailed show data is presented in the attachment. BREAKLINE BREAKLINE
+
+E3 → COMPANYNAME is a VIP client and Shodrone is pleased to submit for your consideration a proposal for the 
+execution of an aerial show with drones, as described below. BREAKLINE
+Shodrone is a company that prioritizes safety, which is why it uses the most advanced AI technology to support the 
+development of its shows, with all shows being previously and carefully tested/simulated with AI-Test© technology before 
+being presented to the client. In the link LINK there is a video with a simulation of the proposed show. BREAKLINE BREAKLINE
+With the application of AI-Test©, a Shodrone exclusive, we are confident in offering liability insurance in the amount 
+of INSURANCEAMOUNT for the show. Detailed show data is presented in the attachment. BREAKLINE BREAKLINE
+
+    LINK → https://www.TEXT.com
+    INSURANCEAMOUNT → VALUE € | VALUE $ | VALUE £
+    VALUE → DIGIT VALUE | DIGIT | ε
+
+F1 → Estando certos que seremos alvo da V/ preferência. BREAKLINE BREAKLINE
+F2 → Being certain that we will be the target of your preference. BREAKLINE BREAKLINE
+F3 → Looking forward to hearing from you soon. BREAKLINE BREAKLINE
+
+G1 → Subscrevemo-nos ao dispor. BREAKLINE BREAKLINE
+    Melhores cumprimentos, BREAKLINE BREAKLINE
+    CRMMANAGERNAME BREAKLINE
+    CRM Manager BREAKLINE
+G2 → We subscribe at your disposal. BREAKLINE BREAKLINE
+    Best regards, BREAKLINE BREAKLINE
+    CRMMANAGERNAME BREAKLINE
+    CRM Manager BREAKLINE
+G3 → Best regards, BREAKLINE BREAKLINE
+    CRMMANAGERNAME BREAKLINE
+    CRM Manager BREAKLINE
+
+H → [page break]
+
+I1 → Anexo – Detalhes do Show PROPOSALNUMBER BREAKLINE
+I2 → Attachment – Show Details PROPOSALNUMBER BREAKLINE
+
+J1 → Local de realização – GPSCOORDINATES BREAKLINE
+    Data – DATE BREAKLINE
+    Hora – TIME BREAKLINE
+    Duração – DURATION minutos BREAKLINE BREAKLINE
+J2 → Location – GPSCOORDINATES BREAKLINE
+    Date – DATE BREAKLINE
+    Time – TIME BREAKLINE
+    Duration – DURATION minutes BREAKLINE BREAKLINE
+
+    GPSCOORDINATES → LAT , LON
+    LAT → SIGN INTLAT . DECS
+    LON → SIGN INTLON . DECS
+    SIGN → - | ε
+    INTLAT → DIGIT | 1 DIGIT | 2 DIGIT | 3 DIGIT | 4 DIGIT | 5 DIGIT | 6 DIGIT | 7 DIGIT | 8 DIGIT | 90
+    INTLON → DIGIT | DIGIT DIGIT | 11 DIGIT | 12 DIGIT | 13 DIGIT | 14 DIGIT | 15 DIGIT | 16 DIGIT | 17 DIGIT | 180
+    DECS → DIGIT DECS | DIGIT
+
+    TIME → HOUR : MINUTE
+    HOUR → 0 DIGIT | 1 DIGIT | 20 | 21 | 22 | 23
+    MINUTE → 0 DIGIT | 1 DIGIT | 2 DIGIT | 3 DIGIT | 4 DIGIT | 5 DIGIT
+    DURATION → DIGIT DURATION | DIGIT | ε
+
+K1 → #Lista de drones utilizados BREAKLINE
+K2 → #List of used drones BREAKLINE
+
+L1 → M1 L1 | M1 | ε
+L2 → M2 L2 | M2 | ε
+
+    M1 → MODEL – QUANTITY unidades. BREAKLINE
+    M2 → MODEL – QUANTITY units. BREAKLINE
+    MODEL → TEXT
+    QUANTITY → DIGIT QUANTITY | DIGIT | ε
+
+N1 → BREAKLINE #Lista de figuras BREAKLINE
+N2 → BREAKLINE #List of figures BREAKLINE
+
+O1 → P1 O1 | P1 | ε
+O2 → P2 O2 | P2 | ε
+
+    P1 → POSITION – FIGURE BREAKLINE
+    P2 → POSITION – FIGURE BREAKLINE
+    POSITION → TEXT
+    FIGURE → NAME
+
+TEXT → CHAR TEXT | CHAR | ε
+NAME → LETTER NAME | LETTER | ε
+CHAR → LETTER | DIGIT | SYMBOL
+
+LETTER → a | b | c | ... | z | A | B | C | ... | Z
+DIGIT → 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+DIGITWITHOUT0 → 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+SYMBOL → . | , | : | ; | ' ' | / | - | _ | ( | ) | ' | " | @ | # | $ | % | & | ? | ! | ε
+BREAKLINE → \n
 ```
 
----
-
-### Test 2: The representative is associated with a customer
-
-**Refers to Acceptance Criteria:** AC02  
-**Description:** Validates that the representative is associated with a customer.
-
-```java
-@Test
-void ensureRepresentativeRepresentsACustomer() {
-    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(dto.getCustomer());
-}
-```
-
----
-
-### Test 3: Customer representative's information is correct
-
-**Refers to Acceptance Criteria:** AC03  
-**Description:** Verifies the correctness of name, email, phone number, position, and status.
-
-```java
-@Test
-void ensureCustomerInformationIsCorrect() {
-    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(dto.getName());
-    assertNotNull(dto.getEmail());
-    assertNotNull(dto.getPhoneNumber());
-    assertNotNull(dto.getPosition());
-    assertNotNull(dto.getStatus());
-}
-```
-
----
-
-### Test 4: Use of DTOs to decouple domain and UI
-
-**Refers to Acceptance Criteria:** AC04  
-**Description:** Ensures that domain entities are not directly exposed.
-
-```java
-@Test
-void ensureDomainEntitiesAreNotLeaked() {
-    var result = controller.listAllCustomers();
-    assertTrue(result.stream().allMatch(dto -> dto instanceof CustomerDTO));
-}
-```
-
----
-
-## 6. Implementation
-
-This section should include evidence that the implementation aligns with the proposed design. Additional artifacts such as configuration files may also be included to help understand the implementation.
-
-### Major Commits (Sample Format)
-
-- `feat(us221): add CustomerRepresentative entity and repository`
-- `feat(us221): implement DTO mapping for representative registration`
-- `test(us221): add unit tests for representative creation and validation`
-- `refactor: adjust Customer aggregate to support representatives`
-
----
-
-## 7. Integration / Demonstration
-
-This section describes how the functionality was integrated with the system. It should also provide instructions for running or demonstrating the feature.
-
-### Example:
-
-1. Start the application.
-2. Log in with a CRM Collaborator account.
-3. Navigate to the Customer page.
-4. Click on "Add Representative".
-5. Fill in the representative's details and submit.
-6. Verify the representative is added and listed correctly.
-
----
-
-## 8. Observations
-
-- The solution follows a clean architecture separating domain, application, and infrastructure layers.
-- The use of DTOs effectively prevents domain leakage.
-- Alternatives considered included merging representative data into the customer aggregate directly, but this was dismissed to preserve modularity.
-- All third-party libraries used (e.g., validation frameworks, mapping tools) are properly documented in the project repository.
-
----
-
-
+This formal specification serves as the foundation for implementing template parsing, validation, and generation tools, 
+ensuring that proposal documents follow a standardized and verifiable format.
