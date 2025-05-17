@@ -359,10 +359,6 @@ void repeat() {
             move_drone(space, drone_positions, m.id - 1, m.pos, s.max_X, s.max_Y, s.max_Z);
         }
 
-        for (int i = 0; i < drones_ativos; i++) {
-            send_continue_flag(i, true);
-        }
-
         // Check for collisions
         collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones);
 
@@ -374,7 +370,11 @@ void repeat() {
             handle_collision_limit_exceeded(terminado);
         }
 
-        usleep((useconds_t)(s.timestamp * 1e6));
+        for (int i = 0; i < s.num_drones; i++) {
+            if (!terminado[i]){
+                send_continue_flag(i, true);
+            }  
+        }
         t++;
     }
 
