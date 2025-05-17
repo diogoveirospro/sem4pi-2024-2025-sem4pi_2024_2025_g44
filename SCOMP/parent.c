@@ -22,6 +22,8 @@
  */
 
 Data s;
+SpaceCell ***space;
+DronePosition *drone_positions;
 
 void end()
 {
@@ -56,6 +58,18 @@ void parse_data(char *str)
 
 	strtok(NULL, d);
 	s.num_drones = atoi(strtok(NULL, d));
+
+	strtok(NULL, d);
+	s.max_X = atoi(strtok(NULL, d));
+
+	strtok(NULL, d);
+	s.max_Y = atoi(strtok(NULL, d));
+
+	strtok(NULL, d);
+	s.max_Z = atoi(strtok(NULL, d));
+
+	strtok(NULL, d);
+	s.timestamp = atof(strtok(NULL, d));
 }
 
 void process_config_file()
@@ -235,17 +249,28 @@ void start() {
 int main(int argc, char **argv){
   if (argc == 1)
     process_config_file();
-  else if (argc == 5)
+  else if (argc == 9)
   {
     s.inp_dir = argv[1];
     s.out_dir = argv[2];
     s.max_collisions = atoi(argv[3]);
     s.num_drones = atoi(argv[4]);
+	s.max_X = atoi(argv[5]);
+	s.max_Y = atoi(argv[6]);
+	s.max_Z = atoi(argv[7]);
+	s.timestamp = atof(argv[8]);
   }
   else
     end();
 
-  fprintf(stderr, "inp_dir: %s, out_dir: %s, num_drones: %d, max_collisions: %d\n", s.inp_dir, s.out_dir, s.num_drones, s.max_collisions);
+  printf("1st arg: %s\n", s.inp_dir);
+  printf("2nd arg: %s\n", s.out_dir);
+  printf("3rd arg: %d\n", s.max_collisions);
+  printf("4th arg: %d\n", s.num_drones);
+  printf("5th arg: %d\n", s.max_X);
+  printf("6th arg: %d\n", s.max_Y);
+  printf("7th arg: %d\n", s.max_Z);
+  printf("8th arg: %f\n", s.timestamp);
 
   start();
 }

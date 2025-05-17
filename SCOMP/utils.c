@@ -123,3 +123,80 @@ void trim_trailing_spaces(char* str) {
         len--;
     }
 }
+
+
+// Allocates a 3D array for the space (sizeX x sizeY x sizeZ)
+SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ) {
+    SpaceCell ***space = (SpaceCell ***)safe_malloc(sizeX * sizeof(SpaceCell **));
+    for (int x = 0; x < sizeX; x++) {
+        space[x] = (SpaceCell **)safe_malloc(sizeY * sizeof(SpaceCell *));
+        for (int y = 0; y < sizeY; y++) {
+            space[x][y] = (SpaceCell *)safe_malloc(sizeZ * sizeof(SpaceCell));
+            for (int z = 0; z < sizeZ; z++) {
+                space[x][y][z].drone_id = -1; // empty
+            }
+        }
+    }
+    return space;
+}
+
+// Frees the 3D space array
+void free_space(SpaceCell ***space, int sizeX, int sizeY) {
+    for (int x = 0; x < sizeX; x++) {
+        for (int y = 0; y < sizeY; y++) {
+            free(space[x][y]);
+        }
+        free(space[x]);
+    }
+    free(space);
+}
+
+// Allocates a matrix to map drones to positions
+DronePosition* alloc_drone_positions(int num_drones) {
+    DronePosition *matrix = (DronePosition *)safe_malloc(num_drones * sizeof(DronePosition));
+    for (int i = 0; i < num_drones; i++) {
+        matrix[i].drone_id = i;
+        matrix[i].pos.x = matrix[i].pos.y = matrix[i].pos.z = -1; // Not placed yet
+    }
+    return matrix;
+}
+
+// Set a drone at a position in the 3D space
+void set_drone_in_space(SpaceCell ***space, int x, int y, int z, int drone_id) {
+    space[x][y][z].drone_id = drone_id;
+}
+
+// Remove a drone from a position in the 3D space
+void remove_drone_from_space(SpaceCell ***space, int x, int y, int z) {
+    space[x][y][z].drone_id = -1;
+}
+
+// Check if a cell is empty
+bool is_cell_empty(SpaceCell ***space, int x, int y, int z) {
+    return space[x][y][z].drone_id == -1;
+}
+
+// Move a drone in the 3D space (updates both space and drone_positions)
+void move_drone(SpaceCell ***space, DronePosition *drone_positions, int drone_idx, Position new_pos, int sizeX, int sizeY, int sizeZ) {
+    Position old_pos = drone_positions[drone_idx].pos;
+    // Remove from old position if valid
+    if (old_pos.x >= 0 && old_pos.x < sizeX && old_pos.y >= 0 && old_pos.y < sizeY && old_pos.z >= 0 && old_pos.z < sizeZ) {
+        remove_drone_from_space(space, old_pos.x, old_pos.y, old_pos.z);
+    }
+    // Set in new position
+    if(new_pos.x < 0 || new_pos.x >= sizeX || new_pos.y < 0 || new_pos.y >= sizeY || new_pos.z < 0 || new_pos.z >= sizeZ) {
+        fprintf(stderr, RED "Error: New position out of bounds.\n" RESET);
+        return;
+    }
+    if (is_cell_empty(space, new_pos.x, new_pos.y, new_pos.z)) {
+        set_drone_in_space(space, new_pos.x, new_pos.y, new_pos.z, drone_idx);
+    } 
+    drone_positions[drone_idx].pos = new_pos;
+}
+
+// Find drone at a given position, returns drone_id or -1
+int get_drone_at(SpaceCell ***space, int x, int y, int z) {
+    return space[x][y][z].drone_id;
+}
+
+

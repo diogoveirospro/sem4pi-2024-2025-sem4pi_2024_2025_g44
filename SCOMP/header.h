@@ -27,6 +27,10 @@ typedef struct data {
   int num_drones;
   char *inp_dir;
   char *out_dir;
+  int max_X;
+  int max_Y;
+  int max_Z;
+  float timestamp;
 
   //signals
   struct sigaction sa;
@@ -57,6 +61,17 @@ typedef struct message {
 } Message;
 
 
+typedef struct {
+    int id; // -1 if empty, else drone id
+} SpaceCell;
+
+// Matrix to map drone index to its Position
+typedef struct {
+    int id;
+    Position pos;
+} DronePosition;
+
+
 // Function declarations
 void* safe_malloc(size_t size);
 char *read_line(const char *prompt);
@@ -67,6 +82,13 @@ void show_list(const char *list[], size_t size, const char *header);
 int select_index(const char *list[], size_t size, const char *header);
 void goBackAndWait();
 void trim_trailing_spaces(char* str);
-
+void set_drone_in_space(SpaceCell ***space, int x, int y, int z, int drone_id);
+void remove_drone_from_space(SpaceCell ***space, int x, int y, int z);
+bool is_cell_empty(SpaceCell ***space, int x, int y, int z);
+void move_drone(SpaceCell ***space, DronePosition *drone_positions, int drone_idx, Position new_pos, int sizeX, int sizeY, int sizeZ);
+int get_drone_at(SpaceCell ***space, int x, int y, int z);
+SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ);
+void free_space(SpaceCell ***space, int sizeX, int sizeY);
+DronePosition* alloc_drone_positions(int num_drones);
 
 #endif
