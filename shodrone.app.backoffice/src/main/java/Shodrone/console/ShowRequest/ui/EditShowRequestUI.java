@@ -9,6 +9,9 @@ import core.ShowRequest.application.EditShowRequestController;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import core.ShowRequest.domain.ValueObjects.Location;
 import core.ShowRequest.domain.ValueObjects.ShowDescription;
+import core.User.domain.ShodroneRoles;
+import eapli.framework.infrastructure.authz.application.AuthorizationService;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -23,10 +26,17 @@ import java.util.List;
 public class EditShowRequestUI extends AbstractFancyUI {
 
     private final EditShowRequestController controller = new EditShowRequestController();
+    private final CustomerPrinter printer = new CustomerPrinter();
+    private final AuthorizationService authz = AuthzRegistry.authorizationService();
 
     @Override
     protected boolean doShow() {
         try {
+            if (!authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: Unauthorized User" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                return false;
+            }
             Customer customer = getCustomer();
             if (customer == null) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer selected. Operation canceled." + UtilsUI.RESET);
@@ -47,7 +57,7 @@ public class EditShowRequestUI extends AbstractFancyUI {
             QuantityOfDrones quantityOfDrones = enterValidQuantityOfDrones();
 
             controller.editShowRequest(showRequest, location, showDescription, date, time, quantityOfDrones);
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Show Request information updated successfully!" + UtilsUI.RESET);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow Request information updated successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
         } catch (IllegalArgumentException e) {
@@ -73,24 +83,24 @@ public class EditShowRequestUI extends AbstractFancyUI {
     private Customer getCustomer() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
         customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, new CustomerPrinter());
-        customerListWidget.show();
-
         int option;
         do {
+            ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer\n", customerList, printer);
+            customerListWidget.show();
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled.\n" + UtilsUI.RESET);
+                return null;
             }
             if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again.\n" + UtilsUI.RESET);
             } else {
                 return customerList.get(option);
             }
@@ -107,11 +117,10 @@ public class EditShowRequestUI extends AbstractFancyUI {
         List<ShowRequest> showRequestList = new ArrayList<>();
         showRequests.forEach(showRequestList::add);
 
-        ListWidget<ShowRequest> showRequestListWidget = new ListWidget<>("Choose a Show Request", showRequestList, new ShowRequestPrinter());
-        showRequestListWidget.show();
-
         int option;
         do {
+            ListWidget<ShowRequest> showRequestListWidget = new ListWidget<>("\nChoose a Show Request\n", showRequestList, new ShowRequestPrinter());
+            showRequestListWidget.show();
             option = UtilsUI.selectsIndex(showRequestList);
             if (option == -2) {
                 throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -137,7 +146,7 @@ public class EditShowRequestUI extends AbstractFancyUI {
 
                 return new ShowDescription(showDescription);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid description. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid description. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -155,29 +164,34 @@ public class EditShowRequestUI extends AbstractFancyUI {
 
                 return new Location(location);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid location. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid location. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
 
 
-    private LocalDate enterValidDate()
-    {
+    private LocalDate enterValidDate() {
         String date;
         LocalDate lDate;
         do {
             try {
-                date = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new show's date(dd-mm-yyyy) (or type 'cancel' to go back): " + UtilsUI.RESET);
+                date = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new show's date (dd-mm-yyyy) (or type 'cancel' to go back): " + UtilsUI.RESET);
 
+                assert date != null;
                 if ("cancel".equalsIgnoreCase(date)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
 
                 lDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
+                if (!lDate.isAfter(LocalDate.now())) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe date must be in the future. Please try again." + UtilsUI.RESET);
+                    continue;
+                }
+
                 return lDate;
             } catch (DateTimeParseException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid date. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid date. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -189,7 +203,7 @@ public class EditShowRequestUI extends AbstractFancyUI {
         do {
             try {
                 time = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new show's time(hh:mm) (or type 'cancel' to go back): " + UtilsUI.RESET);
-
+                assert time != null;
                 if ("cancel".equalsIgnoreCase(time)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
@@ -198,7 +212,7 @@ public class EditShowRequestUI extends AbstractFancyUI {
 
                 return lTime;
             } catch (DateTimeParseException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid time. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid time. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -216,7 +230,7 @@ public class EditShowRequestUI extends AbstractFancyUI {
 
                 return new QuantityOfDrones(qDrones);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid quantity of drones. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid quantity of drones. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }

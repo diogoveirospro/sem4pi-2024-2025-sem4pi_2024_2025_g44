@@ -86,7 +86,7 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
 
                 return new ShowDescription(showDescription);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid description. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid description. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -104,29 +104,34 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
 
                 return new Location(location);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid location. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid location. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
 
 
-    private LocalDate enterValidDate()
-    {
+    private LocalDate enterValidDate() {
         String date;
         LocalDate lDate;
         do {
             try {
-                date = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the show's date(dd-mm-yyyy) (or type 'cancel' to go back): " + UtilsUI.RESET);
+                date = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the show's date (dd-mm-yyyy) (or type 'cancel' to go back): " + UtilsUI.RESET);
 
+                assert date != null;
                 if ("cancel".equalsIgnoreCase(date)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
 
                 lDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
+                if (!lDate.isAfter(LocalDate.now())) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe date must be in the future. Please try again." + UtilsUI.RESET);
+                    continue;
+                }
+
                 return lDate;
             } catch (DateTimeParseException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid date. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid date. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -138,7 +143,7 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
         do {
             try {
                 time = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the show's time(hh:mm) (or type 'cancel' to go back): " + UtilsUI.RESET);
-
+                assert time != null;
                 if ("cancel".equalsIgnoreCase(time)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
@@ -147,7 +152,7 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
 
                 return lTime;
             } catch (DateTimeParseException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid time. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid time. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -165,7 +170,7 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
 
                 return new QuantityOfDrones(qDrones);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid quantity of drones. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid quantity of drones. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -173,25 +178,24 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
     private Customer getCustomer() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
         customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, printer);
-        customerListWidget.show();
-
         int option;
         do {
+            ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer\n", customerList, printer);
+            customerListWidget.show();
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled.\n" + UtilsUI.RESET);
                 return null;
             }
             if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again.\n" + UtilsUI.RESET);
             } else {
                 return customerList.get(option);
             }

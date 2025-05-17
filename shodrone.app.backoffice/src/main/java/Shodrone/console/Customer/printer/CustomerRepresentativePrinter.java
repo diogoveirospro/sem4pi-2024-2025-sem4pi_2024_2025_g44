@@ -9,6 +9,6 @@ public class CustomerRepresentativePrinter implements Visitor<CustomerRepresenta
 
     @Override
     public void visit(CustomerRepresentative visitee) {
-        System.out.printf("%-20s%-20s%-30s%-20s", visitee.name(), visitee.position(), visitee.email(), visitee.phoneNumber());
+        System.out.printf("\nName: %s \nPosition: %s \nEmail: %s \nPhone number: %s\n", visitee.name(), visitee.position(), visitee.email(), visitee.phoneNumber());
     }
 }

@@ -21,7 +21,7 @@ public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, V
         Preconditions.nonEmpty(collaborator);
         Preconditions.nonEmpty(date);
         Preconditions.nonEmpty(time);
-        this.identifier = "customer email = " + customer + " | collaborator email = " + collaborator + " | date = " + date + " | time = " + time;
+        this.identifier = "customer vatNumber = " + customer + " | collaborator email = " + collaborator + " | date = " + date + " | time = " + time;
     }
 
     @Override

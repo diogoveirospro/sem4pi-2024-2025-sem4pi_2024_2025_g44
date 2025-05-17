@@ -17,18 +17,19 @@ import java.util.List;
 public class ListShowRequestsUI extends AbstractFancyListUI<ShowRequest> {
 
     private final ListShowRequestController controller = new ListShowRequestController();
+    private final CustomerPrinter printer = new CustomerPrinter();
 
     @Override
     protected boolean doShow() {
-       try {
-        super.doShow();
-           UtilsUI.goBackAndWait();
-           return true;
-       } catch (UserCancelledException e) {
-           System.out.println(e.getMessage());
-           UtilsUI.goBackAndWait();
-           return false;
-       }
+        try {
+            super.doShow();
+            UtilsUI.goBackAndWait();
+            return true;
+        } catch (UserCancelledException e) {
+            System.out.println(e.getMessage());
+            UtilsUI.goBackAndWait();
+            return false;
+        }
     }
 
     @Override
@@ -52,12 +53,12 @@ public class ListShowRequestsUI extends AbstractFancyListUI<ShowRequest> {
 
     @Override
     protected String listHeader() {
-        return "List of Show Requests";
+        return "\nList of Show Requests\n";
     }
 
     @Override
     protected String emptyMessage() {
-        return (UtilsUI.RED + UtilsUI.BOLD + "No show request available." + UtilsUI.RESET);
+        return (UtilsUI.RED + UtilsUI.BOLD + "\nNo show request available." + UtilsUI.RESET);
     }
 
     @Override
@@ -68,24 +69,24 @@ public class ListShowRequestsUI extends AbstractFancyListUI<ShowRequest> {
     private Customer getCustomer() {
         Iterable<Customer> customers = controller.listCustomers();
         if (customers == null || !customers.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customers available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo customers available." + UtilsUI.RESET);
             return null;
         }
 
         List<Customer> customerList = new ArrayList<>();
         customers.forEach(customerList::add);
 
-        ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer", customerList, new CustomerPrinter());
-        customerListWidget.show();
-
         int option;
         do {
+            ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer\n", customerList, printer);
+            customerListWidget.show();
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled.\n" + UtilsUI.RESET);
+                return null;
             }
             if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again.\n" + UtilsUI.RESET);
             } else {
                 return customerList.get(option);
             }

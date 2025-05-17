@@ -22,20 +22,20 @@ public class CustomerRepresentativeBootstrapper implements Action {
     @Override
     public boolean execute() {
 
-        register("Andrew Wilson", "andrewwilson@easports.com", "+351", "910000001",
-                "CEO", "EA Sports", "eaUser1", "PasswordEA1");
+        register("Andrew Davis", "andrewdavis@easports.com", "+351", "910000002",
+                "Collaborator", "EA Sports", "eaUser2", "PasswordEA2");
 
-        register("Yves Guillemot", "yves.guillemot@ubisoft.com", "+33", "920000001",
-                "CEO", "Ubisoft", "ubisoftUser1", "PasswordUBI1");
+        register("Yves Grievance", "yves.griv@ubisoft.com", "+33", "920000002",
+                "Manager", "Ubisoft", "ubisoftUser2", "PasswordUBI2");
 
-        register("Shuntaro Furukawa", "shuntaro.furukawa@nintendo.com", "+376", "930000001",
-                "President", "Nintendo", "nintendoUser1", "PasswordNIN1");
+        register("Shuntaro Furacon", "shuntaro.furacao@nintendo.com", "+376", "930000002",
+                "International Manager", "Nintendo", "nintendoUser2", "PasswordNIN2");
 
-        register("Kenichiro Yoshida", "kenichiro.yoshida@sony.com", "+420", "940000001",
-                "CEO", "Sony", "sonyUser1", "PasswordSONY1");
+        register("Kenichiro Yoshi", "kenichiro.yoshi@sony.com", "+420", "940000002",
+                "Intern", "Sony", "sonyUser2", "PasswordSONY2");
 
-        register("Satya Nadella", "satya.nadella@microsoft.com", "+377", "950000001",
-                "CEO", "Microsoft", "microsoftUser1", "PasswordMS1");
+        register("Satya Nada", "satya.nada@microsoft.com", "+377", "950000002",
+                "Human Recourses Manager", "Microsoft", "microsoftUser2", "PasswordMS2");
 
         return true;
     }

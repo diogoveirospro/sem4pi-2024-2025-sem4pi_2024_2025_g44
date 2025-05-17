@@ -42,7 +42,6 @@ public class CustomerBootstrapper extends UsersBootstrapperBase implements Actio
         Address addressObj = new Address(address);
         VatNumber taxNumberObj = new VatNumber(taxNumber);
         Customer customer = new Customer(name, addressObj, taxNumberObj, customerType);
-        controller.addCustomer(customer);
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Customer registered: {}" + UtilsUI.RESET, customer.toString());
 
         Email emailObj = new Email(email);
@@ -57,6 +56,7 @@ public class CustomerBootstrapper extends UsersBootstrapperBase implements Actio
         roles.add( ShodroneRoles.CUSTOMERREPRESENTATIVE);
         roles.add(ShodroneRoles.USER);
         registerUser(username, password, firstName, lastName, email, roles, phoneNumberObj);
+        controller.addCustomer(customer);
 
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Registered Customer Representative {} with name {}" +
                 UtilsUI.RESET, nameCustomer, nameRepresentative);

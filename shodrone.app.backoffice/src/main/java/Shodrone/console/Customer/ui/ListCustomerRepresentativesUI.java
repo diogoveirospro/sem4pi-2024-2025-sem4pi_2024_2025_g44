@@ -92,7 +92,7 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
      */
     @Override
     protected String listHeader() {
-        return "List of Customer Representatives";
+        return "\nList of Customer Representatives\n";
     }
 
     /**
