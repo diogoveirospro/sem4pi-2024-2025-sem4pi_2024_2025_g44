@@ -33,15 +33,26 @@ This feature depends on **US241**: As a Drone Tech, I want to add drones of an e
 
 ### Drone Aggregate
 
-The `Drone` aggregate represents each individual drone in the system, including its current **status** (e.g., ACTIVE, INACTIVE, MAINTENANCE) and its association with a **Model**.
+The `Drone` aggregate represents each physical drone tracked in the system. It holds a unique identity (`SerialNumber`), a current operational `DroneStatus`, and is associated with a specific `Model`.
 
-For US243, the key domain element is:
+For **US243**, the primary business requirement is to **filter and retrieve drones by their associated model**. This enables users to quickly query the system for all drones of a particular type.
 
-- **Model** – The specific model that the drone belongs to. This is a required reference for filtering drones.
+#### Key Domain Element:
+
+- **Model** – A required reference that each drone is associated with. This entity acts as the classification or type definition for a drone. Filtering by model means querying drones based on this association.
+
+The aggregate also retains:
+
+- **DroneStatus** – Indicates if the drone is currently ACTIVE, MAINTENANCE, BROKEN, etc., which can be combined with model filters for more refined searches.
+- **SerialNumber** – A unique value object that identifies each drone.
 
 ### Value Objects
 
-- **Model** – The drone's model, which must already exist in the system before drones of that model can be listed.
+- **Model** – An entity representing the drone's configuration and type. It must already exist before any drone of that model can be created or retrieved.
+- **SerialNumber** – Guarantees unique identification and immutability.
+- **DroneStatus** – Encapsulates valid lifecycle states of the drone.
+
+---
 
 ### Domain Model
 
@@ -62,66 +73,21 @@ The following diagram shows the flow of the active drone listing process based o
 ---
 
 
-### 5. Tests
+## 5. Tests
 
-### Test 1: Drones are filtered by model
+Please go to the [US241](../../SPRINT_2/US241/readme.md) for the tests of the system.
 
-**Refers to Acceptance Criteria:** AC01  
-**Description:** Drones must be filtered by model.
-
-```java
-@Test
-void ensureDronesAreFilteredByModel() {
-        List<Drone> drones = controller.listActiveDrones("Model-X");
-        for (Drone drone : drones) {
-        assertEquals("Model-X", drone.getModel().getName());
-        }
-        }
-
-```
+---
 
 ## 6. Implementation
 
-This section includes evidence that the implementation of **US243** aligns with the proposed design. The listing of active drones was developed based on a clean separation of concerns and layered architecture.
+As said during the design phase, the implementation of this functionality is similar to the one presented in [US241](../../SPRINT_2/US241/readme.md).
+And for these case we are going to use the same thing we said in [US241](../../SPRINT_2/US241/readme.md), as the commits are also the same.
 
-### Major Commits
+## 7. Integration/Demonstration
 
-- `feat(us243): add list active drones by model functionality`  
-  Implemented logic to filter and display active drones by model.
-
-- `feat(us243): create ListActiveDronesController and UI flow`  
-  Developed controller and UI components for selecting and displaying active drones.
-
-- `test(us243): add unit tests for active drones listing`  
-  Verified correct filtering and display of active drones.
-
-- `refactor: optimize drone query logic`  
-  Improved the efficiency of querying for active drones by model.
-
----
-
-## 7. Integration / Demonstration
-
-This section describes how the functionality was integrated into the system and instructions to run or demonstrate it.
-
-### Integration
-
-- Connected to the `DroneRepository` to query and retrieve active drones by model.
-- Integrated with the UI to allow Drone Techs to filter drones based on their model and active status.
-
-### How to Demonstrate
-
-1. Start the application.
-2. Log in as a **Drone Tech**.
-3. Go to the **Inventory Management** section.
-4. Select a drone model from the available options.
-5. Submit the request.
-6. The system displays a list of **active drones** for the selected model.
-
----
+Please go to the [US241](../../SPRINT_2/US241/readme.md) for the integration and demonstration of the system.
 
 ## 8. Observations
 
-- The system only lists **active drones** and ensures that each drone is associated with a **valid model**.
-- Model-based filtering helps in making decisions by narrowing down the available inventory to just those drones that are relevant.
-- Future improvements could include adding additional filters, such as **drone location** or **last service date**, to further assist in decision-making.
+Please go to the [US241](../../SPRINT_2/US241/readme.md) for the observations of the system.

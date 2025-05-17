@@ -45,14 +45,15 @@ This requirement depends on **US240:** As a Drone Tech, I want to create a drone
 
 ### Drone Aggregate
 
-The `Drone` aggregate represents an individual drone in the system. For the purpose of US241, the key domain elements are:
+The Drone aggregate represents an individual physical drone in the system and acts as the root of its lifecycle and operational state.
 
-- **SerialNumber** – A value object representing the unique identifier for each drone. No two drones may share the same serial number.
-- **DroneStatus** – A value object that captures the current status of the drone (e.g., ACTIVE, INACTIVE, MAINTENANCE).
-- **Model** – An entity representing the drone’s model. Every drone must be associated with an existing model in the system.
+#### Domain Attributes:
+- **SerialNumber** –A value object representing the unique identifier for each drone. This value must be unique across all drones in the system.
+- **DroneStatus** – A value object indicating the current operational status of the drone (e.g., ACTIVE, INACTIVE, MAINTENANCE, BROKEN). Encapsulates the drone’s lifecycle and availability.
+- **Model** – An entity reference to an existing Model. Every drone must be linked to a valid and pre-registered drone model to ensure standardization and traceability.
+- **RemovalReson** - A value object capturing the reason for removal from service, if applicable. A drone may have multiple associated removal reasons (e.g., malfunction, upgrade, decommission), or none if still in active service.
 
-This design ensures that drones are uniquely identifiable and tied to a known model already configured in the system.
-
+This structure ensures that all drones are uniquely identifiable, tied to a certified model, and that their status and history are traceable through immutable value objects.
 ### Model Aggregate
 
 The `Model` aggregate (also referred to as DroneModel in earlier discussions) represents the specifications of a type of drone. A model must exist before drones of that model can be created.
@@ -61,9 +62,10 @@ In this US, the model must already be present when creating a drone, thus this e
 
 ### Value Objects
 
-- **SerialNumber** – Encapsulates formatting and uniqueness rules.
-- **DroneStatus** – Encodes the drone’s lifecycle states in a strongly typed, controlled way.
-- **DroneModel** – Represents the technical specifications and constraints of a drone type, including its behavior under wind conditions. This entity must exist before a drone instance can be created, ensuring that only valid models are referenced.
+- **SerialNumber** – An immutable, validated value object enforcing uniqueness and formatting rules for drone identification.
+- **DroneStatus** –  A controlled enumerated type representing the valid operational states of a drone throughout its lifecycle.
+- **RemovalReason** – A descriptive value object (e.g., string or code-based reason) used for auditability when a drone is taken out of service.
+- **Model** – An entity reference (not a value object) representing the shared drone type definition required for creating a drone.
 
 ### Domain Model
 
@@ -89,106 +91,116 @@ The following tests validate the acceptance criteria defined for **US241**. They
 
 ---
 
-### Test 1: Each drone must have a serial number
-
-**Refers to Acceptance Criteria:** AC01  
-**Description:** Verifies that a drone cannot be added without a valid serial number and that the number is persisted.
-
-```java
-@Test
-void ensureDroneSerialNumberIsStored() {
-    controller.addDrone("DRN-123456", "Model-X");
-    assertTrue(repository.existsBySerialNumber("DRN-123456"));
-}
-````
-
-### Test 2: Drone addition must support bootstrap process
-**Refers to Acceptance Criteria:** AC02   
-**Description:** Validates that drones can be added through a bootstrap (batch) process using the same validations as manual input.
+### Test: Drone Entity Unit Tests
+**Refers to:** Core functionality of the Drone entity   
+**Description:**  Tests constructors, getters, setters, equality, and business methods for the Drone entity class.
 
 ```java
 @Test
-void ensureBootstrapProcessAddsDrones() {
-List<String> serials = List.of("BOOT-001", "BOOT-002");
-controller.bootstrapAddDrones(serials, "Model-X");
+    void testDroneDefaultConstructorForORM() {
+            Drone emptyDrone = new Drone();
+            assertNotNull(emptyDrone);
+            }
 
-    for (String serial : serials) {
-        assertTrue(repository.existsBySerialNumber(serial));
-    }
-}
-````
-
-### Test 3: Drone model must already exist
-**Refers to Acceptance Criteria:** AC03   
-**Description:** Ensures that a drone cannot be added unless the associated model is registered in the system.
-
-```java
 @Test
-void ensureDroneModelExistsBeforeAddingDrone() {
-        assertThrows(DroneModelNotFoundException.class, () -> {
-        controller.addDrone("DRN-999999", "UnknownModel");
-        });
+    void testDroneSameAsReturnsFalseAlways() {
+            Drone otherDrone = new Drone(
+            new SerialNumber(9999),
+            buildSampleModel(),
+            new RemovalReason(new HashMap<>()),
+        DroneStatus.ACTIVE
+        );
+
+        assertFalse(drone.sameAs(otherDrone));
+        assertFalse(drone.sameAs(null));
         }
+
+@Test
+    void testDroneStatusGetterAndAlias() {
+            assertEquals(drone.droneStatus(), drone.droneStatus());
+            }
+
+@Test
+    void testModelGetterAndAlias() {
+            assertEquals(drone.model(), drone.model());
+            }
+
+@Test
+    void testIdentityEquality() {
+            Drone sameSerialDrone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+            assertEquals(drone.identity(), sameSerialDrone.identity());
+            }
+
+@Test
+    void testGetSerialNumber() {
+            assertEquals(serialNumber, drone.getSerialNumber());
+            }
+
+@Test
+    void testSetSerialNumber() {
+            SerialNumber newSerial = new SerialNumber(5678);
+            drone.setSerialNumber(newSerial);
+            assertEquals(newSerial, drone.getSerialNumber());
+            }
+
+@Test
+    void testSetModel() {
+            Model newModel = buildSampleModel();
+            drone.setModel(newModel);
+            assertEquals(newModel, drone.model());
+            }
+
+@Test
+    void testSetRemovalReason() {
+            Map<Date, String> newReasons = new HashMap<>();
+        newReasons.put(new Date(), "Updated reason");
+        RemovalReason newReason = new RemovalReason(newReasons);
+        drone.setRemovalReason(newReason);
+        assertEquals(newReason, drone.removalReason());
+        }
+
+@Test
+    void testSetDroneStatus() {
+            drone.setDroneStatus(DroneStatus.BROKEN);
+            assertEquals(DroneStatus.BROKEN, drone.droneStatus());
+            }
 ````
 ---
 
 ## 6. Implementation
 
-This section includes evidence that the implementation of US241 aligns with the proposed design. The drone inventory feature was developed based on a clean separation of concerns and layered architecture.
+The implementation of US241,US242, US243 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the registration of a new model of drone. And didn't diverge from the design.
 
-### Major Commits
+## 7. Integration/Demonstration
 
-- `feat(us241): add Drone entity and DroneRepository`
-  Introduced the core domain entity and persistence layer for drones.
+To integrate the new functionality with the existing system, we followed these steps:
 
-- `feat(us241): implement AddDroneToInventoryController`
-  Developed the controller to handle drone registration with serial number validation.
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `DroneRepository` were updated to include the necessary methods for the new functionality.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to models and drones. This includes methods for adding, removing, and retrieving drones and retrieving models.
+3. **UI Layer**: The user interface was updated to include forms and views for managing the drones. This includes input validation and error handling.
+4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
 
-- `feat(us241): implement bootstrap mechanism to preload drones`
-  Supported automatic drone registration at system startup.
+To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
-- `test(us241): add unit tests for adding drones and validating serial numbers`
-  Verified core behaviors related to the addition of drones.
+### Demonstration Instructions
 
-- `refactor: ensure model check before adding drone`
-  Implemented guard clause to ensure only drones of existing models are added.
+To demonstrate the functionality, follow these steps:
 
----
-
-## 7. Integration / Demonstration
-
-This section describes how the functionality was integrated into the system and instructions to run or demonstrate it.
-
-### Integration
-
-- Connected to the existing **DroneModel** entities.
-- Integrated with the persistence layer via `DroneRepository`.
-- Drone registration logic made available through UI and bootstrap process.
-
-### How to Demonstrate
-
-1. Start the application.
-2. Log in as a **Drone Tech**.
-3. Go to the **Inventory Management** section.
-4. Click on **"Add Drone"**.
-5. Enter a **valid serial number** and select a **pre-existing drone model**.
-6. Submit the form.
-7. The drone is now stored and visible in the inventory list.
-
-To test the bootstrap process:
-
-- Add drone data to the configuration or bootstrap script.
-- Run the application.
-- Verify that the drones appear in the inventory at startup.
+1. **Launch the application**.
+2. **Log in as a DroneTech**.
+3. Navigate to the **Drones** section.
+4. Select the corresponding option to what you want to do.
+5. Follow the instructions in the UI.
 
 ---
 
 ## 8. Observations
 
-- The system uses **clean architecture**, isolating domain logic from persistence and UI.
-- **Serial number validation** ensures unique identification of each drone.
-- The **bootstrap process** uses the same logic flow as the UI to avoid duplicating behaviors.
-- A key design decision was to **require the drone model to exist prior to drone registration**, avoiding orphaned drones.
-- Future enhancements could include automatic generation of serial numbers or a drone status tracker.
-- All used libraries (e.g., for input validation) are documented in the project’s dependency files.
+For the implementation of this project, we used the following sources:
+
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
+- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
+- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
 

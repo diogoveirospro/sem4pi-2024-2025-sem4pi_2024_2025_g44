@@ -35,17 +35,25 @@ The main objective is to allow operators to remove a drone when it's no longer n
 
 ### Drone Aggregate
 
-The `Drone` aggregate represents a physical drone in the system, uniquely identified by its `SerialNumber`. In the context of **US242**, the goal is not to delete the drone physically from the system, but to **logically remove** it from the active inventory by recording:
+The `Drone`aggregate represents a physical drone tracked within the system. In the scope of **US242**, the domain logic supports logical removal rather than physical deletion. This means a drone remains in the system but is flagged as removed, with accompanying metadata that includes:
 
 - The **reason** for removal (e.g., "decommissioned", "damaged", "lost").
 - The **date/time** the removal occurred.
 
-This approach ensures that data integrity and auditability are maintained, as removed drones may still be referenced for historical or regulatory purposes.
+This design ensures historical traceability and regulatory compliance, while also supporting business needs such as audit logs and asset lifecycle tracking.
+
+#### Domain Attributes:
+- **SerialNumber** –A value object representing the unique identifier for each drone. This value must be unique across all drones in the system.
+- **DroneStatus** – A value object indicating the current operational status of the drone (e.g., ACTIVE, INACTIVE, MAINTENANCE, BROKEN). Encapsulates the drone’s lifecycle and availability.
+- **RemovalReson** - A value object capturing the reason for removal from service, if applicable. A drone may have multiple associated removal reasons (e.g., malfunction, upgrade, decommission), or none if still in active service.
+
+The removal reason is modeled as a 0..* relationship, supporting multiple entries for scenarios where a drone might be temporarily decommissioned and then reinstated.
 
 ### Value Objects
 
-- **SerialNumber** – Uniquely identifies a drone and ensures consistent formatting.
-- **RemovalReason** – Text or predefined enumeration describing why the drone is being removed.
+- **SerialNumber** – An immutable, validated value object enforcing uniqueness and formatting rules for drone identification.
+- **DroneStatus** –  A controlled enumerated type representing the valid operational states of a drone throughout its lifecycle.
+- **RemovalReason** – A descriptive value object (e.g., string or code-based reason) used for auditability when a drone is taken out of service.
 
 ### Domain Model
 
@@ -65,96 +73,21 @@ The following diagram shows the flow of the drone removal process.
 
 ---
 
-### 5. Tests
+## 5. Tests
 
-### Test 1: Removal reason and date are stored
+Please go to the [US241](../../SPRINT_2/US241/readme.md) for the tests of the system.
 
-**Refers to Acceptance Criteria:** AC01
-**Description:** Validates that when a drone is removed, the reason and current date are saved.
-
-```java
-@Test
-void ensureDroneRemovalReasonAndDateAreSaved() {
-    controller.removeDrone("DRN-123456", "Decommissioned");
-
-    DroneRemovalLog log = repository.getRemovalLog("DRN-123456");
-    assertEquals("Decommissioned", log.getReason());
-    assertNotNull(log.getDate());
-}
-```
-
-### Test 1: Cannot remove non-existent drone
-
-**Description:** Verifies that attempting to remove a drone that doesn’t exist results in a failure.
-
-```java
-@Test
-void ensureCannotRemoveNonexistentDrone() {
-        assertThrows(DroneNotFoundException.class, () -> {
-        controller.removeDrone("UNKNOWN-001", "Lost");
-        });
-        }
-
-```
-
-### Test 1: Removed drone is no longer listed
-
-**Description:** Checks that a drone removed from the inventory is not returned in future inventory listings.
-
-```java
-@Test
-void ensureRemovedDroneNotInInventory() {
-        controller.removeDrone("DRN-123456", "Broken");
-        List<Drone> activeDrones = repository.listActiveDrones();
-        assertFalse(activeDrones.stream()
-        .anyMatch(d -> d.getSerialNumber().equals("DRN-123456")));
-        }
-
-```
 ---
 
 ## 6. Implementation
 
-### Major Commits
+As said during the design phase, the implementation of this functionality is similar to the one presented in [US241](../../SPRINT_2/US241/readme.md).
+And for these case we are going to use the same thing we said in [US241](../../SPRINT_2/US241/readme.md), as the commits are also the same.
 
-- `feat(us242): add Drone removal capability`  
-  Added ability to remove drones and log removal reason and date.
+## 7. Integration/Demonstration
 
-- `feat(us242): implement RemoveDroneController and UI flow`  
-  Provided UI interaction for removal confirmation and input.
-
-- `test(us242): unit tests for removal scenarios`  
-  Ensured proper validation, storage, and filtering of removed drones.
-
-- `refactor: reuse repository instance via factory`  
-  Improved access to `DroneRepository` via singleton repository factory.
-
----
-
-## 7. Integration / Demonstration
-
-### Integration
-
-- Connected to existing `DroneRepository`.
-- UI linked with new controller: `RemoveDroneController`.
-- Removal logs persisted with timestamp and reason.
-
-### How to Demonstrate
-
-1. Start the application.
-2. Log in as a **Drone Tech**.
-3. Go to **Inventory Management**.
-4. Select a drone to remove.
-5. Enter a **reason** for removal and confirm.
-6. Check the inventory: the drone should no longer appear.
-7. View removal logs for auditability (optional).
-
----
+Please go to the [US241](../../SPRINT_2/US241/readme.md) for the integration and demonstration of the system.
 
 ## 8. Observations
 
-- Drone removal is **logical**, not physical — records persist for auditing.
-- The removal includes the **reason** and **timestamp**, as per safety and traceability standards.
-- **Validation ensures** the drone exists before removal is allowed.
-- The system avoids data loss by retaining logs of removal operations.
-- Future improvements may include **status tagging** instead of hard removal (e.g., `"decommissioned"`, `"lost"`).
+Please go to the [US241](../../SPRINT_2/US241/readme.md) for the observations of the system.
