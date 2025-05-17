@@ -61,6 +61,9 @@ void parse_data(char *str)
 	strtok(NULL, d);
 	s.num_drones = atoi(strtok(NULL, d));
 
+    strtok(NULL, d);
+    s.raio_drone = atoi(strtok(NULL, d));
+
 	strtok(NULL, d);
 	s.max_X = atoi(strtok(NULL, d));
 
@@ -266,6 +269,41 @@ void add_position_timestamp(DroneHistory *history, Position pos, float timestamp
     history->count++;
 }
 
+
+// Check number of collisions between drones
+int check_collisions(int COLLISION_DISTANCE, int *pids, DronePosition *drone_positions, int num_drones) {
+    int collisions = 0;
+    for (int i = 0; i < num_drones; i++) {
+        for (int j = i + 1; j < num_drones; j++) {
+            if (calculate_distance(drone_positions[i].pos, drone_positions[j].pos) <= COLLISION_DISTANCE) {
+                // Notifica os drones envolvidos via sinal
+                kill(pids[i], SIGUSR1);
+                kill(pids[j], SIGUSR1);
+                collisions++;
+            }
+        }
+    }
+    return collisions;
+}
+
+// Handle collision limit exceeded
+void handle_collision_limit_exceeded(int *terminado) {
+    fprintf(stderr, "%sCollision limit exceeded. Terminating...%s\n", RED, RESET);
+    // Notify all drones to terminate
+    for (int i = 0; i < s.num_drones; i++) {
+        if (!terminado[i]) {
+            kill(s.pids[i], SIGKILL);
+        }
+    }
+    // Wait for all drones to terminate
+    for (int i = 0; i < s.num_drones; i++) {
+        waitpid(s.pids[i], NULL, 0);
+    }
+    free(terminado);
+    do_report();
+    terminate();
+}
+
 void send_continue_flag(int drone_idx, bool should_continue) {
     write(s.down[drone_idx][1], &should_continue, sizeof(bool));
 }
@@ -279,6 +317,8 @@ void repeat() {
     int t = 0;
     int drones_ativos = s.num_drones;
     int *terminado = calloc(s.num_drones, sizeof(int));
+    int COLLISION_DISTANCE = s.raio_drone * 2;
+    int collisions = 0;
 
     if (!terminado) {
         perror("calloc");
@@ -318,11 +358,23 @@ void repeat() {
             add_position_timestamp(histories[m.id - 1], m.pos, t * s.timestamp);
             move_drone(space, drone_positions, m.id - 1, m.pos, s.max_X, s.max_Y, s.max_Z);
         }
-                
+
         for (int i = 0; i < drones_ativos; i++) {
             send_continue_flag(i, true);
         }
 
+        // Check for collisions
+        collisions += check_collisions(COLLISION_DISTANCE, s.pids, drone_positions, s.num_drones);
+
+        // debbug num colisoes
+        fprintf(stderr, "Collisions detected: %d\n", collisions);
+
+        // Check if the number of collisions exceeds the limit
+        if (collisions >= s.max_collisions){
+            handle_collision_limit_exceeded(terminado);
+        }
+
+        usleep((useconds_t)(s.timestamp * 1e6));
         t++;
     }
 
@@ -387,10 +439,11 @@ int main(int argc, char **argv){
     s.out_dir = argv[2];
     s.max_collisions = atoi(argv[3]);
     s.num_drones = atoi(argv[4]);
-	s.max_X = atoi(argv[5]);
-	s.max_Y = atoi(argv[6]);
-	s.max_Z = atoi(argv[7]);
-	s.timestamp = atof(argv[8]);
+    s.raio_drone = atoi(argv[5]);
+	s.max_X = atoi(argv[6]);
+	s.max_Y = atoi(argv[7]);
+	s.max_Z = atoi(argv[8]);
+	s.timestamp = atof(argv[9]);
   }
   else
     end();
@@ -399,10 +452,11 @@ int main(int argc, char **argv){
   printf("2nd arg: %s\n", s.out_dir);
   printf("3rd arg: %d\n", s.max_collisions);
   printf("4th arg: %d\n", s.num_drones);
-  printf("5th arg: %d\n", s.max_X);
-  printf("6th arg: %d\n", s.max_Y);
-  printf("7th arg: %d\n", s.max_Z);
-  printf("8th arg: %f\n", s.timestamp);
+  printf("5th arg: %d\n", s.raio_drone);
+  printf("6th arg: %d\n", s.max_X);
+  printf("7th arg: %d\n", s.max_Y);
+  printf("8th arg: %d\n", s.max_Z);
+  printf("9th arg: %f\n", s.timestamp);
 
   start();
 }

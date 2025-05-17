@@ -9,22 +9,29 @@ void sigint_handler(int sig)
 
 void handler_sigusr1(int sig)
 {
-    (void) sig;
-    //sigusr1 code
+    (void)sig;
+
+    // Notifica o utilizador que este drone sofreu uma colisão
+    fprintf(stderr, "🚨 Drone %d recebeu sinal de colisão (SIGUSR1)!\n", getpid());
+    fflush(stderr); // Garante que a mensagem é escrita imediatamente
 }
 
 void set_up_signals()
 {
-	struct sigaction sa;
+	struct sigaction sa_usr1, sa_int;
 
-	memset(&sa, 0, sizeof(sa));
-	sigfillset(&sa.sa_mask);
-	sigdelset(&sa.sa_mask, SIGINT);
-	sa.sa_handler = handler_sigusr1;
-	sigaction(SIGUSR1, &sa, NULL);
+    // ----- SIGUSR1: colisão -----
+    memset(&sa_usr1, 0, sizeof(sa_usr1));
+    sa_usr1.sa_handler = handler_sigusr1;
+    sigfillset(&sa_usr1.sa_mask);  // Bloqueia todos os sinais durante tratamento
+    sigaction(SIGUSR1, &sa_usr1, NULL);
 
-	sa.sa_handler = sigint_handler;
-	sigaction(SIGINT, &sa, NULL);
+    // ----- SIGINT: terminar -----
+    memset(&sa_int, 0, sizeof(sa_int));
+    sa_int.sa_handler = sigint_handler;
+    sigfillset(&sa_int.sa_mask);  // Bloqueia todos os sinais durante tratamento
+    sigaction(SIGINT, &sa_int, NULL);
+
 }
 
 // Build the file name based on the drone number

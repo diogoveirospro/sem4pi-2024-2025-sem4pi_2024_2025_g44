@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 
 // Defines
 #define CONFIG_FILE "./config.txt"
@@ -34,6 +35,7 @@ typedef struct data {
   //config file info
   int max_collisions;
   int num_drones;
+  int raio_drone;
   char *inp_dir;
   char *out_dir;
   int max_X;
@@ -114,5 +116,7 @@ int get_drone_at(SpaceCell ***space, int x, int y, int z);
 SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ);
 void free_space(SpaceCell ***space, int sizeX, int sizeY);
 DronePosition* alloc_drone_positions(int num_drones);
+double calculate_distance(Position p1, Position p2);
+
 
 #endif

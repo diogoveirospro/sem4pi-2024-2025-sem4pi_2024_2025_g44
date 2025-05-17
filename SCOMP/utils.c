@@ -199,4 +199,9 @@ int get_drone_at(SpaceCell ***space, int x, int y, int z) {
     return space[x][y][z].drone_id;
 }
 
+// Calculate teh distance between two drones
+double calculate_distance(Position p1, Position p2) {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2) + pow(p1.z - p2.z, 2));
+}
+
 
