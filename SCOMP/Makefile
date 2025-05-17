@@ -6,7 +6,7 @@ PARENT_EXEC=parent
 DRONE_EXEC=drone
 
 CC=gcc
-FLAGS=
+FLAGS= -g
 
 RM=rm -f
 

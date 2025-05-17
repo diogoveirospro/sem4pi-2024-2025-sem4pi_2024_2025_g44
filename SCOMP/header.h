@@ -69,11 +69,6 @@ typedef struct message {
   Position pos;
 } Message;
 
-typedef struct continue_flag{
-  int id;
-  bool should_continue;
-} Continue_Flag;
-
 typedef struct {
     Position *positions;   // dynamic array of drone positions
     float *timestamps;    // parallel array of timestamps for each position
@@ -95,9 +90,9 @@ typedef struct drone_position {
 typedef struct drone{
   int id;
   Position Curr_pos;
-  Position *positions;
+  Position *vector;
   int num_positions;
-  Continue_Flag *continue_flag;
+  bool continue_flag;
 } Drone;
 
 

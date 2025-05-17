@@ -9,10 +9,8 @@ void sigint_handler(int sig)
 
 void handler_sigusr1(int sig)
 {
-  (void) sig;
-  
-  //sigusr1 code
-
+    (void) sig;
+    //sigusr1 code
 }
 
 void set_up_signals()
@@ -35,47 +33,58 @@ void build_filename(char *buffer, size_t size, const char *inp_dir, const char *
 	snprintf(buffer, size, "%s/%s%s%s", inp_dir, INPUT_FILENAME, id, INPUT_FILE_EXTENSION);
 }
 
+// Helper function to handle Continue_Flag logic
+
+void wait_for_continue_flag() {
+    bool should_continue;
+    if (read(0, &should_continue, sizeof(bool)) != sizeof(bool)) {
+        perror("Drone: Failed to read continue flag");
+        raise(SIGINT);
+    }
+}
+
 // Reads the drone file line by line and sends the positions to the parent
 void run_script(const char *filename, int drone_id)
 {
     FILE *f = fopen(filename, "r");
     if (!f) {
         perror("Error opening input file");
-        exit(1);
+        raise(SIGINT);
     }
 
     Message m;
     m.id = drone_id;
 
     int dx, dy, dz;
-	int lastx, lasty, lastz;
+    int lastx, lasty, lastz;
     int first = 1;
 
     while (fscanf(f, "%d,%d,%d", &dx, &dy, &dz) == 3) {
+        int timestep;
+        ssize_t n = read(0, &timestep, sizeof(int));
+        if (n != sizeof(int)) {
+            // Parent closed pipe or error
+            break;
+        }
         if (first) {
-            // Primeira linha: posição absoluta inicial
             m.pos.x = dx;
             m.pos.y = dy;
             m.pos.z = dz;
-
-			lastx = dx;
-			lasty = dy;
-			lastz = dz;
-
+            lastx = dx;
+            lasty = dy;
+            lastz = dz;
             first = 0;
         } else {
-            // Restantes linhas: soma vetorial (deslocamento)
             m.pos.x = lastx + dx;
             m.pos.y = lasty + dy;
             m.pos.z = lastz + dz;
-
-			lastx = m.pos.x;
-			lasty = m.pos.y;
-			lastz = m.pos.z;
-
+            lastx = m.pos.x;
+            lasty = m.pos.y;
+            lastz = m.pos.z;
         }
 
-        write(1, &m, sizeof(Message));  // write to stdout -> pipe to parent
+        write(1, &m, sizeof(Message));
+        wait_for_continue_flag();
     }
 
     fclose(f);

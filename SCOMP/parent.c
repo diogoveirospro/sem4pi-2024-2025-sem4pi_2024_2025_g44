@@ -266,6 +266,14 @@ void add_position_timestamp(DroneHistory *history, Position pos, float timestamp
     history->count++;
 }
 
+void send_continue_flag(int drone_idx, bool should_continue) {
+    write(s.down[drone_idx][1], &should_continue, sizeof(bool));
+}
+
+void send_timestep(int drone_idx, int timestep) {
+    write(s.down[drone_idx][1], &timestep, sizeof(int));
+}
+
 void repeat() {
     Message m;
     int t = 0;
@@ -278,13 +286,18 @@ void repeat() {
     }
 
     while (drones_ativos > 0) {
+        // Send timestep to each drone at the start of the round
+        for (int i = 0; i < s.num_drones; i++) {
+            if (!terminado[i])
+                send_timestep(i, t);
+        }
         for (int i = 0; i < s.num_drones; i++) {
             if (terminado[i])
                 continue;
 
             ssize_t n = read(s.up[0], &m, sizeof(Message));
+
             if (n == 0) {
-                // EOF - drone ended
                 terminado[i] = 1;
                 drones_ativos--;
                 continue;
@@ -302,14 +315,14 @@ void repeat() {
                 continue;
             }
 
-            // Adds position and timestamp to drone history
             add_position_timestamp(histories[m.id - 1], m.pos, t * s.timestamp);
-
-            // Update the current position in space
             move_drone(space, drone_positions, m.id - 1, m.pos, s.max_X, s.max_Y, s.max_Z);
         }
+                
+        for (int i = 0; i < drones_ativos; i++) {
+            send_continue_flag(i, true);
+        }
 
-        usleep((useconds_t)(s.timestamp * 1e6));
         t++;
     }
 
