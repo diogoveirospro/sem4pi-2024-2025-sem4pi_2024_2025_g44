@@ -13,11 +13,19 @@ import java.util.List;
 
 /**
  * User Interface for removing a drone from the inventory.
+ *
+ * Allows the user to select a drone, provide a reason for removal,
+ * confirm the action, and process the removal through the controller.
  */
 public class RemoveDroneUI extends AbstractFancyUI {
 
     private final RemoveDroneController controller = new RemoveDroneController();
 
+    /**
+     * Executes the UI logic for removing a drone.
+     *
+     * @return true if the drone was removed successfully; false otherwise.
+     */
     @Override
     protected boolean doShow() {
         try {
@@ -60,15 +68,22 @@ public class RemoveDroneUI extends AbstractFancyUI {
         }
     }
 
+    /**
+     * Returns the headline/title for this UI screen.
+     *
+     * @return String representing the UI title
+     */
     @Override
     public String headline() {
         return "Remove a Drone from the Inventory";
     }
 
     /**
-     * Allow the user to select a drone from the list.
+     * Allows the user to select a drone from a list of available drones.
+     * Displays each drone with its details and prompts for index selection.
      *
-     * @return the selected Drone or null if none selected.
+     * @return The selected {@link Drone}, or null if none available
+     * @throws UserCancelledException if the user cancels the selection
      */
     private Drone selectDrone() {
         Iterable<Drone> drones = controller.listDrones();
@@ -81,17 +96,20 @@ public class RemoveDroneUI extends AbstractFancyUI {
         List<Drone> droneList = new ArrayList<>();
         int index = 1;
 
+        // Print table header
         System.out.println(UtilsUI.BOLD
                 + String.format("%-5s | %-20s | %-20s | %-10s |", "INDEX", "SERIAL", "MODEL", "STATUS") + "\n"
                 + String.format("%-5s-+-%-20s-+-%-20s-+-%-10s-+", "-".repeat(5), "-".repeat(20), "-".repeat(20), "-".repeat(10))
                 + UtilsUI.RESET);
 
+        // List all drones with index
         for (Drone drone : drones) {
             System.out.printf("%-5d | ", index++);
             new DronePrinter().visit(drone);
             droneList.add(drone);
         }
 
+        // Prompt user to choose
         int option;
         do {
             option = UtilsUI.selectsIndex(droneList);
@@ -107,9 +125,11 @@ public class RemoveDroneUI extends AbstractFancyUI {
     }
 
     /**
-     * Prompt the user to enter a valid reason for removal.
+     * Prompts the user to input a valid reason for drone removal.
+     * Valid reasons must be at least 5 characters. User may cancel by typing 'cancel'.
      *
-     * @return the reason string
+     * @return A valid reason string
+     * @throws UserCancelledException if the user cancels the input
      */
     private String enterValidRemovalReason() {
         String reason;
