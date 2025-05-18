@@ -6,13 +6,13 @@ The objective of this task is to add a new figure category to the figure categor
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implement: 📝 To Do
+Implement: ✅ Done
 
-Test: 📝 To Do
+Test: ✅ Done
 
 
 ## 2. Requirements
@@ -100,20 +100,28 @@ void ensureOnlyShowDesignerCanAddCategory() {
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+* The implementation of US245 follows the design and analysis presented earlier. The Category aggregate was updated to ensure the uniqueness of the CategoryName value object, and the necessary controllers and repositories were implemented to support the functionality.  
+* Key Implementation Details:
+* Domain Layer: The Category aggregate ensures that the CategoryName is unique and immutable. The CategoryName value object validates the input and enforces constraints.
+* Application Layer: The AddCategoryController handles the logic for adding a new category, ensuring that the name is unique before persisting the category.
+* Persistence Layer: The CategoryRepository interface and its JPA implementation ensure that categories are stored and retrieved correctly.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+# 6. Integration/Demonstration
 
-## 6. Integration/Demonstration
-
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+* The functionality developed in US245 was integrated into the existing system. The AddCategoryController was exposed through the UI layer, allowing authenticated Show Designers to add new categories.
+* Steps to Demonstrate:
+* Launch the application: Start the system using the provided scripts or instructions in the main README.md.
+* Log in as a Show Designer: Ensure the user has the appropriate role.
+* Navigate to the Category Management Section: Select the option to add a new category.
+* Add a Category: Enter a unique name and description for the category.
+* Verify: Confirm that the category is added successfully and appears in the list of categories.
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+For the implementation of this project, I used the following sources:
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.

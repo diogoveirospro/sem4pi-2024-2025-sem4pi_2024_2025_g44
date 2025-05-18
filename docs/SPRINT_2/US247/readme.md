@@ -7,13 +7,13 @@ This user story is included in Sprint 2 and represents the first implementation 
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implement: 📝 To Do
+Implement: ✅ Done
 
-Test: 📝 To Do
+Test: ✅ Done
 
 ## 2. Requirements
 
@@ -103,20 +103,27 @@ void ensureCrmCollaboratorCanAccessCategoryList() {
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+* The implementation of US247 involves creating a controller to retrieve all categories and a UI to display them. The ListFigureCategoryController will interact with the CategoryRepository to fetch the data, and the ListFigureCategoryUI will present it to the user.  
+* Key Implementation Details:
+* Domain Layer: The Category aggregate encapsulates the data for each category, including its name, description, and status.
+* Application Layer: The `ListFigureCategoryController` retrieves the list of categories from the repository.
+* Persistence Layer: The `CategoryRepository` interface and its JPA implementation ensure that categories are fetched from the database.
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+* The `ListFigureCategoryUI` was added to the menu for authenticated users with the ShowDesigner or CRM Collaborator roles.
+* Steps to Demonstrate:
+* Launch the application: Start the system using the provided scripts or instructions.
+* Log in as a Show Designer or CRM Collaborator.
+* Navigate to the Category Management Section: Select the option to list all categories.
+* View Categories: Verify that the list includes the name, description, and status of each category.
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+For the implementation of this project, I used the following sources:
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
