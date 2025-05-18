@@ -5,7 +5,7 @@
 This project is an app for the company **Shodrone**. \
 The application has a console line interface. \
 It allows the client to request and schedule a show. \
-The show consists in a sequence of figures represented by drones. \
+The show consists of a sequence of figures represented by drones. \
 This project also includes a simulator to test the different figures and the shows.
 
 
