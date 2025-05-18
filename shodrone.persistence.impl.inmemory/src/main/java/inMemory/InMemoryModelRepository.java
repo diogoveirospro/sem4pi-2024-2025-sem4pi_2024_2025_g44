@@ -40,40 +40,6 @@ public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Des
         return true;
     }
 
-    //----------------------------------------------------------------------
-
-
-    //US241
-    @Override
-    public boolean verifyModel(ModelName modelName) {
-        Iterable<Model> models = findAll();
-
-        for (Model model : models){
-            if (model.sameAs(modelName)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //----------------------------------------------------------------------
-
-
-    //US243
-    @Override
-    public List<Model> getModelList() {
-
-        Iterable<Model> models = findAll();
-        List<Model> modelList = new ArrayList<>();
-
-        for (Model model : models){
-            modelList.add(model);
-        }
-        return modelList;
-    }
-
-    //----------------------------------------------------------------------
-
     @Override
     public Iterable<Model> findAllModels() {
         Iterable<Model> models = findAll();
