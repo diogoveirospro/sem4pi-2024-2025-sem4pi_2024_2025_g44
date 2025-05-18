@@ -246,6 +246,7 @@ DroneHistory* init_drone_history(int drone_id, int initial_capacity) {
     history->count = 0;
     history->capacity = initial_capacity;
     history->drone_id = drone_id;
+	history->collision_count = 0;
 
     return history;
 }
@@ -281,9 +282,13 @@ int check_collisions(int collision_distance, int *pids, DronePosition *drone_pos
     for (int i = 0; i < num_drones; i++) {
         for (int j = i + 1; j < num_drones; j++) {
             if (calculate_distance(drone_positions[i].pos, drone_positions[j].pos) <= collision_distance) {
-                // Notifica os drones envolvidos via sinal
+                // Notifies the drones involved via signal
                 kill(pids[i], SIGUSR1);
                 kill(pids[j], SIGUSR1);
+
+				histories[i]->collision_count++;
+    			histories[j]->collision_count++;
+
                 collisions++;
             }
         }
@@ -292,11 +297,11 @@ int check_collisions(int collision_distance, int *pids, DronePosition *drone_pos
 }
 
 // Handle collision limit exceeded
-void handle_collision_limit_exceeded(int *terminado) {
+void handle_collision_limit_exceeded(int *finished) {
     fprintf(stderr, "%sCollision limit exceeded. Terminating...%s\n", RED, RESET);
     // Notify all drones to terminate
     for (int i = 0; i < s.num_drones; i++) {
-        if (!terminado[i]) {
+        if (!finished[i]) {
             kill(s.pids[i], SIGKILL);
         }
     }
@@ -304,7 +309,7 @@ void handle_collision_limit_exceeded(int *terminado) {
     for (int i = 0; i < s.num_drones; i++) {
         waitpid(s.pids[i], NULL, 0);
     }
-    free(terminado);
+    free(finished);
     do_report();
     terminate();
 }
@@ -320,20 +325,20 @@ void send_timestep(int drone_idx, int timestep) {
 void repeat() {
     Message m;
     int t = 0;
-    int drones_ativos = s.num_drones;
-    int *terminado = calloc(s.num_drones, sizeof(int));
+    int active_drones = s.num_drones;
+    int *finished = calloc(s.num_drones, sizeof(int));
     int collision_distance = s.raio_drone * 2;
     int collisions = 0;
 
-    if (!terminado) {
+    if (!finished) {
         perror("calloc");
         exit(EXIT_FAILURE);
     }
 
-    while (drones_ativos > 0) {
+    while (active_drones > 0) {
         // Send timestep to each drone at the start of the round
         for (int i = 0; i < s.num_drones; i++) {
-            if (!terminado[i])
+            if (!finished[i])
                 send_timestep(i, t);
         }
 
@@ -341,26 +346,26 @@ void repeat() {
         int *received = calloc(s.num_drones, sizeof(int));
         int received_count = 0;
 
-        while (received_count < drones_ativos) {
+        while (received_count < active_drones) {
             ssize_t n = read(s.up[0], &m, sizeof(Message));
             int idx = m.id - 1;
             if (m.finished == 1) {
-                terminado[idx] = 1;
+                finished[idx] = 1;
                 received[idx] = 1;
-                drones_ativos--;
+                active_drones--;
                 received_count++;
                 continue;
             }
-            if (terminado[idx] || received[idx]) {
+            if (finished[idx] || received[idx]) {
                 continue;
             }
             if (n == 0) {
                 // EOF: a drone has exited
                 // Find which drone exited and mark as terminated
                 for (int i = 0; i < s.num_drones; i++) {
-                    if (!terminado[i] && !received[i]) {
-                        terminado[i] = 1;
-                        drones_ativos--;
+                    if (!finished[i] && !received[i]) {
+                        finished[i] = 1;
+                        active_drones--;
                         break;
                     }
                 }
@@ -370,7 +375,7 @@ void repeat() {
                 continue;
             }
 
-            if (terminado[idx] || received[idx]) {
+            if (finished[idx] || received[idx]) {
                 // Already terminated or already received for this timestep
                 continue;
             }
@@ -397,36 +402,96 @@ void repeat() {
         // Check for collisions
         collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones);
 
-        // debug num colisoes
+        // debug number of collisions
         fprintf(stderr, "Collisions detected: %d\n", collisions);
 
         // Check if the number of collisions exceeds the limit
         if (collisions >= s.max_collisions){
-            handle_collision_limit_exceeded(terminado);
+            handle_collision_limit_exceeded(finished);
         }
 
         for (int i = 0; i < s.num_drones; i++) {
-            if (!terminado[i]){
+            if (!finished[i]){
                 send_continue_flag(i, true);
-            }  
+            }
         }
         t++;
     }
 
-    free(terminado);
+    free(finished);
 }
 
 
 void do_report()
 {
+    // File name with timestamp
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
 
+    char filename[100];
+    snprintf(filename, sizeof(filename),
+             "simulation_report_%02d_%02d_%02d_%02d_%02d.txt",
+             t->tm_mday, t->tm_mon + 1, t->tm_year % 100,
+             t->tm_hour, t->tm_min);
+
+    char path[256];
+    snprintf(path, sizeof(path), "%s/%s", s.out_dir, filename);
+
+    FILE *f = fopen(path, "w");
+    if (!f) {
+        perror("Error creating report file");
+        return;
+    }
+
+    // Header
+    fprintf(f, "Simulation Report - Shodrone\n\n");
+    fprintf(f, "Total drones: %d\n\n", s.num_drones);
+
+    // Status of each drone
+    int total_collisions = 0;
+    fprintf(f, "Drone Execution Summary:\n");
+    for (int i = 0; i < s.num_drones; i++) {
+        DroneHistory *h = histories[i];
+        fprintf(f, "Drone %d: %d steps, %d collisions\n",
+                h->drone_id, h->count, h->collision_count);
+        total_collisions += h->collision_count;
+    }
+
+	// Drone Position History
+	fprintf(f, "\nDrone Position History:\n");
+    for (int i = 0; i < s.num_drones; i++) {
+        DroneHistory *h = histories[i];
+        fprintf(f, "Drone %d:\n", h->drone_id);
+        for (int j = 0; j < h->count; j++) {
+            fprintf(f, "  [t = %.2f] (%d, %d, %d)\n",
+                    h->timestamps[j],
+                    h->positions[j].x,
+                    h->positions[j].y,
+                    h->positions[j].z);
+        }
+        fprintf(f, "\n");
+    }
+
+    // Collisions (total count)
+    fprintf(f, "\nCollision Log:\n");
+    if (total_collisions == 0) {
+        fprintf(f, "None\n");
+    } else {
+        fprintf(f, "%d total collisions detected (combined count across drones)\n", total_collisions);
+    }
+
+    // Final result
+    fprintf(f, "\nValidation Result: %s\n",
+            total_collisions > 0 ? "FAILED" : "VALIDATED");
+
+    fclose(f);
+    fprintf(stderr, GREEN "Simulation report saved to %s\n" RESET, path);
 }
-
 
 void terminate()
 {
   int_free_matrix(s.down, s.num_drones);
-  // Liberta os históricos
+  // Free the histories
     for (int i = 0; i < s.num_drones; i++) {
         free_drone_history(histories[i]);
     }

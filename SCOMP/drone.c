@@ -11,25 +11,25 @@ void handler_sigusr1(int sig)
 {
     (void)sig;
 
-    // Notifica o utilizador que este drone sofreu uma colisão
-    fprintf(stderr, "🚨 Drone %d recebeu sinal de colisão (SIGUSR1)!\n", getpid());
-    fflush(stderr); // Garante que a mensagem é escrita imediatamente
+    // Notifies the user that this drone has suffered a collision
+    fprintf(stderr, "🚨 Drone %d received collision signal (SIGUSR1)!\n", getpid());
+    fflush(stderr); // Ensures that the message is written immediately
 }
 
 void set_up_signals()
 {
 	struct sigaction sa_usr1, sa_int;
 
-    // ----- SIGUSR1: colisão -----
+    // ----- SIGUSR1: collision -----
     memset(&sa_usr1, 0, sizeof(sa_usr1));
     sa_usr1.sa_handler = handler_sigusr1;
-    sigfillset(&sa_usr1.sa_mask);  // Bloqueia todos os sinais durante tratamento
+    sigfillset(&sa_usr1.sa_mask);  // Blocks all signals during treatment
     sigaction(SIGUSR1, &sa_usr1, NULL);
 
-    // ----- SIGINT: terminar -----
+    // ----- SIGINT: end -----
     memset(&sa_int, 0, sizeof(sa_int));
     sa_int.sa_handler = sigint_handler;
-    sigfillset(&sa_int.sa_mask);  // Bloqueia todos os sinais durante tratamento
+    sigfillset(&sa_int.sa_mask);  // Blocks all signals during treatment
     sigaction(SIGINT, &sa_int, NULL);
 
 }

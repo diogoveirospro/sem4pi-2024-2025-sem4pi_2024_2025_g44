@@ -78,6 +78,7 @@ typedef struct {
     int count;            // number of stored positions
     int capacity;         // current array capacity (for resizing)
     int drone_id;         // drone id
+    int collision_count; // number of collisions
 } DroneHistory;
 
 typedef struct space_cell {
