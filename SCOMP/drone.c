@@ -1,5 +1,7 @@
 #include "header.h"
 
+int drone_id;
+
 void sigint_handler(int sig)
 {
 	(void) sig;
@@ -12,7 +14,7 @@ void handler_sigusr1(int sig)
     (void)sig;
 
     // Notifies the user that this drone has suffered a collision
-    fprintf(stderr, "🚨 Drone %d received collision signal (SIGUSR1)!\n", getpid());
+    fprintf(stderr, "🚨 Drone %d received collision signal!\n", drone_id);
     fflush(stderr); // Ensures that the message is written immediately
 }
 
@@ -120,7 +122,7 @@ int main(int argc, char **argv)
 
 	set_up_signals();
 
-	int drone_id = atoi(argv[1]);
+	drone_id = atoi(argv[1]);
 	char filename[256];
 	build_filename(filename, sizeof(filename), argv[2], argv[1]);
 
