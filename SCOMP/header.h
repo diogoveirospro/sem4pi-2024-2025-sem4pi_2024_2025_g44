@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
+#include <errno.h>
 
 // Defines
 #define CONFIG_FILE "./config.txt"
@@ -35,7 +36,7 @@ typedef struct data {
   //config file info
   int max_collisions;
   int num_drones;
-  int raio_drone;
+  int drone_radius;
   char *inp_dir;
   char *out_dir;
   int max_X;
@@ -73,12 +74,12 @@ typedef struct {
 } Message;
 
 typedef struct {
-    Position *positions;   // dynamic array of drone positions
+    Position *positions;  // dynamic array of drone positions
     float *timestamps;    // parallel array of timestamps for each position
     int count;            // number of stored positions
     int capacity;         // current array capacity (for resizing)
     int drone_id;         // drone id
-    int collision_count; // number of collisions
+    int collision_count;  // number of collisions
 } DroneHistory;
 
 typedef struct space_cell {

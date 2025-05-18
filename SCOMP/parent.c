@@ -25,6 +25,7 @@ Data s;
 SpaceCell ***space;
 DronePosition *drone_positions;
 DroneHistory **histories;
+int **collision_state = NULL; // 0: no collision, 1: collision
 // remove later
 void do_report(void);
 void terminate(void);
@@ -67,7 +68,7 @@ void parse_data(char *str)
 	s.num_drones = atoi(strtok(NULL, d));
 
     strtok(NULL, d);
-    s.raio_drone = atoi(strtok(NULL, d));
+    s.drone_radius = atoi(strtok(NULL, d));
 
 	strtok(NULL, d);
 	s.max_X = atoi(strtok(NULL, d));
@@ -278,22 +279,29 @@ void add_position_timestamp(DroneHistory *history, Position pos, float timestamp
 
 // Check number of collisions between drones
 int check_collisions(int collision_distance, int *pids, DronePosition *drone_positions, int num_drones) {
-    int collisions = 0;
+    int new_collisions = 0;
     for (int i = 0; i < num_drones; i++) {
         for (int j = i + 1; j < num_drones; j++) {
-            if (calculate_distance(drone_positions[i].pos, drone_positions[j].pos) <= collision_distance) {
-                // Notifies the drones involved via signal
-                kill(pids[i], SIGUSR1);
-                kill(pids[j], SIGUSR1);
-
-				histories[i]->collision_count++;
-    			histories[j]->collision_count++;
-
-                collisions++;
+            double dist = calculate_distance(drone_positions[i].pos, drone_positions[j].pos);
+            if (dist <= collision_distance) {
+                if (collision_state[i][j] == 0) {
+                    // Nova colisão!
+                    kill(pids[i], SIGUSR1);
+                    kill(pids[j], SIGUSR1);
+                    histories[i]->collision_count++;
+                    histories[j]->collision_count++;
+                    new_collisions++;
+                    collision_state[i][j] = 1;
+                    collision_state[j][i] = 1;
+                }
+            } else {
+                // Já não estão em colisão, reset
+                collision_state[i][j] = 0;
+                collision_state[j][i] = 0;
             }
         }
     }
-    return collisions;
+    return new_collisions;
 }
 
 // Handle collision limit exceeded
@@ -327,7 +335,7 @@ void repeat() {
     int t = 0;
     int active_drones = s.num_drones;
     int *finished = calloc(s.num_drones, sizeof(int));
-    int collision_distance = s.raio_drone * 2;
+    int collision_distance = s.drone_radius * 2;
     int collisions = 0;
 
     if (!finished) {
@@ -490,6 +498,7 @@ void do_report()
 
 void terminate()
 {
+  int_free_matrix(collision_state, s.num_drones);
   int_free_matrix(s.down, s.num_drones);
   // Free the histories
     for (int i = 0; i < s.num_drones; i++) {
@@ -505,6 +514,12 @@ void terminate()
 void start() {
     set_up_signals();
 
+    collision_state = int_malloc_matrix(s.num_drones, s.num_drones);
+    for (int i = 0; i < s.num_drones; i++){
+        for (int j = 0; j < s.num_drones; j++){
+            collision_state[i][j] = 0;
+        }
+    }
     space = alloc_space(s.max_X, s.max_Y, s.max_Z);
 
     drone_positions = alloc_drone_positions(s.num_drones);
@@ -539,7 +554,7 @@ int main(int argc, char **argv){
     s.out_dir = argv[2];
     s.max_collisions = atoi(argv[3]);
     s.num_drones = atoi(argv[4]);
-    s.raio_drone = atoi(argv[5]);
+    s.drone_radius = atoi(argv[5]);
 	s.max_X = atoi(argv[6]);
 	s.max_Y = atoi(argv[7]);
 	s.max_Z = atoi(argv[8]);
@@ -552,7 +567,7 @@ int main(int argc, char **argv){
   printf("2nd arg: %s\n", s.out_dir);
   printf("3rd arg: %d\n", s.max_collisions);
   printf("4th arg: %d\n", s.num_drones);
-  printf("5th arg: %d\n", s.raio_drone);
+  printf("5th arg: %d\n", s.drone_radius);
   printf("6th arg: %d\n", s.max_X);
   printf("7th arg: %d\n", s.max_Y);
   printf("8th arg: %d\n", s.max_Z);

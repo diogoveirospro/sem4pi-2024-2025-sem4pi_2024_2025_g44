@@ -44,7 +44,12 @@ void build_filename(char *buffer, size_t size, const char *inp_dir, const char *
 
 void wait_for_continue_flag() {
     bool c;
-    if (read(0, &c, 1) != sizeof(bool)) {
+    ssize_t n;
+    do {
+        n = read(0, &c, sizeof(bool));
+    } while (n == -1 && errno == EINTR);
+
+    if (n != sizeof(bool)) {
         perror("Drone: Failed to read continue flag");
         raise(SIGINT);
     }
