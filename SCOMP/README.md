@@ -70,7 +70,28 @@ For this US, we set up the signal handling, the child creation, the fork and pip
 
 ### Process:
 
-// Put the process here
+### Process:
+
+To implement this user story, the simulation process was designed to act as the central controller, coordinating drone 
+activity and tracking their movements over time. Each drone is launched as a child process using `fork()` and executes 
+a script via `execl()` that reads a predefined input file containing a sequence of 3D coordinates.
+
+Communication between the simulation process and each drone is established using anonymous pipes. The simulation sets up 
+a unidirectional pipe (`up`) for receiving data from all drones, and individual pipes (`down[i]`) for sending control 
+signals and simulation timestamps to each drone. The child processes use `dup2()` to redirect their standard input/output 
+to the respective pipes, enabling message passing through standard file descriptors.
+
+In accordance with AC01, drones send structured messages (`Message` struct) containing their ID and current position at 
+each simulation timestep. These messages are read sequentially by the main process and parsed to extract spatial data.
+
+To satisfy AC02, a 3D matrix `space[x][y][z]` was allocated to represent the current state of the simulation space. 
+Additionally, to fulfil AC03, a dynamic structure (`DroneHistory`) was created for each drone to log all past positions 
+and timestamps. This historical data is essential for future collision detection (handled in US263), as it allows the 
+system to reconstruct movement paths and identify spatial overlaps between drones over time.
+
+The simulation advances in discrete time steps, each separated by a configurable delay (`s.timestamp`). At each step, 
+the simulation collects the current positions from all active drones, updates their states in the shared space matrix, 
+and logs their movements. This process continues until all drones complete their scripts or a termination condition is met.
 
 ### US263 - Detect Drone Collisions in Real Time
 
@@ -139,7 +160,24 @@ All of this is done in a loop, until all the drone processes send a last message
 
 ### Process:
 
-// Put the process here
+To implement this user story, a reporting module was integrated into the final phase of the simulation process, executed 
+after all drones have completed their scripts or the simulation was terminated due to excessive collisions.
+
+A dedicated function, `do_report()`, is responsible for generating a detailed simulation report. In compliance with AC01, 
+this function creates a uniquely named text file in the specified output directory, including a timestamp in the filename 
+to ensure traceability and prevent overwriting previous reports.
+
+To meet AC02, the report includes the total number of drones, their execution duration (in steps), and the number of 
+collisions each drone was involved in. This data is retrieved from a dynamically allocated `DroneHistory` structure 
+associated with each drone, which logs all positions and timestamps throughout the simulation.
+
+Regarding AC03, if collisions were detected during the simulation (using a proximity-based algorithm from US263), the 
+report explicitly lists the total number of collisions. The report includes collision counts for each drone, indirectly 
+reflecting when and how frequently collisions occurred.
+
+Finally, to address AC04, the report concludes with a validation result: if any collisions occurred, the output marks 
+the simulation as "FAILED"; otherwise, it is marked "VALIDATED". This simple pass/fail logic provides the user with a 
+clear indication of whether the tested figure is considered safe for use under the given simulation conditions.
 
 ## Auto-Evaluation
 
