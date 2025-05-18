@@ -4,7 +4,7 @@ This readme contains all the process and information related to the development 
 
 ## Diagram with the components and processes for the solution.
 
-// Put the images here and the other information here
+![SCOMP Diagram](../SCOMP/images/Solution.svg)
 
 ## Drone Script
 
@@ -112,7 +112,7 @@ VXN, VYN, VZN
 For this us, we had to make all the drone processes wait for the main process to send a signal to them, indicating that they can proceed with the next step. 
 This was done using a pipe to send a boolean value to the drone processes.
 
-How did we do that? By putting each drone into a state where he is waiting to read from the pipe the boolean value, that happens after each one writes the new position to a pipe.
+How did we do that? By putting each drone into a state where they are waiting to read from the pipe a boolean value, this happens after each process writes the new position to a pipe.
 In the main process we make all the necessary procedures like moving the drone to a new position and verifying if there were any collisions.
 After that, we send the boolean value to the drone processes, indicating that they can proceed with the next step.
 

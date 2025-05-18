@@ -1,0 +1,85 @@
+@startuml
+
+actor User
+participant "Parent Process" as Parent
+participant "Child Drone[N]" as Drone
+database "Input File" as InputFile
+database "Config File" as Config
+
+activate User
+== Initialization ==
+
+User -> Parent : Starts program
+activate Parent
+
+Parent -> Config : Read config / args
+activate Config
+
+Config --> Parent : Config data
+deactivate Config
+Parent -> Parent : Setup signals, allocs
+
+== Drone Creation ==
+
+loop For each drone
+    Parent -> Parent : fork() and pipes
+    Parent -> Drone : Creates child process
+    activate Drone
+
+        Drone -> Drone : Setup signals
+        Drone -> Drone : Obtain the script
+        Parent -> Parent : Store PID
+
+end
+
+== Simulation Loop ==
+    group Send timestep
+        Drone -> Drone : wait for timestep
+        Parent -> Drone : write(timestep)
+    end
+loop while drones active
+
+    group Drone responds
+        Drone -> InputFile : get position or vector
+        activate InputFile
+        Drone -> Drone : calculate new position
+        Drone -> Parent : Message (position)
+    end
+
+    group Position validation
+        Parent -> Parent : validate bounds
+        Parent -> Parent : update history/position
+    end
+
+    group Check Collisions
+        Parent -> Parent : check_collisions()
+        alt Collision Detected
+            Parent -> Drone : SIGUSR1
+        end
+    end
+
+    alt Too Many Collisions
+        Parent -> Drone : SIGKILL
+        Parent -> Parent : waitpid
+        Parent -> Parent : generate report
+        Parent -> Parent : terminate()
+    else
+        Parent -> Drone : Continue flag
+    end
+
+end
+InputFile -> Drone : End of the file
+deactivate InputFile
+Drone -> Parent : Send message saying done
+deactivate Drone
+
+== Wrap Up ==
+
+
+
+Parent -> Parent : do_report()
+Parent -> Parent : terminate()
+Parent -> User : Report
+deactivate Parent
+deactivate User
+@enduml
