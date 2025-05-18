@@ -13,6 +13,8 @@
 #include <time.h>
 #include <math.h>
 #include <errno.h>
+#include <sys/stat.h>
+
 
 // Defines
 #define CONFIG_FILE "./config.txt"
@@ -22,6 +24,7 @@
 
 
 #define CONFIG_FILE_MAX_SIZE 10000
+#define MAX_COLLISIONS_LOG 1000
 
 #define RESET "\033[0m"
 #define BOLD "\033[1m"
@@ -81,6 +84,13 @@ typedef struct {
     int drone_id;         // drone id
     int collision_count;  // number of collisions
 } DroneHistory;
+
+typedef struct {
+    int drone1;
+    int drone2;
+    Position pos;
+    float timestamp;
+} CollisionLog;
 
 typedef struct space_cell {
     int drone_id; // -1 if empty, else drone id

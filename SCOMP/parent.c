@@ -25,12 +25,13 @@ Data s;
 SpaceCell ***space;
 DronePosition *drone_positions;
 DroneHistory **histories;
+CollisionLog collision_log[MAX_COLLISIONS_LOG];
+int collision_log_count = 0;
+
 int **collision_state = NULL; // 0: no collision, 1: collision
 // remove later
 void do_report(void);
 void terminate(void);
-
-
 
 void end()
 {
@@ -278,24 +279,31 @@ void add_position_timestamp(DroneHistory *history, Position pos, float timestamp
 
 
 // Check number of collisions between drones
-int check_collisions(int collision_distance, int *pids, DronePosition *drone_positions, int num_drones) {
+int check_collisions(int collision_distance, int *pids, DronePosition *drone_positions, int num_drones, float current_timestamp) {
     int new_collisions = 0;
     for (int i = 0; i < num_drones; i++) {
         for (int j = i + 1; j < num_drones; j++) {
             double dist = calculate_distance(drone_positions[i].pos, drone_positions[j].pos);
             if (dist <= collision_distance) {
                 if (collision_state[i][j] == 0) {
-                    // Nova colisão!
+                    // New Collision!
                     kill(pids[i], SIGUSR1);
                     kill(pids[j], SIGUSR1);
                     histories[i]->collision_count++;
                     histories[j]->collision_count++;
                     new_collisions++;
+
+					collision_log[collision_log_count].drone1 = i + 1;
+					collision_log[collision_log_count].drone2 = j + 1;
+					collision_log[collision_log_count].pos = drone_positions[i].pos; // uses the position of drone1 but could be drone2 as well
+					collision_log[collision_log_count].timestamp = current_timestamp;
+					collision_log_count++;
+
                     collision_state[i][j] = 1;
                     collision_state[j][i] = 1;
                 }
             } else {
-                // Já não estão em colisão, reset
+                // They are no longer in collision, reset
                 collision_state[i][j] = 0;
                 collision_state[j][i] = 0;
             }
@@ -306,7 +314,7 @@ int check_collisions(int collision_distance, int *pids, DronePosition *drone_pos
 
 // Handle collision limit exceeded
 void handle_collision_limit_exceeded(int *finished) {
-    fprintf(stderr, "%sCollision limit exceeded. Terminating...%s\n", RED, RESET);
+    fprintf(stderr, "\n%sCollision limit exceeded. Terminating...%s\n", RED, RESET);
     // Notify all drones to terminate
     for (int i = 0; i < s.num_drones; i++) {
         if (!finished[i]) {
@@ -408,10 +416,8 @@ void repeat() {
         free(received);
 
         // Check for collisions
-        collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones);
-
-        // debug number of collisions
-        fprintf(stderr, "Collisions detected: %d\n", collisions);
+		float current_time = t * s.timestamp;
+        collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones, current_time);
 
         // Check if the number of collisions exceeds the limit
         if (collisions >= s.max_collisions){
@@ -445,6 +451,12 @@ void do_report()
     char path[256];
     snprintf(path, sizeof(path), "%s/%s", s.out_dir, filename);
 
+	// Create output directory if it doesn't exist
+    if (mkdir(s.out_dir, 0777) == -1 && errno != EEXIST) {
+        perror("Error creating output directory");
+        return;
+    }
+
     FILE *f = fopen(path, "w");
     if (!f) {
         perror("Error creating report file");
@@ -456,13 +468,11 @@ void do_report()
     fprintf(f, "Total drones: %d\n\n", s.num_drones);
 
     // Status of each drone
-    int total_collisions = 0;
     fprintf(f, "Drone Execution Summary:\n");
     for (int i = 0; i < s.num_drones; i++) {
         DroneHistory *h = histories[i];
         fprintf(f, "Drone %d: %d steps, %d collisions\n",
                 h->drone_id, h->count, h->collision_count);
-        total_collisions += h->collision_count;
     }
 
 	// Drone Position History
@@ -480,20 +490,25 @@ void do_report()
         fprintf(f, "\n");
     }
 
-    // Collisions (total count)
-    fprintf(f, "\nCollision Log:\n");
-    if (total_collisions == 0) {
-        fprintf(f, "None\n");
-    } else {
-        fprintf(f, "%d total collisions detected (combined count across drones)\n", total_collisions);
-    }
+    // Collisions (detailed log)
+	fprintf(f, "\nCollision Log:\n");
+	if (collision_log_count == 0) {
+		fprintf(f, "None\n");
+	} else {
+		for (int i = 0; i < collision_log_count; i++) {
+			CollisionLog *cl = &collision_log[i];
+			fprintf(f, "[t = %.2f] Drones %d and %d collided at position (%d, %d, %d)\n",
+					cl->timestamp, cl->drone1, cl->drone2,
+					cl->pos.x, cl->pos.y, cl->pos.z);
+		}
+	}
 
     // Final result
     fprintf(f, "\nValidation Result: %s\n",
-            total_collisions > 0 ? "FAILED" : "VALIDATED");
+            collision_log_count >= s.max_collisions ? "FAILED" : "VALIDATED");
 
     fclose(f);
-    fprintf(stderr, GREEN "Simulation report saved to %s\n" RESET, path);
+    fprintf(stderr, GREEN "\nSimulation report saved to %s\n" RESET, path);
 }
 
 void terminate()
@@ -507,7 +522,7 @@ void terminate()
     free(histories);
   free_space(space, s.max_X, s.max_Y);
   free(drone_positions);
-  printf("Done\n");
+  printf(GREEN "\nDone\n" RESET);
   exit(0);
 }
 
@@ -563,15 +578,16 @@ int main(int argc, char **argv){
   else
     end();
 
-  printf("1st arg: %s\n", s.inp_dir);
-  printf("2nd arg: %s\n", s.out_dir);
-  printf("3rd arg: %d\n", s.max_collisions);
-  printf("4th arg: %d\n", s.num_drones);
-  printf("5th arg: %d\n", s.drone_radius);
-  printf("6th arg: %d\n", s.max_X);
-  printf("7th arg: %d\n", s.max_Y);
-  printf("8th arg: %d\n", s.max_Z);
-  printf("9th arg: %f\n", s.timestamp);
+  printf(CYAN "\nSimulation Configurations:\n" RESET);
+  printf("Input Directory: %s\n", s.inp_dir);
+  printf("Output Directory: %s\n", s.out_dir);
+  printf("Maximum collisions: %d\n", s.max_collisions);
+  printf("Number of Drones: %d\n", s.num_drones);
+  printf("Drone Radius: %d\n", s.drone_radius);
+  printf("Maximum Coordinate X: %d\n", s.max_X);
+  printf("Maximum Coordinate Y: %d\n", s.max_Y);
+  printf("Maximum Coordinate Z: %d\n", s.max_Z);
+  printf("Timestamp: %f\n\n", s.timestamp);
 
   start();
 }
