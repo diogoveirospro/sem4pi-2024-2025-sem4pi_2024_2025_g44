@@ -293,11 +293,11 @@ int check_collisions(int collision_distance, int *pids, DronePosition *drone_pos
                     histories[j]->collision_count++;
                     new_collisions++;
 
-					collision_log[collision_log_count].drone1 = i + 1;
-					collision_log[collision_log_count].drone2 = j + 1;
-					collision_log[collision_log_count].pos = drone_positions[i].pos; // uses the position of drone1 but could be drone2 as well
-					collision_log[collision_log_count].timestamp = current_timestamp;
-					collision_log_count++;
+                    collision_log[collision_log_count].drone1 = i + 1;
+                    collision_log[collision_log_count].drone2 = j + 1;
+                    collision_log[collision_log_count].pos = drone_positions[i].pos; // uses the position of drone1 but could be drone2 as well
+                    collision_log[collision_log_count].timestamp = current_timestamp;
+                    collision_log_count++;
 
                     collision_state[i][j] = 1;
                     collision_state[j][i] = 1;

@@ -1,4 +1,4 @@
-INPUT_DIR=./DroneFiles
+INPUT_DIR=./DroneTests/DroneFiles1/
 OUTPUT_DIR=./ReportFolder
 MAX_COLLISIONS=5
 NUM_DRONES=3

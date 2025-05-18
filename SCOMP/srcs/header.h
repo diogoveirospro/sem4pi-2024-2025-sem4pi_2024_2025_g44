@@ -102,15 +102,6 @@ typedef struct drone_position {
     Position pos;
 } DronePosition;
 
-typedef struct drone{
-  int id;
-  Position Curr_pos;
-  Position *vector;
-  int num_positions;
-  bool continue_flag;
-} Drone;
-
-
 // Function declarations
 void* safe_malloc(size_t size);
 char *read_line(const char *prompt);
