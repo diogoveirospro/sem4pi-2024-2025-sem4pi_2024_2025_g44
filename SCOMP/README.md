@@ -51,7 +51,8 @@ VXN, VYN, VZN
 
 ### Process:
 
-// Put the process here
+For this US, we set up the signal handling, the child creation, the fork and pipes setup, and the config file and struct initialization, in order to setup for the other USs.
+
 
 ### US262 - Capture and Process Drone Movements
 
