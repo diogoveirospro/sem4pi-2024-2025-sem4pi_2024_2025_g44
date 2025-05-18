@@ -15,17 +15,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * UI class to list all active drones of a selected model.
+ * UI class responsible for listing all active drones of a selected model.
+ * Inherits from {@link AbstractFancyListUI} to take advantage of generic list-handling behavior.
  */
 public class ListDroneUI extends AbstractFancyListUI<Drone> {
 
     private final ListDroneController controller = new ListDroneController();
     private Model selectedModel;
 
+    /**
+     * Executes the logic to select a model and display all corresponding active drones.
+     *
+     * @return true if the process completed successfully, false if canceled or empty
+     */
     @Override
     protected boolean doShow() {
         try {
-            // Seleciona o modelo de drone antes de listar
+            // Prompt user to select a model before listing
             selectedModel = selectModel();
             if (selectedModel == null) return false;
 
@@ -52,11 +58,21 @@ public class ListDroneUI extends AbstractFancyListUI<Drone> {
         }
     }
 
+    /**
+     * Returns the title/header shown at the top of the UI screen.
+     *
+     * @return A string representing the headline
+     */
     @Override
     public String headline() {
         return "List Active Drones by Model";
     }
 
+    /**
+     * Retrieves the list of drones for the selected model.
+     *
+     * @return Iterable containing drones of the selected model
+     */
     @Override
     protected Iterable<Drone> elements() {
         if (selectedModel == null) {
@@ -65,16 +81,31 @@ public class ListDroneUI extends AbstractFancyListUI<Drone> {
         return controller.getDrnModelList(selectedModel);
     }
 
+    /**
+     * Returns a {@link Visitor} responsible for printing individual drone elements.
+     *
+     * @return DronePrinter instance
+     */
     @Override
     protected Visitor<Drone> elementPrinter() {
         return new DronePrinter();
     }
 
+    /**
+     * Returns the name of the entity being listed.
+     *
+     * @return String representing the entity name
+     */
     @Override
     protected String elementName() {
         return "Drone";
     }
 
+    /**
+     * Builds and returns the formatted list header for console output.
+     *
+     * @return String containing the list header
+     */
     @Override
     protected String listHeader() {
         return UtilsUI.BOLD + String.format("%-20s | %-20s | %-10s |",
@@ -83,16 +114,21 @@ public class ListDroneUI extends AbstractFancyListUI<Drone> {
                 + UtilsUI.RESET;
     }
 
+    /**
+     * Returns the message shown when no drone data is found.
+     *
+     * @return Empty state message string
+     */
     @Override
     protected String emptyMessage() {
         return UtilsUI.RED + UtilsUI.BOLD + "\nNo drones found for the selected model." + UtilsUI.RESET;
     }
 
     /**
-     * Permite ao utilizador escolher um modelo de drone da lista disponível.
+     * Prompts the user to choose a model from a list of available drone models.
      *
-     * @return Model escolhido ou null se cancelado
-     * @throws UserCancelledException se o utilizador cancelar explicitamente
+     * @return The selected {@link Model} or null if the list is empty
+     * @throws UserCancelledException If the user explicitly cancels the operation
      */
     private Model selectModel() throws UserCancelledException {
         Iterable<Model> models = controller.listModels();

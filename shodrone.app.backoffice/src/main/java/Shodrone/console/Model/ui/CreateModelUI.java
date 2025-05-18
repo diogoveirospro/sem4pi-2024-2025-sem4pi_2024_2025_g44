@@ -8,16 +8,30 @@ import shodrone.presentation.UtilsUI;
 
 import java.util.*;
 
+/**
+ * UI for creating a new drone model.
+ *
+ * Allows the user to define a model name and configure wind speed tolerances
+ * mapped to positional tolerances. The resulting configuration is used to
+ * create a model through the controller.
+ */
 public class CreateModelUI extends AbstractFancyUI {
 
     private final CreateModelController controller = new CreateModelController();
 
+    /**
+     * Main method that controls the UI logic for creating a new drone model.
+     *
+     * @return true if the model was created successfully, false otherwise.
+     */
     @Override
     public boolean doShow() {
 
+        // Prompt for model name
         String name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Model name: " + UtilsUI.RESET);
         ModelName modelName = new ModelName(name);
 
+        // Start by defining the first wind speed tolerance range (from 0 to X)
         int previousLimit = 0;
         int currentLimit;
 
@@ -35,13 +49,14 @@ public class CreateModelUI extends AbstractFancyUI {
 
         previousLimit = currentLimit;
         double lastPosition = 0.0;
-        int choice;
 
+        // Loop to allow the user to add multiple wind tolerance configurations
         while (true) {
             if (!UtilsUI.confirm(UtilsUI.BOLD + "Add more wind tolerances? (Y/N): " + UtilsUI.RESET)) {
                 break;
             }
 
+            // Request positional tolerance, ensuring it's increasing
             double position;
             do {
                 position = UtilsUI.readDoubleFromConsole(UtilsUI.BOLD + "Wind tolerance (> " + lastPosition + "): " + UtilsUI.RESET);
@@ -50,6 +65,7 @@ public class CreateModelUI extends AbstractFancyUI {
                 }
             } while (position <= lastPosition);
 
+            // Request wind limit for this tolerance, ensuring it's increasing
             do {
                 currentLimit = UtilsUI.readIntegerFromConsole(UtilsUI.BOLD + "Max wind (for " + position + "m): " + UtilsUI.RESET);
                 if (currentLimit <= previousLimit) {
@@ -65,10 +81,12 @@ public class CreateModelUI extends AbstractFancyUI {
             lastPosition = position;
         }
 
+        // Final wind range with UNSAFE indication
         WindSpeed windSpeed = new WindSpeed(previousLimit, 999);
         PositionTolerance positionTolerance = new PositionTolerance(-1);
         config.put(windSpeed, positionTolerance);
 
+        // Print summary of the configuration for confirmation
         System.out.println("\n" + UtilsUI.BOLD + UtilsUI.YELLOW + "== " + modelName + " ==" + UtilsUI.RESET);
         for (Map.Entry<WindSpeed, PositionTolerance> entry : config.entrySet()) {
             int min = entry.getKey().minSpeed();
@@ -84,6 +102,7 @@ public class CreateModelUI extends AbstractFancyUI {
             }
         }
 
+        // Confirm creation
         boolean confirm = UtilsUI.confirm("Confirm? (Y/N): ");
 
         if (!confirm) {
@@ -92,6 +111,7 @@ public class CreateModelUI extends AbstractFancyUI {
             return false;
         }
 
+        // Attempt to create the model
         Configuration configuration = new Configuration(config, SafetyStatus.SAFE);
         boolean success = controller.createModel(modelName, configuration);
 
@@ -101,7 +121,11 @@ public class CreateModelUI extends AbstractFancyUI {
         return true;
     }
 
-
+    /**
+     * Returns the title/headline of the UI screen.
+     *
+     * @return The headline text
+     */
     @Override
     public String headline() {
         return "Create New Drone Model";

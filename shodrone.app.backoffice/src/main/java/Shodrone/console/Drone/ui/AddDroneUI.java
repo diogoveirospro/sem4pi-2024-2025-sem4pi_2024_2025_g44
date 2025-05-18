@@ -12,10 +12,20 @@ import shodrone.presentation.UtilsUI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User Interface for adding a new Drone to the system.
+ * Handles the interaction with the user to gather all required data
+ * and delegates the creation process to the {@link AddDroneController}.
+ */
 public class AddDroneUI extends AbstractFancyUI {
 
     private final AddDroneController controller = new AddDroneController();
 
+    /**
+     * Executes the UI logic to add a drone.
+     *
+     * @return true if the drone was successfully added, false otherwise.
+     */
     @Override
     protected boolean doShow() {
         try {
@@ -40,11 +50,22 @@ public class AddDroneUI extends AbstractFancyUI {
         }
     }
 
+    /**
+     * Returns the headline/title of the UI screen.
+     *
+     * @return the headline string.
+     */
     @Override
     public String headline() {
         return "Add a Drone to the Inventory";
     }
 
+    /**
+     * Prompts the user to select a model from the list of available drone models.
+     *
+     * @return the selected {@link Model} or null if none are available.
+     * @throws UserCancelledException if the user cancels the action.
+     */
     private Model selectModel() {
         Iterable<Model> models = controller.listModels();
 
@@ -75,6 +96,12 @@ public class AddDroneUI extends AbstractFancyUI {
         } while (true);
     }
 
+    /**
+     * Prompts the user to input a valid serial number for the drone.
+     * Ensures the number is numeric, positive, and between 3 and 30 digits.
+     *
+     * @return a valid {@link SerialNumber} object.
+     */
     private SerialNumber enterValidSerialNumber() {
         String serialRegex = "^[0-9]{3,30}$";
 
