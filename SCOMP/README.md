@@ -111,7 +111,25 @@ and logs their movements. This process continues until all drones complete their
 
 ### Process:
 
-// Put the process here
+To implement this user story, the simulation system was designed to monitor drone positions in real time and detect collisions based on proximity. 
+
+The following steps outline the process:  
+Collision Detection Algorithm: At each simulation timestep, the system calculates the distance between all pairs of drones using their current positions. 
+If the distance between two drones is less than or equal to twice the drone radius (`collision_distance`), a collision is detected.  
+
+Collision Logging: 
+When a collision is detected:  
+The system logs the event by updating the collision state matrix (`collision_state`) and incrementing the collision count for the involved drones.
+The system sends a SIGUSR1 signal to the drones involved in the collision. The drones handle this signal.
+Signal Handling in Drones: Each drone process has a signal handler for SIGUSR1. Upon receiving the signal, other signals are blocked to ensure proper processing.
+
+Collision Limit Check: 
+The system tracks the total number of collisions. If the number of collisions exceeds the predefined threshold (`s.max_collisions`), the simulation terminates early:  
+All drones are notified to terminate using SIGKILL.
+The system generates a simulation report summarizing the results.
+
+Real-Time Execution: 
+The collision detection and notification process is integrated into the main simulation loop. After processing all drone positions for a timestep, the system checks for collisions before advancing to the next step.
 
 ### US264 - Synchronize drone execution with a time step
 
