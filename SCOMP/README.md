@@ -109,7 +109,14 @@ VXN, VYN, VZN
 
 ### Process:
 
-// Put the process here
+For this us, we had to make all the drone processes wait for the main process to send a signal to them, indicating that they can proceed with the next step. 
+This was done using a pipe to send a boolean value to the drone processes.
+
+How did we do that? By putting each drone into a state where he is waiting to read from the pipe the boolean value, that happens after each one writes the new position to a pipe.
+In the main process we make all the necessary procedures like moving the drone to a new position and verifying if there were any collisions.
+After that, we send the boolean value to the drone processes, indicating that they can proceed with the next step.
+
+All of this is done in a loop, until all the drone processes send a last message saying that they have finished executing their scripts.
 
 ### US265 - Generate a simulation report
 
@@ -135,11 +142,14 @@ VXN, VYN, VZN
 
 ## Auto-Evaluation
 
-The auto-evaluation is between 0 and 100.
+The auto-evaluation is between 0 and 100 %.
 
 Diogo Veiros = 100%
+<br>
 Diogo Pereira = 100%
+<br>
 Tiago Sampaio = 100%
+<br>
 Tiago Alves = 100%
 
 
