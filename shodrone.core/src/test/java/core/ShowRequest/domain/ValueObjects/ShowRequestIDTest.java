@@ -9,7 +9,7 @@ class ShowRequestIDTest {
     void ensureShowRequestIDIsCreatedSuccessfully() {
         ShowRequestID showRequestID = new ShowRequestID("customer", "crmcollaborator", "12-12-2000", "12:12");
         assertNotNull(showRequestID);
-        String toString = "customer email = " + "customer" + " | collaborator email = " + "crmcollaborator" + " | date = " + "12-12-2000" + " | time = " + "12:12";
+        String toString = "customer vatNumber = " + "customer" + " | collaborator email = " + "crmcollaborator" + " | date = " + "12-12-2000" + " | time = " + "12:12";
         assertEquals(toString, showRequestID.toString());
     }
 
@@ -31,7 +31,7 @@ class ShowRequestIDTest {
     @Test
     void ensureShowRequestIDToStringReturnsCorrectValue() {
         ShowRequestID showRequestID = new ShowRequestID("customer", "crmcollaborator", "12-12-2000", "12:12");
-        String toString = "customer email = " + "customer" + " | collaborator email = " + "crmcollaborator" + " | date = " + "12-12-2000" + " | time = " + "12:12";
+        String toString = "customer vatNumber = " + "customer" + " | collaborator email = " + "crmcollaborator" + " | date = " + "12-12-2000" + " | time = " + "12:12";
         assertEquals(toString, showRequestID.toString());
     }
 
