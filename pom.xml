@@ -19,7 +19,8 @@
         <module>shodrone.plugin.figure</module>
 		<module>shodrone.plugin.drone</module>
 		<module>shodrone.plugin.proposal</module>
-	</modules>
+        <module>shodrone.plugin.show</module>
+    </modules>
 	<version>0.1.0</version>
 
 	<properties>
