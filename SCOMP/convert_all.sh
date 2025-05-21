@@ -12,12 +12,10 @@ if [ ! -d "$1" ]; then
   exit 1
 fi
 
-# Apply dos2unix to all files in the directory
-for file in "$1"/*; do
-  if [ -f "$file" ]; then
-    echo "Converting $file..."
-    dos2unix "$file"
-  fi
+# Apply dos2unix to all files in the directory and subdirectories
+find "$1" -type f | while read -r file; do
+  echo "Converting $file..."
+  dos2unix "$file"
 done
 
 echo "Conversion complete."
