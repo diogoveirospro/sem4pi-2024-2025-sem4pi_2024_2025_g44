@@ -29,6 +29,7 @@ public class CRMCollaborator implements AggregateRoot<EmailAddress>, Serializabl
     private PhoneNumber phoneNumber;
 
     @Embedded
+    @Column(unique = true, nullable = false)
     private Email email;
 
     protected CRMCollaborator() {

@@ -75,11 +75,11 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "DSLCodeLines", column = @Column(name = "DSLCodeLines")),
+            @AttributeOverride(name = "DSLCodeLines", column = @Column(name = "DSLCodeLines", columnDefinition = "TEXT")),
             @AttributeOverride(name = "DSLVersion", column = @Column(name = "DSLVersion"))
     })
     private DSLDescription DSLDescription;
-
+    
     /**
      * The status of the Figure
      */

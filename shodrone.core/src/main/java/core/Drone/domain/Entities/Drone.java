@@ -21,7 +21,8 @@ public class Drone implements AggregateRoot<Designation> {
     @Enumerated(EnumType.STRING)
     private DroneStatus droneStatus;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "Model", nullable = false)
     private Model model;
 
     @Embedded

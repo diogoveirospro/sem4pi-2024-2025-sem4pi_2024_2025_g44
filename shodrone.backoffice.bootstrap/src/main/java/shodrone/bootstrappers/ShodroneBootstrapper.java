@@ -91,7 +91,7 @@ public class ShodroneBootstrapper implements Action {
 
 		try {
 			final var poweruser = userRepository.save(newUser);
-			ShodroneUser shodroneUser = new ShodroneUser(newUser, new PhoneNumber("+351", "123456789"));
+			ShodroneUser shodroneUser = new ShodroneUser(poweruser, new PhoneNumber("+351", "123456789"));
 			final var shodronePowerUser = shodroneUserRepository.save(shodroneUser);
 			assert poweruser != null;
 			assert shodronePowerUser != null;

@@ -23,10 +23,10 @@ public class Configuration implements Serializable, ValueObject {
     @Column(name = "wind_speed")
     private Map<WindSpeed, PositionTolerance> config = new LinkedHashMap<>();
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     @Column(name = "safetyStatus")
     private SafetyStatus safetyStatus;
+
     protected Configuration() {
         // for JPA
     }

@@ -20,6 +20,7 @@
  */
 package inMemory.persistence;
 
+import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Drone.repositories.DroneRepository;
@@ -100,6 +101,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public ShowRequestRepository showRequest() {
 		return showRequest(null);
+	}
+
+	@Override
+	public CRMCollaboratorRepository crmCollaborators(TransactionalContext autoTx) {
+		return new InMemoryCRMCollaboratorRepository();
+	}
+
+	@Override
+	public CRMCollaboratorRepository crmCollaborators() {
+		return crmCollaborators(null);
 	}
 
 	@Override

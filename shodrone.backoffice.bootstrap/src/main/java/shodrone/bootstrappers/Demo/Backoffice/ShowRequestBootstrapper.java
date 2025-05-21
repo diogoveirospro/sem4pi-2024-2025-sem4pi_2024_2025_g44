@@ -1,6 +1,7 @@
 package shodrone.bootstrappers.Demo.Backoffice;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
+import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Customer.domain.Entities.Customer;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Action {
     private static final Logger LOGGER = LogManager.getLogger(ShowRequestBootstrapper.class);
     private static final RegisterShowRequestController controller = new RegisterShowRequestController();
+    private static final CRMCollaboratorRepository collaboratorRepository = PersistenceContext.repositories().crmCollaborators();
 
     @Override
     public boolean execute() {
@@ -35,6 +37,7 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
     private void register(String description, String date, String time, String location, String quantityOfDrones, String customerName) {
 
         CRMCollaborator crmCollaborator = new CRMCollaborator(new Name("Bruce wayne"), new PhoneNumber("+351", "999999999"), new Email("bruce.wayne@showdrone.com"));
+        CRMCollaborator newCollaborator = collaboratorRepository.save(crmCollaborator);
         Customer customer = PersistenceContext.repositories().customers().findCustomerByName(new Name(customerName));
 
         ShowDescription description1 = new ShowDescription(description);
@@ -43,7 +46,7 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
         Location location1 = new Location(location);
         QuantityOfDrones quantityOfDrones1 = new QuantityOfDrones(quantityOfDrones);
 
-        ShowRequest showRequest = new ShowRequest(description1, date1, time1, location1, quantityOfDrones1, customer, crmCollaborator);
+        ShowRequest showRequest = new ShowRequest(description1, date1, time1, location1, quantityOfDrones1, customer, newCollaborator);
 
         controller.registerShowRequest(showRequest);
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Show Request registered: {}" + UtilsUI.RESET, showRequest.toString());

@@ -24,6 +24,7 @@
 
 package core.Persistence;
 
+import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
@@ -98,4 +99,8 @@ public interface RepositoryFactory {
     ShowRequestRepository showRequest(TransactionalContext autoTx);
 
     ShowRequestRepository showRequest();
+
+    CRMCollaboratorRepository crmCollaborators(TransactionalContext autoTx);
+
+    CRMCollaboratorRepository crmCollaborators();
 }

@@ -23,6 +23,7 @@
  */
 package jpa.persistence;
 
+import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Drone.repositories.DroneRepository;
@@ -161,5 +162,14 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 		return new JpaShowDesignerRepository(Application.settings().persistenceUnitName());
 	}
 
+	@Override
+	public CRMCollaboratorRepository crmCollaborators (TransactionalContext autoTx) {
+		return new JpaCRMCollaboratorRepository(autoTx);
+	}
+
+	@Override
+	public CRMCollaboratorRepository crmCollaborators() {
+		return new JpaCRMCollaboratorRepository(Application.settings().persistenceUnitName());
+	}
 
 }
