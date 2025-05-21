@@ -127,12 +127,10 @@ public class UtilsUI {
         do {
             try {
                 String input = readLineFromConsole(prompt);
-
                 int value = Integer.parseInt(input);
-
                 return value;
             } catch (NumberFormatException ex) {
-                Logger.getLogger(UtilsUI.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(RED + BOLD + "Invalid input. Please enter a valid integer." + RESET);
             }
         } while (true);
     }
@@ -155,7 +153,7 @@ public class UtilsUI {
 
                 return value;
             } catch (NumberFormatException ex) {
-                Logger.getLogger(UtilsUI.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(RED + BOLD + "Invalid input. Please enter a valid decimal number." + RESET);
             }
         } while (true);
     }

@@ -153,9 +153,9 @@ public class MainMenu extends AbstractFancyUI {
     private static final int DECOMMISSION_FIGURE_OPTION = 1;
 
     // FIGURE POWER USER MENU
-    private static final int PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
-    private static final int PU_SEARCH_FIGURE_CATALOGUE_OPTION = 2;
-    private static final int PU_ADD_FIGURE_CATALOGUE_OPTION = 3;
+    private static final int PU_ADD_FIGURE_CATALOGUE_OPTION = 1;
+    private static final int PU_LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 2;
+    private static final int PU_SEARCH_FIGURE_CATALOGUE_OPTION = 3;
     private static final int PU_DECOMMISSION_FIGURE_OPTION = 4;
 
     // SHOW REQUEST MENU
