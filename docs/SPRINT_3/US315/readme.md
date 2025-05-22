@@ -1,86 +1,101 @@
-# US 101
-
-*This is an example template*
+# US315 - Add Video of Simulation to the Proposal
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This task as the objective of concluding the requirements of the us315 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
 
-### 1.1 List of issues
+### 1.1 List of Issues
 
-Analysis:
+- **Analysis**: Done
+- **Design**: DOne
+- **Implementation**: In Progress
+- **Testing**: To do
 
-Design:
-
-Implement:
-
-Test:
-
+---
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As** a CRM Collaborator,
+<br>
+**I want** to add a video of the simulated show,
+<br>
+**So that** the customer can have a preview of the show.
 
-*Example*
 
-**US G101** As {Ator} I Want...
+### Acceptance Criteria
 
-**Acceptance Criteria:**
+- **AC01**: There is no need to generate the video, but we can use any suitable file.
+- **AC02**: The video must be available via a link.
+- **AC03**: The video must be used in the analyse proposal us.
 
-- US101.1 The system should...Blá Blá Blá ...
+### Dependencies
 
-- US101.2. Blá Blá Blá ...
+- This requirement depends on [US310](../../SPRINT_3/US310/readme.md), as a proposal must be created before we can add the video of that proposal simulation.
+- This requirement depends on [US370](../../SPRINT_3/US370/readme.md), as the objective of adding the video is soo that the customer can visualise it.
 
-**Dependencies/References:**
+---
 
-*Regarding this requirement we understand that it relates to...*
+### Client Clarifications:
+
+> **[Topic: US315](https://moodle.isep.ipp.pt/mod/forum/discuss.php?d=36158)**  
+> The video is just a link.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+It is important that the customer can visualise their own proposal simulation, as they request for that show and have all the motives to want to see how much progress was made into implementing his show.
+
+This is possible because in terms of domain the proposal as a relation of many-to-one with the request and the request as a many-to-one relation with customer.
+
+Other elements not relevant to this functionality are omitted for simplicity.
+
+![Relation customer with proposals](images/domain_model_us315.svg "Domain Model")
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+*In this section we are going to present the design of the system. We will focus on the design of the new functionality, but we will also include other parts of the system that are important to understand the implementation.*
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+The class diagram will follow [US370](../../SPRINT_2/US221/readme.md), as it will be exactly the same because as said before, there is no need to
+generate the video soo it will be a fixed video or a method that attributes a random video from a list of videos we have.
 
-### 4.3. Applied Patterns
+## 5. Tests
 
-### 4.4. Acceptance Tests
+The tests that will be used for this us will be the same as the ones in [US370](../../SPRINT_2/US221/readme.md), for the same motives listed above.
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+## 6. Implementation
 
-**Test 1:** *Verifies that it is not possible to ...*
+List of videos that can be used:
 
-**Refers to Acceptance Criteria:** US101.1
+1. https://www.youtube.com/watch?v=G4-2bls6-Z0&ab_channel=DroneSolutionProvider
 
+## 7. Integration/Demonstration
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
+To integrate the new functionality with the existing system, we followed these steps:
 
-## 5. Implementation
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `ShowProposalRepository` was updated to include the necessary methods for the new functionality.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to visualising the simulation of the proposal. 
+3. **UI Layer**: The user interface was updated to include forms and views for analysing the proposal via the video. This includes input validation and error handling.
+4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+### Demonstration Instructions
 
-## 6. Integration/Demonstration
+To demonstrate the functionality, follow these steps:
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+1. **Launch the application via the user app**.
+2. **Log in as a Customer**.
+3. Navigate to the **Proposal** section.
+4. Select the corresponding option to what you want to do.
+5. Follow the instructions in the UI.
+6. And click the link to visualise the video
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+## 8. Observations
 
-## 7. Observations
+For the implementation of this project, we used the following sources:
 
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
+- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
+- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.

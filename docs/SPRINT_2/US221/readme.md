@@ -173,7 +173,7 @@ To run the project, follow the instructions in the [README.md](../../../readme.m
 
 To demonstrate the functionality, follow these steps:
 
-1. **Launch the application**. 
+1. **Launch the application via the backoffice application**. 
 2. **Log in as a CRM Collaborator**.
 3. Navigate to the **Customers** section.
 4. Select the corresponding option to what you want to do.

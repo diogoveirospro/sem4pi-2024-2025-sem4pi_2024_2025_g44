@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Customer <<Entity>> <<root>>{
+
+}
+
+class ShowProposal <<Entity>> <<root>>{
+}
+
+class ShowRequest <<Entity>> <<root>>{
+}
+
+ShowProposal "0..*" --> "1" ShowRequest: based on
+
+ShowRequest "0..*" --> "1" Customer: requested by
+
+
+@enduml
