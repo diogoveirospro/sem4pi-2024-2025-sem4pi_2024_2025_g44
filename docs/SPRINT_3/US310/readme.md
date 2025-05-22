@@ -1,86 +1,170 @@
-# US 101
-
-*This is an example template*
+# US310 - Create Show Proposal
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This task as the objective of concluding the requirements of the us310 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
 
-### 1.1 List of issues
+### 1.1 List of Issues
 
-Analysis:
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: To do
+- **Testing**: To do
 
-Design:
-
-Implement:
-
-Test:
-
+---
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As** a CRM Collaborator,
+<br>
+**I want** to start the process of creating a show proposal,
+<br>
+**So that** we can replay to the customer.
 
-*Example*
 
-**US G101** As {Ator} I Want...
+### Acceptance Criteria
 
-**Acceptance Criteria:**
+- **AC01:** The show proposal should include the total number of drones to be used in the show.
+- **AC02:** All figures in a show must use all drones.
+- **AC03:** The show proposal must follow a predefined template.
+- **AC04:** The show proposal must be associated with a show request.
+- **AC05:** The show proposal should have a link for a video of his simulation associated with it (while analyzing the show proposal).
 
-- US101.1 The system should...Blá Blá Blá ...
+### Dependencies
 
-- US101.2. Blá Blá Blá ...
+This requirement depends on [US230](../../SPRINT_2/US230/readme.md), as a show request must be registered in the system before a show proposal can be created. 
 
-**Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
+---
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+It is important that we are able to create a new show proposal with an associated show request. We need to communicate with the customer to update them and continue planning the show.
+
+This method will be used in the UI to register a new show proposal.
+
+### Show Proposal Aggregate
+
+The `Show Proposal` aggregate includes:
+
+- **CRMCollaborator** – Collaborator responsible for creating the proposal.
+- **ShowRequest** – Show request on which the proposal is based.
+- **ShowProposalStatus** – Current status of the show proposal.
+- **Figures** – List of figures requested for the show.
+- **ShowProposalTemplate** – Predefined template the proposal must follow.
+- **Models** – Drone models used in the show.
+- **QuantityOfDrones** – Total number of drones to be used in the show.
+- **Time** – Duration of the show.
+- **Date** – Date of the show.
+- **Insurance** – Value of the insurance for the show.
+- **FeedbackEmail** – Email from the customer with feedback on the proposal.
+
+Non-essential elements were omitted to maintain clarity and focus.
+
+![Relation customer and representative](images/domain_model_us310.svg "Domain Model")
+
+---
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+In this section, we describe the design approach adopted for implementing **US310 - Create Show Proposal**. The class diagram defines the main components involved in the creation of a new show proposal, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
 
-### 4.1. Realization
+### 4.1 Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US310 Class Diagram](images/class_diagram_us310.svg "US310 Class Diagram")
 
-### 4.3. Applied Patterns
+---
 
-### 4.4. Acceptance Tests
+## 5. Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI, and that DTOs are used properly.
 
-**Test 1:** *Verifies that it is not possible to ...*
+---
 
-**Refers to Acceptance Criteria:** US101.1
+### Test 1: Customer is a user of the system
 
+**Refers to Acceptance Criteria:** AC01  
+**Description:** Ensures that customer representatives are valid system users.
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+```java
+@Test
+void ensureCustomerRepresentativeIsAUser() {
+    // setup: create and persist a customer representative
+    // action: call controller.registerNewRepresentativeOfCustomer() and get the users list
+    // assert: customer representative is in the list of users
 }
-````
+```
 
-## 5. Implementation
+---
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+### Test 2: The representative is associated with a customer
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+**Refers to Acceptance Criteria:** AC02  
+**Description:** Validates that the representative is associated with a customer.
 
-## 6. Integration/Demonstration
+```java
+@Test
+void ensureRepresentativeRepresentsACustomer() {
+    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
+    assertNotNull(dto.getCustomer());
+}
+```
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+---
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+### Test 3: Customer representative's information is correct
 
-## 7. Observations
+**Refers to Acceptance Criteria:** AC03  
+**Description:** Verifies the correctness of name, email, phone number, position, and status.
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+```java
+@Test
+void ensureCustomerInformationIsCorrect() {
+    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
+    assertNotNull(dto.getName());
+    assertNotNull(dto.getEmail());
+    assertNotNull(dto.getPhoneNumber());
+    assertNotNull(dto.getPosition());
+    assertNotNull(dto.getStatus());
+}
+```
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
+## 6. Implementation
 
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+The implementation of US221 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the registration of a new customer representative. And didn't diverge from the design.
+
+The coding Commit messages related to this requirement are as follows:
+
+- [Added the unit tests for the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/8c673b5543cfdc98a1faad132e06541cc48147cb)
+
+- [Added the implementation of the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c649bbf87b8d7c21c9dd30540338cba4c656bbf1)
+
+## 7. Integration/Demonstration
+
+To integrate the new functionality with the existing system, we followed these steps:
+
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `CustomerRepository` were updated to include the necessary methods for the new functionality.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to customer representatives. This includes methods for adding, updating, and retrieving representatives.
+3. **UI Layer**: The user interface was updated to include forms and views for managing customer representatives. This includes input validation and error handling.
+4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
+
+To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
+
+### Demonstration Instructions
+
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application via the backoffice application**.
+2. **Log in as a CRM Collaborator**.
+3. Navigate to the **Customers** section.
+4. Select the corresponding option to what you want to do.
+5. Follow the instructions in the UI.
+
+## 8. Observations
+
+For the implementation of this project, we used the following sources:
+
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
+- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
+- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
