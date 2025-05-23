@@ -34,7 +34,6 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
     private final AddCustomerRepresentativeController controller = new AddCustomerRepresentativeController();
     private final CustomerPrinter printer = new CustomerPrinter();
-    private final UserManagementService userSvc = AuthzRegistry.userService();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final CountryPrinter countryPrinter = new CountryPrinter();
 
@@ -70,12 +69,13 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             return false;
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
-            System.out.println(e.getMessage());
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
@@ -100,7 +100,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         ShodronePasswordPolicy passwordPolicy = new ShodronePasswordPolicy();
 
         do {
-            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's username (or type 'cancel' to go back): " + UtilsUI.RESET);
+            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the representative's username (or type 'cancel' to go back): " + UtilsUI.RESET);
 
             if (username == null || username.trim().isEmpty()) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nUsername cannot be empty. Please try again." + UtilsUI.RESET);
@@ -113,7 +113,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
             java.io.Console console = System.console();
             if (console != null) {
-                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "\nEnter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
+                passwordChars = UtilsUI.readPassword(UtilsUI.BOLD + "\n\nEnter the representative's password (or type 'cancel' to go back) (at least 6 characters, including a number): " + UtilsUI.RESET);
                 password = passwordChars;
             } else {
                 // Fallback in case console is not available
@@ -129,8 +129,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
                 throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             }
 
-            Iterable<SystemUser> allUsers = userSvc.allUsers();
-            boolean found = controller.checkIfUsernameIsInUse(allUsers, username, false);
+            boolean found = controller.checkIfUsernameIsInUse(username);
             if (found) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nUsername already exists. Please choose a different one." + UtilsUI.RESET);
             } else if (!passwordPolicy.isSatisfiedBy(password)) {
@@ -155,7 +154,8 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
         int option;
         do {
-            ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer\n", customerList, printer);
+            ListWidget<Customer> customerListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
+                    "Choose a Customer:\n" + UtilsUI.RESET, customerList, printer);
             customerListWidget.show();
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
@@ -175,7 +175,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         String nameRegex = "^[A-Za-zÀ-ÿ\\s]+$";
         do {
             try {
-                name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's name (or type 'cancel' to go back): " + UtilsUI.RESET);
+                name = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the representative's name (or type 'cancel' to go back): " + UtilsUI.RESET);
                 assert name != null;
                 if ("cancel".equalsIgnoreCase(name)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -195,17 +195,25 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
 
     private Email enterValidEmail() {
         String email;
+
         do {
             try {
-                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's email (or type 'cancel' to go back): " + UtilsUI.RESET);
+                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the representative's email (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(email)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                } else if (controller.checkIfEmailIsInUse(email)) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nEmail already exists. Please choose a different one." + UtilsUI.RESET);
+                    continue;
+                } else {
+                    assert email != null;
+                    if (email.isEmpty()) {
+                        throw new IllegalArgumentException("\nEmail cannot be empty.");
+                    }
                 }
-
                 return new Email(email);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + "Invalid email. Please try again.\n" + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid email. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -223,13 +231,13 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
                     return null;
                 }
                 countryCode = controller.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's phone number (or type 'cancel' to go back) (No spaces): " + UtilsUI.RESET);
+                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the representative's phone number (or type 'cancel' to go back) (No spaces): " + UtilsUI.RESET);
                 if ("cancel".equalsIgnoreCase(phoneNumber)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
                 return new PhoneNumber(countryCode, phoneNumber);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + "Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n" + e.getMessage() + "Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -241,7 +249,8 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>("Choose a Country", countries, countryPrinter);
+        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
+                "\nChoose a Country: \n" + UtilsUI.RESET, countries, countryPrinter);
         countryListWidget.show();
 
         int option;
@@ -266,7 +275,7 @@ public class AddCustomerRepresentativeUI extends AbstractFancyUI {
         String positionRegex = "^[A-Za-zÀ-ÿ\\s]+$";
         do {
             try {
-                position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the representative's position (or type 'cancel' to go back): " + UtilsUI.RESET);
+                position = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the representative's position (or type 'cancel' to go back): " + UtilsUI.RESET);
                 assert position != null;
                 if ("cancel".equalsIgnoreCase(position)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);

@@ -47,6 +47,6 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
         ShowRequest showRequest = new ShowRequest(description1, date1, time1, location1, quantityOfDrones1, customer, crmCollaborator);
 
         controller.registerShowRequest(showRequest);
-        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Show Request registered: {}" + UtilsUI.RESET, showRequest.toString());
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Show Request '{}' registered" + UtilsUI.RESET, showRequest.identity());
     }
 }

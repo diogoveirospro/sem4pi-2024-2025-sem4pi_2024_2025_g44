@@ -8,6 +8,7 @@ import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.User.application.RegisterUsersController;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.application.UseCaseController;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.infrastructure.authz.domain.model.Username;
@@ -19,6 +20,7 @@ import java.util.*;
 public class AddCustomerRepresentativeController {
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
     private final RegisterUsersController registerUserController = new RegisterUsersController();
+    private final Iterable<SystemUser> allUsers = AuthzRegistry.userService().allUsers();
 
     public void addCustomerRepresentative(CustomerRepresentative representative, Customer customer, String username, String password, PhoneNumber phoneNumber) {
         Preconditions.noneNull(representative);
@@ -57,9 +59,21 @@ public class AddCustomerRepresentativeController {
         return PhoneNumber.countryCodeOfCountry(country);
     }
 
-    public boolean checkIfUsernameIsInUse(Iterable<SystemUser> allUsers, String username, boolean found) {
+    public boolean checkIfUsernameIsInUse(String username) {
+        boolean found = false;
         for (SystemUser user : allUsers) {
             if (user.username().equals(Username.valueOf(username))) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
+    public boolean checkIfEmailIsInUse(String email) {
+        boolean found = false;
+        for (SystemUser user : allUsers) {
+            if (user.email().toString().equals(email)) {
                 found = true;
                 break;
             }

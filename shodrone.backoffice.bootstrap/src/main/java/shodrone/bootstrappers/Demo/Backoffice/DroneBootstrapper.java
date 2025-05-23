@@ -61,9 +61,11 @@ public class DroneBootstrapper implements Action {
         try {
             SerialNumber serial = new SerialNumber(serialNumberInt);
             controller.addDrone(serial, model);
-            LOGGER.info(UtilsUI.GREEN + "Drone '{}' registered for model '{}'" + UtilsUI.RESET, serialNumberInt, model.identity());
+            LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Drone '{}' registered for model '{}'" + UtilsUI.RESET,
+                    serialNumberInt, model.identity());
         } catch (Exception e) {
-            LOGGER.error(UtilsUI.RED + "Failed to register drone '{}': {}" + UtilsUI.RESET, serialNumberInt, e.getMessage());
+            LOGGER.error(UtilsUI.BOLD + UtilsUI.RED + "Failed to register drone '{}': {}" + UtilsUI.RESET,
+                    serialNumberInt, e.getMessage());
         }
     }
 }

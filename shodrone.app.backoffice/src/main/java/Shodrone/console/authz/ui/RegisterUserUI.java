@@ -1,6 +1,7 @@
 package Shodrone.console.authz.ui;
 
 import Shodrone.console.Figure.printer.CategoriesPrinter;
+import Shodrone.console.authz.printer.CountryPrinter;
 import Shodrone.console.authz.printer.RolesPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Category.domain.Entities.Category;
@@ -35,8 +36,8 @@ public class RegisterUserUI extends AbstractFancyUI {
         try {
             final String username = enterValidUsername();
             final String password = enterValidPassword();
-            final String firstName = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "First Name: " + UtilsUI.RESET);
-            final String lastName = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Last Name: " + UtilsUI.RESET);
+            final String firstName = enterValidName(UtilsUI.BOLD + "First Name (or type 'cancel' to go back): " + UtilsUI.RESET);
+            final String lastName = enterValidName(UtilsUI.BOLD + "\nLast Name (or type 'cancel' to go back): " + UtilsUI.RESET);
             final Email email = enterValidEmail();
             final PhoneNumber phoneNumber = enterValidPhoneNumber();
 
@@ -55,12 +56,10 @@ public class RegisterUserUI extends AbstractFancyUI {
             }
 
         } catch (IllegalArgumentException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
-            System.out.println(e.getMessage());
-            UtilsUI.goBackAndWait();
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
@@ -69,21 +68,44 @@ public class RegisterUserUI extends AbstractFancyUI {
         }
     }
 
+    private String enterValidName(String prompt) {
+        String name;
+        do {
+            name = UtilsUI.readLineFromConsole(prompt);
+            if (name == null || name.trim().isEmpty()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nName cannot be empty. Please try again." + UtilsUI.RESET);
+                continue;
+            } else if ("cancel".equalsIgnoreCase(name)) {
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+            break;
+        } while (true);
+        return name;
+    }
+
     private String enterValidUsername() {
         String username;
+
         do {
-            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Username: " + UtilsUI.RESET);
+            username = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Username (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+            if ("cancel".equalsIgnoreCase(username)) {
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
+
             if (username == null || username.trim().isEmpty()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Username cannot be empty. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nUsername cannot be empty. Please try again." + UtilsUI.RESET);
                 continue;
             }
 
             if (isUsernameTaken(username)) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "That username is already in use. Please choose another one." + UtilsUI.RESET);
-            } else {
-                break;
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nUsername already taken. Please try again." + UtilsUI.RESET);
+                continue;
             }
+
+            break;
         } while (true);
+
         return username;
     }
 
@@ -97,33 +119,33 @@ public class RegisterUserUI extends AbstractFancyUI {
 
         do {
             try {
-                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the email (or type 'cancel' to go back): " + UtilsUI.RESET);
+                email = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the email (or type 'cancel' to go back): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(email)) {
-                    throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                    throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
                 }
 
                 if (!Pattern.matches(emailRegex, email)) {
-                    throw new IllegalArgumentException("\nInvalid email format. Please try again.");
+                    throw new IllegalArgumentException("Invalid email format. Please try again.");
                 }
 
                 return new Email(email);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
+                System.out.println("\n\n" + UtilsUI.RED + UtilsUI.BOLD + e.getMessage() + UtilsUI.RESET);
             }
         } while (true);
     }
     private String enterValidPassword() {
         String password;
         do {
-            password = UtilsUI.readPassword(UtilsUI.BOLD + "\nPassword (at least 6 characters, including a number): " + UtilsUI.RESET);
+            password = UtilsUI.readPassword(UtilsUI.BOLD + "\n\nPassword (at least 6 characters, including a number): " + UtilsUI.RESET);
             if (password == null || password.trim().isEmpty()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty. Please try again.\n" + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty. Please try again." + UtilsUI.RESET);
                 continue;
             }
 
             if (!passwordPolicy.isSatisfiedBy(password)) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPassword does not meet the required criteria. Please try again.\n" + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password does not meet the required criteria. Please try again." + UtilsUI.RESET);
             } else {
                 break;
             }
@@ -143,10 +165,20 @@ public class RegisterUserUI extends AbstractFancyUI {
                     return null;
                 }
                 countryCode = theController.countryCode(country);
-                phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the phone number: " + UtilsUI.RESET);
-                return new PhoneNumber(countryCode, phoneNumber);
+
+                while (true) {
+                    phoneNumber = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the phone number: " + UtilsUI.RESET);
+
+                    if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPhone number cannot be empty. Please try again." + UtilsUI.RESET);
+                        continue;
+                    }
+
+                    return new PhoneNumber(countryCode, phoneNumber);
+                }
+
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid phone number. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid phone number. Please try again." + UtilsUI.RESET);
             }
         } while (true);
     }
@@ -158,15 +190,15 @@ public class RegisterUserUI extends AbstractFancyUI {
             return null;
         }
 
-        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Country: \n" + UtilsUI.RESET, countries);
+        ListWidget<String> countryListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
+                "\n\nChoose a Country: \n" + UtilsUI.RESET, countries, new CountryPrinter());
         countryListWidget.show();
 
         int option;
         do {
             option = UtilsUI.selectsIndex(countries);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
-                return null;
+                throw new UserCancelledException(UtilsUI.BOLD + UtilsUI.RED + "\nAction cancelled by user." + UtilsUI.RESET);
             }
             if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
@@ -190,7 +222,7 @@ public class RegisterUserUI extends AbstractFancyUI {
         RolesPrinter rolesPrinter = new RolesPrinter();
 
         ListWidget<Role> roleListWidget = new ListWidget<>(
-                UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose the Roles:\n" + UtilsUI.RESET,
+                UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose the Roles:\n" + UtilsUI.RESET,
                 roleList,
                 rolesPrinter
         );
@@ -224,7 +256,7 @@ public class RegisterUserUI extends AbstractFancyUI {
             throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
         }
 
-        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected roles:\n" + selectedRoles + UtilsUI.RESET);
+        System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nSelected roles:\n" + selectedRoles + UtilsUI.RESET);
         return selectedRoles;
     }
 

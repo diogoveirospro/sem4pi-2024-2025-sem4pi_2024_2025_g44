@@ -23,6 +23,10 @@
  */
 package shodrone.authz.ui;
 
+import core.User.domain.ShodroneRoles;
+import eapli.framework.infrastructure.authz.application.AuthenticationService;
+import eapli.framework.infrastructure.authz.application.AuthorizationService;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.io.util.Console;
 import eapli.framework.presentation.console.AbstractUI;
@@ -70,18 +74,28 @@ public class LoginUI extends AbstractFancyUI {
 	protected boolean doShow() {
 		var attempt = 1;
 		while (attempt <= maxAttempts) {
-			final String userName = UtilsUI.readNonEmptyLine(UtilsUI.BOLD + "Username: " + UtilsUI.RESET,
-					UtilsUI.RED + UtilsUI.BOLD + "Please provide a Username" + UtilsUI.RESET);
-			final String password = UtilsUI.readPassword(UtilsUI.BOLD + "\nPassword: " + UtilsUI.RESET);
+            final String userName = UtilsUI.readNonEmptyLine(UtilsUI.BOLD + "Username: " + UtilsUI.RESET,
+                    UtilsUI.RED + UtilsUI.BOLD + "\nPlease provide a Username" + UtilsUI.RESET);
 
-			if (credentialHandler.authenticated(userName, password, onlyWithThis)) {
-				return true;
-			}
+            String password;
+            do {
+                password = UtilsUI.readPassword(UtilsUI.BOLD + "\nPassword: " + UtilsUI.RESET);
+
+                if (password.isEmpty()) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPlease provide a Password" + UtilsUI.RESET);
+                    continue;
+                }
+                break;
+            } while (true);
+
+            if (credentialHandler.authenticated(userName, password, onlyWithThis)) {
+                return true;
+            }
 			System.out.printf(UtilsUI.RED + UtilsUI.BOLD +
-							"%nWrong username or password. You have %d attempts left.%n" + UtilsUI.RESET,
-					maxAttempts - attempt);
-			attempt++;
-		}
+                            "%nWrong username or password. You have %d attempts left.%n" + UtilsUI.RESET,
+                    maxAttempts - attempt);
+            attempt++;
+        }
 		System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Sorry, we are unable to authenticate you. Please contact your " +
 				"System Administrator." + UtilsUI.RESET);
 		return false;

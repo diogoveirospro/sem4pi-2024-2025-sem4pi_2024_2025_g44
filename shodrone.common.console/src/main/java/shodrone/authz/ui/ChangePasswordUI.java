@@ -20,30 +20,44 @@
  */
 package shodrone.authz.ui;
 
+import core.User.domain.ShodronePasswordPolicy;
 import eapli.framework.domain.repositories.ConcurrencyException;
 import eapli.framework.domain.repositories.IntegrityViolationException;
 import eapli.framework.infrastructure.authz.application.AuthenticationService;
+import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.io.util.Console;
-import eapli.framework.presentation.console.AbstractUI;
+import eapli.framework.infrastructure.authz.application.UserSession;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import shodrone.exceptions.OperationCancelledException;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
+
+import java.util.Optional;
 
 /**
  * UI for user login action.
  *
- * @author nuno 21/03/16.
  */
 @SuppressWarnings("squid:S106")
 public class ChangePasswordUI extends AbstractFancyUI {
 
-    private final AuthenticationService authenticationService = AuthzRegistry
-            .authenticationService();
+    private final AuthenticationService authenticationService = AuthzRegistry.authenticationService();
+    private final AuthorizationService authz = AuthzRegistry.authorizationService();
+    private final ShodronePasswordPolicy passwordPolicy = new ShodronePasswordPolicy();
 
     @Override
     protected boolean doShow() {
-        final String oldPassword = UtilsUI.readPassword(UtilsUI.BOLD + "Old Password: " + UtilsUI.RESET);
-        final String newPassword = UtilsUI.readPassword(UtilsUI.BOLD + "\nNew Password: " + UtilsUI.RESET);
+
+        final String oldPassword;
+        final String newPassword;
+
+        try{
+            oldPassword = validateOldPassword();
+            newPassword = validateNewPassword(oldPassword);
+        } catch (OperationCancelledException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
 
         try {
             boolean toContinue;
@@ -58,10 +72,66 @@ public class ChangePasswordUI extends AbstractFancyUI {
             }
             return toContinue;
         } catch (ConcurrencyException | IntegrityViolationException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "An error has occurred> " + e.getLocalizedMessage() + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn error has occurred> " + e.getLocalizedMessage() + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return false;
         }
+    }
+
+    private String validateNewPassword(String oldPassword) {
+        while (true){
+            String newPassword = UtilsUI.readPassword(UtilsUI.BOLD + "\nNew Password (at least 6 characters, including a number): " + UtilsUI.RESET);
+
+            if (newPassword.isEmpty()){
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty! Try again!" + UtilsUI.RESET);
+                continue;
+            } else if (newPassword.equals(oldPassword)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "New password cannot be the same as the old password! Try again!" + UtilsUI.RESET);
+                continue;
+            } else if (!passwordPolicy.isSatisfiedBy(newPassword)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password does not meet the requirements! Try again!" + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password must contain at least 6 characters, including a number!" + UtilsUI.RESET);
+                continue;
+            }
+
+            String confirmPassword = UtilsUI.readPassword(UtilsUI.BOLD + "\nConfirm New Password: " + UtilsUI.RESET);
+
+            if (newPassword.equals(confirmPassword)){
+                return newPassword;
+            } else {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nPasswords do not match! Try again!" + UtilsUI.RESET);
+            }
+        }
+    }
+
+    private String validateOldPassword() {
+        Optional<UserSession> session = authz.session();
+
+        if (session.isPresent()) {
+            while (true){
+                String oldPassword = UtilsUI.readPassword(UtilsUI.BOLD + "Old Password (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if (oldPassword.isEmpty()) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Password cannot be empty! Try again!\n" + UtilsUI.RESET);
+                    continue;
+                }
+
+                if ("cancel".equalsIgnoreCase(oldPassword)) {
+                    throw new OperationCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
+                // Get the authenticated user from the session
+                SystemUser user = session.get().authenticatedUser();
+
+                if (authenticationService.authenticate(user.username().toString(), oldPassword).isPresent()){
+                    return oldPassword;
+                } else {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Incorrect Password! Try again!\n" + UtilsUI.RESET);
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -14,6 +14,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.application.UserManagementService;
 import eapli.framework.infrastructure.authz.domain.model.Role;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.validations.Preconditions;
 
 import java.util.ArrayList;
@@ -39,9 +40,11 @@ public class EditCustomerRepresentativeController {
         if (existingRepresentative == null) {
             throw new IllegalArgumentException("Customer representative not found.");
         }
-        ShodroneUser user = userRepository.findByEmail(new Email(representative.email().toString()));
+
         existingRepresentative.changeInfo(newEmail, newPhone);
         customerRepository.save(customer);
+
+        ShodroneUser user = userRepository.findByEmail(representative.email());
         user.changeEmail(newEmail);
         user.changePhoneNumber(newPhone);
         userRepository.save(user);
@@ -59,5 +62,18 @@ public class EditCustomerRepresentativeController {
 
     public String countryCode(String country) {
         return PhoneNumber.countryCodeOfCountry(country);
+    }
+
+    public boolean checkIfEmailIsInUse(String email) {
+        boolean found = false;
+        Iterable<ShodroneUser> allUsers = userRepository.findAll();
+
+        for (ShodroneUser user : allUsers) {
+            if (user.email().toString().equals(email)) {
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 }

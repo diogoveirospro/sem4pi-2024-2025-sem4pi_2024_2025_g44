@@ -40,6 +40,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.strings.util.Strings;
 import eapli.framework.validations.Invariants;
+import shodrone.presentation.UtilsUI;
 
 /**
  * eCafeteria Bootstrapping data. This class bootstraps Master/reference data of
@@ -71,7 +72,9 @@ public class ShodroneBootstrapper implements Action {
 		// execute all bootstrapping
 		var ret = true;
 		for (final Action boot : actions) {
-			System.out.println("Bootstrapping " + nameOfEntity(boot) + "...");
+			System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "Bootstrapping " + nameOfEntity(boot) + "..." + UtilsUI.RESET);
+			LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Registered Master User {}" +
+					UtilsUI.RESET, POWERUSER);
 			ret &= boot.execute();
 		}
 		return ret;

@@ -28,6 +28,9 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ExitWithMessageAction;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
 import core.Persistence.Application;
+import shodrone.authz.ui.LoginUI;
+import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
+import shodrone.infrastructure.authz.CredentialHandler;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
@@ -171,6 +174,7 @@ public class MainMenu extends AbstractFancyUI {
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
+    private final CredentialHandler credentialHandler = new AuthenticationCredentialHandler();
 
     @Override
     public boolean show() {
@@ -268,6 +272,11 @@ public class MainMenu extends AbstractFancyUI {
 
             final SubMenu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(POWER_USER_DRONE_MENU, dronesMenu);
+        }
+
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                    "You are not allowed to login as a Customer Representative. Please contact your System Administrator.\n" + UtilsUI.RESET);
         }
 
         if (!Application.settings().isMenuLayoutHorizontal()) {

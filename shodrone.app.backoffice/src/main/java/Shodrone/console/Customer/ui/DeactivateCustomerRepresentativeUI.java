@@ -10,52 +10,64 @@ import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
+import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * User Interface for deactivating a customer representative.
- * This class extends AbstractFancyUI and implements the doShow method to display the UI.
- */
-public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
+public class DeactivateCustomerRepresentativeUI extends AbstractFancyListUI<CustomerRepresentative> {
 
     private final DeactivateCustomerRepresentativeController controller = new DeactivateCustomerRepresentativeController();
-    private final CustomerPrinter printer = new CustomerPrinter();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
+    private final CustomerPrinter printer = new CustomerPrinter();
+    private Customer customer;
 
     @Override
     protected boolean doShow() {
         try {
-            if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
-                Customer customer = selectCustomer();
-                if (customer == null) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer selected. Operation canceled." + UtilsUI.RESET);
-                    return false;
-                }
+            if (!authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Access denied." + UtilsUI.RESET);
+                return false;
+            }
 
-                CustomerRepresentative representative = selectCustomerRepresentative(customer);
-                if (representative == null) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No representative selected. Operation canceled." + UtilsUI.RESET);
-                    return false;
-                }
-
-                controller.deactivateCustomerRepresentative(customer, representative);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Customer Representative deactivated successfully!" + UtilsUI.RESET);
+            Iterable<CustomerRepresentative> reps = elements();
+            if (!reps.iterator().hasNext()) {
+                System.out.println(emptyMessage());
                 UtilsUI.goBackAndWait();
                 return true;
             }
+
+            List<CustomerRepresentative> repList = new ArrayList<>();
+            int index = 1;
+            System.out.println(listHeader());
+            for (CustomerRepresentative rep : reps) {
+                System.out.printf("%-5d | ", index++);
+                elementPrinter().visit(rep);
+                repList.add(rep);
+            }
+
+            int option;
+            do {
+                option = UtilsUI.selectsIndex(repList);
+                if (option == -2) return false;
+                if (option < 0 || option >= repList.size()) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                } else break;
+            } while (true);
+
+            CustomerRepresentative selectedRep = repList.get(option);
+
+            controller.deactivateCustomerRepresentative(customer, selectedRep);
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nCustomer Representative deactivated successfully!" + UtilsUI.RESET);
+
+            UtilsUI.goBackAndWait();
+            return true;
+        } catch (UserCancelledException e) {
             return false;
         } catch (IllegalArgumentException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
-            return false;
-        } catch (UserCancelledException e) {
-            System.out.println(e.getMessage());
-            return false;
-        } catch (Exception e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }
@@ -77,12 +89,12 @@ public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
 
         int option;
         do {
-            ListWidget<Customer> customerListWidget = new ListWidget<>("Choose a Customer\n", customerList, printer);
+            ListWidget<Customer> customerListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
+                    "Choose a Customer:\n" + UtilsUI.RESET, customerList, printer);
             customerListWidget.show();
             option = UtilsUI.selectsIndex(customerList);
             if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled.\n" + UtilsUI.RESET);
-                return null;
+                throw new UserCancelledException("User cancelled the operation.");
             }
             if (option == -1) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again.\n" + UtilsUI.RESET);
@@ -92,33 +104,40 @@ public class DeactivateCustomerRepresentativeUI extends AbstractFancyUI {
         } while (true);
     }
 
-    private CustomerRepresentative selectCustomerRepresentative(Customer customer) {
-        Iterable<CustomerRepresentative> representatives = controller.listRepresentativesOfCustomer(customer);
-        if (representatives == null || !representatives.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "No customer representatives available." + UtilsUI.RESET);
+    @Override
+    protected String listHeader() {
+        return UtilsUI.BOLD + UtilsUI.BLUE +
+                "\n\nChoose a Customer Representative to Deactivate:\n" + UtilsUI.RESET + UtilsUI.BOLD
+                + String.format("%n%-5s | %-20s | %-20s | %-30s | %-20s |", "INDEX", "NAME", "POSITION", "EMAIL", "PHONE")
+                + "\n"
+                + String.format("%-5s-+-%-20s-+-%-20s-+-%-30s-+-%-20s-+", "-".repeat(5), "-".repeat(20),
+                "-".repeat(20), "-".repeat(30), "-".repeat(20))
+                + UtilsUI.RESET;
+    }
+
+    @Override
+    protected Iterable<CustomerRepresentative> elements() {
+        customer = selectCustomer();
+
+        if (customer == null) {
             return null;
         }
 
-        List<CustomerRepresentative> representativeList = new ArrayList<>();
-        representatives.forEach(representativeList::add);
+        return controller.listRepresentativesOfCustomer(customer);
+    }
 
+    @Override
+    protected CustomerRepresentativePrinter elementPrinter() {
+        return new CustomerRepresentativePrinter();
+    }
 
+    @Override
+    protected String elementName() {
+        return "";
+    }
 
-        int option;
-        do {
-            ListWidget<CustomerRepresentative> representativeListWidget = new ListWidget<>("Choose a Representative", representativeList, new CustomerRepresentativePrinter());
-            representativeListWidget.show();
-            option = UtilsUI.selectsIndex(representativeList);
-            if (option == -2) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
-                return null;
-            }
-
-            if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again.\n" + UtilsUI.RESET);
-            } else {
-                return representativeList.get(option);
-            }
-        } while (true);
+    @Override
+    protected String emptyMessage() {
+        return UtilsUI.RED + UtilsUI.BOLD + "No active customer representatives found for this customer." + UtilsUI.RESET;
     }
 }
