@@ -51,7 +51,8 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "collaborator_id", nullable = false)
     private CRMCollaborator crmCollaborator;
 
     protected ShowRequest(){}

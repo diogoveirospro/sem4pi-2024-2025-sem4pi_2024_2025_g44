@@ -6,7 +6,6 @@ import core.Customer.domain.Entities.Customer;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
-import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowRequest.application.RegisterShowRequestController;
 import core.ShowRequest.domain.Entities.ShowRequest;
@@ -35,9 +34,8 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
         return true;
     }
     private void register(String description, String date, String time, String location, String quantityOfDrones, String customerName) {
-
-        CRMCollaborator crmCollaborator = new CRMCollaborator(new Name("Bruce wayne"), new PhoneNumber("+351", "999999999"), new Email("bruce.wayne@showdrone.com"));
-        CRMCollaborator newCollaborator = collaboratorRepository.save(crmCollaborator);
+        Email email = new Email("bruce.wayne@showdrone.com");
+        CRMCollaborator crmCollaborator = collaboratorRepository.findByEmail(email);
         Customer customer = PersistenceContext.repositories().customers().findCustomerByName(new Name(customerName));
 
         ShowDescription description1 = new ShowDescription(description);
@@ -46,7 +44,7 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
         Location location1 = new Location(location);
         QuantityOfDrones quantityOfDrones1 = new QuantityOfDrones(quantityOfDrones);
 
-        ShowRequest showRequest = new ShowRequest(description1, date1, time1, location1, quantityOfDrones1, customer, newCollaborator);
+        ShowRequest showRequest = new ShowRequest(description1, date1, time1, location1, quantityOfDrones1, customer, crmCollaborator);
 
         controller.registerShowRequest(showRequest);
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Show Request registered: {}" + UtilsUI.RESET, showRequest.toString());

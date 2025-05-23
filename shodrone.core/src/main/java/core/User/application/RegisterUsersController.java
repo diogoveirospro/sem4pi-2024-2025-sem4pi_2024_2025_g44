@@ -3,6 +3,8 @@ package core.User.application;
 import java.util.*;
 
 
+import core.CRMCollaborator.domain.Entities.CRMCollaborator;
+import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
@@ -27,6 +29,7 @@ public class RegisterUsersController {
     private final UserManagementService userSvc = AuthzRegistry.userService();
     private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
     private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
+    private final CRMCollaboratorRepository crmCollaboratorRepository = PersistenceContext.repositories().crmCollaborators();
 
     public Role[] getRoleTypes() {
         return ShodroneRoles.nonUserValues();
@@ -44,6 +47,11 @@ public class RegisterUsersController {
 
         if (user.hasAny(ShodroneRoles.SHOWDESIGNER, ShodroneRoles.POWER_USER)){
             showDesignerRepository.save(new ShowDesigner(new Name(user.name().firstName() + " " + user.name().lastName()),
+                    phoneNumber, new Email(user.email().toString())));
+        }
+
+        if (user.hasAny(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
+            crmCollaboratorRepository.save(new CRMCollaborator(new Name(user.name().firstName() + " " + user.name().lastName()),
                     phoneNumber, new Email(user.email().toString())));
         }
 

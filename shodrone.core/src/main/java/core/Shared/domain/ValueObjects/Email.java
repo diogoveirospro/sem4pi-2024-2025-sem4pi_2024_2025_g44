@@ -1,5 +1,6 @@
 package core.Shared.domain.ValueObjects;
 
+import core.Customer.domain.ValueObjects.VatNumber;
 import eapli.framework.domain.model.ValueObject;
 import eapli.framework.general.domain.model.EmailAddress;
 import jakarta.persistence.Embeddable;
@@ -32,14 +33,10 @@ public class Email extends EmailAddress implements ValueObject, Serializable, Co
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Email)) {
-            return false;
-        }
-        final Email that = (Email) o;
-        return this.toString().equals(that.toString());
+        if (this == o) return true;
+        if (!(o instanceof Email)) return false;
+        Email that = (Email) o;
+        return email.equals(that.email);
     }
 
     @Override
