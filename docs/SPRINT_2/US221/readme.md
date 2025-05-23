@@ -95,7 +95,7 @@ In this section, we describe the design approach adopted for implementing **US22
 
 ## 5. Tests
 
-The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI, and that DTOs are used properly.
+The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI.
 
 ---
 
@@ -138,12 +138,12 @@ void ensureRepresentativeRepresentsACustomer() {
 ```java
 @Test
 void ensureCustomerInformationIsCorrect() {
-    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(dto.getName());
-    assertNotNull(dto.getEmail());
-    assertNotNull(dto.getPhoneNumber());
-    assertNotNull(dto.getPosition());
-    assertNotNull(dto.getStatus());
+    Customer customer = controller.registerNewRepresentativeOfCustomer();
+    assertNotNull(customer.getName());
+    assertNotNull(customer.getEmail());
+    assertNotNull(customer.getPhoneNumber());
+    assertNotNull(customer.getPosition());
+    assertNotNull(customer.getStatus());
 }
 ```
 

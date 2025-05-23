@@ -15,12 +15,9 @@ This task as the objective of concluding the requirements of the us310 of sprint
 
 ## 2. Requirements
 
-**As** a CRM Collaborator,
-<br>
-**I want** to start the process of creating a show proposal,
-<br>
+**As** a CRM Collaborator,  
+**I want** to start the process of creating a show proposal,  
 **So that** we can replay to the customer.
-
 
 ### Acceptance Criteria
 
@@ -32,7 +29,7 @@ This task as the objective of concluding the requirements of the us310 of sprint
 
 ### Dependencies
 
-This requirement depends on [US230](../../SPRINT_2/US230/readme.md), as a show request must be registered in the system before a show proposal can be created. 
+This requirement depends on [US230](../../SPRINT_2/US230/readme.md), as a show request must be registered in the system before a show proposal can be created.
 
 ---
 
@@ -76,57 +73,57 @@ In this section, we describe the design approach adopted for implementing **US31
 
 ## 5. Tests
 
-The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI, and that DTOs are used properly.
+The following tests validate the acceptance criteria defined for US310. They ensure that only valid show proposals are created, that all drones are used in the figures, the template is applied, and the show request and video simulation are properly associated.
 
 ---
 
-### Test 1: Customer is a user of the system
+### Test 1: Show proposal includes total number of drones
 
-**Refers to Acceptance Criteria:** AC01  
-**Description:** Ensures that customer representatives are valid system users.
+**Refers to Acceptance Criteria:** AC01
+**Description:** Ensures that a valid show proposal contains a positive number of drones.
+
 
 ```java
 @Test
-void ensureCustomerRepresentativeIsAUser() {
-    // setup: create and persist a customer representative
-    // action: call controller.registerNewRepresentativeOfCustomer() and get the users list
-    // assert: customer representative is in the list of users
+void ensureProposalIncludesTotalNumberOfDrones() {
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    assertTrue(proposal.getQuantityOfDrones() > 0);
 }
 ```
 
 ---
 
-### Test 2: The representative is associated with a customer
+### Test 2: Show proposal uses predefined template
 
-**Refers to Acceptance Criteria:** AC02  
-**Description:** Validates that the representative is associated with a customer.
+**Refers to Acceptance Criteria:** AC03
+**Description:** Confirms the proposal includes the predefined template.
 
 ```java
 @Test
-void ensureRepresentativeRepresentsACustomer() {
-    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(dto.getCustomer());
+void ensureProposalUsesPredefinedTemplate() {
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    proposal.addTemplate(template);
+    assertNotNull(proposal.getTemplate());
+    assertEquals(expectedTemplateId, proposal.getTemplate().getId());
 }
 ```
 
 ---
 
-### Test 3: Customer representative's information is correct
+### Test 3: Show proposal must be associated with a show request
 
-**Refers to Acceptance Criteria:** AC03  
-**Description:** Verifies the correctness of name, email, phone number, position, and status.
+**Refers to Acceptance Criteria:** AC04
+**Description:** Validates that the proposal is linked to an existing show request.
 
 ```java
 @Test
-void ensureCustomerInformationIsCorrect() {
-    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(dto.getName());
-    assertNotNull(dto.getEmail());
-    assertNotNull(dto.getPhoneNumber());
-    assertNotNull(dto.getPosition());
-    assertNotNull(dto.getStatus());
+void ensureProposalIsAssociatedWithShowRequest() {
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    assertNotNull(proposal.getShowRequest());
 }
 ```
+
+---
 
 ## 6. Implementation
 
