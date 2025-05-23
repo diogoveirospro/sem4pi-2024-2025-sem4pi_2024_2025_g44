@@ -1,86 +1,81 @@
-# US 101
-
-*This is an example template*
+# US 341
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+The purpose of this task is to validate the syntax of a figure's high-level description (DSL), ensuring it complies
+with the defined grammar and can therefore be safely registered in the system. This task is included in Sprint 3 and
+is being implemented for the first time. The grammar used for validation was previously designed in Sprint 2, as part
+of US251 – Specification of the language for figure and show description.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing  
 
-Design:
+Design: 🧪 Testing  
 
-Implement:
+Implementation: 📝 To Do  
 
-Test:
-
+Testing: 📝 To Do
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As a** Show Designer,  
+**I want** to validate the syntax of the figure description written in DSL,  
+**So that** I can register the figure in the system.
 
-*Example*
+### Acceptance Criteria
 
-**US G101** As {Ator} I Want...
+- **_US341.1_** The system must verify that the figure description follows the DSL grammar rules.
+- **_US341.2_** The validation process must use the ANTLR parser configured with the current version of the DSL grammar.
 
-**Acceptance Criteria:**
+### Dependencies/References
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
-
-**Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
+- **_US251 – Specification of the language for figure and show description_**: The grammar for the DSL was defined in 
+this user story, and it is essential for the validation process.
+- **_US233 – Add Figure to the Catalogue_**: The validation must occur before a figure can be added to the catalogue.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+The grammar used for this user story was designed in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#3-analysis) to describe drone shows and figures in a modular and 
+extensible way.
+
+In the scope of US341, this grammar is now applied to validate DSL input files before figures are registered in the 
+system. The validation process ensures that each DSL file is syntactically correct and matches the expected structure.
+
+The grammar distinguishes between two main domains:
+
+1. **Show Definition:** Describes the overall structure of a show, composed of multiple figure references.
+2. **Figure Definition:** Encapsulates all the declarations and movement instructions that define a single figure.
+
+The grammar relies on terminal rules (e.g., `DOUBLENUMBER`, `IDENTIFIER`) to enforce type correctness and uses recursive 
+productions to support expression nesting, command blocks (`before`, `after`, `group`) and action sequences.
+
+Validation will be performed using ANTLR, which will generate the lexer and parser to be used in this validation process.
+This user story focuses on verifying that the grammar works as intended and detecting syntax errors, but not on 
+integrating the parser into the system as a reusable plugin.
+
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+The grammar was fully designed and documented in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#4-design). In this user story, the focus is on using that grammar to 
+generate the ANTLR parser and apply it to figure description files.
 
-### 4.1. Realization
+The ANTLR grammar will serve as the basis for generating a parser capable of validating DSL inputs. The parser will 
+detect syntax errors and confirm whether a DSL description can be safely registered.
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+This section includes a copy of the relevant grammar rules to support validation. For the full design rationale, see 
+the documentation of US251.
 
-### 4.3. Applied Patterns
+[Full Grammar](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#full-grammar)
 
-### 4.4. Acceptance Tests
-
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
-
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
-
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+### Demonstration Instructions
+
 
 ## 7. Observations
-
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*

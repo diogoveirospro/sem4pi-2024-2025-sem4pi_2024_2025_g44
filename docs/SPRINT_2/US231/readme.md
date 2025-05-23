@@ -7,13 +7,13 @@ the design of show request process. This task is included in Sprint 2 and is bei
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implement: 🧪 Testing
+Implement: ✅ Done
 
-Test: 🧪 Testing
+Test: ✅ Done
 
 
 ## 2. Requirements

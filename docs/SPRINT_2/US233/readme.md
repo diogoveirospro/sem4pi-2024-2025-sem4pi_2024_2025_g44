@@ -8,13 +8,13 @@ public and can only be used in shows for the customer holding the exclusivity ri
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implement: 🧪 Testing
+Implement: ✅ Done
 
-Test: 🧪 Testing
+Test: ✅ Done
 
 
 ## 2. Requirements
