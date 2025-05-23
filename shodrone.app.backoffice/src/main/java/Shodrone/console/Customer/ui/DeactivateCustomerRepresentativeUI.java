@@ -108,10 +108,10 @@ public class DeactivateCustomerRepresentativeUI extends AbstractFancyListUI<Cust
     protected String listHeader() {
         return UtilsUI.BOLD + UtilsUI.BLUE +
                 "\n\nChoose a Customer Representative to Deactivate:\n" + UtilsUI.RESET + UtilsUI.BOLD
-                + String.format("%n%-5s | %-20s | %-20s | %-30s | %-20s |", "INDEX", "NAME", "POSITION", "EMAIL", "PHONE")
+                + String.format("%n%-5s | %-20s | %-30s | %-30s | %-20s |", "INDEX", "NAME", "POSITION", "EMAIL", "PHONE")
                 + "\n"
-                + String.format("%-5s-+-%-20s-+-%-20s-+-%-30s-+-%-20s-+", "-".repeat(5), "-".repeat(20),
-                "-".repeat(20), "-".repeat(30), "-".repeat(20))
+                + String.format("%-5s-+-%-20s-+-%-30s-+-%-30s-+-%-20s-+", "-".repeat(5), "-".repeat(20),
+                "-".repeat(30), "-".repeat(30), "-".repeat(20))
                 + UtilsUI.RESET;
     }
 

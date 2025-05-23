@@ -175,7 +175,7 @@ public class UtilsUI {
 
                 return date;
             } catch (ParseException ex) {
-                System.out.println(BOLD + RED + "Invalid date format. Please use dd-MM-yyyy." + RESET);
+                System.out.println(BOLD + RED + "\nInvalid date format. Please use dd-MM-yyyy." + RESET);
             }
         } while (true);
     }

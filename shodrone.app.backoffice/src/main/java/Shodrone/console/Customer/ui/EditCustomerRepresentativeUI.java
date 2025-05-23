@@ -33,10 +33,11 @@ public class EditCustomerRepresentativeUI extends AbstractFancyListUI<CustomerRe
     private final CustomerPrinter printer = new CustomerPrinter();
     private final CountryPrinter countryPrinter = new CountryPrinter();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
+    private Customer customer;
 
     @Override
     protected Iterable<CustomerRepresentative> elements() {
-        Customer customer = selectCustomer();
+        customer = selectCustomer();
 
         if (customer == null) {
             return null;
@@ -59,10 +60,10 @@ public class EditCustomerRepresentativeUI extends AbstractFancyListUI<CustomerRe
     protected String listHeader() {
         return UtilsUI.BOLD + UtilsUI.BLUE +
                 "\n\nChoose a Customer Representative:\n" + UtilsUI.RESET + UtilsUI.BOLD
-                + String.format("%n%-5s | %-20s | %-20s | %-30s | %-20s |", "INDEX", "NAME", "POSITION", "EMAIL", "PHONE")
+                + String.format("%n%-5s | %-20s | %-30s | %-30s | %-20s |", "INDEX", "NAME", "POSITION", "EMAIL", "PHONE")
                 + "\n"
-                + String.format("%-5s-+-%-20s-+-%-20s-+-%-30s-+-%-20s-+", "-".repeat(5), "-".repeat(20),
-                "-".repeat(20), "-".repeat(30), "-".repeat(20))
+                + String.format("%-5s-+-%-20s-+-%-30s-+-%-30s-+-%-20s-+", "-".repeat(5), "-".repeat(20),
+                "-".repeat(30), "-".repeat(30), "-".repeat(20))
                 + UtilsUI.RESET;
     }
 
@@ -77,9 +78,6 @@ public class EditCustomerRepresentativeUI extends AbstractFancyListUI<CustomerRe
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Access denied." + UtilsUI.RESET);
             return false;
         }
-
-        Customer customer = selectCustomer();
-        if (customer == null) return false;
 
         Iterable<CustomerRepresentative> reps = elements();
         if (!reps.iterator().hasNext()) {

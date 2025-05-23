@@ -56,7 +56,9 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	public UserRepository users(final TransactionalContext tx) {
 		final var repo = new InMemoryUserRepository();
 		final var repo2 = new InMemoryShodroneUserRepository();
-		ShodroneBootstrapper.registerPowerUser(repo, repo2);
+		final var repo3 = new InMemoryShowDesignerRepository();
+		final var repo4 = new InMemoryCRMCollaboratorRepository();
+		ShodroneBootstrapper.registerPowerUser(repo, repo2, repo3, repo4);
 		return repo;
 	}
 

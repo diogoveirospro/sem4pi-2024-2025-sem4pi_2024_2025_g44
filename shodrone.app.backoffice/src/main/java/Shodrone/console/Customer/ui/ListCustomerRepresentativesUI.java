@@ -98,8 +98,8 @@ public class ListCustomerRepresentativesUI extends AbstractFancyListUI<CustomerR
     @Override
     protected String listHeader() {
         return UtilsUI.BOLD
-                + String.format("%n%n%-20s | %-20s | %-30s | %-20s |", "NAME", "POSITION", "EMAIL", "PHONE NUMBER") + "\n"
-                + String.format("%-20s-+-%-20s-+-%-30s-+-%-20s-+", "-".repeat(20), "-".repeat(20),
+                + String.format("%n%n%-20s | %-30s | %-30s | %-20s |", "NAME", "POSITION", "EMAIL", "PHONE NUMBER") + "\n"
+                + String.format("%-20s-+-%-30s-+-%-30s-+-%-20s-+", "-".repeat(20), "-".repeat(30),
                 "-".repeat(30), "-".repeat(20)) + UtilsUI.RESET;
     }
 

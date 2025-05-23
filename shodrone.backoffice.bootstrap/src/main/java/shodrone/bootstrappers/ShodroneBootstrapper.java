@@ -23,8 +23,14 @@
  */
 package shodrone.bootstrappers;
 
+import core.CRMCollaborator.domain.Entities.CRMCollaborator;
+import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.Email;
+import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
+import core.ShowDesigner.domain.Entities.ShowDesigner;
+import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.domain.ShodroneRoles;
 import core.User.domain.UserBuilderHelper;
@@ -59,6 +65,8 @@ public class ShodroneBootstrapper implements Action {
 	private final AuthenticationService authenticationService = AuthzRegistry.authenticationService();
 	private final UserRepository userRepository = PersistenceContext.repositories().users();
 	private final ShodroneUserRepository shodroneUserRepository = PersistenceContext.repositories().shodroneUsers();
+	private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
+	private final CRMCollaboratorRepository crmCollaboratorRepository = PersistenceContext.repositories().crmCollaborators();
 
 	@Override
 	public boolean execute() {
@@ -66,7 +74,7 @@ public class ShodroneBootstrapper implements Action {
 		final Action[] actions = {
 				new MasterUsersBootstrapper()		};
 
-		registerPowerUser(userRepository, shodroneUserRepository);
+		registerPowerUser(userRepository, shodroneUserRepository, showDesignerRepository, crmCollaboratorRepository);
 		authenticateForBootstrapping();
 
 		// execute all bootstrapping
@@ -85,7 +93,8 @@ public class ShodroneBootstrapper implements Action {
 	 * circumvent authorizations in the Application Layer.
 	 */
 	public static boolean registerPowerUser(final UserRepository userRepository,
-			final ShodroneUserRepository shodroneUserRepository) {
+			final ShodroneUserRepository shodroneUserRepository, final ShowDesignerRepository showDesignerRepository,
+											final CRMCollaboratorRepository crmCollaboratorRepository) {
 
 		final var userBuilder = UserBuilderHelper.builder();
 		userBuilder.withUsername(POWERUSER).withPassword(POWERUSER_PWD).withName("joe", "power")
@@ -94,10 +103,22 @@ public class ShodroneBootstrapper implements Action {
 
 		try {
 			final var poweruser = userRepository.save(newUser);
+
 			ShodroneUser shodroneUser = new ShodroneUser(poweruser, new PhoneNumber("+351", "123456789"));
 			final var shodronePowerUser = shodroneUserRepository.save(shodroneUser);
+
+			ShowDesigner showDesigner = new ShowDesigner(new Name(newUser.name().toString()),
+					new PhoneNumber("+351", "123456789"), new Email(newUser.email().toString()));
+			final var showDesignerPowerUser = showDesignerRepository.save(showDesigner);
+
+			CRMCollaborator crmCollaborator = new CRMCollaborator(new Name(newUser.name().toString()),
+					new PhoneNumber("+351", "123456789"), new Email(newUser.email().toString()));
+			final var crmCollaboratorPowerUser = crmCollaboratorRepository.save(crmCollaborator);
+
 			assert poweruser != null;
 			assert shodronePowerUser != null;
+			assert showDesignerPowerUser != null;
+			assert crmCollaboratorPowerUser != null;
 			return true;
 		} catch (ConcurrencyException | IntegrityViolationException e) {
 			// ignoring exception. assuming it is just a primary key violation

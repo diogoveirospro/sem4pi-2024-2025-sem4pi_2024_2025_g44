@@ -115,7 +115,7 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
     @Override
     protected String listHeader() {
         return UtilsUI.BOLD
-                + String.format("%-15s | %-10s | %-50s | %-10s | %-20s | %-20s |", "CODE", "VERSION",
+                + String.format("%n%n%-15s | %-10s | %-50s | %-10s | %-20s | %-20s |", "CODE", "VERSION",
                 "DESCRIPTION", "TYPE", "CREATION DATE", "LAST UPDATE DATE") + "\n"
                 + String.format("%-15s-+-%-10s-+-%-50s-+-%-10s-+-%-20s-+-%-20s-+",
                 "-".repeat(15), "-".repeat(10), "-".repeat(50), "-".repeat(10), "-".repeat(20), "-".repeat(20))
@@ -167,10 +167,10 @@ public class SearchCatalogueUI extends AbstractFancyListUI<Figure> {
             }
 
             if (option < 0 || option > categoriesList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Invalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 Category selected = categoriesList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "Selected Category: " + selected.toString() + "\n" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Category: " + selected.toString() + "\n" + UtilsUI.RESET);
                 return selected.name().toString();
             }
 
