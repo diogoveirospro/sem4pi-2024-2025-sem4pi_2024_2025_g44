@@ -1,4 +1,5 @@
-// Generated from C:/Users/diogo/OneDrive - 0cms6/Faculdade/Código/sem4pi-2024-2025-sem4pi_2024_2025_g44/shodrone.plugin.figure/src/main/plugin/antlr4/FigureLexer.g4 by ANTLR 4.13.2
+package gen;
+// Generated from FigureLexer.g4 by ANTLR 4.13.2
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
