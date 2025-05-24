@@ -13,6 +13,7 @@ import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
 import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
+import Shodrone.console.ShowProposal.ui.CreateShowProposalUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
@@ -94,14 +95,19 @@ public class MainMenu extends AbstractFancyUI {
             "(______/    )_) \\__/    \\____/   (_/    \\__/      \\____\\ /____/\n" +
             "\n";
 
+    private static final String SHOW_PROPOSALS_MENU_TITLE = "  _____   __    __     ____     ___       ___      ______      _____     ____      __    __    _____    _____   ________    _____\n" +
+            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (   __ \\    / ___/    / __ \\     ) )  ( (   / ___/   / ____\\ (___  ___)  / ____\\\n" +
+            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) (__) )  ( (__     / /  \\ \\   ( (    ) ) ( (__    ( (___       ) )    ( (___\n" +
+            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (    __/    ) __)   ( (    ) )   ) )  ( (   ) __)    \\___ \\     ( (      \\___ \\\n" +
+            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) \\ \\  _  ( (      ( (  /\\) )  ( (    ) ) ( (           ) )     ) )         ) )\n" +
+            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( ( \\ \\_))  \\ \\___   \\ \\_\\ \\/    ) \\__/ (   \\ \\___   ___/ /     ( (      ___/ /\n" +
+            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/         )_) \\__/    \\____\\   \\___\\ \\_   \\______/    \\____\\ /____/      /__\\    /____/\n" +
+            "                                                                             \\__)\n";
+
     // USERS
     private static final int REGISTER_USER_OPTION = 1;
     private static final int LIST_USERS_OPTION = 2;
     private static final int ACTIVATE_DEACTIVATE_USER_OPTION = 3;
-
-    // USER MENU (This has no US associated it is just a good thing to add for UX)
-    private static final int CHANGE_USERNAME_OPTION = 1;
-    private static final int CHANGE_PASSWORD_OPTION = 2;
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
@@ -113,7 +119,8 @@ public class MainMenu extends AbstractFancyUI {
     // CRM COLLABORATOR MENUS
     private static final int COLLABORATOR_CUSTOMER_MENU = 2;
     private static final int COLLABORATOR_FIGURE_MENU = 3;
-    private static final int COLLABORATOR_SHOW_REQUEST_MENU = 4;
+    private static final int COLLABORATOR_SHOW_PROPOSALS_MENU = 4;
+    private static final int COLLABORATOR_SHOW_REQUEST_MENU = 5;
 
     // SHOW DESIGNER MENUS
     private static final int SHOW_DESIGNER_FIGURE_MENU = 2;
@@ -121,6 +128,7 @@ public class MainMenu extends AbstractFancyUI {
 
     // CRM MANAGER MENUS
     private static final int CRM_MANAGER_FIGURE_MENU = 2;
+    private static final int CRM_MANAGER_SHOW_PROPOSAL_MENU = 3;
 
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
@@ -134,9 +142,10 @@ public class MainMenu extends AbstractFancyUI {
     private static final int POWER_USER_USERS_MENU = 2;
     private static final int POWER_USER_CUSTOMER_MENU = 3;
     private static final int POWER_USER_FIGURE_MENU = 4;
-    private static final int POWER_USER_SHOW_REQUEST_MENU = 5;
-    private static final int POWER_USER_FIGURE_CATEGORY_MENU = 6;
-    private static final int POWER_USER_DRONE_MENU = 7;
+    private static final int POWER_USER_SHOW_PROPOSAL_MENU = 5;
+    private static final int POWER_USER_SHOW_REQUEST_MENU = 6;
+    private static final int POWER_USER_FIGURE_CATEGORY_MENU = 7;
+    private static final int POWER_USER_DRONE_MENU = 8;
 
     // CUSTOMER MENU
     private static final int REGISTER_CUSTOMER_OPTION = 1;
@@ -144,6 +153,14 @@ public class MainMenu extends AbstractFancyUI {
     private static final int LIST_CUSTOMER_REPRESENTATIVES_OPTION = 3;
     private static final int EDIT_CUSTOMER_REPRESENTATIVE_OPTION = 4;
     private static final int DISABLE_CUSTOMER_REPRESENTATIVE_OPTION = 5;
+
+    // SHOW PROPOSAL MENU
+    private static final int CREATE_SHOW_PROPOSAL_OPTION = 1;
+    private static final int ADD_DRONES_TO_SHOW_PROPOSAL_OPTION = 2;
+    private static final int ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION = 2;
+    private static final int SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 2;
+    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 2;
+    private static final int CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 2;
 
     // FIGURE CRM COLLABORATOR MENU
     private static final int LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
@@ -171,6 +188,8 @@ public class MainMenu extends AbstractFancyUI {
     private static final int EDIT_CATEGORY_OPTION = 2;
     private static final int LIST_CATEGORIES_OPTION = 3;
     private static final int ACTIVATE_DEACTIVATE_CATEGORY_OPTION = 4;
+
+    // PROPOSAL COLLABORATOR MENU
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -232,6 +251,9 @@ public class MainMenu extends AbstractFancyUI {
             final SubMenu figureMenu = buildCollaboratorFiguresMenu();
             mainMenu.addSubMenu(COLLABORATOR_FIGURE_MENU, figureMenu);
 
+            final SubMenu showProposalsMenu = buildCollaboratorShowProposalsMenu();
+            mainMenu.addSubMenu(COLLABORATOR_SHOW_PROPOSALS_MENU, showProposalsMenu);
+
             final SubMenu showRequestMenu = buildShowRequestMenu();
             mainMenu.addSubMenu(COLLABORATOR_SHOW_REQUEST_MENU, showRequestMenu);
         }
@@ -247,6 +269,9 @@ public class MainMenu extends AbstractFancyUI {
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.MANAGER)) {
             final SubMenu managerFiguresMenu = buildManagerFiguresMenu();
             mainMenu.addSubMenu(CRM_MANAGER_FIGURE_MENU, managerFiguresMenu);
+
+            final SubMenu showProposalsMenu = buildShowProposalsManagerMenu();
+            mainMenu.addSubMenu(CRM_MANAGER_SHOW_PROPOSAL_MENU, showProposalsMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.DRONETECH)) {
@@ -263,6 +288,9 @@ public class MainMenu extends AbstractFancyUI {
 
             final SubMenu figureMenu = buildFiguresMenu();
             mainMenu.addSubMenu(POWER_USER_FIGURE_MENU, figureMenu);
+
+            final SubMenu showProposalsMenu = buildShowProposalsMenu();
+            mainMenu.addSubMenu(POWER_USER_SHOW_PROPOSAL_MENU, showProposalsMenu);
 
             final SubMenu showRequestMenu = buildShowRequestMenu();
             mainMenu.addSubMenu(POWER_USER_SHOW_REQUEST_MENU, showRequestMenu);
@@ -388,6 +416,27 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(REMOVE_DRONE_OPTION, "Remove a Drone from Inventory", new RemoveDroneUI()::show);
         menu.addItem(LIST_DRONES_OPTION, "List a Model of Drone", new ListDroneUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
+    }
+
+    private SubMenu buildShowProposalsMenu() {
+        final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
+
+        menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
+
+        return menu;
+    }
+
+    private SubMenu buildCollaboratorShowProposalsMenu() {
+        final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
+        menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
+
+        return menu;
+    }
+
+    private SubMenu buildShowProposalsManagerMenu() {
+        final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
 
         return menu;
     }

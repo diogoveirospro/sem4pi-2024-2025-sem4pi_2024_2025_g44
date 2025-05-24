@@ -44,6 +44,7 @@
 
     <!-- Show Proposal Aggregate -->
     <class>core.ShowProposal.domain.Entities.ShowProposal</class>
+    <class>core.ShowProposal.domain.Entities.ShowConfiguration</class>
 
     <!-- Show Request Aggregate -->
     <class>core.ShowRequest.domain.Entities.ShowRequest</class>

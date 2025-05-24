@@ -1,37 +1,35 @@
-package core.ShowRequest.application;
+package core.ShowProposal.application;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.Insurance;
+import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.application.UseCaseController;
-import eapli.framework.domain.repositories.IntegrityViolationException;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
+import eapli.framework.validations.Preconditions;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @UseCaseController
-public class RegisterShowRequestController {
-    private final ShowRequestRepository showRequestRepository = PersistenceContext.repositories().showRequest();
+public class CreateShowProposalController {
     private final CustomerRepository customerRepository = PersistenceContext.repositories().customers();
+    private final ShowRequestRepository showRequestRepository = PersistenceContext.repositories().showRequest();
+    private final ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
     private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final CRMCollaboratorRepository crmCollaboratorRepository = PersistenceContext.repositories().crmCollaborators();
-
-    public void registerShowRequest(ShowRequest showRequest) {
-        try {
-            showRequestRepository.save(showRequest);
-        } catch (IntegrityViolationException e) {
-            throw new IllegalArgumentException("Error saving the show request: " + e.getMessage());
-        }
-    }
-
-    public Iterable<Customer> listCustomers() { return  customerRepository.findAllCreatedCustomers(); }
 
     public CRMCollaborator getCrmCollaborator() {
         CRMCollaborator collaborator;
@@ -45,5 +43,26 @@ public class RegisterShowRequestController {
             throw new IllegalArgumentException("No CRM Collaborator found for the authenticated user.");
         }
         return collaborator;
+    }
+
+    public Iterable<ShowRequest> listShowRequests(Customer customer) {
+        return showRequestRepository.findAllCreatedShowRequestsByCustomer(customer);
+    }
+
+    public Iterable<Customer> listCustomers() {
+        return customerRepository.findAllCreatedCustomers();
+    }
+
+    public void createShowProposal(ShowRequest showRequest, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator crmCollaborator) {
+        Preconditions.noneNull( showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
+        if (!showRequestRepository.contains(showRequest)) {
+            throw new IllegalArgumentException("Show request does not exist.");
+        }
+        if (!crmCollaboratorRepository.contains(crmCollaborator)) {
+            throw new IllegalArgumentException("CRM Collaborator does not exist.");
+        }
+
+        ShowProposal showProposal = new ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
+        showProposalRepository.save(showProposal);
     }
 }

@@ -3,7 +3,7 @@ package core.ModelOfDrone.domain.Entities;
 import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
 import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
 import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
-import eapli.framework.domain.model.ValueObject;
+import eapli.framework.domain.model.DomainEntity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "configuration")
-public class Configuration implements Serializable, ValueObject {
+public class Configuration implements Serializable, DomainEntity<Long> {
 
     @Id
     @GeneratedValue
@@ -114,5 +114,18 @@ public class Configuration implements Serializable, ValueObject {
     @Override
     public int hashCode() {
         return Objects.hash(config);
+    }
+
+    @Override
+    public boolean sameAs(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Configuration that = (Configuration) other;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public Long identity() {
+        return id;
     }
 }

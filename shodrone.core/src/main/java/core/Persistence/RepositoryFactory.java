@@ -32,6 +32,7 @@ import core.Drone.repositories.DroneRepository;
 
 import core.Figure.repositories.FigureRepository;
 import core.ShowDesigner.repositories.ShowDesignerRepository;
+import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -103,4 +104,8 @@ public interface RepositoryFactory {
     CRMCollaboratorRepository crmCollaborators(TransactionalContext autoTx);
 
     CRMCollaboratorRepository crmCollaborators();
+
+    ShowProposalRepository proposals(TransactionalContext autoTx);
+
+    ShowProposalRepository proposals();
 }

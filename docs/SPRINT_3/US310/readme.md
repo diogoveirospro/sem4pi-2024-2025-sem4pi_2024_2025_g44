@@ -55,7 +55,15 @@ The `Show Proposal` aggregate includes:
 - **Insurance** – Value of the insurance for the show.
 - **FeedbackEmail** – Email from the customer with feedback on the proposal.
 
-Non-essential elements were omitted to maintain clarity and focus.
+For this requirement we will add the following elements:
+- **ShowRequest**
+- **ShowProposalStatus** - Initially set to `Testing`.
+- **CRMCollaborator** 
+- **Time** 
+- **Date** 
+- **Insurance**
+
+The other elements will be added to the system and on other requirements.
 
 ![Relation customer and representative](images/domain_model_us310.svg "Domain Model")
 

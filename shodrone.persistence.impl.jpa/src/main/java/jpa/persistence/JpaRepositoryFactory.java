@@ -31,6 +31,7 @@ import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
 import core.ShowDesigner.repositories.ShowDesignerRepository;
+import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -170,6 +171,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public CRMCollaboratorRepository crmCollaborators() {
 		return new JpaCRMCollaboratorRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public ShowProposalRepository proposals(TransactionalContext autoTx) {
+		return new  JpaShowProposalRepository(autoTx);
+	}
+
+	@Override
+	public ShowProposalRepository proposals() {
+		return new JpaShowProposalRepository(Application.settings().persistenceUnitName());
 	}
 
 }

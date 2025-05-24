@@ -28,6 +28,7 @@ import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
 import core.ShowDesigner.repositories.ShowDesignerRepository;
+import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
@@ -113,6 +114,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public CRMCollaboratorRepository crmCollaborators() {
 		return crmCollaborators(null);
+	}
+
+	@Override
+	public ShowProposalRepository proposals(TransactionalContext autoTx) {
+		return new InMemoryShowProposalRepository();
+	}
+
+	@Override
+	public ShowProposalRepository proposals() {
+		return proposals(null);
 	}
 
 	@Override

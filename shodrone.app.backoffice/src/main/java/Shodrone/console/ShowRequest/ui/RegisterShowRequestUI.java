@@ -48,8 +48,9 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
             QuantityOfDrones quantityOfDrones = enterValidQuantityOfDrones();
 
             Customer customer = getCustomer();
-            CRMCollaborator crmCollaborator = getCrmCollaborator();
+            CRMCollaborator crmCollaborator = controller.getCrmCollaborator();
 
+            assert customer != null;
             ShowRequest showRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator);
 
             controller.registerShowRequest(showRequest);
@@ -200,11 +201,6 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
                 return customerList.get(option);
             }
         } while (true);
-    }
-    private CRMCollaborator getCrmCollaborator()
-    {
-        SystemUser user = authz.session().get().authenticatedUser();
-        return new CRMCollaborator(new Name(user.name().firstName()), new PhoneNumber("+351", "999999999"), new Email(user.email().toString()));
     }
 
     @Override
