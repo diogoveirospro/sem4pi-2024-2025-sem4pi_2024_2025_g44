@@ -1,53 +1,48 @@
-# US 101
+# US 340
 
 *This is an example template*
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+The purpose of this task is to deploy and configure a plugin so it can be used by the system to analyze the figure high-level description.
+This task is included in Sprint 3 and is being implemented for the first time. 
+This plugin is supposed to use the antlr code developed in US341 - Validate Figure Description, And connect it to the system so that it can be used to validate the figure description.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: To Do
 
-Design:
+Design: To Do
+ 
+Implement: To Do
 
-Implement:
-
-Test:
+Test: To Do
 
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As** a Drone Tech,
+<br>
+**I want** to deploy and configure a plugin,
+<br>
+**So that** it can be used by the system to analyze the figure high-level description.
 
-*Example*
+### Acceptance Criteria
 
-**US G101** As {Ator} I Want...
-
-**Acceptance Criteria:**
-
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
+- **_US341.1_** The system should be able to call the plugin to validate the figure description.
 
 **Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+- **US341 – Validate Figure Description**: The plugin will use the code developed in this user story to validate the figure description.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+The grammar used for this user story was designed in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#3-analysis) to describe drone shows and figures in a modular and
+extensible way. And is implemented in the plugin developed in [US341 - Validate Figure Description](../US341/readme.md).
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
-
-### 4.1. Realization
-
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
-
-### 4.3. Applied Patterns
+View the design of the plugin in [US341 - Validate Figure Description](../US341/readme.md#4-design).
 
 ### 4.4. Acceptance Tests
 
@@ -67,20 +62,9 @@ public void ensureXxxxYyyy() {
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
 
 ## 7. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*

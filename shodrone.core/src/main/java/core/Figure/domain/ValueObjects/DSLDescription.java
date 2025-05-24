@@ -1,5 +1,8 @@
 package core.Figure.domain.ValueObjects;
 
+
+import core.Figure.application.Service.DSLValidate;
+import core.Figure.application.Service.DSLValidationResult;
 import eapli.framework.domain.model.ValueObject;
 import jakarta.persistence.Embeddable;
 
@@ -56,9 +59,20 @@ public class DSLDescription implements ValueObject, Serializable {
             throw new IllegalArgumentException("Invalid DSL version format. Expected format: X.Y.Z");
         }
 
-        this.DSLCodeLines = String.join("\n", DSLCodeLines);
+        String dslCode = String.join("\n", DSLCodeLines);
+        /*
+        DSLValidate validator = new DSLValidate();
+        DSLValidationResult result = validator.validate(dslCode);
+
+        if (!result.isValid()) {
+            throw new IllegalArgumentException("Invalid DSL:\n" + String.join("\n", result.errors()));
+        }
+        */
+        this.DSLCodeLines = dslCode;
         this.DSLVersion = DSLVersion;
     }
+
+
 
     /**
      * Verifies if the DSL version is valid.
