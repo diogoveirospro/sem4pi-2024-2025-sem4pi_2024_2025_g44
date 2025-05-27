@@ -60,6 +60,8 @@ In this section, we describe the design approach adopted for implementing **US31
 
 ## 5. Tests
 
+The following tests validate the acceptance criteria defined for US315. They ensure that only valid videos are added.
+
 **Refers to Acceptance Criteria: AC02 and AC03**
 **Description**: Ensures that a video link can be added to a proposal.
 
@@ -76,9 +78,14 @@ void ensureVideoLinkCanBeAddedToProposal() {
 
 ## 6. Implementation
 
-List of videos that can be used:
+The implementation of US315 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the addition of a video to the show proposal. And didn't diverge from the design.
 
-1. https://www.youtube.com/watch?v=G4-2bls6-Z0&ab_channel=DroneSolutionProvider
+The coding Commit messages related to this requirement are as follows:
+
+- [Added the unit tests for the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/8c673b5543cfdc98a1faad132e06541cc48147cb)
+
+- [Added the implementation of the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c649bbf87b8d7c21c9dd30540338cba4c656bbf1)
 
 ## 7. Integration/Demonstration
 

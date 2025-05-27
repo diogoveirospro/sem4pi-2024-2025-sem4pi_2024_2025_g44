@@ -190,6 +190,10 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
         return configuration;
     }
 
+    public Video video() {
+        return video;
+    }
+
     public void addVideo(Video video) {
         if (video == null) {
             throw new IllegalArgumentException("Video cannot be null.");

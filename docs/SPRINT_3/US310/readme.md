@@ -8,8 +8,8 @@ This task as the objective of concluding the requirements of the us310 of sprint
 
 - **Analysis**: Done
 - **Design**: Done
-- **Implementation**: To do
-- **Testing**: To do
+- **Implementation**: Done
+- **Testing**: In Progress
 
 ---
 
@@ -81,7 +81,7 @@ In this section, we describe the design approach adopted for implementing **US31
 
 ## 5. Tests
 
-The following tests validate the acceptance criteria defined for US310. They ensure that only valid show proposals are created, that all drones are used in the figures, the template is applied, and the show request and video simulation are properly associated.
+The following tests validate the acceptance criteria defined for US310. They ensure that only valid show proposals are created.
 
 ---
 
