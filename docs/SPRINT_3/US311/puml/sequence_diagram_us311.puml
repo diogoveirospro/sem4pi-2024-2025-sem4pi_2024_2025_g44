@@ -1,0 +1,128 @@
+@startuml
+'skinparam monochrome
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "CRM Collaborator" as DT
+participant ":ConfigShowPropUI" as UI
+participant ":ConfigShowPropController" as CTRL
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
+participant "showProposalRepository\n:ShowProposalRepository" as SP_REPO
+participant "modelRepository\n:ModelRepository" as MOD_REPO
+participant "configuration\n:Configuration" as CONF
+
+activate DT
+
+DT -> UI : requests to configure the drone list of a show proposal
+activate UI
+    UI -> CTRL : getShowProposalList()
+    activate CTRL
+
+    CTRL --> PERS : getRepositoryFactory()
+    activate PERS
+    PERS --> CTRL : repositoryFactory
+    deactivate PERS
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+    CTRL -> REPOS_SINGLETON : getModelRepository()
+    activate REPOS_SINGLETON
+    REPOS_SINGLETON --> CTRL : modelRepository
+    deactivate REPOS_SINGLETON
+    CTRL -> SP_REPO : getShowProposalList()
+    activate SP_REPO
+    SP_REPO --> CTRL : showProposalList
+    deactivate SP_REPO
+    CTRL --> UI : showProposalList
+    deactivate CTRL
+    UI --> DT : shows show proposal list and ask to select one
+    deactivate UI
+    DT -> UI : selects one
+    activate UI
+    loop for each model for the configuration
+    UI -> CTRL : getModelList()
+        activate CTRL
+
+        CTRL --> PERS : getRepositoryFactory()
+        activate PERS
+        PERS --> CTRL : repositoryFactory
+        deactivate PERS
+        CTRL -> REPOS : getInstance()
+        activate REPOS
+        REPOS --> CTRL : repositories
+        deactivate REPOS
+        CTRL -> REPOS_SINGLETON : getShowProposalRepository()
+        activate REPOS_SINGLETON
+        REPOS_SINGLETON --> CTRL : showProposalRepository
+        deactivate REPOS_SINGLETON
+        CTRL -> MOD_REPO : getModelList()
+        activate MOD_REPO
+        MOD_REPO --> CTRL : modelList
+        deactivate MOD_REPO
+        CTRL --> UI : modelList
+        deactivate CTRL
+    UI --> DT : shows drone models list and ask to select one
+    deactivate UI
+    DT -> UI : selects one
+        activate UI
+        UI --> DT : asks for the number of drones for the selected drone
+        deactivate UI
+         DT -> UI : submits data
+         activate UI
+         end loop
+
+                UI --> DT : shows the configuration and asks for confirmation
+                deactivate UI
+    DT -> UI : confirms data
+    activate UI
+    UI -> CTRL : configureShow(configuration)
+    activate CTRL
+        CTRL --> CTRL :getShowProposalRepository()
+        activate CTRL
+        CTRL -> PERS : getShowProposalRepository()
+                                                activate PERS
+                                                PERS --> CTRL : repositoryFactory
+                                                deactivate PERS
+        CTRL -> REPOS : getInstance()
+        activate REPOS
+            REPOS --> CTRL : repositories
+        deactivate REPOS
+
+        CTRL -> REPOS_SINGLETON : getShowProposalRepository()
+        activate REPOS_SINGLETON
+            REPOS_SINGLETON --> CTRL : showProposalRepository
+            deactivate REPOS_SINGLETON
+        CTRL -->CTRL : showProposalRepository
+
+        deactivate CTRL
+            CTRL -> SP_REPO : createModel(configuration)
+
+            activate SP_REPO
+        SP_REPO -> CONF : createConfig(configuration)
+        activate CONF
+        CONF --> SP_REPO : configuration
+        deactivate CONF
+
+        SP_REPO ->SP_REPO : addConfig(showConfiguration)
+        activate SP_REPO
+        SP_REPO -> SP_REPO : true
+        deactivate SP_REPO
+        SP_REPO --> CTRL : true
+
+        deactivate SP_REPO
+
+        CTRL --> UI : true
+
+    deactivate CTRL
+
+UI --> DT : displays success message
+deactivate UI
+deactivate DT
+
+@enduml
