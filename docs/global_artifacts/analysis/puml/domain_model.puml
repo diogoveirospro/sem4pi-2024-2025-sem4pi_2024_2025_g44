@@ -200,23 +200,25 @@ package "ShowProposal " <<aggregate>>{
 
     class Insurance <<Value Object>>{
     }
+    class ShowConfiguration <<Entity>>{
+    }
 
     class FeedbackEmail <<Value Object>>{
     }
-
     class Video <<Value Object>>{
     }
 
-    'ShowProposal -> x
-    ShowProposal --> "1" FeedbackEmail: feedbackEmail
+
+    ShowProposal --> "1" Video: video
+        ShowProposal --> "1" FeedbackEmail: feedbackEmail
     ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
     ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
-    ShowProposal --> "1..*" Model: uses
     ShowProposal --> "1" Insurance: insurance
-    ShowProposal --> "1" Video: video
+    ShowProposal --> "1" ShowConfiguration: showConfiguration
+    ShowConfiguration --> "1..*" Drone: drone
 }
 
 package "ShowDesigner " <<aggregate>>{

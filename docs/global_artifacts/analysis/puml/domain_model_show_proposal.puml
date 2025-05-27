@@ -25,6 +25,13 @@ package "ShowRequest " <<aggregate>>{
     }
 }
 
+package "Drone " <<aggregate>>{
+
+    class Drone <<Entity>> <<root>>{
+    }
+}
+
+
 package "ShowProposal " <<aggregate>>{
 
     enum ShowProposalStatus <<Value Object>>{
@@ -41,8 +48,13 @@ package "ShowProposal " <<aggregate>>{
     class FeedbackEmail <<Value Object>>{
     }
 
-    class Video <<Value Object>>{
+    class ShowConfiguration <<Entity>>{
     }
+        class Video <<Value Object>>{
+        }
+
+
+     ShowProposal --> "1" Video: video
 
     'ShowProposal -> x
     ShowProposal --> "1" FeedbackEmail: feedbackEmail
@@ -51,9 +63,10 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
     ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
-    ShowProposal --> "1..*" Model: uses
+    ShowConfiguration --> "1..*" Drone: drone
     ShowProposal --> "1" Insurance: insurance
-    ShowProposal --> "1" Video: video
+        ShowProposal --> "1" ShowConfiguration: showConfiguration
+     Drone --> "1" Model: model
 }
 
 package Shared {
