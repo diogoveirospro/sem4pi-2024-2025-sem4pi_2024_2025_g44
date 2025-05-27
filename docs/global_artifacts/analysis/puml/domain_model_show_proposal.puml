@@ -42,6 +42,10 @@ package "ShowProposal " <<aggregate>>{
 
     class ShowProposalTemplate <<Value Object>>{
     }
+
+    class ShowProposalNumber <<Value Object>>{
+    }
+
     class Insurance <<Value Object>>{
     }
 
@@ -50,8 +54,9 @@ package "ShowProposal " <<aggregate>>{
 
     class ShowConfiguration <<Entity>>{
     }
-        class Video <<Value Object>>{
-        }
+
+    class Video <<Value Object>>{
+    }
 
 
      ShowProposal --> "1" Video: video
@@ -63,9 +68,10 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
     ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
+    ShowProposal --> "1" ShowProposalNumber: proposalNumber
     ShowConfiguration --> "1..*" Drone: drone
     ShowProposal --> "1" Insurance: insurance
-        ShowProposal --> "1" ShowConfiguration: showConfiguration
+    ShowProposal --> "1" ShowConfiguration: showConfiguration
      Drone --> "1" Model: model
 }
 
