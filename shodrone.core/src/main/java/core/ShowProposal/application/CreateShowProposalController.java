@@ -5,6 +5,7 @@ import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.Insurance;
@@ -21,6 +22,9 @@ import eapli.framework.validations.Preconditions;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @UseCaseController
 public class CreateShowProposalController {
@@ -64,5 +68,19 @@ public class CreateShowProposalController {
 
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
         showProposalRepository.save(showProposal);
+    }
+
+    public List<String> listCurrencies() {
+        Map<String, String> map;
+        map = Insurance.getMainEuropeanCurrencies();
+        List<String> currencies = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            currencies.add(entry.getKey());
+        }
+        return currencies;
+    }
+
+    public String getCurrencySymbol(String selectedCurrency) {
+        return Insurance.getMainEuropeanCurrencies().get(selectedCurrency);
     }
 }

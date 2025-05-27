@@ -1,0 +1,147 @@
+@startuml
+set separator none
+left to right direction
+
+
+package "Domain" #DDDDDD {
+
+    package "Repository " #DDDDDD {
+        Interface ShowProposalRepository <<Repository>> {
+            + findAllTestingProposals() : Iterable<ShowProposal>
+
+        }
+
+        Interface RepositoryFactory <<Factory>> {
+            - RepositoryFactory()
+            + proposals() : ShowProposalRepository
+        }
+
+    }
+
+    enum ShowProposalStatus <<Value Object>>{
+        }
+
+        class ShowProposal <<Entity>> <<root>>{
+        }
+
+        class ShowProposalTemplate <<Value Object>>{
+        }
+
+        class ShowRequest <<Entity>> <<root>>{
+        }
+
+        class CRMCollaborator <<Entity>> <<root>>{
+        }
+
+        class Figure <<Entity>> <<root>>{
+        }
+
+        class Date <<Value Object>>{
+        }
+
+        class QuantityOfDrones <<Value Object>>{
+        }
+
+        class Time <<Value Object>>{
+        }
+
+        class Model <<Entity>> <<root>>{
+        }
+
+        class Insurance <<Value Object>>{
+        }
+
+        class FeedbackEmail <<Value Object>>{
+        }
+
+        class Video <<Value Object>>{
+        }
+
+        class VideoList {
+        }
+}
+
+package "UI" #DDDDDD {
+    class AddVideoToProposalUI <<UI>> {
+
+    }
+}
+
+package "Controller" #DDDDDD {
+    class AddVideoToProposalController <<Controller>> {
+        + findAllTestingProposals() : Iterable<ShowProposal>
+        + listVideos()
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaShowProposalRepository <<Repository>> {
+        + findAllTestingProposals() : Iterable<ShowProposal>
+    }
+
+    class JpaRepositoryFactory <<Factory>> {
+        - JpaRepositoryFactory()
+        + proposals() : ShowProposalRepository
+    }
+
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryShowProposalRepository <<Repository>> {
+        + findAllTestingProposals() : Iterable<ShowProposal>
+    }
+
+    class InMemoryRepositoryFactory <<Factory>> {
+        - InMemoryRepositoryFactory()
+        + proposals() : ShowProposalRepository
+    }
+}
+
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        repositories() : RepositoryFactory
+    }
+}
+
+' Relações entre as classes
+ShowProposal --> "1" FeedbackEmail: feedbackEmail
+ShowProposal --> "1" CRMCollaborator: created by
+ShowProposal --> "1" ShowRequest: based on
+ShowProposal --> "1" ShowProposalStatus: proposalStatus
+ShowProposal --> "0..*" Figure : requests new
+ShowProposal --> "1" ShowProposalTemplate: template
+ShowProposal --> "1..*" Model: uses
+ShowProposal --> "1" QuantityOfDrones: qnt_drones
+ShowProposal --> "1" Time: time
+ShowProposal --> "1" Date: date
+ShowProposal --> "1" Insurance: insurance
+ShowProposal --> "1" Video: video
+
+RepositoryFactory ..> ShowProposalRepository : proposals()
+
+ShowProposalRepository --> "0..*" ShowProposal : proposals
+
+AddVideoToProposalUI ..> AddVideoToProposalController
+AddVideoToProposalController ..> RepositoryFactory : proposals()
+AddVideoToProposalController ..> ShowProposalRepository : proposals()
+AddVideoToProposalController ..> PersistenceContext : repositories()
+
+AddVideoToProposalController ..> VideoList : listVideos()
+
+PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
+PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
+PersistenceContext ..> RepositoryFactory : proposals()
+
+JpaRepositoryFactory ...|> RepositoryFactory : proposals()
+JpaRepositoryFactory ..> JpaShowProposalRepository
+
+JpaShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposals()
+
+
+InMemoryRepositoryFactory .|> RepositoryFactory : proposals()
+InMemoryRepositoryFactory ..> InMemoryShowProposalRepository
+
+InMemoryShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposals()
+
+
+@enduml

@@ -13,6 +13,7 @@ import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
 import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
+import Shodrone.console.ShowProposal.ui.AddVideoToProposalUI;
 import Shodrone.console.ShowProposal.ui.CreateShowProposalUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
@@ -37,7 +38,6 @@ import shodrone.presentation.UtilsUI;
 
 /**
  * TODO split this class in more specialized classes for each menu
- *
  */
 public class MainMenu extends AbstractFancyUI {
 
@@ -157,10 +157,11 @@ public class MainMenu extends AbstractFancyUI {
     // SHOW PROPOSAL MENU
     private static final int CREATE_SHOW_PROPOSAL_OPTION = 1;
     private static final int ADD_DRONES_TO_SHOW_PROPOSAL_OPTION = 2;
-    private static final int ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION = 2;
-    private static final int SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 2;
-    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 2;
-    private static final int CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 2;
+    private static final int ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION = 3;
+    private static final int ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION = 4;
+    private static final int SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 5;
+    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 6;
+    private static final int CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 7;
 
     // FIGURE CRM COLLABORATOR MENU
     private static final int LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
@@ -190,6 +191,15 @@ public class MainMenu extends AbstractFancyUI {
     private static final int ACTIVATE_DEACTIVATE_CATEGORY_OPTION = 4;
 
     // PROPOSAL COLLABORATOR MENU
+    private static final int COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION = 1;
+    private static final int COLLABORATOR_ADD_DRONES_TO_SHOW_PROPOSAL_OPTION = 2;
+    private static final int COLLABORATOR_ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION = 3;
+    private static final int COLLABORATOR_ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION = 4;
+    private static final int COLLABORATOR_SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 5;
+    private static final int COLLABORATOR_MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 6;
+
+    // PROPOSAL MANAGER MENU
+    private static final int MANAGER_CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 1;
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -279,7 +289,7 @@ public class MainMenu extends AbstractFancyUI {
             mainMenu.addSubMenu(DRONE_MENU, dronesMenu);
         }
 
-        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)){
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)) {
             final SubMenu usersMenu = buildUsersMenu();
             mainMenu.addSubMenu(POWER_USER_USERS_MENU, usersMenu);
 
@@ -316,7 +326,7 @@ public class MainMenu extends AbstractFancyUI {
         return mainMenu;
     }
 
-    private SubMenu buildFiguresMenu(){
+    private SubMenu buildFiguresMenu() {
         final SubMenu menu = new SubMenu("Figures", FIGURES_MENU_TITLE);
 
         menu.addItem(PU_ADD_FIGURE_CATALOGUE_OPTION, "Add Figure to the Catalogue", new AddFigureToCatalogueUI()::show);
@@ -424,14 +434,14 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
 
         menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
-
+        menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         return menu;
     }
 
     private SubMenu buildCollaboratorShowProposalsMenu() {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
-        menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
-
+        menu.addItem(COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
+        menu.addItem(COLLABORATOR_ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         return menu;
     }
 

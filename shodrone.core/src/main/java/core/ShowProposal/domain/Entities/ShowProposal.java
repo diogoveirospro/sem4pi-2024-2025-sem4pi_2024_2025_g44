@@ -49,6 +49,9 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
     @Embedded
     private ShowProposalTemplate template;
 
+    @Embedded
+    private Video video;
+
 
     /**
      * The request of the ShowProposal
@@ -137,5 +140,63 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
     @Override
     public Long identity() {
         return id;
+    }
+
+    public CRMCollaborator creator() {
+        return creator;
+    }
+
+    public CRMCollaborator sender() {
+        return sender;
+    }
+
+    public ShowRequest request() {
+        return request;
+    }
+
+    public LocalDate dateOfShow() {
+        return dateOfShow;
+    }
+
+    public LocalTime timeOfShow() {
+        return timeOfShow;
+    }
+
+    public QuantityOfDrones quantityOfDrones() {
+        return quantityOfDrones;
+    }
+
+    public Insurance insurance() {
+        return insurance;
+    }
+
+    public ShowProposalStatus status() {
+        return status;
+    }
+
+    public ShowProposalTemplate template() {
+        return template;
+    }
+
+    public List<Figure> figures() {
+        return figures;
+    }
+
+    public FeedbackEmail feedbackEmail() {
+        return feedbackEmail;
+    }
+
+    public ShowConfiguration configuration() {
+        return configuration;
+    }
+
+    public void addVideo(Video video) {
+        if (video == null) {
+            throw new IllegalArgumentException("Video cannot be null.");
+        }
+        if (status != ShowProposalStatus.TESTING) {
+            throw new IllegalArgumentException("Cannot add video to a non-testing proposal.");
+        }
+        this.video = video;
     }
 }

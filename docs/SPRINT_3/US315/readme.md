@@ -26,7 +26,7 @@ This task as the objective of concluding the requirements of the us315 of sprint
 
 - **AC01**: There is no need to generate the video, but we can use any suitable file.
 - **AC02**: The video must be available via a link.
-- **AC03**: The video must be used in the analyse proposal us.
+- **AC03**: The video must be available in the analyse proposal us.
 
 ### Dependencies
 
@@ -52,16 +52,14 @@ Other elements not relevant to this functionality are omitted for simplicity.
 
 ## 4. Design
 
-*In this section we are going to present the design of the system. We will focus on the design of the new functionality, but we will also include other parts of the system that are important to understand the implementation.*
+In this section, we describe the design approach adopted for implementing **US315 - Add Video of Simulation to the Proposal**. The class diagram defines the main components involved in the addition of a video to the show proposal, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
 
 ### 4.1. Realization
 
-The class diagram will follow [US370](../../SPRINT_2/US221/readme.md), as it will be exactly the same because as said before, there is no need to
-generate the video soo it will be a fixed video or a method that attributes a random video from a list of videos we have.
+
 
 ## 5. Tests
 
-The tests that will be used for this us will be the same as the ones in [US370](../../SPRINT_2/US221/readme.md), for the same motives listed above.
 
 ## 6. Implementation
 

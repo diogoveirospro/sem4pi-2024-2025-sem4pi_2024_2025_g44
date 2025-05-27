@@ -1,5 +1,6 @@
 package Shodrone.console.ShowProposal.ui;
 
+import Shodrone.console.ShowProposal.printer.CurrencyPrinter;
 import Shodrone.console.ShowProposal.printer.CustomerPrinter;
 import Shodrone.console.ShowProposal.printer.ShowRequestPrinter;
 import Shodrone.exceptions.UserCancelledException;
@@ -16,13 +17,11 @@ import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 public class CreateShowProposalUI extends AbstractFancyUI {
@@ -31,6 +30,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
     private final ShowRequestPrinter showRequestPrinter = new ShowRequestPrinter();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private final CreateShowProposalController controller = new CreateShowProposalController();
+    private final CurrencyPrinter currencyPrinter = new CurrencyPrinter();
 
     @Override
     protected boolean doShow() {
@@ -60,6 +60,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
             UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
+            System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
@@ -71,30 +72,65 @@ public class CreateShowProposalUI extends AbstractFancyUI {
     private Insurance enterValidInsurance() {
         do {
             try {
-                String amountStr = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the insurance amount (e.g., 100.00) (or type 'cancel' to go back): " + UtilsUI.RESET);
+                String amountStr = enterValidAmount();
+                String currencySymbol = selectCurrency();
+                if (currencySymbol == null) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+                return new Insurance(amountStr, currencySymbol);
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+            }
+        } while (true);
+
+    }
+
+    private String enterValidAmount() {
+        do {
+            try {
+                String amountStr = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the insurance amount (or type 'cancel' to go back): " + UtilsUI.RESET);
                 if ("cancel".equalsIgnoreCase(amountStr)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
 
                 assert amountStr != null;
-                BigDecimal amount = new BigDecimal(amountStr);
-
-                if (amount.scale() > 2) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe amount cannot have more than two decimal places." + UtilsUI.RESET);
+                if (!amountStr.matches("\\d+(\\.\\d{1,2})?")) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nThe amount must be a valid number with up to two decimal places." + UtilsUI.RESET);
                     continue;
                 }
 
-                String currencyCode = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the currency code (e.g., USD, EUR) (or type 'cancel' to go back): " + UtilsUI.RESET);
-                if ("cancel".equalsIgnoreCase(currencyCode)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
-                }
-
-                assert currencyCode != null;
-                Currency currency = Currency.getInstance(currencyCode.toUpperCase());
-
-                return new Insurance(amount, currency);
+                return amountStr;
             } catch (IllegalArgumentException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private String selectCurrency() {
+        List<String> currencies = controller.listCurrencies();
+        if (currencies == null || currencies.isEmpty()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo currencies available." + UtilsUI.RESET);
+            return null;
+        }
+
+        ListWidget<String> currencyListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
+                "\nChoose a Currency: \n" + UtilsUI.RESET, currencies, currencyPrinter );
+        currencyListWidget.show();
+
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(currencies);
+            if (option == -2) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
+                return null;
+            }
+            if (option == -1) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else if (option < 0 || option >= currencies.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo currency selected! Please select a currency!" + UtilsUI.RESET);
+            } else {
+                String selectedCurrency = currencies.get(option);
+                return controller.getCurrencySymbol(selectedCurrency);
             }
         } while (true);
     }

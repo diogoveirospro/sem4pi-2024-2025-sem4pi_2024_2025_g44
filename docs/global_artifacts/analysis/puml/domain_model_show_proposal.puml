@@ -41,6 +41,9 @@ package "ShowProposal " <<aggregate>>{
     class FeedbackEmail <<Value Object>>{
     }
 
+    class Video <<Value Object>>{
+    }
+
     'ShowProposal -> x
     ShowProposal --> "1" FeedbackEmail: feedbackEmail
     ShowProposal --> "1" CRMCollaborator: created by
@@ -50,6 +53,7 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" ShowProposalTemplate: template
     ShowProposal --> "1..*" Model: uses
     ShowProposal --> "1" Insurance: insurance
+    ShowProposal --> "1" Video: video
 }
 
 package Shared {

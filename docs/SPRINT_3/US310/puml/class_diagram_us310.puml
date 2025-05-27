@@ -31,9 +31,6 @@ package "Domain" #DDDDDD {
         }
 
     }
-
-    class Customer <<Entity>> <<root>>{
-    }
     enum ShowProposalStatus <<Value Object>>{
     }
 
