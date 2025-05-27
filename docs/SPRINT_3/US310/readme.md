@@ -135,8 +135,8 @@ void ensureProposalIsAssociatedWithShowRequest() {
 
 ## 6. Implementation
 
-The implementation of US221 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
-We included the necessary classes and methods to support the registration of a new customer representative. And didn't diverge from the design.
+The implementation of US310 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the creation of a new show proposal. And didn't diverge from the design.
 
 The coding Commit messages related to this requirement are as follows:
 

@@ -26,7 +26,7 @@ This task as the objective of concluding the requirements of the us315 of sprint
 
 - **AC01**: There is no need to generate the video, but we can use any suitable file.
 - **AC02**: The video must be available via a link.
-- **AC03**: The video must be available in the analyse proposal us.
+- **AC03**: The video must be available in the Show Proposal.
 
 ### Dependencies
 
@@ -56,10 +56,23 @@ In this section, we describe the design approach adopted for implementing **US31
 
 ### 4.1. Realization
 
-
+![US310 Class Diagram](images/class_diagram_us315.svg "US310 Class Diagram")
 
 ## 5. Tests
 
+**Refers to Acceptance Criteria: AC02 and AC03**
+**Description**: Ensures that a video link can be added to a proposal.
+
+```java
+@Test
+void ensureVideoLinkCanBeAddedToProposal() {
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    String videoName = "The name of the video";
+    String videoLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley";
+    proposal.addVideo(videoLink);
+    assertEquals(videoLink, proposal.getVideoLink());
+}
+```
 
 ## 6. Implementation
 

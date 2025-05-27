@@ -1,19 +1,14 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class Customer <<Entity>> <<root>>{
-
-}
-
 class ShowProposal <<Entity>> <<root>>{
 }
 
-class ShowRequest <<Entity>> <<root>>{
+
+class Video <<Value Object>>{
 }
 
-ShowProposal "0..*" --> "1" ShowRequest: based on
-
-ShowRequest "0..*" --> "1" Customer: requested by
+ShowProposal --> "1" Video: video
 
 
 @enduml

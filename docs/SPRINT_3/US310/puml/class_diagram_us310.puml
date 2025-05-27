@@ -37,16 +37,10 @@ package "Domain" #DDDDDD {
     class ShowProposal <<Entity>> <<root>>{
     }
 
-    class ShowProposalTemplate <<Value Object>>{
-    }
-
     class ShowRequest <<Entity>> <<root>>{
     }
 
     class CRMCollaborator <<Entity>> <<root>>{
-    }
-
-    class Figure <<Entity>> <<root>>{
     }
 
     class Date <<Value Object>>{
@@ -58,17 +52,11 @@ package "Domain" #DDDDDD {
     class Time <<Value Object>>{
     }
 
-    class Model <<Entity>> <<root>>{
-    }
-
     class Insurance <<Value Object>>{
     }
 
-    class FeedbackEmail <<Value Object>>{
+    class Customer <<Entity>> <<root>>{
     }
-
-
-
 }
 
 package "UI" #DDDDDD {
@@ -148,13 +136,9 @@ package "persistence" #DDDDDD {
 
 'ShowProposal -> x
 
-ShowProposal --> "1" FeedbackEmail: feedbackEmail
 ShowProposal --> "1" CRMCollaborator: created by
 ShowProposal --> "1" ShowRequest: based on
 ShowProposal --> "1" ShowProposalStatus: proposalStatus
-ShowProposal --> "0..*" Figure : requests new
-ShowProposal --> "1" ShowProposalTemplate: template
-ShowProposal --> "1..*" Model: uses
 ShowProposal --> "1" QuantityOfDrones: qnt_drones
 ShowProposal --> "1" Time: time
 ShowProposal --> "1" Date: date
