@@ -6,10 +6,10 @@ import core.User.domain.ShodronePasswordPolicy;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.PlainTextEncoder;
 import eapli.framework.infrastructure.pubsub.EventDispatcher;
+import plugins.PluginInitializer;
 import shodrone.ShodroneBaseApplication;
 import shodrone.authz.ui.LoginUI;
 import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
-import shodrone.presentation.UtilsUI;
 
 public class ShodroneBackoffice extends ShodroneBaseApplication {
     private ShodroneBackoffice () {
@@ -17,6 +17,7 @@ public class ShodroneBackoffice extends ShodroneBaseApplication {
     }
 
     public static void main(String[] args) {
+        PluginInitializer.initialize();
         new ShodroneBackoffice().run(args);
     }
 

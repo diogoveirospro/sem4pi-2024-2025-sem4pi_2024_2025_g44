@@ -60,14 +60,14 @@ public class DSLDescription implements ValueObject, Serializable {
         }
 
         String dslCode = String.join("\n", DSLCodeLines);
-        /*
+
         DSLValidate validator = new DSLValidate();
         DSLValidationResult result = validator.validate(dslCode);
 
         if (!result.isValid()) {
             throw new IllegalArgumentException("Invalid DSL:\n" + String.join("\n", result.errors()));
         }
-        */
+
         this.DSLCodeLines = dslCode;
         this.DSLVersion = DSLVersion;
     }

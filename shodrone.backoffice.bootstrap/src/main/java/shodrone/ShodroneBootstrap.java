@@ -29,6 +29,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.PlainTextEncoder;
 import eapli.framework.infrastructure.pubsub.EventDispatcher;
 import eapli.framework.io.util.Console;
+import plugins.PluginInitializer;
 import shodrone.bootstrappers.Demo.ShodroneDemoBootstrapper;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 import shodrone.bootstrappers.SmokeTests.ShodroneDemoSmokeTester;
@@ -54,7 +55,7 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
     }
 
     public static void main(final String[] args) {
-
+        PluginInitializer.initialize();
         new ShodroneBootstrap().run(args);
     }
 

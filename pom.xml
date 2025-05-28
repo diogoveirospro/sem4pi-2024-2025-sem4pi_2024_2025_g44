@@ -20,6 +20,7 @@
 		<module>shodrone.plugin.drone</module>
 		<module>shodrone.plugin.proposal</module>
         <module>shodrone.plugin.show</module>
+        <module>shodrone.plugins</module>
     </modules>
 	<version>0.1.0</version>
 

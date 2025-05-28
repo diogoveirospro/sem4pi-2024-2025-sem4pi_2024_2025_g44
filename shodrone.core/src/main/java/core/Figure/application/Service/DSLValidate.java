@@ -1,6 +1,5 @@
 package core.Figure.application.Service;
 
-
 public class DSLValidate {
 
     private final DSLValidatorPlugin plugin;
@@ -10,13 +9,11 @@ public class DSLValidate {
     }
 
     public DSLValidate() {
-        // TO DO
-        plugin = null;
+        // Obtain the default plugin instance
+        this.plugin = DSLValidatorPluginFactory.getInstance();
     }
 
-    // Optional: if you want to validate from raw String
     public DSLValidationResult validate(String dslCode) {
         return plugin.validateDSL(dslCode);
     }
 }
-
