@@ -36,4 +36,7 @@ hs_err_pid*
 replay_pid*
 /.idea/
 
+# Figure Plugin
+shodrone.plugin.figure/gen
+
 
