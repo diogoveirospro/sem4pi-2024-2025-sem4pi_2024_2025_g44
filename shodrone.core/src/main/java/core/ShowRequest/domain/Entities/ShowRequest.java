@@ -3,6 +3,7 @@ package core.ShowRequest.domain.Entities;
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.Customer.domain.Entities.Customer;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowRequest.application.Service.GenerateShowRequestID;
 import core.ShowRequest.domain.ValueObjects.Location;
 import core.ShowRequest.domain.ValueObjects.ShowDescription;
 import core.ShowRequest.domain.ValueObjects.ShowRequestID;
@@ -67,42 +68,51 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         this.crmCollaborator = crmCollaborator;
 
         this.status = ShowRequestStatus.CREATED;
-        this.showRequestID = new ShowRequestID(customer.identity().toString(), crmCollaborator.identity().toString(), dateOfShow.toString(), timeOfShow.toString());
+        this.showRequestID = new GenerateShowRequestID().generate();
     }
 
-    public ShowRequestID getShowRequestID() {
-        return showRequestID;
+    public ShowRequest(ShowDescription showDescription, LocalDate dateOfShow, LocalTime timeOfShow, Location location, QuantityOfDrones quantityOfDrones, Customer customer, CRMCollaborator crmCollaborator, GenerateShowRequestID generateShowRequestID ) {
+        this.showDescription = showDescription;
+        this.dateOfShow = dateOfShow;
+        this.timeOfShow = timeOfShow;
+        this.location = location;
+        this.quantityOfDrones = quantityOfDrones;
+        this.customer = customer;
+        this.crmCollaborator = crmCollaborator;
+
+        this.status = ShowRequestStatus.CREATED;
+        this.showRequestID = generateShowRequestID.generateWithoutRep(); // for testing purposes
     }
 
-    public ShowRequestStatus getStatus() {
+    public ShowRequestStatus status() {
         return status;
     }
 
-    public ShowDescription getShowDescription() {
+    public ShowDescription showDescription() {
         return showDescription;
     }
 
-    public LocalDate getDateOfShow() {
+    public LocalDate dateOfShow() {
         return dateOfShow;
     }
 
-    public LocalTime getTimeOfShow() {
+    public LocalTime timeOfShow() {
         return timeOfShow;
     }
 
-    public Location getLocation() {
+    public Location location() {
         return location;
     }
 
-    public QuantityOfDrones getQuantityOfDrones() {
+    public QuantityOfDrones quantityOfDrones() {
         return quantityOfDrones;
     }
 
-    public Customer getCustomer() {
+    public Customer customer() {
         return customer;
     }
 
-    public CRMCollaborator getCrmCollaborator() {
+    public CRMCollaborator crmCollaborator() {
         return crmCollaborator;
     }
 
@@ -113,8 +123,6 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
         this.dateOfShow = date;
         this.timeOfShow = time;
         this.quantityOfDrones = quantityOfDrones;
-
-        this.showRequestID = new ShowRequestID(customer.identity().toString(), crmCollaborator.identity().toString(), dateOfShow.toString(), timeOfShow.toString());
     }
 
     @Override

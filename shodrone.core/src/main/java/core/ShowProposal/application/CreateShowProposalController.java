@@ -57,7 +57,8 @@ public class CreateShowProposalController {
         return customerRepository.findAllCreatedCustomers();
     }
 
-    public void createShowProposal(ShowRequest showRequest, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator crmCollaborator) {
+    public void createShowProposal(ShowRequest showRequest, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones, Insurance insurance) {
+        CRMCollaborator crmCollaborator = getCrmCollaborator();
         Preconditions.noneNull( showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
         if (!showRequestRepository.contains(showRequest)) {
             throw new IllegalArgumentException("Show request does not exist.");
@@ -65,7 +66,6 @@ public class CreateShowProposalController {
         if (!crmCollaboratorRepository.contains(crmCollaborator)) {
             throw new IllegalArgumentException("CRM Collaborator does not exist.");
         }
-
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
         showProposalRepository.save(showProposal);
     }

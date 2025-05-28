@@ -72,7 +72,7 @@ package "ShowProposal " <<aggregate>>{
     ShowConfiguration --> "1..*" Drone: drone
     ShowProposal --> "1" Insurance: insurance
     ShowProposal --> "1" ShowConfiguration: showConfiguration
-     Drone --> "1" Model: model
+    Drone --> "1" Model: model
 }
 
 package Shared {

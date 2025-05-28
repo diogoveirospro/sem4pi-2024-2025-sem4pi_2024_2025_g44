@@ -11,4 +11,8 @@ public interface ShowRequestRepository extends DomainRepository<ShowRequestID, S
     Iterable<ShowRequest> findAllCreatedShowRequestsByCustomer(Customer customer);
 
     Iterable<ShowRequest> findAllCreatedShowRequestsByCustomerWithoutProposal(Customer customer);
+
+    boolean existsByProposalNumber(ShowRequestID showRequestID);
+
+    Iterable<ShowRequest> findAllCreatedShowRequests();
 }

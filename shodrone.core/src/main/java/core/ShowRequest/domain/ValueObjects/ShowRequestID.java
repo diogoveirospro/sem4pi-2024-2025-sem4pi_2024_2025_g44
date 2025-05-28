@@ -1,7 +1,6 @@
 package core.ShowRequest.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
-import eapli.framework.validations.Preconditions;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -12,42 +11,45 @@ public class ShowRequestID implements Comparable<ShowRequestID>, Serializable, V
 
     private static final long serialVersionUID = 1L;
 
-    private String identifier;
+    private String showRequestID;
 
-    protected ShowRequestID() {}
-
-    public ShowRequestID(String customer, String collaborator, String date, String time) {
-        Preconditions.nonEmpty(customer);
-        Preconditions.nonEmpty(collaborator);
-        Preconditions.nonEmpty(date);
-        Preconditions.nonEmpty(time);
-        this.identifier = "customer vatNumber = " + customer + " | collaborator email = " + collaborator + " | date = " + date + " | time = " + time;
+    protected ShowRequestID () {
+        // Default constructor for JPA
     }
+
+    public ShowRequestID(String showRequestID) {
+        if (showRequestID == null || !showRequestID.startsWith("REQ-")) {
+            throw new IllegalArgumentException("ShowRequestID must not be null, empty, and must start with 'REQ-'");
+        }
+        this.showRequestID = showRequestID;
+    }
+
+    public String showRequestID() {
+        return showRequestID;
+    }
+
 
     @Override
     public int compareTo(ShowRequestID o) {
-        if (this == o) return 0;
-        if (o == null) return 1;
-
-        return this.identifier.compareTo(o.identifier);
+        return this.showRequestID().compareTo(o.showRequestID());
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ShowRequestID that = (ShowRequestID) o;
-        return Objects.equals(identifier, that.identifier);
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ShowRequestID that = (ShowRequestID) obj;
+        return this.showRequestID.equals(that.showRequestID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier);
+        return Objects.hash(showRequestID);
     }
 
     @Override
     public String toString() {
-        return identifier;
+        return this.showRequestID;
     }
 }
 

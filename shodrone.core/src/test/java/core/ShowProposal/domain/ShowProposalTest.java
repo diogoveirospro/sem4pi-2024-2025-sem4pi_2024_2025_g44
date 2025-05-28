@@ -10,8 +10,10 @@ import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowProposal.application.Service.GenerateProposalNumber;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.*;
+import core.ShowRequest.application.Service.GenerateShowRequestID;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import core.ShowRequest.domain.ValueObjects.Location;
 import core.ShowRequest.domain.ValueObjects.ShowDescription;
@@ -32,7 +34,7 @@ public class ShowProposalTest {
     private CRMCollaborator collaborator;
     private LocalDate date;
     private LocalTime time;
-
+    private GenerateProposalNumber generateProposalNumber;
 
 
 
@@ -45,6 +47,7 @@ public class ShowProposalTest {
         insurance = new Insurance("1000.0","€");
         date = LocalDate.now();
         time = LocalTime.now();
+        generateProposalNumber = new GenerateProposalNumber();
     }
 
     private CRMCollaborator setUpCollaborator() {
@@ -67,26 +70,27 @@ public class ShowProposalTest {
         time = LocalTime.parse("22:22", DateTimeFormatter.ofPattern("HH:mm"));
         Location location = new Location("Porto");
         QuantityOfDrones quantityOfDrones = new QuantityOfDrones("12");
+        GenerateShowRequestID generateShowRequestID = new GenerateShowRequestID();
 
-        showRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator);
+        showRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator, generateShowRequestID);
         return showRequest;
     }
 
     @Test
     void ensureProposalIncludesTotalNumberOfDrones() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
         assertTrue(proposal.quantityOfDrones().getQuantityOfDrones() > 0);
     }
 
     @Test
     void ensureProposalIsAssociatedWithShowRequest() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
         assertNotNull(proposal.request());
     }
 
     @Test
     void ensureVideoCanBeAddedToProposal() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
         String name = "Test Video";
         Video video = new Video(name,"https://www.youtube.com/watch?v=dQw4w9WgXcQ");
         proposal.addVideo(video);
@@ -97,7 +101,7 @@ public class ShowProposalTest {
 
     @Test
     void ensureCannotAddNullVideo() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
         assertThrows(IllegalArgumentException.class, () -> proposal.addVideo(null));
     }
 }

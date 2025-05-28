@@ -3,7 +3,9 @@ package core.ShowProposal.domain.Entities;
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.Figure.domain.Entities.Figure;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowProposal.application.Service.GenerateProposalNumber;
 import core.ShowProposal.domain.ValueObjects.*;
+import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import eapli.framework.domain.model.AggregateRoot;
 import jakarta.persistence.*;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class ShowProposal implements Serializable, AggregateRoot<Long> {
+public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNumber> {
 
     /**
      * Serial version UID for serialization.
@@ -24,6 +26,10 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Embedded
+    @Column(unique = true, nullable = false)
+    private ShowProposalNumber proposalNumber;
 
 
     @Version
@@ -113,8 +119,8 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
 
     protected ShowProposal() {}
 
-    public  ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
-                          QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator) {
+    public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
+                        QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator) {
         this.request = request;
         this.dateOfShow = dateOfShow;
         this.timeOfShow = timeOfShow;
@@ -126,8 +132,25 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.figures = new ArrayList<>();
+        this.proposalNumber = new GenerateProposalNumber().generate();
     }
 
+    public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
+                        QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator,
+                        GenerateProposalNumber proposalNumberGenerator) {
+        this.request = request;
+        this.dateOfShow = dateOfShow;
+        this.timeOfShow = timeOfShow;
+        this.quantityOfDrones = quantityOfDrones;
+        this.insurance = insurance;
+        this.creator = creator;
+        this.sender = creator; // Initially, the creator is also the sender for simplicity
+        this.status = ShowProposalStatus.TESTING;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.figures = new ArrayList<>();
+        this.proposalNumber = proposalNumberGenerator.generateWithoutRep(); // for testing purposes
+    }
 
     @Override
     public boolean sameAs(Object other) {
@@ -138,8 +161,8 @@ public class ShowProposal implements Serializable, AggregateRoot<Long> {
     }
 
     @Override
-    public Long identity() {
-        return id;
+    public ShowProposalNumber identity() {
+        return proposalNumber;
     }
 
     public CRMCollaborator creator() {

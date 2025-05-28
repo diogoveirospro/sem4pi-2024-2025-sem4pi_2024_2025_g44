@@ -435,6 +435,7 @@ public class MainMenu extends AbstractFancyUI {
 
         menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
         menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
 
@@ -442,12 +443,15 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
         menu.addItem(COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
         menu.addItem(COLLABORATOR_ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
         return menu;
     }
 
     private SubMenu buildShowProposalsManagerMenu() {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
 
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
 }

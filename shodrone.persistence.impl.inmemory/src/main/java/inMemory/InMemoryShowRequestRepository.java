@@ -22,7 +22,7 @@ public class InMemoryShowRequestRepository extends InMemoryDomainRepository<Show
         Iterable<ShowRequest> showRequests = findAll();
         List<ShowRequest> result = new ArrayList<>();
         for (ShowRequest showRequest : showRequests) {
-            if (showRequest.getCustomer().equals(customer)) {
+            if (showRequest.customer().equals(customer)) {
                 result.add(showRequest);
             }
         }
@@ -34,7 +34,30 @@ public class InMemoryShowRequestRepository extends InMemoryDomainRepository<Show
         Iterable<ShowRequest> showRequests = findAll();
         List<ShowRequest> result = new ArrayList<>();
         for (ShowRequest showRequest : showRequests) {
-            if (showRequest.getStatus() == ShowRequestStatus.CREATED && showRequest.getCustomer().equals(customer)) {
+            if (showRequest.status() == ShowRequestStatus.CREATED && showRequest.customer().equals(customer)) {
+                result.add(showRequest);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean existsByProposalNumber(ShowRequestID showRequestID) {
+        Iterable<ShowRequest> showRequests = findAll();
+        for (ShowRequest showRequest : showRequests) {
+            if (showRequest.identity().equals(showRequestID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Iterable<ShowRequest> findAllCreatedShowRequests() {
+        Iterable<ShowRequest> showRequests = findAll();
+        List<ShowRequest> result = new ArrayList<>();
+        for (ShowRequest showRequest : showRequests) {
+            if (showRequest.status() == ShowRequestStatus.CREATED) {
                 result.add(showRequest);
             }
         }

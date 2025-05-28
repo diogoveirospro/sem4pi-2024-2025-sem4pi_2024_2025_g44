@@ -36,4 +36,20 @@ public class JpaShowRequestRepository extends JpaAutoTxRepository<ShowRequest, S
         query.setParameter("customer", customer);
         return query.getResultList();
     }
+
+    @Override
+    public boolean existsByProposalNumber(ShowRequestID showRequestID) {
+        final TypedQuery<Long> query = entityManager().createQuery(
+                "SELECT COUNT(s) FROM ShowRequest s WHERE s.showRequestID = :showRequestID", Long.class);
+        query.setParameter("showRequestID", showRequestID);
+        return query.getSingleResult() > 0;
+    }
+
+    @Override
+    public Iterable<ShowRequest> findAllCreatedShowRequests() {
+        final TypedQuery<ShowRequest> query = entityManager().createQuery(
+                "SELECT s FROM ShowRequest s WHERE s.status = :status", ShowRequest.class);
+        query.setParameter("status", ShowRequestStatus.CREATED);
+        return query.getResultList();
+    }
 }

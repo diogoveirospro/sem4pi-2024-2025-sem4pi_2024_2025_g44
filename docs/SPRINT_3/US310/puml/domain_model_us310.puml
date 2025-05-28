@@ -21,6 +21,9 @@ class QuantityOfDrones <<Value Object>>{
 class Time <<Value Object>>{
 }
 
+class ShowProposalNumber <<Value Object>>{
+}
+
     'ShowProposal -> x
     ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" ShowRequest: based on
@@ -29,6 +32,7 @@ class Time <<Value Object>>{
     ShowProposal ----> "1" Time: time
     ShowProposal ----> "1" Date: date
     ShowProposal --> "1" Insurance: insurance
+    ShowProposal --> "1" ShowProposalNumber: proposalNumber
 
 
 @enduml

@@ -4,7 +4,6 @@ import Shodrone.console.ShowProposal.printer.CurrencyPrinter;
 import Shodrone.console.ShowProposal.printer.CustomerPrinter;
 import Shodrone.console.ShowProposal.printer.ShowRequestPrinter;
 import Shodrone.exceptions.UserCancelledException;
-import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.Customer.domain.Entities.Customer;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowProposal.application.CreateShowProposalController;
@@ -39,17 +38,15 @@ public class CreateShowProposalUI extends AbstractFancyUI {
 
                 ShowRequest showRequest = selectShowRequest();
                 assert showRequest != null;
-                LocalDate currDate = showRequest.getDateOfShow();
-                LocalTime currTime = showRequest.getTimeOfShow();
-                QuantityOfDrones currQuantityOfDrones = showRequest.getQuantityOfDrones();
+                LocalDate currDate = showRequest.dateOfShow();
+                LocalTime currTime = showRequest.timeOfShow();
+                QuantityOfDrones currQuantityOfDrones = showRequest.quantityOfDrones();
 
                 LocalDate date = enterValidDate(currDate);
                 LocalTime time = enterValidTime(currTime);
                 QuantityOfDrones quantityOfDrones = enterValidQuantityOfDrones(currQuantityOfDrones);
                 Insurance insurance = enterValidInsurance();
-
-                CRMCollaborator crmCollaborator = controller.getCrmCollaborator();
-                controller.createShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
+                controller.createShowProposal(showRequest, date, time, quantityOfDrones, insurance);
                 System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow Proposal created successfully!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;

@@ -7,6 +7,7 @@ import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowRequest.application.Service.GenerateShowRequestID;
 import core.ShowRequest.domain.ValueObjects.Location;
 import core.ShowRequest.domain.ValueObjects.ShowDescription;
 import core.ShowRequest.domain.ValueObjects.ShowRequestStatus;
@@ -58,24 +59,25 @@ class ShowRequestTest {
         time = LocalTime.parse("22:22", DateTimeFormatter.ofPattern("HH:mm"));
         location = new Location("Porto");
         quantityOfDrones = new QuantityOfDrones("12");
+        GenerateShowRequestID generateShowRequestID = new GenerateShowRequestID();
 
-        showRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator);
+        showRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator, generateShowRequestID);
     }
 
     @Test
     void ensureShowRequestIsCreatedCorrectly() {
         assertNotNull(showRequest);
-        assertEquals(showRequest.getShowDescription(), showDescription);
-        assertEquals(showRequest.getDateOfShow(), date);
-        assertEquals(showRequest.getTimeOfShow(), time);
-        assertEquals(showRequest.getLocation(), location);
-        assertEquals(showRequest.getQuantityOfDrones(), quantityOfDrones);
-        assertEquals(ShowRequestStatus.CREATED, showRequest.getStatus());
+        assertEquals(showRequest.showDescription(), showDescription);
+        assertEquals(showRequest.dateOfShow(), date);
+        assertEquals(showRequest.timeOfShow(), time);
+        assertEquals(showRequest.location(), location);
+        assertEquals(showRequest.quantityOfDrones(), quantityOfDrones);
+        assertEquals(ShowRequestStatus.CREATED, showRequest.status());
     }
 
     @Test
     void ensureShowRequestEquality() {
-        ShowRequest anotherShowRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator);
+        ShowRequest anotherShowRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator, new GenerateShowRequestID());
         assertTrue(showRequest.sameAs(anotherShowRequest));
         assertEquals(showRequest, anotherShowRequest);
     }
@@ -83,7 +85,7 @@ class ShowRequestTest {
     @Test
     void ensureShowRequestInequality() {
         LocalDate differentDate = LocalDate.parse("11-11-2004", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        ShowRequest differentShowRequest = new ShowRequest(showDescription, differentDate, time, location, quantityOfDrones, customer, crmCollaborator);
+        ShowRequest differentShowRequest = new ShowRequest(showDescription, differentDate, time, location, quantityOfDrones, customer, crmCollaborator, new GenerateShowRequestID());
         assertFalse(showRequest.sameAs(differentShowRequest));
         assertNotEquals(showRequest, differentShowRequest);
     }
@@ -98,7 +100,7 @@ class ShowRequestTest {
 
         showRequest.editInformation(new Location("Lisbon"), showDescription, date, time, new QuantityOfDrones("101"));
 
-        assertEquals("Lisbon", showRequest.getLocation().toString());
-        assertEquals("101", showRequest.getQuantityOfDrones().toString());
+        assertEquals("Lisbon", showRequest.location().toString());
+        assertEquals("101", showRequest.quantityOfDrones().toString());
     }
 }

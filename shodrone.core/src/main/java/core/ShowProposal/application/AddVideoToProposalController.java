@@ -6,6 +6,8 @@ import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.Video;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowProposal.repositories.ShowProposalRepository;
+import core.ShowRequest.domain.Entities.ShowRequest;
+import core.ShowRequest.repositories.ShowRequestRepository;
 import eapli.framework.application.UseCaseController;
 
 import java.util.List;
@@ -13,11 +15,12 @@ import java.util.List;
 @UseCaseController
 public class AddVideoToProposalController {
 
+    private final ShowRequestRepository showRequestRepository = PersistenceContext.repositories().showRequest();
     private final ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
     private final VideoList videoList = new VideoList();
 
-    public Iterable<ShowProposal> listProposals() {
-        return showProposalRepository.findAllTestingProposals();
+    public Iterable<ShowProposal> listProposals(ShowRequest showRequest) {
+        return showProposalRepository.findAllTestingProposalsByShowRequest(showRequest);
     }
 
     public List<Video> listVideos() {
@@ -42,5 +45,13 @@ public class AddVideoToProposalController {
 
         showProposal.addVideo(video);
         showProposalRepository.save(showProposal);
+    }
+
+    public Iterable<ShowRequest> listRequests() {
+        Iterable<ShowRequest> showRequests = showRequestRepository.findAllCreatedShowRequests();
+        if (!showRequests.iterator().hasNext()) {
+            throw new IllegalArgumentException("No show requests available.");
+        }
+        return showRequests;
     }
 }

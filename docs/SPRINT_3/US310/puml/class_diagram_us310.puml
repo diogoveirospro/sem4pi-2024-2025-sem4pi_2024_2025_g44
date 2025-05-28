@@ -57,6 +57,10 @@ package "Domain" #DDDDDD {
 
     class Customer <<Entity>> <<root>>{
     }
+
+    class ShowProposalNumber <<Value Object>>{
+    }
+
 }
 
 package "UI" #DDDDDD {
@@ -143,6 +147,7 @@ ShowProposal --> "1" QuantityOfDrones: qnt_drones
 ShowProposal --> "1" Time: time
 ShowProposal --> "1" Date: date
 ShowProposal --> "1" Insurance: insurance
+ShowProposal --> "1" ShowProposalNumber: proposalNumber
 
 ShowRequest --> "1" Customer: requested by
 
