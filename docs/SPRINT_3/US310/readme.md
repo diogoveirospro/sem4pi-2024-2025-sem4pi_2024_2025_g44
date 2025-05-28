@@ -140,17 +140,19 @@ We included the necessary classes and methods to support the creation of a new s
 
 The coding Commit messages related to this requirement are as follows:
 
-- [Added the unit tests for the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/8c673b5543cfdc98a1faad132e06541cc48147cb)
+- [Multiple changes to the show proposal and request class soo now the id is generated correctly also slightly changed the uis for us310 and 315](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/38b0902705b7983d1fdea497785e2859b6fea4b8)
 
-- [Added the implementation of the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c649bbf87b8d7c21c9dd30540338cba4c656bbf1)
+- [Added all the necessary missing tests of us310 and us315](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/13b89c9f055017b05f840f70fa7a344a49856043)
+
+- [ Finished the implementation of us310 and us315 missing some documentation and tests](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/4fb53c686ebf47e7c6766f895d7e8d01a2e32c27)
 
 ## 7. Integration/Demonstration
 
 To integrate the new functionality with the existing system, we followed these steps:
 
-1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `CustomerRepository` were updated to include the necessary methods for the new functionality.
-2. **Controller Layer**: The controller was updated to include methods for handling requests related to customer representatives. This includes methods for adding, updating, and retrieving representatives.
-3. **UI Layer**: The user interface was updated to include forms and views for managing customer representatives. This includes input validation and error handling.
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `ShowProposalRepository` was updated to include the necessary methods for the new functionality.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to the creation of a show proposal. This includes methods for creating a new proposal, validating the input, and saving it to the database.
+3. **UI Layer**: The user interface was updated to include forms and views for creating the proposal. This includes input validation and error handling.
 4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
 
 To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
@@ -161,7 +163,7 @@ To demonstrate the functionality, follow these steps:
 
 1. **Launch the application via the backoffice application**.
 2. **Log in as a CRM Collaborator**.
-3. Navigate to the **Customers** section.
+3. Navigate to the **Show Proposal** section.
 4. Select the corresponding option to what you want to do.
 5. Follow the instructions in the UI.
 
