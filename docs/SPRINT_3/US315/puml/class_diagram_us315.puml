@@ -7,7 +7,7 @@ package "Domain" #DDDDDD {
 
     package "Repository " #DDDDDD {
         Interface ShowProposalRepository <<Repository>> {
-            + findAllTestingProposals() : Iterable<ShowProposal>
+            + findAllTestingProposalsByShowRequest(request) : Iterable<ShowProposal>
 
         }
 
@@ -16,8 +16,16 @@ package "Domain" #DDDDDD {
             + proposals() : ShowProposalRepository
         }
 
+        Interface ShowRequestRepository <<Repository>> {
+            + findAllCreatedShowRequests() : Iterable<ShowRequest>
+        }
+
     }
 
+
+        class ShowRequest <<Entity>> <<root>> {
+
+        }
         class ShowProposal <<Entity>> <<root>>{
         }
 
@@ -36,14 +44,15 @@ package "UI" #DDDDDD {
 
 package "Controller" #DDDDDD {
     class AddVideoToProposalController <<Controller>> {
-        + findAllTestingProposals() : Iterable<ShowProposal>
+        + findAllTestingProposalsByShowRequest(request) : Iterable<ShowProposal>
+        + findAllCreatedShowRequests() : Iterable<ShowRequest>
         + listVideos()
     }
 }
 
 package "persistence.impl.jpa" #DDDDDD {
     class JpaShowProposalRepository <<Repository>> {
-        + findAllTestingProposals() : Iterable<ShowProposal>
+        + findAllTestingProposalsByShowRequest(request) : Iterable<ShowProposal>
     }
 
     class JpaRepositoryFactory <<Factory>> {
@@ -51,6 +60,9 @@ package "persistence.impl.jpa" #DDDDDD {
         + proposals() : ShowProposalRepository
     }
 
+    class JpaShowRequestRepository <<Repository>> {
+        + findAllCreatedShowRequests() : Iterable<ShowRequest>
+    }
 }
 
 package "persistence.impl.inmemory" #DDDDDD {
@@ -61,6 +73,10 @@ package "persistence.impl.inmemory" #DDDDDD {
     class InMemoryRepositoryFactory <<Factory>> {
         - InMemoryRepositoryFactory()
         + proposals() : ShowProposalRepository
+    }
+
+    class InMemoryShowRequestRepository <<Repository>> {
+        + findAllCreatedShowRequests() : Iterable<ShowRequest>
     }
 }
 
@@ -73,13 +89,19 @@ package "persistence" #DDDDDD {
 ' Relações entre as classes
 
 ShowProposal --> "1" Video: video
+ShowProposal --> "1" ShowRequest: based on
+
 
 RepositoryFactory ..> ShowProposalRepository : proposals()
+ShowProposalRepository ..> ShowRequestRepository : showRequest()
 
 ShowProposalRepository --> "0..*" ShowProposal : proposals
+ShowRequestRepository --> "0..*" ShowRequest : requests
 
 AddVideoToProposalUI ..> AddVideoToProposalController
 AddVideoToProposalController ..> RepositoryFactory : proposals()
+AddVideoToProposalController ..> RepositoryFactory : showRequest()
+AddVideoToProposalController ..> ShowRequestRepository : showRequest()
 AddVideoToProposalController ..> ShowProposalRepository : proposals()
 AddVideoToProposalController ..> PersistenceContext : repositories()
 
@@ -88,17 +110,27 @@ AddVideoToProposalController ..> VideoList : listVideos()
 PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
 PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
 PersistenceContext ..> RepositoryFactory : proposals()
+PersistenceContext ..> RepositoryFactory : showRequest()
 
 JpaRepositoryFactory ...|> RepositoryFactory : proposals()
+JpaRepositoryFactory ...|> RepositoryFactory : showRequest()
 JpaRepositoryFactory ..> JpaShowProposalRepository
+JpaRepositoryFactory ..> JpaShowRequestRepository
 
-JpaShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposals()
+JpaShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposalsByShowRequest(request)
+
+JpaShowRequestRepository ..|> ShowRequestRepository : findAllCreatedShowRequests()
+
 
 
 InMemoryRepositoryFactory .|> RepositoryFactory : proposals()
-InMemoryRepositoryFactory ..> InMemoryShowProposalRepository
+InMemoryRepositoryFactory .|> RepositoryFactory : showRequest()
 
-InMemoryShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposals()
+InMemoryRepositoryFactory ..> InMemoryShowProposalRepository
+InMemoryRepositoryFactory ..> InMemoryShowRequestRepository
+
+InMemoryShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposalsByShowRequest(request)
+InMemoryShowRequestRepository ..|> ShowRequestRepository : findAllCreatedShowRequests()
 
 
 @enduml

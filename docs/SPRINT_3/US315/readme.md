@@ -48,7 +48,7 @@ This is possible because in terms of domain the proposal as a relation of many-t
 
 Other elements not relevant to this functionality are omitted for simplicity.
 
-![Relation customer with proposals](images/domain_model_us315.svg "Domain Model")
+![Relation show proposal](../../global_artifacts/analysis/images/domain_model_show_proposal.svg "Domain Model")
 
 ## 4. Design
 
@@ -56,7 +56,7 @@ In this section, we describe the design approach adopted for implementing **US31
 
 ### 4.1. Realization
 
-![US310 Class Diagram](images/class_diagram_us315.svg "US310 Class Diagram")
+![US310 Class Diagram](images/class_diagram_us315.svg "US315 Class Diagram")
 
 ## 5. Tests
 

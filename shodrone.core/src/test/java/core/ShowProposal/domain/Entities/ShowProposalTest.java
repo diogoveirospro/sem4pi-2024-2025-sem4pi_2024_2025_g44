@@ -1,17 +1,15 @@
-package core.ShowProposal.domain;
+package core.ShowProposal.domain.Entities;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.ValueObjects.Address;
 import core.Customer.domain.ValueObjects.CustomerType;
 import core.Customer.domain.ValueObjects.VatNumber;
-import core.Figure.domain.Entities.Figure;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowProposal.application.Service.GenerateProposalNumber;
-import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.*;
 import core.ShowRequest.application.Service.GenerateShowRequestID;
 import core.ShowRequest.domain.Entities.ShowRequest;
@@ -21,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -103,5 +102,17 @@ public class ShowProposalTest {
     void ensureCannotAddNullVideo() {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
         assertThrows(IllegalArgumentException.class, () -> proposal.addVideo(null));
+    }
+
+    @Test
+    void ensureInitialStatusIsTesting() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        assertEquals(ShowProposalStatus.TESTING, proposal.status());
+    }
+
+    @Test
+    void ensureCreatorIsAlsoInitialSender() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        assertEquals(proposal.creator(), proposal.sender());
     }
 }

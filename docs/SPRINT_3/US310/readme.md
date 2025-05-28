@@ -65,7 +65,7 @@ For this requirement we will add the following elements:
 
 The other elements will be added to the system and on other requirements.
 
-![Relation customer and representative](images/domain_model_us310.svg "Domain Model")
+![Relation show proposal](../../global_artifacts/analysis/images/domain_model_show_proposal.svg "Domain Model")
 
 ---
 

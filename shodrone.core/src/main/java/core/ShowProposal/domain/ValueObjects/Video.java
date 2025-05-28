@@ -31,9 +31,6 @@ public class Video implements ValueObject, Serializable {
 
     @Override
     public String toString() {
-        return "Video{" +
-                "title='" + title + '\'' +
-                ", url='" + url + '\'' +
-                '}';
+        return "Title: " + title + " URL:" + url;
     }
 }
