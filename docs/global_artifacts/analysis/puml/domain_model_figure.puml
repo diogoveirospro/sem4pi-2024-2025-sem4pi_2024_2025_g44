@@ -101,6 +101,7 @@ package Shared {
 
     'Figure -> x
     Figure ----> "1" Description: description
+    Figure ----> "1" Name: name
 
     'Category -> x
     Category ----> "1" Description: description

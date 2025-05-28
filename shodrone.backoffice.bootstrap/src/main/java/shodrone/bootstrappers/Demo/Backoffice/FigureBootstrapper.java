@@ -45,32 +45,33 @@ public class FigureBootstrapper implements Action {
 
     @Override
     public boolean execute() {
-        registerPublic("FIG-1234", "1.0.1", "A public figure", DSL1, Set.of("keyword1", "keyword2"),
+        registerPublic("FIG-1234", "1.0.1", "Public Figure", "A public figure", DSL1, Set.of("keyword1", "keyword2"),
                 Set.of("category1", "category2"));
 
-        registerPublic("FIG-1234", "1.0.2", "Another version of public figure", DSL1, Set.of("keyword2"),
+        registerPublic("FIG-1234", "1.0.2", "Another Version Public Figure 1", "Another version of public figure", DSL1, Set.of("keyword2"),
                 Set.of("category1"));
 
-        registerPublic("FIG-5678", "1.0.1", "Another public figure", DSL2, Set.of("keyword3", "keyword4"),
+        registerPublic("FIG-5678", "1.0.1", "Another Public Figure", "Another public figure", DSL2, Set.of("keyword3", "keyword4"),
                 Set.of("category3", "category4"));
 
-        registerPublic("FIG-5678", "1.0.2", "Another version of public figure", DSL2, Set.of("keyword4"),
+        registerPublic("FIG-5678", "1.0.2", "Another Version Public Figure 2", "Another version of public figure", DSL2, Set.of("keyword4"),
                 Set.of("category3"));
 
-        registerExclusive("FIG-9012", "1.0.1", "An exclusive figure", DSL3, Set.of("keyword5", "keyword6"),
+        registerExclusive("FIG-9012", "1.0.1", "Exclusive Figure", "An exclusive figure", DSL3, Set.of("keyword5", "keyword6"),
                 Set.of("category5", "category6"), "EA Sports", new Date(), new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24));
 
-        registerExclusive("FIG-9012", "1.0.2", "Another version of exclusive figure", DSL3, Set.of("keyword6"),
+        registerExclusive("FIG-9012", "1.0.2", "Another Version Exclusive Figure", "Another version of exclusive figure", DSL3, Set.of("keyword6"),
                 Set.of("category5"), "EA Sports", new Date(), new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24));
 
         return true;
 
     }
 
-    private void registerPublic(String code, String version, String description,
+    private void registerPublic(String code, String version, String name, String description,
                           String DSLDescriptionFile, Set<String> keywords, Set<String> categories) {
         Code codeObj = new Code(code);
         Version versionObj = new Version(version);
+        Name nameObj = new Name(name);
         Description descriptionObj = new Description(description);
         DSLDescription dslDescription = readDSLDescription(DSLDescriptionFile);
         if (dslDescription == null) {
@@ -93,18 +94,19 @@ public class FigureBootstrapper implements Action {
 
         ShowDesigner showDesigner = showDesignerRepository.findByEmail(new Email("peter.parker@showdrone.com"));
 
-        controller.addPublicFigureToCatalogue(codeObj, versionObj, descriptionObj,
+        controller.addPublicFigureToCatalogue(codeObj, versionObj, nameObj, descriptionObj,
                 dslDescription, keywordsObj, categoriesObj, showDesigner);
 
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully registered public figure {}" + UtilsUI.RESET, code);
 
     }
 
-    private void registerExclusive(String code, String version, String description,
+    private void registerExclusive(String code, String version, String name, String description,
                                    String DSLDescriptionFile, Set<String> keywords, Set<String> categories,
                                    String customerName, Date startDate, Date endDate) {
         Code codeObj = new Code(code);
         Version versionObj = new Version(version);
+        Name nameObj = new Name(name);
         Description descriptionObj = new Description(description);
         DSLDescription dslDescription = readDSLDescription(DSLDescriptionFile);
         if (dslDescription == null) {
@@ -141,7 +143,7 @@ public class FigureBootstrapper implements Action {
 
         Exclusivity exclusivity = new Exclusivity(customer, new DateInterval(start, end));
 
-        controller.addExclusiveFigureToCatalogue(codeObj, versionObj, descriptionObj,
+        controller.addExclusiveFigureToCatalogue(codeObj, versionObj, nameObj, descriptionObj,
                 dslDescription, keywordsObj, categoriesObj, showDesigner, exclusivity);
 
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully registered exclusive figure {} for customer " +

@@ -298,6 +298,7 @@ package Shared {
 
     'Figure -> x
     Figure ----> "1" Description: description
+    Figure ----> "1" Name: name
 
     'Model -> x
     Model --> "1" Name: modelName

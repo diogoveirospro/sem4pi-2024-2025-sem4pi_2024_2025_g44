@@ -3,6 +3,7 @@ package core.Figure.domain.Entities;
 import core.Category.domain.Entities.Category;
 import core.Figure.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.Description;
+import core.Shared.domain.ValueObjects.Name;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.domain.model.DomainEntities;
@@ -64,6 +65,13 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
     private FigureID figureID;
 
     /**
+     * The name of the Figure
+     */
+    @Embedded
+    @Column(name = "figureName")
+    private Name name;
+
+    /**
      * The description of the Figure
      */
     @Embedded
@@ -120,17 +128,19 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      *
      * @param code the code of the Figure
      * @param version the version of the Figure
+     * @param name the name of the Figure
      * @param description the description of the Figure
      * @param DSLDescription the DSL description of the Figure
      * @param keywords the keywords associated with the Figure
      * @param categories the categories associated with the Figure
      */
-    public Figure(Code code, core.Figure.domain.ValueObjects.Version version, Description description,
+    public Figure(Code code, core.Figure.domain.ValueObjects.Version version, Name name, Description description,
                   DSLDescription DSLDescription, Set<Keyword> keywords, Set<Category> categories, ShowDesigner showDesigner) {
 
-        assert code != null && version != null && description != null && DSLDescription != null &&
+        assert code != null && version != null && name != null && description != null && DSLDescription != null &&
                 keywords != null && categories != null && showDesigner != null;
         this.figureID = new FigureID(code, version);
+        this.name = name;
         this.description = description;
         this.DSLDescription = DSLDescription;
         this.figureStatus = FigureStatus.ACTIVE;
@@ -146,19 +156,21 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      *
      * @param code the code of the Figure
      * @param version the version of the Figure
+     * @param name the name of the Figure
      * @param description the description of the Figure
      * @param DSLDescription the DSL description of the Figure
      * @param keywords the keywords associated with the Figure
      * @param categories the categories associated with the Figure
      * @param exclusivity the exclusivity of the Figure
      */
-    public Figure(Code code, core.Figure.domain.ValueObjects.Version version, Description description,
+    public Figure(Code code, core.Figure.domain.ValueObjects.Version version, Name name, Description description,
                   DSLDescription DSLDescription, Set<Keyword> keywords, Set<Category> categories, ShowDesigner showDesigner,
                   Exclusivity exclusivity) {
 
-        assert code != null && version != null && description != null && DSLDescription != null &&
+        assert code != null && version != null && name != null && description != null && DSLDescription != null &&
                 keywords != null && categories != null && showDesigner != null;
         this.figureID = new FigureID(code, version);
+        this.name = name;
         this.description = description;
         this.DSLDescription = DSLDescription;
         this.figureStatus = FigureStatus.ACTIVE;
@@ -173,14 +185,6 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      * Default constructor for JPA
      */
     protected Figure() {
-        this.figureID = null;
-        this.description = null;
-        this.DSLDescription = null;
-        this.figureStatus = null;
-        this.keywords = null;
-        this.categories = null;
-        this.exclusivity = null;
-        this.showDesigner = null;
     }
 
     /**
@@ -206,6 +210,14 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
      */
     public FigureID figureID() {
         return figureID;
+    }
+
+    /**
+     * Get Figure Name
+     * @return the Name object
+     */
+    public Name name() {
+        return name;
     }
 
     /**
@@ -368,6 +380,7 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
         Figure figure = (Figure) other;
 
         return figureID.equals(figure.figureID()) &&
+                name.equals(figure.name()) &&
                 description.equals(figure.description()) &&
                 DSLDescription.equals(figure.DSLDescription()) &&
                 figureStatus.equals(figure.figureStatus()) &&
@@ -437,8 +450,8 @@ public class Figure implements AggregateRoot<FigureID>, Serializable {
                 ? exclusivity().customer().name().toString()
                 : "None";
 
-        return String.format("Code: %s | Version: %s | Description: %s | Exclusivity: %s",
-                identity().code(), identity().version(), description(), exclusivity);
+        return String.format("Code: %s | Version: %s | Name: %s | Description: %s | Exclusivity: %s",
+                identity().code(), identity().version(), name(), description(), exclusivity);
     }
 
 }

@@ -28,6 +28,7 @@ public class FigureTest {
         // Create a Figure object with the required parameters
         Code code = new Code("FIG-1234");
         Version version = new Version("1.0.0");
+        Name name = new Name("Test Figure");
         Description figureDescription = new Description("A test figure");
         DSLDescription dslDescription = new DSLDescription(List.of("line1", "line2"), "1.0.0");
 
@@ -45,13 +46,14 @@ public class FigureTest {
                 new PhoneNumber("+351", "912345678"),
                 new Email("showdesigner1@shodrone.com"));
 
-        return new Figure(code, version, figureDescription, dslDescription, keywords, categories, showDesigner);
+        return new Figure(code, version, name, figureDescription, dslDescription, keywords, categories, showDesigner);
     }
 
     private Figure buildExclusiveFigure() {
         // Create a Figure object with the required parameters
         Code code = new Code("FIG-5678");
         Version version = new Version("1.0.0");
+        Name name = new Name("Exclusive Figure");
         Description figureDescription = new Description("A test figure");
         DSLDescription dslDescription = new DSLDescription(List.of("line1", "line2"), "1.0.0");
 
@@ -83,7 +85,7 @@ public class FigureTest {
 
         Exclusivity exclusivity = new Exclusivity(customer, new DateInterval(start, end));
 
-        return new Figure(code, version, figureDescription, dslDescription, keywords, categories, showDesigner, exclusivity);
+        return new Figure(code, version, name, figureDescription, dslDescription, keywords, categories, showDesigner, exclusivity);
     }
 
     @Test
@@ -218,7 +220,7 @@ public class FigureTest {
         Set<Keyword> emptyKeywords = new HashSet<>();
         Set<Category> emptyCategories = new HashSet<>();
 
-        Figure figure = new Figure(new Code("FIG-0000"), new Version("1.0.0"),
+        Figure figure = new Figure(new Code("FIG-0000"), new Version("1.0.0"), new Name("Empty Figure"),
                 new Description("Empty test"), new DSLDescription(List.of("line1", "line2"), "1.0.0"),
                 emptyKeywords, emptyCategories,
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("sd@email.com")));
@@ -233,7 +235,7 @@ public class FigureTest {
 
         // null code
         assertThrows(AssertionError.class, () -> {
-            new Figure(null, new Version("1.0.0"),
+            new Figure(null, new Version("1.0.0"), new Name("Empty Figure"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -241,15 +243,23 @@ public class FigureTest {
 
         // null version
         assertThrows(AssertionError.class, () -> {
-            new Figure(new Code("FIG-1234"), null,
+            new Figure(new Code("FIG-1234"), null, new Name("Empty Figure"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
         });
 
+        // null name
+        assertThrows(AssertionError.class, () -> {
+                    new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+                            null, new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
+                            Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
+                            new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
+        });
+
         // null description
         assertThrows(AssertionError.class, () -> {
-            new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+            new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Empty Figure"),
                     null, new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -257,7 +267,7 @@ public class FigureTest {
 
         // null DSLDescription
         assertThrows(AssertionError.class, () -> {
-            new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+            new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Empty Figure"),
                     new Description("Description"), null,
                     Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -265,7 +275,7 @@ public class FigureTest {
 
         // null keywords
         assertThrows(AssertionError.class, () -> {
-            new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+            new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Empty Figure"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     null, Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -273,7 +283,7 @@ public class FigureTest {
 
         // null categories
         assertThrows(AssertionError.class, () -> {
-            new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+            new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Empty Figure"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), null,
                     new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -281,7 +291,7 @@ public class FigureTest {
 
         // showDesigner is null
         assertThrows(AssertionError.class, () -> {
-            new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+            new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Empty Figure"),
                     new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                     Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                     null);
@@ -318,12 +328,12 @@ public class FigureTest {
 
     @Test
     void ensureSearchByKeywordOnlyReturnsMatchingFigures() {
-        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Figure1"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                 Set.of(new Keyword("fire")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
-        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Figure2"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                 Set.of(new Keyword("water")), Set.of(new Category(new CategoryName("C"), new Description("D"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -334,12 +344,12 @@ public class FigureTest {
 
     @Test
     void ensureSearchByCategoryOnlyReturnsMatchingFigures() {
-        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Figure1"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                 Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("mythology"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
-        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Figure2"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                 Set.of(new Keyword("test")), Set.of(new Category(new CategoryName("nature"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
@@ -350,12 +360,12 @@ public class FigureTest {
 
     @Test
     void ensureSearchIgnoresCaseAndAccents() {
-        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+        Figure figure1 = new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Fénix"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                 Set.of(new Keyword("Fénix")), Set.of(new Category(new CategoryName("C"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));
 
-        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"),
+        Figure figure2 = new Figure(new Code("FIG-1234"), new Version("1.0.0"), new Name("Phoenix"),
                 new Description("Description"), new DSLDescription(List.of("line1"), "1.0.0"),
                 Set.of(new Keyword("Phoenix")), Set.of(new Category(new CategoryName("C"), new Description("Description"))),
                 new ShowDesigner(new Name("SD"), new PhoneNumber("+351", "911111111"), new Email("email@test.com")));

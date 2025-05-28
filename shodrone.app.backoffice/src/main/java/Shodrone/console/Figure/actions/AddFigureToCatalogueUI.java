@@ -12,6 +12,7 @@ import core.Figure.domain.ValueObjects.*;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Description;
 import core.Shared.domain.ValueObjects.Email;
+import core.Shared.domain.ValueObjects.Name;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
 import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.User.domain.ShodroneRoles;
@@ -62,6 +63,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
 
                 Code code = enterValidCode();
                 Version version = enterValidVersion();
+                Name name = enterValidName();
                 Description description = enterValidDescription();
                 DSLDescription dslDescription = enterValidDSLDescription();
                 Set<Keyword> keywords = enterValidKeywords();
@@ -75,9 +77,9 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                 }
 
                 if (exclusivity != null) {
-                    success = addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+                    success = addExclusiveFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner, exclusivity);
                 } else {
-                    success = addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+                    success = addPublicFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner);
                 }
 
                 if (success){
@@ -119,11 +121,11 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
      * Add a public figure to the catalogue.
      *
      */
-    private boolean addPublicFigureToCatalogue(Code code, Version version, Description description,
+    private boolean addPublicFigureToCatalogue(Code code, Version version, Name name, Description description,
                                             DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
                                             ShowDesigner showDesigner) throws InterruptedException {
         try{
-            return controller.addPublicFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner);
+            return controller.addPublicFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner);
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
             new AddFigureToCatalogueUI().show();
@@ -148,11 +150,11 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
      * Add an exclusive figure to the catalogue.
      *
      */
-    private boolean addExclusiveFigureToCatalogue(Code code, Version version, Description description,
+    private boolean addExclusiveFigureToCatalogue(Code code, Version version, Name name, Description description,
                                                DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
                                                ShowDesigner showDesigner, Exclusivity exclusivity) throws InterruptedException {
         try{
-            return controller.addExclusiveFigureToCatalogue(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+            return controller.addExclusiveFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner, exclusivity);
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
             new AddFigureToCatalogueUI().show();
@@ -297,6 +299,31 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         }
 
         return keywords;
+    }
+
+    /**
+     * Enter a valid name for the figure.
+     * @return a Name object.
+     */
+    private Name enterValidName() {
+        String name;
+        do {
+            try{
+                name = readLineFromConsole(UtilsUI.BOLD + "\nEnter a name (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(name)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "Action cancelled by user." + UtilsUI.RESET);
+                } else if (name.isEmpty()){
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nName cannot be empty." + UtilsUI.RESET);
+                    continue;
+                }
+
+                return new Name(name);
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                continue;
+            }
+        } while (true);
     }
 
     /**

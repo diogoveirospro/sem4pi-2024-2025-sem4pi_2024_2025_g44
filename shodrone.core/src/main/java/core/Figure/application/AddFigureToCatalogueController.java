@@ -10,6 +10,7 @@ import core.Figure.domain.ValueObjects.*;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Description;
+import core.Shared.domain.ValueObjects.Name;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.validations.Preconditions;
@@ -47,11 +48,11 @@ public class AddFigureToCatalogueController {
      * @param showDesigner show designer associated with the figure
      * @return true if the figure was added successfully, false otherwise
      */
-    public boolean addPublicFigureToCatalogue(Code code, Version version, Description description,
+    public boolean addPublicFigureToCatalogue(Code code, Version version, Name name, Description description,
                                               DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
                                               ShowDesigner showDesigner){
         Preconditions.noneNull(code, version, description, dslDescription, keywords, categories, showDesigner);
-        Figure figure = new Figure(code, version, description, dslDescription, keywords, categories, showDesigner);
+        Figure figure = new Figure(code, version, name, description, dslDescription, keywords, categories, showDesigner);
         figureRepository.save(figure);
         return true;
     }
@@ -68,11 +69,11 @@ public class AddFigureToCatalogueController {
      * @param exclusivity exclusivity of the figure
      * @return true if the figure was added successfully, false otherwise
      */
-    public boolean addExclusiveFigureToCatalogue(Code code, Version version, Description description,
+    public boolean addExclusiveFigureToCatalogue(Code code, Version version, Name name, Description description,
                                                  DSLDescription dslDescription, Set<Keyword> keywords, Set<Category> categories,
                                                  ShowDesigner showDesigner, Exclusivity exclusivity){
         Preconditions.noneNull(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
-        Figure figure = new Figure(code, version, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+        Figure figure = new Figure(code, version, name, description, dslDescription, keywords, categories, showDesigner, exclusivity);
         figureRepository.save(figure);
         return true;
     }
