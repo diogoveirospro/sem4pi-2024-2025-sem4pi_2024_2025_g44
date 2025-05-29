@@ -1,6 +1,6 @@
 package plugins;
 
-import core.Figure.application.Service.DSLValidatorPluginFactory;
+import core.Figure.application.Service.plugin.DSLValidatorPluginFactory;
 import plugin.java.ANTLRDSLValidatorPlugin;
 
 public class PluginInitializer {

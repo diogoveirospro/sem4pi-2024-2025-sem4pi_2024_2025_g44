@@ -1,5 +1,9 @@
 parser grammar FigureParser;
 
+@header {
+package gen
+}
+
 options { tokenVocab=FigureLexer; }
 
 start           : header mainBody EOF;

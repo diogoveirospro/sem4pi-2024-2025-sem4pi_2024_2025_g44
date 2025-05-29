@@ -1,5 +1,8 @@
 package core.Figure.application.Service;
 
+import core.Figure.application.Service.plugin.DSLValidatorPlugin;
+import core.Figure.application.Service.plugin.DSLValidatorPluginFactory;
+
 public class DSLValidate {
 
     private final DSLValidatorPlugin plugin;

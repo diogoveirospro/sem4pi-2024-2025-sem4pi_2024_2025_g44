@@ -1,4 +1,4 @@
-package core.Figure.application.Service;
+package core.Figure.application.Service.plugin;
 
 public class DSLValidatorPluginFactory {
 

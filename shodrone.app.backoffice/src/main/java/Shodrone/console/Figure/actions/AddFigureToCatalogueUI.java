@@ -7,6 +7,7 @@ import Shodrone.exceptions.UserCancelledException;
 import core.Category.domain.Entities.Category;
 import core.Customer.domain.Entities.Customer;
 import core.Figure.application.AddFigureToCatalogueController;
+import core.Figure.application.Service.DSLValidate;
 import core.Figure.domain.Entities.Exclusivity;
 import core.Figure.domain.ValueObjects.*;
 import core.Persistence.PersistenceContext;
@@ -49,6 +50,11 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
      * User Repository
      */
     private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
+
+    /**
+     * DSL Validator
+     */
+    private final DSLValidate dslValidate = new DSLValidate();
 
     /**
      * Show the UI for adding a figure to the catalogue.
@@ -347,7 +353,13 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                                 .trim())
                         .orElseThrow(() -> new IllegalArgumentException("DSL version not found in file."));
 
-                return new DSLDescription(dslLines, dslVersion);
+                String dslCode = String.join("\n", dslLines);
+                // Validate the DSL version format
+                if (dslValidate.validate(dslCode).isValid()){
+                    return new DSLDescription(dslLines, dslVersion);
+                } else {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid DSL code in file. Please ensure the DSL is correct." + UtilsUI.RESET);
+                }
 
             } catch (IOException e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError reading file: " + e.getMessage() + UtilsUI.RESET);

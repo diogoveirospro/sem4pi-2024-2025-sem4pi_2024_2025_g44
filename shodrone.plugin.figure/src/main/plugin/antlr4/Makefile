@@ -13,4 +13,3 @@ clean:
 
 generate:
 	@antlr4 -Dlanguage=Java -visitor -no-listener -o $(OUT_DIR) $(GRAMMAR_BASE)Lexer.g4 $(GRAMMAR_BASE)Parser.g4
-	@sed -i '1s|^|package gen;\n|' $(OUT_DIR)/$(GRAMMAR_BASE)*.java

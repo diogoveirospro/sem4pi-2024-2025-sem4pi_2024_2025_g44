@@ -1,12 +1,10 @@
 package plugin.java;
 
 import core.Figure.application.Service.DSLValidationResult;
-import core.Figure.application.Service.DSLValidatorPlugin;
+import core.Figure.application.Service.plugin.DSLValidatorPlugin;
 import gen.FigureLexer;
 import gen.FigureParser;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +23,8 @@ public class ANTLRDSLValidatorPlugin implements DSLValidatorPlugin {
         FigureParser parser = new FigureParser(tokens);
 
         List<String> errors = new ArrayList<>();
+
+        // Capture syntax errors in a custom error listener
         parser.removeErrorListeners();
         parser.addErrorListener(new BaseErrorListener() {
             @Override
@@ -34,11 +34,10 @@ public class ANTLRDSLValidatorPlugin implements DSLValidatorPlugin {
             }
         });
 
-        ParseTree tree = parser.start();
+        // Start parsing from the entry point defined in your grammar
+        parser.start();
 
-        // Optionally: invoke semantic visitor here (US341 responsibility)
-        // new DSLFigureVisitor().visit(tree);
-
+        // Return validation result
         return new DSLValidationResult(errors.isEmpty(), errors);
     }
 }
