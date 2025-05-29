@@ -7,6 +7,8 @@ import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
 public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser, Long, Username> implements ShodroneUserRepository {
@@ -34,15 +36,10 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
      */
     @Override
     public ShodroneUser findByUsername(Username username) {
-        Iterable<ShodroneUser> users = findAll();
-
-        for (ShodroneUser user : users) {
-            if (user.user().username().equals(username)) {
-                return user;
-            }
-        }
-
-        return null;
+        final TypedQuery<ShodroneUser> query = entityManager().createQuery(
+                "SELECT u FROM ShodroneUser u WHERE u.systemUser.username = :username", ShodroneUser.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
     }
 
     @Override
