@@ -83,9 +83,11 @@ We included the necessary classes and methods to support the addition of a video
 
 The coding Commit messages related to this requirement are as follows:
 
-- [Added the unit tests for the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/8c673b5543cfdc98a1faad132e06541cc48147cb)
+- [Multiple changes to the show proposal and request class soo now the id is generated correctly also slightly changed the uis for us310 and 315](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/38b0902705b7983d1fdea497785e2859b6fea4b8)
 
-- [Added the implementation of the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c649bbf87b8d7c21c9dd30540338cba4c656bbf1)
+- [Added all the necessary missing tests of us310 and us315](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/13b89c9f055017b05f840f70fa7a344a49856043)
+
+- [ Finished the implementation of us310 and us315 missing some documentation and tests](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/4fb53c686ebf47e7c6766f895d7e8d01a2e32c27)
 
 ## 7. Integration/Demonstration
 
@@ -102,12 +104,11 @@ To run the project, follow the instructions in the [README.md](../../../readme.m
 
 To demonstrate the functionality, follow these steps:
 
-1. **Launch the application via the user app**.
-2. **Log in as a Customer**.
-3. Navigate to the **Proposal** section.
+1. **Launch the application via the backoffice application**.
+2. **Log in as a CRM Collaborator**.
+3. Navigate to the **Show Proposal** section.
 4. Select the corresponding option to what you want to do.
 5. Follow the instructions in the UI.
-6. And click the link to visualise the video
 
 ## 8. Observations
 
