@@ -1,0 +1,32 @@
+@startuml
+actor "Show Designer" as User
+participant "AddFigureToCatalogueUI" as UI
+participant "DSLValidate" as Validator
+participant "ANTLRDSLValidatorPlugin" as Plugin
+participant "FigureLexer" as Lexer
+participant "FigureParser" as Parser
+participant "AddFigureToCatalogueController" as Controller
+participant "FigureRepository" as Repo
+
+User -> UI : enter DSL and figure data
+UI -> Validator : validate(dslCode)
+Validator -> Plugin : validateDSL(code)
+Plugin -> Lexer : new FigureLexer(input)
+Lexer --> Plugin : token stream
+Plugin -> Parser : new FigureParser(tokens)
+Parser -> Parser : parser.start()
+
+Parser --> Plugin : parse result (success/errors)
+Plugin --> Validator : DSLValidationResult
+Validator --> UI : DSLValidationResult
+
+alt DSL is valid
+    UI -> Controller : addPublicFigureToCatalogue(...) or addExclusiveFigureToCatalogue(...)
+    Controller -> Repo : save(figure)
+    Repo --> Controller : confirmation
+    Controller --> UI : true (success)
+    UI --> User : show success message
+else DSL is invalid
+    UI --> User : show validation errors
+end
+@enduml

@@ -68,79 +68,46 @@ validation:
 
 ## 4. Design
 
-This section outlines the design adopted for implementing **US341**. The class diagram presents the essential components
-involved in validating a figure's DSL description, with a clear separation between the domain service, validation logic,
-and integration with the DSL plugin.
+This section outlines the design adopted for implementing **US341**. The class diagram presents the essential components 
+involved in validating a figure's DSL description, with a clear separation between the user interface, domain service, 
+validation logic, and integration with the DSL plugin.
 
 ### 4.1 Realisation
 
-The class diagram below represents the realisation of **US341 — Validate Figure Description**. The domain service
-`DSLValidate` is responsible for validating the DSL description of a figure before it is added to the system. This
-service receives the DSL code and delegates its validation to the plugin configured under **US340**.
+The class diagram below represents the realisation of **US341 — Validate Figure Description**. The validation process 
+is initiated in the user interface, where the DSL code entered by the Show Designer is validated before the figure is 
+submitted to the system. The interface invokes the domain service `DSLValidate`, which delegates the validation to the 
+plugin defined under **US340**.
 
-The plugin exposes a method such as `validateDSL(String code)`, which internally uses an ANTLR-generated parser
-(`FigureLexer` and `FigureParser`) to perform a syntactic analysis of the input. If any syntax errors are detected,
-they are reported back in a structured result; otherwise, the DSL is considered valid.
+The plugin exposes a method such as `validateDSL(String code)`, which internally uses ANTLR-generated components — 
+namely `FigureLexer` and `FigureParser` — to perform syntactic analysis of the DSL input. If any syntax errors are 
+detected, they are collected and returned in a structured format. If the input is syntactically correct, the validation 
+is considered successful.
 
-The `Figure` entity includes a `DSLDescription` as one of its attributes. Validation is performed before the figure is
-registered, ensuring the integrity and correctness of the figure's description according to the DSL grammar.
+After validation succeeds, the UI proceeds to create the `DSLDescription` value object and the corresponding `Figure`. 
+This ensures that only figures with valid DSL descriptions are allowed into the catalogue, maintaining system integrity.
 
-Only the relevant domain elements are included in the diagram, such as `Figure`, the `DSLValidate` service, and the
-plugin interface. The diagram omits unrelated components to maintain clarity and focus on the functionality.
+Only the relevant domain elements are included in the diagram, such as `Figure`, `DSLDescription`, the `DSLValidate` 
+service, and the plugin interface. The diagram omits unrelated components to maintain clarity and focus on the core 
+functionality of DSL validation.
 
 [Full Grammar](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#full-grammar)
 
-![Class Diagram US341](images/class_diagram_us341.svg)
+![Class Diagram US341](images/sequence_diagram_us341.svg)
 
 ### 4.2. Acceptance Tests
 
-The following tests validate the acceptance criteria defined for **US341 - Validate Figure Description**. They ensure
-that figures are correctly validated against the DSL grammar, and that any errors in the DSL description are appropriately
-reported.
+Given that the validation logic is invoked directly from the user interface layer — and not from within the domain 
+model or a dedicated application service — no unit tests are provided for this user story.
 
----
+The `DSLValidate` service is designed to be used externally by the UI to check whether the input DSL code is 
+syntactically valid. Since the responsibility of triggering validation and handling the result lies entirely within the 
+user interface flow, this validation will be verified manually or as part of the figure registration process during 
+full-system testing.
 
-#### **Test 1: Invalid figure DSL – missing mandatory elements**
-**Refers to Acceptance Criteria:** _US341.1_, _US341.3_  
-**Description:** This test ensures that a figure's DSL description is rejected when it does not comply with the 
-grammar — specifically, when required elements are missing.
-
-```java
-@Test
-void shouldFailValidationWhenDSLIsMissingMandatoryElements() {
-  // Arrange: define an invalid DSL input that lacks required elements
-  // In this case, there are no statements or actions defined
-  
-  // Act: call the validateDSL method from the plugin
-  
-  // Assert: check that validation fails
-  // The DSL should be considered invalid due to missing structural elements
-  
-  // Assert: check that at least one error is reported
-  
-  // Assert: check that the error message is meaningful
-  // This depends on how your ANTLR parser reports errors
-
-}
-```
-
-#### **Test 2: Valid figure DSL – correct structure**
-**Refers to Acceptance Criteria:** _US341.1_, _US341.3_
-**Description:** This test ensures that a figure’s DSL description is accepted when it complies with the grammar and contains all required elements.
-
-```java
-@Test
-void shouldPassValidationWhenDSLIsValid() {
-  // Arrange: define a valid DSL input that includes all required elements
-  
-  // Act: call the validateDSL method from the plugin
-  
-  // Assert: check that validation passes
-  // The DSL should be considered valid
-  
-  // Assert: check that no errors are reported
-}
-```
+Unit testing the `DSLValidate` service in isolation is not required in this context, as it acts as a pass-through to the 
+plugin implemented in **US340**, which is where the core parsing and validation logic resides and may be tested directly 
+if needed.
 
 ## 5. Implementation
 
