@@ -1,0 +1,43 @@
+@startuml
+
+
+class SerialNumber <<Value Object>> {
+  -value: int
+}
+
+class RemovalReason <<Value Object>> {
+  -reasons: Map<Date, String>
+}
+
+enum DroneStatus {
+  ACTIVE
+  MAINTENANCE
+  REMOVED
+  BROKEN
+}
+
+class Model {
+  +modelName: String
+}
+
+class Drone {
+  -id: Long
+  -serialNumber: SerialNumber
+  -removalReason: RemovalReason
+  -droneStatus: DroneStatus
+  -model: Model
+
+  +Drone(serialNumber: SerialNumber, model: Model, removalReason: RemovalReason, droneStatus: DroneStatus)
+  +getSerialNumber(): SerialNumber
+  +getDroneStatus(): DroneStatus
+  +getModel(): Model
+  +getRemovalReason(): RemovalReason
+  +setDroneStatus(newStatus: DroneStatus)
+}
+
+Drone "1" *-- SerialNumber : embeds
+Drone "1" *-- RemovalReason : embeds
+Drone "1" o-- Model : references
+Drone --> DroneStatus : has status
+
+@enduml
