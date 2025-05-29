@@ -18,9 +18,9 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing  
 
-Implementation: 📝 To Do  
+Implementation: 🧪 Testing  
 
-Testing: 📝 To Do
+Testing: ⚪ Not Applicable (UI-driven)
 
 ## 2. Requirements
 
@@ -111,11 +111,57 @@ if needed.
 
 ## 5. Implementation
 
+The implementation of **US341** focused on enabling the syntactic validation of a figure’s DSL description before it is 
+registered in the system.
+
+A new application service, `DSLValidate`, was created to encapsulate the validation logic. This service delegates the 
+validation to the plugin `ANTLRDSLValidatorPlugin`, which uses the ANTLR-generated components `FigureLexer` and 
+`FigureParser` to perform syntax checks over the input DSL code. The result is returned as a structured object 
+containing success or failure status and error details (if applicable).
+
+Validation is triggered directly from the user interface (`AddFigureToCatalogueUI`) before a figure is created. If the 
+DSL is valid, the process continues; otherwise, the figure is not registered and the error messages are shown to the 
+user.
+
+No changes were required to the `Figure` entity itself. All logic was isolated in the application layer and plugin, 
+maintaining separation of concerns.
+
+Relevant commit messages:
+
+* [Grammar implementation in ANTLR to test DSL Description.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/ac8e50203bb9db2b8860084a3363740454781268)
+* [Minor grammar corrections and creation of the DSLValidate service for validating the DSL file in the US233 UI.](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/de39ab3e638252e89fc3e8b7cca8337d2ef03694)
 
 ## 6. Integration/Demonstration
 
+The functionality developed in **US341** was successfully integrated into the process of figure registration through 
+the `AddFigureToCatalogueUI`.
+
+When the Show Designer inputs the DSL code during figure creation, the system performs a validation step by calling the 
+`DSLValidate` service. This ensures that only syntactically correct DSL descriptions are accepted, preserving system 
+integrity and preventing runtime errors in future show execution.
+
+The validation result (success or detailed errors) is presented to the user in the UI. If valid, the figure can be 
+created as usual.
 
 ### Demonstration Instructions
 
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](readme.md)).
+2. **Log in as a Show Designer**.
+3. Navigate to the **Figures** section.
+4. Choose **Add Figure to the Catalogue**.
+5. Enter all the necessary data to create the figure.
+6. Select a **DSL File** from the list or the **Other** option to enter your own path to a file.
+7. If the DSL is valid, you can continue creating the figure; otherwise, error messages (with line and message) are 
+displayed, and you are asked to make a new selection.
 
 ## 7. Observations
+
+* The validation process was implemented using **ANTLR 4**, a powerful parser generator for building DSLs.
+* The grammar used is defined and documented in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md).
+* No unit tests were implemented for this user story, as validation is triggered exclusively from the user interface 
+and is indirectly verified through the figure registration flow.
+* The `DSLValidate` service and the plugin were designed for reuse, ensuring that future use cases can rely on 
+centralized validation logic.
+* The `eCafeteria` project and **EAPLI Framework** served as references for structural and architectural alignment.
