@@ -1,13 +1,43 @@
 @startuml
-
-class A {
-
+class ListHistoryController {
+  -maintenanceAppService: MaintenanceAppService
+  +listHistory(droneId, startDate, endDate): ModelAndView / Response
 }
 
-class B {
-
+class MaintenanceAppService {
+  -droneRepository: DroneRepository
+  -maintenanceRecordRepository: MaintenanceRecordRepository
+  +getMaintenanceHistory(droneId, startDate, endDate): List<MaintenanceRecord>
+  -convertToDomain(maintenanceRecord: MaintenanceRecord): MaintenanceRecord
 }
 
-A -> B
+interface DroneRepository {
+  +findById(droneId): Optional<Drone>
+}
+
+interface MaintenanceRecordRepository {
+  +findByDroneAndMaintenanceDateBetween(drone: Drone, startDate: Date, endDate: Date): List<MaintenanceRecord>
+}
+
+class Drone {
+  +droneId: String
+  +listHistory(startDate: Date, endDate: Date): List<MaintenanceRecord>
+}
+
+class MaintenanceRecord {
+  +maintenanceDate: Date
+  +serviceDescription: String
+  +responsibleTechnician: String
+  +recordStatus: MaintenanceRecordStatus
+}
+
+ListHistoryController --> MaintenanceAppService
+MaintenanceAppService --> DroneRepository
+MaintenanceAppService --> MaintenanceRecordRepository
+MaintenanceAppService ..> Drone : uses
+DroneRepository ..> Drone : returns
+MaintenanceRecordRepository ..> MaintenanceRecord : returns
+
+Drone "1" -- "0..*" MaintenanceRecord
 
 @enduml
