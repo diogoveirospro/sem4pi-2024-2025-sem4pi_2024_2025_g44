@@ -6,6 +6,12 @@ package "CRMCollaborator " <<aggregate>> {
     }
 }
 
+package "CRM Manager " <<aggregate>> {
+
+    class CRMManager <<Entity>> <<root>>{
+    }
+}
+
 package "ModelOfDrone " <<aggregate>> {
 
     class Model <<Entity>> <<root>>{
@@ -59,20 +65,24 @@ package "ShowProposal " <<aggregate>>{
     }
 
 
-     ShowProposal --> "1" Video: video
-
     'ShowProposal -> x
     ShowProposal --> "1" FeedbackEmail: feedbackEmail
     ShowProposal --> "1" CRMCollaborator: created by
+    ShowProposal --> "1" CRMManager: template configured by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
-    ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
     ShowProposal --> "1" ShowProposalNumber: proposalNumber
-    ShowConfiguration --> "1..*" Drone: drone
     ShowProposal --> "1" Insurance: insurance
     ShowProposal --> "1" ShowConfiguration: showConfiguration
-    Drone --> "1" Model: model
+    ShowProposal --> "1" Video: video
+
+    'ShowConfiguration -> x
+    ShowConfiguration --> "1..*" Drone: drones
+    ShowConfiguration --> "1..*" Figure: figures
+
+    'Drone -> x
+    Drone --> "1" Model: uses
 }
 
 package Shared {

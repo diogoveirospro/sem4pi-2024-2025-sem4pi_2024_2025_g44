@@ -44,6 +44,12 @@ package "CRMCollaborator " <<aggregate>> {
     }
 }
 
+package "CRM Manager " <<aggregate>> {
+
+    class CRMManager <<Entity>> <<root>>{
+    }
+}
+
 package "Drone " <<aggregate>> {
 
     class Drone <<Entity>> <<root>>{
@@ -213,18 +219,21 @@ package "ShowProposal " <<aggregate>>{
     class Video <<Value Object>>{
     }
 
-
-    ShowProposal --> "1" Video: video
+    'ShowProposal -> x
     ShowProposal --> "1" FeedbackEmail: feedbackEmail
     ShowProposal --> "1" CRMCollaborator: created by
+    ShowProposal --> "1" CRMManager: template configured by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
-    ShowProposal --> "0..*" Figure : requests new
     ShowProposal --> "1" ShowProposalTemplate: template
     ShowProposal --> "1" ShowProposalNumber: proposalNumber
     ShowProposal --> "1" Insurance: insurance
     ShowProposal --> "1" ShowConfiguration: showConfiguration
-    ShowConfiguration --> "1..*" Drone: drone
+    ShowProposal --> "1" Video: video
+
+    'ShowConfiguration -> x
+    ShowConfiguration --> "1..*" Drone: drones
+    ShowConfiguration --> "1..*" Figure: figures
 }
 
 package "ShowDesigner " <<aggregate>>{
@@ -263,6 +272,11 @@ package Shared {
     CRMCollaborator --> "1" Name: name
     CRMCollaborator --> "1" Email: email
     CRMCollaborator --> "1" PhoneNumber: phoneNumber
+
+    'CRM Manager -> x
+    CRMManager --> "1" Name: name
+    CRMManager --> "1" Email: email
+    CRMManager --> "1" PhoneNumber: phoneNumber
 
     'ShowDesigner -> x
     ShowDesigner --> "1" Name: name

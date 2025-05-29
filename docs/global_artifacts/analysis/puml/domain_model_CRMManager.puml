@@ -1,0 +1,28 @@
+@startuml
+
+package "CRMManager " <<aggregate>> {
+
+    class CRMManager <<Entity>> <<root>>{
+    }
+}
+
+package Shared {
+
+    class Name <<Value Object>>{
+    }
+
+    class Email <<Value Object>>{
+    }
+
+    class PhoneNumber <<Value Object>>{
+    }
+
+    'CRM Collaborator -> x
+    CRMManager --> "1" Name: name
+    CRMManager --> "1" Email: email
+    CRMManager --> "1" PhoneNumber: phoneNumber
+}
+
+
+
+@enduml
