@@ -55,7 +55,7 @@ package "ShowProposal " <<aggregate>>{
     class Insurance <<Value Object>>{
     }
 
-    class FeedbackEmail <<Value Object>>{
+    class CustomerFeedback <<Value Object>>{
     }
 
     class ShowConfiguration <<Entity>>{
@@ -64,9 +64,17 @@ package "ShowProposal " <<aggregate>>{
     class Video <<Value Object>>{
     }
 
+    class TemplateValidate <<Service>> {
+    }
+
+    class ShowDSLDescription <<Value Object>> {
+    }
+
+    class GenerateShowDSL <<Service>> {
+    }
 
     'ShowProposal -> x
-    ShowProposal --> "1" FeedbackEmail: feedbackEmail
+    ShowProposal --> "1" CustomerFeedback: customerFeedback
     ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" CRMManager: template configured by
     ShowProposal --> "1" ShowRequest: based on
@@ -77,9 +85,17 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" ShowConfiguration: showConfiguration
     ShowProposal --> "1" Video: video
 
+    'GenerateShowDSL -> x
+    GenerateShowDSL ..> ShowConfiguration: uses
+    GenerateShowDSL --> ShowDSLDescription: returns
+
+    'TemplateValidate -> x
+    TemplateValidate ..> "1" ShowProposalTemplate: validates
+
     'ShowConfiguration -> x
     ShowConfiguration --> "1..*" Drone: drones
     ShowConfiguration --> "1..*" Figure: figures
+    ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
 
     'Drone -> x
     Drone --> "1" Model: uses

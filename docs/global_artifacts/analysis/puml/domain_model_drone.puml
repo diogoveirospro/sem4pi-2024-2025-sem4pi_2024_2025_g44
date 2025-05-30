@@ -11,13 +11,23 @@ package "Drone " <<aggregate>> {
     enum DroneStatus <<Value Object>>{
     }
 
-     class RemovalReason <<Value Object>>{
-        }
+    class RemovalReason <<Value Object>>{
+    }
+
+    class DroneLanguage <<Value Object>>{
+    }
+
+    class DroneLanguageValidate <<Service>>{
+    }
 
     'Drone -> x
     Drone --> "1" DroneStatus: status
     Drone --> "1" SerialNumber: serialNumber
     Drone --> "0..*" RemovalReason: removalReason
+    Drone --> "1" DroneLanguage: language
+
+    'DroneLanguageValidate -> x
+    DroneLanguageValidate ..> "1" DroneLanguage: validates
 }
 
 package "ModelOfDrone " <<aggregate>> {
@@ -42,7 +52,7 @@ package "ModelOfDrone " <<aggregate>> {
     Configuration --> "1..*" WindSpeed: windSpeed
     Configuration --> "1..*" PositionTolerance: positionTolerance
     Model --> "1" SafetyStatus: safetyStatus
-        SafetyStatus -->  Configuration: depends
+    SafetyStatus -->  Configuration: depends
 
 
     'Drone -> x
