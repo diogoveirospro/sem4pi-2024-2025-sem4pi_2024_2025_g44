@@ -68,32 +68,34 @@ validation:
 
 ## 4. Design
 
-This section outlines the design adopted for implementing **US341**. The class diagram presents the essential components 
-involved in validating a figure's DSL description, with a clear separation between the user interface, domain service, 
-validation logic, and integration with the DSL plugin.
+This section outlines the design adopted for implementing **US341 – Validate Figure Description**. The system allows a  
+Show Designer to enter a figure's DSL description, which must be validated before the figure can be added to the catalogue.
 
 ### 4.1 Realisation
 
-The class diagram below represents the realisation of **US341 — Validate Figure Description**. The validation process 
-is initiated in the user interface, where the DSL code entered by the Show Designer is validated before the figure is 
-submitted to the system. The interface invokes the domain service `DSLValidate`, which delegates the validation to the 
-plugin defined under **US340**.
+The sequence diagram below presents the full validation flow, highlighting the separation of responsibilities between the  
+user interface, domain service, plugin infrastructure, and ANTLR-generated components.
 
-The plugin exposes a method such as `validateDSL(String code)`, which internally uses ANTLR-generated components — 
-namely `FigureLexer` and `FigureParser` — to perform syntactic analysis of the DSL input. If any syntax errors are 
-detected, they are collected and returned in a structured format. If the input is syntactically correct, the validation 
-is considered successful.
+The validation process is initiated by the Show Designer through the `AddFigureToCatalogueUI`, where the DSL code and other  
+figure-related metadata are entered. The UI component delegates validation to the domain service `DSLValidate`, which  
+interacts with the plugin registered via **US340**.
 
-After validation succeeds, the UI proceeds to create the `DSLDescription` value object and the corresponding `Figure`. 
-This ensures that only figures with valid DSL descriptions are allowed into the catalogue, maintaining system integrity.
+The plugin exposes a `validateDSL(code)` method and internally leverages ANTLR-generated components, specifically  
+`FigureLexer` and `FigureParser`, to perform lexical and syntactic analysis. The process includes:
 
-Only the relevant domain elements are included in the diagram, such as `Figure`, `DSLDescription`, the `DSLValidate` 
-service, and the plugin interface. The diagram omits unrelated components to maintain clarity and focus on the core 
-functionality of DSL validation.
+- Lexical analysis performed by `FigureLexer`
+- Syntax parsing through `FigureParser`, starting from the root rule
+- Collection of validation results and reporting of syntax errors (if any)
+
+Upon successful validation, the UI proceeds to call the controller to persist the figure. Otherwise, it displays the  
+validation errors to the user and halts the process.
+
+This design ensures that **only syntactically valid DSL descriptions are accepted**, promoting data integrity and consistency  
+across the system.
 
 [Full Grammar](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#full-grammar)
 
-![Class Diagram US341](images/sequence_diagram_us341.svg)
+![Sequence Diagram US341](images/sequence_diagram_us341.svg)
 
 ### 4.2. Acceptance Tests
 
