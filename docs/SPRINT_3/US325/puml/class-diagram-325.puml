@@ -1,0 +1,90 @@
+@startuml
+set separator none
+
+package "Domain" #DDDDDD {
+
+    class Drone <<Entity>> {
+    }
+
+    class MaintenanceRecord <<Entity>> {
+    }
+
+    interface DroneRepository <<Repository>> {
+        + findDroneById(id: String): Drone
+    }
+
+    interface RepositoryFactory <<Factory>> {
+        + droneRepository(): DroneRepository
+    }
+}
+
+package "UI" #DDDDDD {
+    class ListMaintenanceHistoryUI <<UI>> {
+        + requestMaintenanceHistory(droneId: String, startDate: Date, endDate: Date)
+        + displayMaintenanceRecords(records: List<MaintenanceRecord>)
+    }
+}
+
+package "Controller" #DDDDDD {
+    class ListMaintenanceHistoryController <<Controller>> {
+        + listMaintenanceHistory(droneId: String, startDate: Date, endDate: Date): List<MaintenanceRecord>
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaDroneRepository <<Repository>> {
+        + findDroneById(id: String): Drone
+    }
+
+    class JpaRepositoryFactory <<Factory>> {
+        - instance
+        + getInstance(): RepositoryFactory
+        + droneRepository(): DroneRepository
+    }
+}
+
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryDroneRepository <<Repository>> {
+        + findDroneById(id: String): Drone
+    }
+
+    class InMemoryRepositoryFactory <<Factory>> {
+        - instance
+        + getInstance(): RepositoryFactory
+        + droneRepository(): DroneRepository
+    }
+}
+
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        + getRepositoryFactory(): RepositoryFactory
+    }
+}
+
+' Relações entre as classes
+
+Drone "1" o-- "0..*" MaintenanceRecord : has
+
+DroneRepository --> Drone : manages
+RepositoryFactory ..> DroneRepository : droneRepository()
+
+ListMaintenanceHistoryController ..> RepositoryFactory : repositoryFactory
+ListMaintenanceHistoryController ..> DroneRepository : droneRepository()
+ListMaintenanceHistoryController --> Drone : uses
+
+ListMaintenanceHistoryUI ..> ListMaintenanceHistoryController : controller
+
+PersistenceContext ..> JpaRepositoryFactory : getInstance()
+PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
+PersistenceContext ..> RepositoryFactory : getRepositoryFactory()
+
+JpaDroneRepository ..|> DroneRepository
+InMemoryDroneRepository ..|> DroneRepository
+
+JpaRepositoryFactory ..|> RepositoryFactory
+InMemoryRepositoryFactory ..|> RepositoryFactory
+
+JpaRepositoryFactory ..> JpaDroneRepository : droneRepository()
+InMemoryRepositoryFactory ..> InMemoryDroneRepository : droneRepository()
+
+@enduml
