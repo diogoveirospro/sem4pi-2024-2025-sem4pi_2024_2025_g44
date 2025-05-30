@@ -15,6 +15,7 @@ participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
 participant "showProposalRepository\n:ShowProposalRepository" as SP_REPO
 participant "modelRepository\n:ModelRepository" as MOD_REPO
 participant "configuration\n:Configuration" as CONF
+participant "showProposal\n:ShowProposal" as SP
 
 activate DT
 
@@ -71,19 +72,23 @@ activate UI
     deactivate UI
     DT -> UI : selects one
         activate UI
-        UI --> DT : asks for the number of drones for the selected drone
+        UI --> DT : asks for the number of drones for the selected model
         deactivate UI
          DT -> UI : submits data
          activate UI
+         UI -> UI : getModelDrones()
+         activate UI
+         UI--> UI: modelDroneslist
+         deactivate UI
          end loop
 
                 UI --> DT : shows the configuration and asks for confirmation
                 deactivate UI
     DT -> UI : confirms data
     activate UI
-    UI -> CTRL : configureShow(configuration)
+    UI -> CTRL : configureShow(showProposal, configuration)
     activate CTRL
-        CTRL --> CTRL :getShowProposalRepository()
+        CTRL -> CTRL :getShowProposalRepository()
         activate CTRL
         CTRL -> PERS : getShowProposalRepository()
                                                 activate PERS
@@ -99,21 +104,29 @@ activate UI
             REPOS_SINGLETON --> CTRL : showProposalRepository
             deactivate REPOS_SINGLETON
         CTRL -->CTRL : showProposalRepository
-
         deactivate CTRL
-            CTRL -> SP_REPO : createModel(configuration)
+        CTRL -> CTRL : configureShow(showProposal, configuration)
+        activate CTRL
+         CTRL -> CONF : createConfig(configuration)
+                activate CONF
+                CONF --> CTRL : configuration
+                deactivate CONF
+
+                CTRL ->SP : setConfig(showConfiguration)
+                activate SP
+                SP --> CTRL : showProposal
+                deactivate SP
+                CTRL -> CTRL : verifyShowProp(showProposal)
+                activate CTRL
+                CTRL --> CTRL: true
+                deactivate CTRL
+        CTRL --> CTRL : showProposal
+        deactivate CTRL
+            CTRL -> SP_REPO : save(showProposal)
 
             activate SP_REPO
-        SP_REPO -> CONF : createConfig(configuration)
-        activate CONF
-        CONF --> SP_REPO : configuration
-        deactivate CONF
 
-        SP_REPO ->SP_REPO : addConfig(showConfiguration)
-        activate SP_REPO
-        SP_REPO -> SP_REPO : true
-        deactivate SP_REPO
-        SP_REPO --> CTRL : true
+           SP_REPO --> CTRL : true
 
         deactivate SP_REPO
 

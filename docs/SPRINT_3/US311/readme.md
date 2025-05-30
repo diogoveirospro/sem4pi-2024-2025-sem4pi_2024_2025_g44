@@ -2,13 +2,13 @@
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us311 of sprint2, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task as the objective of concluding the requirements of the us311 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
 
 ### 1.1 List of Issues
 
 - **Analysis**: Done  
 - **Design**: Done  
-- **Implementation**: To Do 
+- **Implementation**: Doing
 - **Testing**: Doing  
 
 ---
@@ -23,6 +23,7 @@ This task as the objective of concluding the requirements of the us311 of sprint
 
 - **AC01**: The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
 - **AC02**: There is no need to verify if these drones are used in another show on the same date.
+- **AC03**: The same drone cannot be used more than once in the same configuration.
 
 ### Dependencies
 
@@ -95,105 +96,165 @@ For this US, the important elemente from **Model** is the **ModelName**, to inde
 
 ## 4. Design
 
-In this section, we describe the design approach adopted for implementing **US311 – Add drones to a proposal**. The sequence diagram defines the main components involved in the addition of a new drone to the inventory, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer.
+This document provides an overview of the system design for configuring drone models in a show proposal. The architecture follows a layered approach with UI, controller, repository, persistence, and domain layers.
+
+---
+
+### 👤 Actor
+
+#### CRM Collaborator
+- **Role:** The end-user who initiates the configuration of drone models for a show proposal.
+- **Interaction:** Navigates the UI to select a show proposal, choose drone models, specify quantities, and confirm the configuration.
+
+---
+
+### 💻 UI Layer
+
+#### :ConfigShowPropUI
+- **Role:** Manages interaction with the CRM Collaborator. Collects and displays data.
+- **Main Methods:**
+  - `getShowProposalList()`: Requests available show proposals.
+  - `getModelList()`: Requests a list of drone models for selection.
+  - `getModelDrones()`: Requests the selected number of drones of the selected model.
+  - `configureShow(showProposal, configuration)`: Sends the final configuration to the controller.
+
+---
+
+### 🎮 Application Layer
+
+#### :ConfigShowPropController
+- **Role:** Orchestrates the logic of configuring the drone list by coordinating repositories and domain objects.
+- **Main Methods:**
+  - `getShowProposalList()`: Fetches show proposals using the `ShowProposalRepository`.
+  - `getModelList()`: Fetches drone models using the **ModelRepository**.
+  - `configureShow(showProposal, configuration)`: Builds, validates, and saves the configuration.
+  - `getShowProposalRepository()`: Resolves and caches the repository instance.
+
+---
+
+### 🗃 Persistence Layer
+
+#### :Persistence
+- **Role:** Provides access to the persistence infrastructure and repository factory.
+- **Main Method:**
+  - `getRepositoryFactory()`: Returns a factory capable of creating repository instances.
+
+---
+
+### 🏗 Repository Layer
+
+#### :RepositoryFactory
+- **Role:** Abstract factory interface to provide access to various domain repositories.
+
+#### :repositoryFactory::RepositoryFactory (Singleton)
+- **Role:** Singleton implementation that returns concrete repositories for domain access.
+- **Main Methods:**
+  - `getShowProposalRepository()`: Retrieves the `ShowProposalRepository` instance.
+  - `getModelRepository()`: Retrieves the `ModelRepository` instance.
+
+#### showProposalRepository: ShowProposalRepository
+- **Role:** Handles persistent storage and retrieval of `ShowProposal` entities.
+- **Main Methods:**
+  - `getShowProposalList()`: Returns all existing show proposals.
+  - `save(showProposal)`: Persists the updated show proposal with the new configuration.
+
+#### modelRepository: ModelRepository
+- **Role:** Provides access to drone model data.
+- **Main Method:**
+  - `getModelList()`: Returns the list of available drone models.
+
+---
+
+### 🧠 Domain Layer
+
+#### configuration: Configuration
+- **Role:** Responsible for encapsulating the logic and data structure for a show configuration.
+- **Main Method:**
+  - `createConfig(configuration)`: Builds a configuration object from the user input (model and quantity data).
+
+#### showProposal: ShowProposal
+- **Role:** Represents a single show proposal entity and contains business rules.
+- **Main Methods:**
+  - `setConfig(showConfiguration)`: Adds the configuration to the proposal.
+  - `verifyShowProp(showProposal)`: Validates the configuration according to business rules.
+
+---
+
+### 🔁 Process Flow Summary
+
+1. **CRM Collaborator** starts the process in the UI.
+2. The UI requests available **Show Proposals** via the **Controller**, which fetches them through the **ShowProposalRepository**.
+3. The user selects a proposal.
+4. For each drone model:
+  - The UI requests available models via the **ModelRepository**.
+  - The CRM Collaborator selects a model and provides a drone count.
+5. The UI collects these inputs into a configuration.
+6. The user confirms the configuration.
+7. The Controller:
+  - Builds the configuration using the **Configuration** domain object.
+  - Assigns it to the **ShowProposal**.
+  - Validates the **ShowProposal**.
+  - Persists the updated proposal via the **ShowProposalRepository**.
+8. A success message is shown to the CRM Collaborator.
+
+---
+
+This layered architecture ensures clear separation of concerns and supports maintainability, extensibility, and adherence to Domain-Driven Design principles.
 
 ### 4.1 Realization
 
-![US311 Sequence Diagram](images/sequence_diagram_us311.svg "US221 Class Diagram")
+![US311 Sequence Diagram](images/sequence_diagram_us311.svg "US311 Sequence Diagram")
 
 ---
 
 ## 5. Tests
 
-The following tests validate the acceptance criteria defined for US221. They ensure that only valid customer representatives are created, that the data is correctly returned to the UI.
+The following tests validate the acceptance criteria defined for **US311**. These tests ensure that the system behaves as expected when configuring drone models in a show proposal.
 
 ---
 
 ### Test 1: Customer is a user of the system
 
 **Refers to Acceptance Criteria:** AC01  
-**Description:** Ensures that customer representatives are valid system users.
+**Description:** The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
 
 ```java
 @Test
-void ensureCustomerRepresentativeIsAUser() {
-    // setup: create and persist a customer representative
-    // action: call controller.registerNewRepresentativeOfCustomer() and get the users list
-    // assert: customer representative is in the list of users
+void ensureValidDrones() {
+    // setup: create and persist a Show proposal configuration with models and drones
+    // action: call controller.getDroneList() and get all drones list
+    // assert: creates the configuration and checks if the drones are compatible with the Shodrone’s inventory
 }
 ```
 
 ---
 
-### Test 2: The representative is associated with a customer
-
-**Refers to Acceptance Criteria:** AC02  
-**Description:** Validates that the representative is associated with a customer.
-
-```java
-@Test
-void ensureRepresentativeRepresentsACustomer() {
-    CustomerDTO dto = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(dto.getCustomer());
-}
-```
-
----
-
-### Test 3: Customer representative's information is correct
+### Test 2: Configuration cant have the same drone multiple times
 
 **Refers to Acceptance Criteria:** AC03  
-**Description:** Verifies the correctness of name, email, phone number, position, and status.
+**Description:** Verifies that the same drone is not used more than 1 time on the same configuration.
 
 ```java
 @Test
-void ensureCustomerInformationIsCorrect() {
-    Customer customer = controller.registerNewRepresentativeOfCustomer();
-    assertNotNull(customer.getName());
-    assertNotNull(customer.getEmail());
-    assertNotNull(customer.getPhoneNumber());
-    assertNotNull(customer.getPosition());
-    assertNotNull(customer.getStatus());
-}
+void ensureNotSameDrone() {
+        // setup: create and persist a Show proposal configuration with models and drones
+        // assert: creates the configuration and checks if the same drone is used multiple times 
+        }
 ```
 
+---
 ## 6. Implementation
 
-The implementation of US221 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
-We included the necessary classes and methods to support the registration of a new customer representative. And didn't diverge from the design.
-
-The coding Commit messages related to this requirement are as follows:
-
-- [Added the unit tests for the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/8c673b5543cfdc98a1faad132e06541cc48147cb)
-
-- [Added the implementation of the classes that make the us221 us222 us223 and us224](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/c649bbf87b8d7c21c9dd30540338cba4c656bbf1)
+---
 
 ## 7. Integration/Demonstration
 
-To integrate the new functionality with the existing system, we followed these steps:
 
-1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `CustomerRepository` were updated to include the necessary methods for the new functionality.
-2. **Controller Layer**: The controller was updated to include methods for handling requests related to customer representatives. This includes methods for adding, updating, and retrieving representatives.
-3. **UI Layer**: The user interface was updated to include forms and views for managing customer representatives. This includes input validation and error handling.
-4. **Testing**: We ran the unit tests to ensure that the new functionality works as expected. The tests cover all acceptance criteria and other important scenarios.
-
-To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
 ### Demonstration Instructions
 
-To demonstrate the functionality, follow these steps:
-
-1. **Launch the application via the backoffice application**. 
-2. **Log in as a CRM Collaborator**.
-3. Navigate to the **Customers** section.
-4. Select the corresponding option to what you want to do.
-5. Follow the instructions in the UI.
+---
 
 ## 8. Observations
 
-For the implementation of this project, we used the following sources:
-
-- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
-- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
-- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
-- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
+---

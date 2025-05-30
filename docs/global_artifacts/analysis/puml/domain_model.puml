@@ -261,6 +261,7 @@ package "ShowProposal " <<aggregate>>{
 
     'ShowConfiguration -> x
     ShowConfiguration --> "1..*" Drone: drones
+        ShowConfiguration --> "1..*" Model: model
     ShowConfiguration --> "1..*" Figure: figures
     ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
 
