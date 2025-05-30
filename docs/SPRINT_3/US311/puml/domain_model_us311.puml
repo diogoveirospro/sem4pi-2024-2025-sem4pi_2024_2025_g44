@@ -2,19 +2,24 @@
 'https://plantuml.com/sequence-diagram
 
 
+package "ShowProposal " <<aggregate>> {
 
   class ShowProposal <<Entity>> <<root>>{
     }
 
    class ShowConfiguration <<Entity>>{
       }
+      }
+package "Drone " <<aggregate>> {
 
    class Drone <<Entity>> <<root>>{
       }
+}
+package "Model " <<aggregate>> {
 
      class Model <<Entity>> <<root>>{
       }
-
+}
     'Model -> x
       ShowProposal --> "1" ShowConfiguration: showConfiguration
       Drone --> "1" Model: model

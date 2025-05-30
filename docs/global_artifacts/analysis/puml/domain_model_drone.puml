@@ -34,7 +34,8 @@ package "ModelOfDrone " <<aggregate>> {
 
     class Model <<Entity>> <<root>>{
     }
-
+    class ModelName <<Value Object>>{
+    }
     class Configuration <<Entity>>{
     }
 
@@ -51,8 +52,8 @@ package "ModelOfDrone " <<aggregate>> {
     Model --> "1" Configuration: configuration
     Configuration --> "1..*" WindSpeed: windSpeed
     Configuration --> "1..*" PositionTolerance: positionTolerance
-    Model --> "1" SafetyStatus: safetyStatus
-    SafetyStatus -->  Configuration: depends
+    Model --> "1" ModelName: modelName
+    Configuration --> SafetyStatus: safetyStatus
 
 
     'Drone -> x
