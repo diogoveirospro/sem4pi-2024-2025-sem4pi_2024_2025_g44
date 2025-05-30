@@ -14,7 +14,7 @@ import java.util.List;
 public class ANTLRTemplateValidationPlugin implements TemplateValidationPlugin {
 
     @Override
-    public TemplateValidationResult TemplateValidate(String code) {
+    public TemplateValidationResult validateTemplate(String code) {
         if (code == null || code.isBlank()) {
             return new TemplateValidationResult(false, List.of("DSL input is empty or null"));
         }
@@ -41,11 +41,6 @@ public class ANTLRTemplateValidationPlugin implements TemplateValidationPlugin {
 
         // Return validation result
         return new TemplateValidationResult(errors.isEmpty(), errors);
-    }
-
-    @Override
-    public TemplateValidationResult validateTemplate(String code) {
-        return null;
     }
 }
 
