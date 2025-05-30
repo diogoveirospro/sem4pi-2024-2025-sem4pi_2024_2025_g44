@@ -1,13 +1,100 @@
 @startuml
+set separator none
+left to right direction
 
-class A {
+package "Domain" #DDDDDD {
+
+    package "Repository " #DDDDDD {
+        Interface ShowProposalRepository <<Repository>> {
+            + findAllTestingProposals() : Iterable<ShowProposal>
+
+        }
+
+        Interface RepositoryFactory <<Factory>> {
+            - RepositoryFactory()
+            + proposals() : ShowProposalRepository
+        }
+
+    }
+
+        class ShowProposal <<Entity>> <<root>>{
+        }
+
+        class Figure <<Entity>> <<root>>{
+        }
+}
+
+package "UI" #DDDDDD {
+    class AddFigureToProposalUI <<UI>> {
+
+    }
+}
+
+package "Controller" #DDDDDD {
+    class AddFigureToProposalController <<Controller>> {
+        + findAllTestingProposals() : Iterable<ShowProposal>
+        + listActiveFigures()
+        + addFigureToProposal(figure: Figure, proposal: ShowProposal)
+    }
+}
+
+package "persistence.impl.jpa" #DDDDDD {
+    class JpaShowProposalRepository <<Repository>> {
+        + findAllTestingProposals() : Iterable<ShowProposal>
+    }
+
+    class JpaRepositoryFactory <<Factory>> {
+        - JpaRepositoryFactory()
+        + proposals() : ShowProposalRepository
+    }
 
 }
 
-class B {
+package "persistence.impl.inmemory" #DDDDDD {
+    class InMemoryShowProposalRepository <<Repository>> {
+        + findAllTestingProposals() : Iterable<ShowProposal>
+    }
 
+    class InMemoryRepositoryFactory <<Factory>> {
+        - InMemoryRepositoryFactory()
+        + proposals() : ShowProposalRepository
+    }
 }
 
-A -> B
+package "persistence" #DDDDDD {
+    class PersistenceContext {
+        repositories() : RepositoryFactory
+    }
+}
+
+' Relações entre as classes
+
+ShowProposal --> "0..*" Figure: figure
+
+RepositoryFactory ..> ShowProposalRepository : proposals()
+
+ShowProposalRepository --> "0..*" ShowProposal : proposals
+
+AddFigureToProposalUI ..> AddFigureToProposalController
+AddFigureToProposalController ..> RepositoryFactory : proposals()
+AddFigureToProposalController ..> ShowProposalRepository : proposals()
+AddFigureToProposalController ..> PersistenceContext : repositories()
+
+
+PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
+PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
+PersistenceContext ..> RepositoryFactory : proposals()
+
+JpaRepositoryFactory ...|> RepositoryFactory : proposals()
+JpaRepositoryFactory ..> JpaShowProposalRepository
+
+JpaShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposals()
+
+
+InMemoryRepositoryFactory .|> RepositoryFactory : proposals()
+InMemoryRepositoryFactory ..> InMemoryShowProposalRepository
+
+InMemoryShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposals()
+
 
 @enduml
