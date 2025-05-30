@@ -217,6 +217,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         return video;
     }
 
+    public void setConfiguration(ShowConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
     public void addVideo(Video video) {
         if (video == null) {
             throw new IllegalArgumentException("Video cannot be null.");
