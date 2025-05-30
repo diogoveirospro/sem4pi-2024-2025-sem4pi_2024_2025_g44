@@ -1,29 +1,123 @@
 @startuml
-'https://plantuml.com/sequence-diagram
 
-
-package "ShowProposal " <<aggregate>> {
-
-  class ShowProposal <<Entity>> <<root>>{
-    }
-
-   class ShowConfiguration <<Entity>>{
-      }
-      }
 package "Drone " <<aggregate>> {
 
-   class Drone <<Entity>> <<root>>{
-      }
-}
-package "Model " <<aggregate>> {
+    class Drone <<Entity>> <<root>>{
+    }
 
-     class Model <<Entity>> <<root>>{
-      }
+    class SerialNumber <<Value Object>>{
+    }
+
+    enum DroneStatus <<Value Object>>{
+    }
+
+    class RemovalReason <<Value Object>>{
+    }
+
+    class DroneLanguage <<Value Object>>{
+    }
+
+    class DroneLanguageValidate <<Service>>{
+    }
+
+    'Drone -> x
+    Drone --> "1" DroneStatus: status
+    Drone --> "1" SerialNumber: serialNumber
+    Drone --> "0..*" RemovalReason: removalReason
+    Drone --> "1" DroneLanguage: language
+
+    'DroneLanguageValidate -> x
+    DroneLanguageValidate ..> "1" DroneLanguage: validates
 }
+
+package "ModelOfDrone " <<aggregate>> {
+
+    class Model <<Entity>> <<root>>{
+    }
+    class ModelName <<Value Object>>{
+    }
+    class Configuration <<Entity>>{
+    }
+
+    class WindSpeed <<Value Object>>{
+    }
+
+    class PositionTolerance <<Value Object>>{
+    }
+
+    enum SafetyStatus <<Value Object>>{
+    }
+
     'Model -> x
-      ShowProposal --> "1" ShowConfiguration: showConfiguration
-      Drone --> "1" Model: model
-      ShowConfiguration --> "1..*" Drone: drone
+    Model --> "1" Configuration: configuration
+    Configuration --> "1..*" WindSpeed: windSpeed
+    Configuration --> "1..*" PositionTolerance: positionTolerance
+    Model --> "1" ModelName: modelName
+    Configuration --> SafetyStatus: safetyStatus
 
+
+    'Drone -> x
+    Drone --> "1" Model: uses
+
+}
+
+package "ShowProposal " <<aggregate>>{
+
+    enum ShowProposalStatus <<Value Object>>{
+    }
+
+    class ShowProposal <<Entity>> <<root>>{
+    }
+
+    class ShowProposalTemplate <<Value Object>>{
+    }
+
+    class ShowProposalNumber <<Value Object>>{
+    }
+
+    class Insurance <<Value Object>>{
+    }
+
+    class CustomerFeedback <<Value Object>>{
+    }
+
+    class ShowConfiguration <<Entity>>{
+    }
+
+    class Video <<Value Object>>{
+    }
+
+    class TemplateValidate <<Service>> {
+    }
+
+    class ShowDSLDescription <<Value Object>> {
+    }
+
+    class GenerateShowDSL <<Service>> {
+    }
+
+    'ShowProposal -> x
+    ShowProposal --> "1" CustomerFeedback: customerFeedback
+    ShowProposal --> "1" CRMManager: template configured by
+    ShowProposal --> "1" ShowRequest: based on
+    ShowProposal --> "1" ShowProposalStatus: proposalStatus
+    ShowProposal --> "1" ShowProposalTemplate: template
+    ShowProposal --> "1" ShowProposalNumber: proposalNumber
+    ShowProposal --> "1" Insurance: insurance
+    ShowProposal --> "1" ShowConfiguration: showConfiguration
+    ShowProposal --> "1" Video: video
+
+    'GenerateShowDSL -> x
+    GenerateShowDSL ..> ShowConfiguration: uses
+    GenerateShowDSL --> ShowDSLDescription: returns
+
+    'TemplateValidate -> x
+    TemplateValidate ..> "1" ShowProposalTemplate: validates
+
+    'ShowConfiguration -> x
+    ShowConfiguration --> "1..*" Drone: drones
+    ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
+
+}
 
 @enduml
