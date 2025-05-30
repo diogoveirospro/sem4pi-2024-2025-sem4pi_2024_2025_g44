@@ -61,7 +61,7 @@ Which returns a success status or a list of syntax errors with line/column info.
 
 ### 4.2 Class Diagram
 
----
+
 
 ### 4.3 Acceptance Tests
 
