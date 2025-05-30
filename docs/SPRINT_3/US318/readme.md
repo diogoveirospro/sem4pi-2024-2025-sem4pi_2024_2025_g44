@@ -1,86 +1,106 @@
-# US 101
-
-*This is an example template*
+# US 318
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This user story is being developed as part of Sprint 3. It introduces the functionality that allows a CRM Manager to  
+configure and validate a proposal template before sending it to a customer. The template defines the structure and  
+content of the document that will be delivered to the customer during the show proposal process.
+
+The validation ensures that the template is compatible with the system and conforms to the expected structure. The  
+plugin used for validation must already be registered in the system (as defined in US317), and it will be invoked to  
+check the correctness of the template formatting.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing  
 
-Design:
+Design: 📝 To Do  
 
-Implement:
+Implementation: 📝 To Do  
 
-Test:
-
+Testing: 📝 To Do
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As a** CRM Manager,  
+<br>  
+**I want** to be able to configure the template that formats the document,  
+<br>  
+**So that** it can be sent to the customer.
 
-*Example*
+### Acceptance Criteria:
 
-**US G101** As {Ator} I Want...
+- **US318.1** The plugin used to validate the proposal template must be previously registered in the system.
+- **US318.2** The configured template must be validated before it is accepted for use in proposals.
+- **US318.3** In case of invalid formatting, an appropriate error must be returned to the user.
 
-**Acceptance Criteria:**
+### Dependencies/References:
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
-
-**Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
+- **_US347 – Proposal Generation_**: This user story uses the configured template to validate and generate the proposal  
+  document. The template defined in US318 must be available and valid for US347 to execute successfully.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+This user story focuses on validating the proposal template configured by the CRM Manager. The template will be used to  
+generate documents sent to customers when proposing a drone show.
+
+The domain includes a `ShowProposalTemplate` value object that encapsulates the raw content of the template to be validated.  
+The validation is performed by the `TemplateValidate` domain service, which invokes a plugin registered in the system  
+(see [US317](../US317/readme.md)). The validation plugin checks whether the template includes all required tags and 
+follows the correct format.
+
+Validation is mandatory: a template cannot be used in the system unless it passes validation. If the validation fails,  
+the system returns a descriptive error message and prevents the use of the invalid template.
+
+The following diagram shows the current domain model for the `ShowProposal` aggregate, including the newly introduced  
+components `ShowProposalTemplate` and `TemplateValidate`:
+
+![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+This section presents the design adopted for implementing **US318 – Configure Proposal Template**.
+The following diagram and explanation detail the interaction between the user interface, controller, validation service, 
+plugin, domain model, and persistence layer.
 
-### 4.1. Realization
+### 4.1 Realisation
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+The sequence diagram below illustrates the realisation of **US318 – Configure Proposal Template**.
 
-### 4.3. Applied Patterns
+The process begins in the user interface (`ConfigureTemplateUI`), where the **CRM Manager** initiates the configuration 
+of a proposal template. The UI requests a list of proposals eligible for template configuration by invoking the 
+controller. The `ConfigureTemplateController` retrieves these proposals from the `ShowProposalRepository`, filtering 
+those that can still be configured.
 
-### 4.4. Acceptance Tests
+Once the CRM Manager selects a specific proposal and provides a template, the controller retrieves the corresponding 
+`ShowProposal` from the repository using its identifier.
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+The selected template is passed to the domain service `TemplateValidate`, which is responsible for validating its 
+syntax and structure. The validation logic is delegated to a plugin (`TemplateValidationPlugin`), previously registered 
+in the system as part of **US317**. The plugin analyses the template and returns a `ValidationResult` indicating whether 
+it is valid or contains errors.
 
-**Test 1:** *Verifies that it is not possible to ...*
+If the validation succeeds, the template is set on the `ShowProposal`, and the updated proposal is persisted through 
+the repository. If the validation fails, the UI displays the corresponding error messages to the user, and the 
+configuration is aborted.
 
-**Refers to Acceptance Criteria:** US101.1
+This design ensures a clear separation of concerns:
 
+* The **UI** handles user input and feedback.
+* The **controller** coordinates the flow and validation.
+* The **domain** retains ownership of proposal data and template assignment.
+* The **plugin** encapsulates validation logic, promoting modularity and reuse.
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
+![Sequence Diagram for US318](images/sequence_diagram_us318.svg)
+
+### 4.2. Acceptance Tests
+
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
 
 ## 7. Observations
-
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*

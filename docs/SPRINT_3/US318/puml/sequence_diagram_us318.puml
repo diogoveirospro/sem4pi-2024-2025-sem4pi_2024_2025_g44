@@ -1,0 +1,38 @@
+@startuml
+actor "CRM Manager" as User
+participant "ConfigureTemplateUI" as UI
+participant "ConfigureTemplateController" as Controller
+participant "TemplateValidate" as Validator
+participant "TemplateValidationPlugin" as Plugin
+participant "ShowProposalRepository" as Repo
+participant "ShowProposal" as Proposal
+
+User -> UI : request template configuration
+UI -> Controller : fetch available proposals
+Controller -> Repo : findConfigurableProposals()
+Repo --> Controller : list of proposals
+Controller --> UI : proposals
+
+UI -> User : show proposals and templates
+User -> UI : select proposal and template
+UI -> Controller: findProposalById(proposalId)
+Controller -> Repo : findProposalById(proposalId)
+Repo --> Controller : proposal
+
+Controller -> Proposal: template(selectedTemplate);
+Proposal -> Controller : templateContent
+
+Controller -> Validator : validate(templateContent)
+Validator -> Plugin : validateTemplate(templateContent)
+Plugin --> Validator : ValidationResult
+Validator --> Controller : ValidationResult
+
+alt Template is valid
+    Controller -> Controller : proposal.setTemplate(templateContent)
+    Controller -> Repo : save(proposal)
+    Repo --> Controller : confirmation
+    Controller --> UI : show success message
+else Template is invalid
+    Controller --> UI : show validation errors
+end
+@enduml
