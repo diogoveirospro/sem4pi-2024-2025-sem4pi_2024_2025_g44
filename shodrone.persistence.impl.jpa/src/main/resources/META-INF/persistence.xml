@@ -54,7 +54,7 @@
 
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
-      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/DB/shodrone.app"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://10.9.21.98/~/DB/shodrone.app"/>
       <property name="jakarta.persistence.jdbc.user" value="user"/>
       <property name="jakarta.persistence.jdbc.password" value="password"/>
       <property name="jakarta.persistence.schema-generation.database.action" value= "update"/>
