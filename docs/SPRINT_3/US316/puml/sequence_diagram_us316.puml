@@ -1,0 +1,31 @@
+@startuml
+actor "CRM Collaborator" as User
+participant "SendProposalUI" as UI
+participant "SendProposalController" as Controller
+participant "ShowProposalRepository" as Repo
+participant "ProposalDelivery" as Delivery
+
+User -> UI : request to send proposal
+UI -> Controller : fetch available proposals
+Controller -> Repo : findProposalsReadyToSend()
+Repo --> Controller : list of proposals
+Controller --> UI : proposals
+
+UI -> User : show proposals
+User -> UI : select proposal
+
+UI -> Controller : sendProposal(proposalId)
+Controller -> Repo : findProposalById(proposalId)
+Repo --> Controller : proposal
+
+
+Controller -> Delivery : sendProposal(proposal)
+Delivery --> Controller : delivery confirmation
+alt Proposal is sent
+    Controller --> UI : true
+    UI --> User : show success message
+else Proposal is not sent
+    Controller --> UI : false
+    UI --> User : show error (missing document/video/simulation)
+end
+@enduml

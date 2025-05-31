@@ -14,7 +14,7 @@ check the correctness of the template formatting.
 
 Analysis: 🧪 Testing  
 
-Design: 📝 To Do  
+Design: 🧪 Testing  
 
 Implementation: 📝 To Do  
 

@@ -1,86 +1,90 @@
-# US 101
-
-*This is an example template*
+# US 316
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This user story is being developed as part of Sprint 3. It introduces the functionality that allows a CRM Collaborator to
+send a completed show proposal to a customer. A proposal includes the configured figures, drones, duration, the
+associated simulation video, and a formatted document generated from a previously validated template (see US318).
+
+Sending the proposal is only possible once the proposal has passed simulation, includes a video (US315), and has been
+formatted with a valid template. The goal is to provide a clear, professional proposal document to the customer, using
+a standardised format with personalised content.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing
 
-Design:
+Design: 🧪 Testing
 
-Implement:
+Implementation: 📝 To Do
 
-Test:
-
+Testing: 📝 To Do
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As a** CRM Collaborator, 
+<br>
+**I want** to send a show proposal to the customer, 
+<br>
+**So that** the customer can review and approve the planned drone show.
 
-*Example*
+### Acceptance Criteria:
 
-**US G101** As {Ator} I Want...
+* **US316.1** The proposal must have passed simulation validation.
+* **US316.2** The proposal must have an associated video (see US315).
+* **US316.3** A valid proposal template must be configured for the proposal (see US318).
+* **US316.4** The final document must be generated using the template and data.
+* **US316.5** The system must successfully deliver the document and video to the customer.
 
-**Acceptance Criteria:**
+### Dependencies/References:
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
-
-**Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
+* ***US315 – Generate Simulation Video***: A video must exist before sending the proposal.
+* ***US318 – Configure Proposal Template***: A valid template must be available and applied.
+* ***US347 – Proposal Generation***: Involves document generation using the template.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+This user story focuses on the final step of the proposal process: delivering the complete proposal package to the
+customer.
+
+The domain includes a `ShowProposal` entity, which aggregates:
+
+* Figures and configuration (ShowConfiguration)
+* Simulation video (Video VO)
+* Template (ShowProposalTemplate VO)
+
+The proposal must be in a valid state (e.g., approved simulation, associated video). The content from `ShowProposalTemplate`
+is combined with the data from the proposal to produce a formatted document (e.g. TXT or PDF). The system then packages 
+this document along with the video and sends it to the customer.
+
+The following diagram shows the current domain model for the `ShowProposal` aggregate:
+
+![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+This section presents the design adopted for implementing **US316 – Send Show Proposal to Customer**. The sequence diagram
+below illustrates the interaction between the CRM Collaborator, the UI, the controller, the proposal generator, and the
+communication service.
 
-### 4.1. Realization
+### 4.1 Realisation
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+The process begins when the CRM Collaborator selects a completed and valid proposal from the user interface. The
+`SendProposalController` coordinates the generation of the final document using the existing `ShowProposalTemplate` and
+the proposal data.
 
-### 4.3. Applied Patterns
+Once the proposal is retrieved, the system uses a `ProposalGeneratorService` to render the document (e.g., PDF) based
+on the template content. The video file is also retrieved.
 
-### 4.4. Acceptance Tests
+These files are then passed to the `ProposalDeliveryService`, which sends the package to the customer's email address.
+If any step fails (e.g., missing video or template), the UI informs the user and blocks the operation.
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+![Sequence Diagram for US316](images/sequence_diagram_us316.svg)
 
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
-
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
+### 4.2. Acceptance Tests
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
-
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
-
 ## 7. Observations
-
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
