@@ -1,0 +1,30 @@
+DSL version 1.1.23;
+
+DroneType droneTypeZ;
+
+Position aPos = (0,0,0);
+Position anotherPos = (0, 20, 0);
+Position yAxis = (0,1,0);
+
+Velocity aVelocity = 7;
+Velocity rotVelocity = PI/6;
+
+Distance aRadius = 30;
+
+Circle aCircle(aPos, aRadius, droneTypeZ);
+
+before
+   aCircle.lightsOn(GREEN);
+   aCircle.move((0, 0, 1),60, aVelocity);
+endbefore
+
+aCircle.rotate(aPos, yAxis, 2*PI, rotVelocity);
+
+pause(12);
+
+aCircle.lightsOn(RED);
+
+after
+   aCircle.move((0, 0, -1),60, aVelocity);
+   aCircle.lightsOff;
+endafter

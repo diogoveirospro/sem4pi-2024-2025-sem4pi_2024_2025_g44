@@ -1,0 +1,30 @@
+DSL version 1.1.23;
+
+DroneType windCatcher;
+
+Position aPos = (0,0,0);
+Position anotherPos = (0, 30, 0);
+Position yAxis = (0,1,0);
+
+Velocity aVelocity = 9;
+Velocity rotVelocity = PI/4;
+
+Distance aRadius = 40;
+
+Circle aCircle(aPos, aRadius, windCatcher);
+
+before
+   aCircle.lightsOn(YELLOW);
+   aCircle.move((0, 0, 1),80, aVelocity);
+endbefore
+
+aCircle.rotate(aPos, yAxis, 2*PI, rotVelocity);
+
+pause(20);
+
+aCircle.lightsOn(RED);
+
+after
+   aCircle.move((0, 0, -1),80, aVelocity);
+   aCircle.lightsOff;
+endafter

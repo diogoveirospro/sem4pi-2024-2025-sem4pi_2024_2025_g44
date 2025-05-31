@@ -1,0 +1,30 @@
+DSL version 1.1.23;
+
+DroneType stormRider;
+
+Position aPos = (0,0,0);
+Position anotherPos = (0, 25, 0);
+Position zAxis = (0,0,1);
+
+Velocity aVelocity = 8;
+Velocity rotVelocity = PI/5;
+
+Distance aLength = 35;
+
+Rectangle aRectangle(aPos, aLength, aLength, stormRider);
+
+before
+   aRectangle.lightsOn(RED);
+   aRectangle.move((0, 0, 1),70, aVelocity);
+endbefore
+
+aRectangle.rotate(aPos, zAxis, -2*PI, rotVelocity);
+
+pause(15);
+
+aRectangle.lightsOn(YELLOW);
+
+after
+   aRectangle.move((0, 0, -1),70, aVelocity);
+   aRectangle.lightsOff;
+endafter

@@ -40,6 +40,10 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         this.config = Map.copyOf(builder.config);
     }
 
+    protected ShowConfiguration() {
+        // Default constructor for JPA
+    }
+
     public Map<Model, List<Drone>> drones() {
         return config;
     }

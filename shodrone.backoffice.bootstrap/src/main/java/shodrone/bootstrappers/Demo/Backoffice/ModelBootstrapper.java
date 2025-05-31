@@ -31,9 +31,8 @@ public class ModelBootstrapper implements Action {
         config.put(new WindSpeed(10, 15), new PositionTolerance(0.8));
         config.put(new WindSpeed(15, 999), new PositionTolerance(-1));
 
-        register("DroneX-200", new Configuration(config, SafetyStatus.SAFE));
+        register("droneTypeX", new Configuration(config, SafetyStatus.SAFE));
 
-        // Configuração para DroneY-300
         Map<WindSpeed, PositionTolerance> config1 = new HashMap<>();
         config1.put(new WindSpeed(0, 3), new PositionTolerance(0.0));
         config1.put(new WindSpeed(3, 6), new PositionTolerance(0.25));
@@ -41,27 +40,24 @@ public class ModelBootstrapper implements Action {
         config1.put(new WindSpeed(9, 12), new PositionTolerance(0.6));
         config1.put(new WindSpeed(12, 999), new PositionTolerance(-1));
 
-        register("DroneY-300", new Configuration(config1, SafetyStatus.SAFE));
+        register("droneTypeY", new Configuration(config1, SafetyStatus.SAFE));
 
-        // Configuração para DroneZ-500
         Map<WindSpeed, PositionTolerance> config2 = new HashMap<>();
         config2.put(new WindSpeed(0, 4), new PositionTolerance(0.0));
         config2.put(new WindSpeed(4, 8), new PositionTolerance(0.2));
         config2.put(new WindSpeed(8, 11), new PositionTolerance(0.6));
         config2.put(new WindSpeed(11, 999), new PositionTolerance(-1));
 
-        register("DroneZ-500", new Configuration(config2, SafetyStatus.SAFE));
+        register("droneTypeZ", new Configuration(config2, SafetyStatus.SAFE));
 
-        // Configuração para StormRider-900
         Map<WindSpeed, PositionTolerance> config3 = new HashMap<>();
         config3.put(new WindSpeed(0, 6), new PositionTolerance(0.1));
         config3.put(new WindSpeed(6, 12), new PositionTolerance(0.4));
         config3.put(new WindSpeed(12, 16), new PositionTolerance(0.7));
         config3.put(new WindSpeed(16, 999), new PositionTolerance(-1));
 
-        register("StormRider-900", new Configuration(config3, SafetyStatus.SAFE));
+        register("stormRider", new Configuration(config3, SafetyStatus.SAFE));
 
-        // Configuração para WindCatcher-X
         Map<WindSpeed, PositionTolerance> config4 = new HashMap<>();
         config4.put(new WindSpeed(0, 2), new PositionTolerance(0.0));
         config4.put(new WindSpeed(2, 5), new PositionTolerance(0.15));
@@ -69,7 +65,15 @@ public class ModelBootstrapper implements Action {
         config4.put(new WindSpeed(9, 13), new PositionTolerance(0.75));
         config4.put(new WindSpeed(13, 999), new PositionTolerance(-1));
 
-        register("WindCatcher-X", new Configuration(config4, SafetyStatus.SAFE));
+        register("windCatcher", new Configuration(config4, SafetyStatus.SAFE));
+
+        Map<WindSpeed, PositionTolerance> config5 = new HashMap<>();
+        config5.put(new WindSpeed(0, 4), new PositionTolerance(0.0));
+        config5.put(new WindSpeed(4, 8), new PositionTolerance(0.3));
+        config5.put(new WindSpeed(8, 12), new PositionTolerance(0.6));
+        config5.put(new WindSpeed(12, 999), new PositionTolerance(-1));
+
+        register("droneTypeA", new Configuration(config5, SafetyStatus.SAFE));
 
         return true;
     }

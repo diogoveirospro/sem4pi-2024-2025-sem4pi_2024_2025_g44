@@ -22,6 +22,17 @@ public class CategoryBootstrapper implements Action {
         registerCategory("category4", "description4");
         registerCategory("category5", "description5");
         registerCategory("category6", "description6");
+        registerCategory("category7", "description7");
+        registerCategory("category8", "description8");
+        registerCategory("category9", "description9");
+        registerCategory("category10", "description10");
+        registerCategory("category11", "description11");
+        registerCategory("category12", "description12");
+        registerCategory("category13", "description13");
+        registerCategory("category14", "description14");
+        registerCategory("category15", "description15");
+        registerCategory("category16", "description16");
+        registerCategory("category17", "description17");
 
         return true;
 
