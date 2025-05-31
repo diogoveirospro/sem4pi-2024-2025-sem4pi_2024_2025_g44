@@ -56,7 +56,7 @@ In this section, we describe the design approach adopted for implementing **US31
 
 ### 4.1. Realization
 
-![US310 Class Diagram](images/class_diagram_us315.svg "US315 Class Diagram")
+![US310 Class Diagram](images/sequence_diagram_us315.svg "US315 Class Diagram")
 
 ## 5. Tests
 

@@ -1,0 +1,160 @@
+@startuml
+actor "CRM Collaborator" as User
+participant "CreateShowProposalUI" as UI
+participant "CreateShowProposalController" as Controller
+participant "PersistenceContext" as Persistence
+participant "RepositoryFactory" as Factory
+participant "CustomerRepository" as CustomerRepo
+participant "ShowRequestRepository" as ShowRequestRepo
+participant "ShowProposalRepository" as ShowProposalRepo
+participant "ShodroneUserRepository" as UserRepo
+participant "CRMCollaboratorRepository" as CollaboratorRepo
+participant "ShowProposal" as Proposal
+
+activate User
+
+User -> UI : request to create a show proposal
+activate UI
+
+UI -> Controller : listCustomers()
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> CustomerRepo : customers()
+deactivate Factory
+
+activate CustomerRepo
+CustomerRepo -> CustomerRepo : findAllCreatedCustomers()
+activate CustomerRepo
+CustomerRepo -> Controller : customers
+deactivate CustomerRepo
+deactivate CustomerRepo
+
+Controller -> UI : customers
+deactivate Controller
+
+UI -> User : asks to select a customer
+
+User -> UI : selects a customer
+UI -> Controller : listShowRequests(customer)
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> ShowRequestRepo : showRequest()
+deactivate Factory
+
+activate ShowRequestRepo
+
+ShowRequestRepo -> ShowRequestRepo : findAllCreatedShowRequestsByCustomer(customer)
+activate ShowRequestRepo
+ShowRequestRepo -> Controller : showRequests
+deactivate ShowRequestRepo
+deactivate ShowRequestRepo
+
+Controller -> UI : showRequests
+deactivate Controller
+UI -> User : asks to select a show request
+User -> UI : selects a show request
+
+UI -> UI : asks for date, time, quantity of drones and insurance
+
+UI -> User : Asks for all the necessary information to create a show proposal
+
+User -> UI : provides date, time, quantityOfDrones and the insurance
+UI -> Controller : createShowProposal(showRequest, date, time, quantityOfDrones, insurance)
+activate Controller
+
+Controller -> Controller : getCrmCollaborator()
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> UserRepo : shodroneUsers()
+deactivate Factory
+
+activate UserRepo
+UserRepo -> UserRepo : findByUsername(user.username())
+activate UserRepo
+
+
+UserRepo -> Controller : authenticatedUser
+deactivate UserRepo
+
+deactivate UserRepo
+
+Controller -> Persistence : PersistenceContext()
+
+activate Persistence
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> CollaboratorRepo : crmCollaborators()
+
+deactivate Factory
+
+
+activate CollaboratorRepo
+CollaboratorRepo -> CollaboratorRepo : findByEmail(authenticatedUser.email)
+activate CollaboratorRepo
+
+CollaboratorRepo -> Controller : crmCollaborator
+deactivate CollaboratorRepo
+
+deactivate CollaboratorRepo
+
+deactivate Controller
+
+Controller -> Proposal : ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator)
+
+activate Proposal
+
+Proposal -> Controller : showProposal
+
+deactivate Proposal
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+activate Factory
+
+Factory -> ShowProposalRepo : proposals()
+deactivate Factory
+activate ShowProposalRepo
+ShowProposalRepo -> ShowProposalRepo : save(showProposal)
+activate ShowProposalRepo
+
+ShowProposalRepo -> Controller : showProposal saved
+deactivate ShowProposalRepo
+
+deactivate ShowProposalRepo
+
+
+Controller -> UI : Show Proposal created successfully
+deactivate Controller
+
+UI -> User : Show Proposal created successfully
+deactivate UI
+deactivate User
+
+@enduml

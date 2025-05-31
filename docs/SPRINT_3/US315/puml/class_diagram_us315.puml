@@ -1,136 +1,141 @@
 @startuml
-set separator none
-left to right direction
+actor "CRM Collaborator" as User
+participant "AddVideoToProposalUI" as UI
+participant "AddVideoToProposalController" as Controller
+participant "VideoList" as List
+participant "PersistenceContext" as Persistence
+participant "RepositoryFactory" as Factory
+participant "ShowRequestRepository" as ShowRequestRepo
+participant "ShowProposalRepository" as ShowProposalRepo
+participant "ShowProposal" as Proposal
+
+activate User
+
+User -> UI : request to add a video to the proposal
+activate UI
+
+UI -> Controller : listShowRequests()
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> ShowRequestRepo : showRequest()
+deactivate Factory
+
+activate ShowRequestRepo
+
+ShowRequestRepo -> ShowRequestRepo : findAllCreatedShowRequests()
+activate ShowRequestRepo
+
+ShowRequestRepo -> Controller : showRequests
+deactivate ShowRequestRepo
+
+deactivate ShowRequestRepo
+
+Controller -> UI : showRequests
+deactivate Controller
+UI -> User : asks to select a show request
+User -> UI : selects a show request
+
+UI -> Controller : listProposals(showRequest)
+
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
 
 
-package "Domain" #DDDDDD {
+activate Factory
+Factory -> ShowProposalRepo : proposals()
 
-    package "Repository " #DDDDDD {
-        Interface ShowProposalRepository <<Repository>> {
-            + findAllTestingProposalsByShowRequest(request) : Iterable<ShowProposal>
+deactivate Factory
 
-        }
+activate ShowProposalRepo
 
-        Interface RepositoryFactory <<Factory>> {
-            - RepositoryFactory()
-            + proposals() : ShowProposalRepository
-        }
+ShowProposalRepo -> ShowProposalRepo : findAllTestingProposalsByShowRequest(showRequest)
+activate ShowProposalRepo
 
-        Interface ShowRequestRepository <<Repository>> {
-            + findAllCreatedShowRequests() : Iterable<ShowRequest>
-        }
+ShowProposalRepo -> Controller : proposals
 
-    }
+deactivate ShowProposalRepo
 
+deactivate ShowProposalRepo
 
-        class ShowRequest <<Entity>> <<root>> {
+Controller -> UI : proposals
 
-        }
-        class ShowProposal <<Entity>> <<root>>{
-        }
+deactivate Controller
+UI -> User : asks to select a proposal
 
-        class Video <<Value Object>>{
-        }
+User -> UI : selects a proposal
 
-        class VideoList {
-        }
-}
+UI -> Controller : listVideos()
+activate Controller
 
-package "UI" #DDDDDD {
-    class AddVideoToProposalUI <<UI>> {
+Controller -> List : getVideos()
 
-    }
-}
+activate List
 
-package "Controller" #DDDDDD {
-    class AddVideoToProposalController <<Controller>> {
-        + findAllTestingProposalsByShowRequest(request) : Iterable<ShowProposal>
-        + findAllCreatedShowRequests() : Iterable<ShowRequest>
-        + listVideos()
-    }
-}
+List -> List : getVideos()
 
-package "persistence.impl.jpa" #DDDDDD {
-    class JpaShowProposalRepository <<Repository>> {
-        + findAllTestingProposalsByShowRequest(request) : Iterable<ShowProposal>
-    }
+List -> Controller : videos
 
-    class JpaRepositoryFactory <<Factory>> {
-        - JpaRepositoryFactory()
-        + proposals() : ShowProposalRepository
-    }
+deactivate List
 
-    class JpaShowRequestRepository <<Repository>> {
-        + findAllCreatedShowRequests() : Iterable<ShowRequest>
-    }
-}
+Controller -> UI : videos
 
-package "persistence.impl.inmemory" #DDDDDD {
-    class InMemoryShowProposalRepository <<Repository>> {
-        + findAllTestingProposals() : Iterable<ShowProposal>
-    }
+deactivate Controller
 
-    class InMemoryRepositoryFactory <<Factory>> {
-        - InMemoryRepositoryFactory()
-        + proposals() : ShowProposalRepository
-    }
+UI -> User : asks to select a video
 
-    class InMemoryShowRequestRepository <<Repository>> {
-        + findAllCreatedShowRequests() : Iterable<ShowRequest>
-    }
-}
+User -> UI : selects a video
 
-package "persistence" #DDDDDD {
-    class PersistenceContext {
-        repositories() : RepositoryFactory
-    }
-}
+UI -> Controller : addVideoToProposal(video, proposal)
 
-' Relações entre as classes
+activate Controller
 
-ShowProposal --> "1" Video: video
-ShowProposal --> "1" ShowRequest: based on
+Controller -> Proposal: addVideo(video)
 
+activate Proposal
 
-RepositoryFactory ..> ShowProposalRepository : proposals()
-ShowProposalRepository ..> ShowRequestRepository : showRequest()
+Proposal -> Proposal : addVideo(video)
+Proposal -> Controller : video added
+deactivate Proposal
 
-ShowProposalRepository --> "0..*" ShowProposal : proposals
-ShowRequestRepository --> "0..*" ShowRequest : requests
+Controller -> Persistence : PersistenceContext()
 
-AddVideoToProposalUI ..> AddVideoToProposalController
-AddVideoToProposalController ..> RepositoryFactory : proposals()
-AddVideoToProposalController ..> RepositoryFactory : showRequest()
-AddVideoToProposalController ..> ShowRequestRepository : showRequest()
-AddVideoToProposalController ..> ShowProposalRepository : proposals()
-AddVideoToProposalController ..> PersistenceContext : repositories()
+activate Persistence
 
-AddVideoToProposalController ..> VideoList : listVideos()
+Persistence -> Factory : repositories()
 
-PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
-PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
-PersistenceContext ..> RepositoryFactory : proposals()
-PersistenceContext ..> RepositoryFactory : showRequest()
+deactivate Persistence
+activate Factory
 
-JpaRepositoryFactory ...|> RepositoryFactory : proposals()
-JpaRepositoryFactory ...|> RepositoryFactory : showRequest()
-JpaRepositoryFactory ..> JpaShowProposalRepository
-JpaRepositoryFactory ..> JpaShowRequestRepository
+Factory -> ShowProposalRepo : proposals()
+deactivate Factory
+activate ShowProposalRepo
 
-JpaShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposalsByShowRequest(request)
+ShowProposalRepo -> ShowProposalRepo : save(proposal)
+activate ShowProposalRepo
 
-JpaShowRequestRepository ..|> ShowRequestRepository : findAllCreatedShowRequests()
+ShowProposalRepo -> Controller : proposal saved
+deactivate ShowProposalRepo
 
+deactivate ShowProposalRepo
 
+Controller -> UI : video added to proposal
 
-InMemoryRepositoryFactory .|> RepositoryFactory : proposals()
-InMemoryRepositoryFactory .|> RepositoryFactory : showRequest()
+deactivate Controller
+UI -> User : video added to proposal
 
-InMemoryRepositoryFactory ..> InMemoryShowProposalRepository
-InMemoryRepositoryFactory ..> InMemoryShowRequestRepository
-
-InMemoryShowProposalRepository ..|> ShowProposalRepository : findAllTestingProposalsByShowRequest(request)
-InMemoryShowRequestRepository ..|> ShowRequestRepository : findAllCreatedShowRequests()
-
+deactivate UI
+deactivate User
 
 @enduml
