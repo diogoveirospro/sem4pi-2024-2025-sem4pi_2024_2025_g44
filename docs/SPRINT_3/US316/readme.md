@@ -63,21 +63,30 @@ The following diagram shows the current domain model for the `ShowProposal` aggr
 
 ## 4. Design
 
-This section presents the design adopted for implementing **US316 – Send Show Proposal to Customer**. The sequence diagram
-below illustrates the interaction between the CRM Collaborator, the UI, the controller, the proposal generator, and the
-communication service.
+This section presents the design adopted for implementing **US316 – Send Show Proposal to Customer**.  
+The sequence diagram below illustrates the interaction between the CRM Collaborator, the UI, the controller, the 
+proposal repository, and the delivery service.
 
 ### 4.1 Realisation
 
-The process begins when the CRM Collaborator selects a completed and valid proposal from the user interface. The
-`SendProposalController` coordinates the generation of the final document using the existing `ShowProposalTemplate` and
-the proposal data.
+The process begins when the CRM Collaborator opens the interface to send a proposal. The UI invokes the 
+`SendProposalController`, which queries the `ShowProposalRepository` for proposals that are ready to be sent — meaning 
+they have passed simulation, include a valid video (US315), and have a validated template (US318).
 
-Once the proposal is retrieved, the system uses a `ProposalGeneratorService` to render the document (e.g., PDF) based
-on the template content. The video file is also retrieved.
+Once the list of ready proposals is presented, the CRM Collaborator selects the one to be sent. The controller then 
+retrieves the selected `ShowProposal` from the repository using its identifier.
 
-These files are then passed to the `ProposalDeliveryService`, which sends the package to the customer's email address.
-If any step fails (e.g., missing video or template), the UI informs the user and blocks the operation.
+The controller invokes the `ProposalDelivery` service, passing the proposal object. This service is responsible for 
+accessing the associated document and video, and delivering them to the customer.
+
+If the delivery is successful, the UI notifies the user accordingly. If the delivery fails — for example, due to missing 
+data — the UI presents an appropriate error message and the process is aborted.
+
+This design follows clean separation of responsibilities:
+- The **UI** handles user interaction and feedback.
+- The **controller** manages orchestration and delegates to the domain and infrastructure layers.
+- The **repository** provides access to persistent proposals.
+- The **delivery service** encapsulates the communication logic, allowing future extensibility.
 
 ![Sequence Diagram for US316](images/sequence_diagram_us316.svg)
 
