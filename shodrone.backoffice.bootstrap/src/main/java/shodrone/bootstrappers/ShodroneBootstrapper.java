@@ -25,6 +25,8 @@ package shodrone.bootstrappers;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
+import core.CRMManager.domain.Entities.CRMManager;
+import core.CRMManager.repositories.CRMManagerRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
@@ -67,6 +69,7 @@ public class ShodroneBootstrapper implements Action {
 	private final ShodroneUserRepository shodroneUserRepository = PersistenceContext.repositories().shodroneUsers();
 	private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
 	private final CRMCollaboratorRepository crmCollaboratorRepository = PersistenceContext.repositories().crmCollaborators();
+	private final CRMManagerRepository crmManagerRepository = PersistenceContext.repositories().crmManagers();
 
 	@Override
 	public boolean execute() {
@@ -74,7 +77,7 @@ public class ShodroneBootstrapper implements Action {
 		final Action[] actions = {
 				new MasterUsersBootstrapper()		};
 
-		registerPowerUser(userRepository, shodroneUserRepository, showDesignerRepository, crmCollaboratorRepository);
+		registerPowerUser(userRepository, shodroneUserRepository, showDesignerRepository, crmCollaboratorRepository, crmManagerRepository);
 		authenticateForBootstrapping();
 
 		// execute all bootstrapping
@@ -94,7 +97,8 @@ public class ShodroneBootstrapper implements Action {
 	 */
 	public static boolean registerPowerUser(final UserRepository userRepository,
 			final ShodroneUserRepository shodroneUserRepository, final ShowDesignerRepository showDesignerRepository,
-											final CRMCollaboratorRepository crmCollaboratorRepository) {
+											final CRMCollaboratorRepository crmCollaboratorRepository,
+											final CRMManagerRepository crmManagerRepository) {
 
 		final var userBuilder = UserBuilderHelper.builder();
 		userBuilder.withUsername(POWERUSER).withPassword(POWERUSER_PWD).withName("joe", "power")
@@ -115,10 +119,15 @@ public class ShodroneBootstrapper implements Action {
 					new PhoneNumber("+351", "123456789"), new Email(newUser.email().toString()));
 			final var crmCollaboratorPowerUser = crmCollaboratorRepository.save(crmCollaborator);
 
+			CRMManager crmManager = new CRMManager(new Name(newUser.name().toString()),
+					new PhoneNumber("+351", "123456789"), new Email(newUser.email().toString()));
+			final var crmManagerPowerUser = crmManagerRepository.save(crmManager);
+
 			assert poweruser != null;
 			assert shodronePowerUser != null;
 			assert showDesignerPowerUser != null;
 			assert crmCollaboratorPowerUser != null;
+			assert crmManagerPowerUser != null;
 			return true;
 		} catch (ConcurrencyException | IntegrityViolationException e) {
 			// ignoring exception. assuming it is just a primary key violation

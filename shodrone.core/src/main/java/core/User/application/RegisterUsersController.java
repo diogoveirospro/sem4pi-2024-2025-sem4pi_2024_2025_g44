@@ -5,6 +5,8 @@ import java.util.*;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
+import core.CRMManager.domain.Entities.CRMManager;
+import core.CRMManager.repositories.CRMManagerRepository;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
@@ -30,6 +32,7 @@ public class RegisterUsersController {
     private final ShodroneUserRepository userRepository = PersistenceContext.repositories().shodroneUsers();
     private final ShowDesignerRepository showDesignerRepository = PersistenceContext.repositories().showDesigners();
     private final CRMCollaboratorRepository crmCollaboratorRepository = PersistenceContext.repositories().crmCollaborators();
+    private final CRMManagerRepository crmManagerRepository = PersistenceContext.repositories().crmManagers();
 
     public Role[] getRoleTypes() {
         return ShodroneRoles.nonUserValues();
@@ -50,8 +53,13 @@ public class RegisterUsersController {
                     phoneNumber, new Email(user.email().toString())));
         }
 
-        if (user.hasAny(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
+        if (user.hasAny(ShodroneRoles.COLLABORATOR, ShodroneRoles.POWER_USER)) {
             crmCollaboratorRepository.save(new CRMCollaborator(new Name(user.name().firstName() + " " + user.name().lastName()),
+                    phoneNumber, new Email(user.email().toString())));
+        }
+
+        if (user.hasAny(ShodroneRoles.MANAGER, ShodroneRoles.POWER_USER)) {
+            crmManagerRepository.save(new CRMManager(new Name(user.name().firstName() + " " + user.name().lastName()),
                     phoneNumber, new Email(user.email().toString())));
         }
 

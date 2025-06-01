@@ -19,6 +19,9 @@
     <!-- CRM Collaborator Aggregate -->
     <class>core.CRMCollaborator.domain.Entities.CRMCollaborator</class>
 
+    <!-- CRM Manager Aggregate -->
+    <class>core.CRMManager.domain.Entities.CRMManager</class>
+
     <!-- Customer Aggregate -->
     <class>core.Customer.domain.Entities.Customer</class>
     <class>core.Customer.domain.Entities.CustomerRepresentative</class>

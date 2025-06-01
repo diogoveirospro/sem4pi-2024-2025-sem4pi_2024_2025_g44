@@ -2,12 +2,12 @@
 
 ## 1. Context
 
-This user story is being developed as part of Sprint 3. It introduces the functionality that allows a CRM Manager to  
-configure and validate a proposal template before sending it to a customer. The template defines the structure and  
+This user story is being developed as part of Sprint 3. It introduces the functionality that allows a CRM Manager to
+configure and validate a proposal template before sending it to a customer. The template defines the structure and
 content of the document that will be delivered to the customer during the show proposal process.
 
-The validation ensures that the template is compatible with the system and conforms to the expected structure. The  
-plugin used for validation must already be registered in the system (as defined in US317), and it will be invoked to  
+The validation ensures that the template is compatible with the system and conforms to the expected structure. The
+plugin used for validation must already be registered in the system (as defined in US317), and it will be invoked to
 check the correctness of the template formatting.
 
 ### 1.1 List of issues
@@ -22,10 +22,10 @@ Testing: 📝 To Do
 
 ## 2. Requirements
 
-**As a** CRM Manager,  
-<br>  
-**I want** to be able to configure the template that formats the document,  
-<br>  
+**As a** CRM Manager,
+<br>
+**I want** to be able to configure the template that formats the document,
+<br>
 **So that** it can be sent to the customer.
 
 ### Acceptance Criteria:
@@ -36,30 +36,30 @@ Testing: 📝 To Do
 
 ### Dependencies/References:
 
-- **_US347 – Proposal Generation_**: This user story uses the configured template to validate and generate the proposal  
-  document. The template defined in US318 must be available and valid for US347 to execute successfully.
+- **_US347 – Proposal Generation_**: This user story uses the configured template to validate and generate the proposal
+document. The template defined in US318 must be available and valid for US347 to execute successfully.
 
 ## 3. Analysis
 
-This user story focuses on validating the proposal template configured by the CRM Manager. The template will be used to  
+This user story focuses on validating the proposal template configured by the CRM Manager. The template will be used to
 generate documents sent to customers when proposing a drone show.
 
-The domain includes a `ShowProposalTemplate` value object that encapsulates the raw content of the template to be validated.  
-The validation is performed by the `TemplateValidate` domain service, which invokes a plugin registered in the system  
+The domain includes a `ShowProposalTemplate` value object that encapsulates the raw content of the template to be validated.
+The validation is performed by the `TemplateValidate` domain service, which invokes a plugin registered in the system
 (see [US317](../US317/readme.md)). The validation plugin checks whether the template includes all required tags and 
 follows the correct format.
 
-Validation is mandatory: a template cannot be used in the system unless it passes validation. If the validation fails,  
+Validation is mandatory: a template cannot be used in the system unless it passes validation. If the validation fails,
 the system returns a descriptive error message and prevents the use of the invalid template.
 
-The following diagram shows the current domain model for the `ShowProposal` aggregate, including the newly introduced  
+The following diagram shows the current domain model for the `ShowProposal` aggregate, including the newly introduced
 components `ShowProposalTemplate` and `TemplateValidate`:
 
 ![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
 ## 4. Design
 
-This section presents the design adopted for implementing **US318 – Configure Proposal Template**.
+This section presents the design adopted for implementing **US318 – Configure Proposal Template**. 
 The following diagram and explanation detail the interaction between the user interface, controller, validation service, 
 plugin, domain model, and persistence layer.
 

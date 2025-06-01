@@ -24,6 +24,7 @@
 package jpa.persistence;
 
 import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
+import core.CRMManager.repositories.CRMManagerRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Drone.repositories.DroneRepository;
@@ -181,6 +182,16 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public ShowProposalRepository proposals() {
 		return new JpaShowProposalRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public CRMManagerRepository crmManagers(TransactionalContext autoTx) {
+		return new JpaCRMManagerRepository(autoTx);
+	}
+
+	@Override
+	public CRMManagerRepository crmManagers() {
+		return new JpaCRMManagerRepository(Application.settings().persistenceUnitName());
 	}
 
 }

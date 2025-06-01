@@ -21,6 +21,7 @@
 package inMemory.persistence;
 
 import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
+import core.CRMManager.repositories.CRMManagerRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Drone.repositories.DroneRepository;
@@ -59,7 +60,8 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 		final var repo2 = new InMemoryShodroneUserRepository();
 		final var repo3 = new InMemoryShowDesignerRepository();
 		final var repo4 = new InMemoryCRMCollaboratorRepository();
-		ShodroneBootstrapper.registerPowerUser(repo, repo2, repo3, repo4);
+		final var repo5 = new InMemoryCRMManagerRepository();
+		ShodroneBootstrapper.registerPowerUser(repo, repo2, repo3, repo4, repo5);
 		return repo;
 	}
 
@@ -124,6 +126,16 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public ShowProposalRepository proposals() {
 		return proposals(null);
+	}
+
+	@Override
+	public CRMManagerRepository crmManagers(TransactionalContext autoTx) {
+		return new InMemoryCRMManagerRepository();
+	}
+
+	@Override
+	public CRMManagerRepository crmManagers() {
+		return crmManagers(null);
 	}
 
 	@Override
