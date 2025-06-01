@@ -14,6 +14,7 @@ import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
 import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
 import Shodrone.console.ShowProposal.ui.AddVideoToProposalUI;
+import Shodrone.console.ShowProposal.ui.ConfigShowPropUI;
 import Shodrone.console.ShowProposal.ui.CreateShowProposalUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
@@ -434,6 +435,7 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
 
         menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
+        menu.addItem(ADD_DRONES_TO_SHOW_PROPOSAL_OPTION, "Add Drones to a Show Proposal", new ConfigShowPropUI()::show);
         menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;

@@ -30,12 +30,30 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             boolean configuring = true;
             Scanner scanner = new Scanner(System.in);
 
+            Map<Model, Integer> verificaçao = new LinkedHashMap<>();
             while (configuring) {
+                int AllQuantity;
                 Model model = selectModel();
                 if (model == null) continue;
+                if (verificaçao.containsKey(model)) {
+                    AllQuantity = verificaçao.get(model);
+                }else{
+                    AllQuantity = 0;
+                }
+                Iterable<Drone> drones = controller.getDrnModelList(model);
+                List<Drone> droneList = new ArrayList<>();
+                drones.forEach(droneList::add);
+                if (droneList.isEmpty()) {
+                    System.out.println(UtilsUI.RED + "No drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
+                    continue;
+                }
+                int availableDrones  = droneList.size() - AllQuantity;
+                if (availableDrones <= 0) {
+                    System.out.println(UtilsUI.RED + "No more drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
+                    continue;
+                }
 
-                System.out.print(UtilsUI.BOLD + "Enter the number of drones for model '" +
-                        model.identity() + "': " + UtilsUI.RESET);
+                System.out.print(UtilsUI.BOLD + "Enter the number of drones for model '" + model.identity() + " (" + availableDrones  + " drones available) : " + UtilsUI.RESET);
                 int quantity;
                 try {
                     quantity = Integer.parseInt(scanner.nextLine());
@@ -43,14 +61,18 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                         System.out.println(UtilsUI.RED + "Invalid quantity!" + UtilsUI.RESET);
                         continue;
                     }
+                    if (quantity > availableDrones) {
+                        System.out.println(UtilsUI.RED + "Not enough drones available. Maximum is " + droneList.size() + "." + UtilsUI.RESET);
+                        continue;
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println(UtilsUI.RED + "Please enter a valid number." + UtilsUI.RESET);
                     continue;
                 }
-                Iterable<Drone> drones = controller.getDrnModelList(model);
-                List<Drone> droneList = new ArrayList<>();
-                drones.forEach(droneList::add);
-                configBuilder.addDrones(model, droneList);
+                List<Drone> selectedDrones = droneList.subList(AllQuantity, AllQuantity + quantity);
+
+                configBuilder.addDrones(model, selectedDrones);
+                verificaçao.put(model, AllQuantity + quantity);
 
                 System.out.print("Add another model? (y/n): ");
                 String more = scanner.nextLine().trim().toLowerCase();
@@ -107,7 +129,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
         Iterable<ShowProposal> showProposals = controller.getShowProposalList();
 
         if (showProposals == null || !showProposals.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo models available." + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo show proposal available." + UtilsUI.RESET);
             return null;
         }
 
