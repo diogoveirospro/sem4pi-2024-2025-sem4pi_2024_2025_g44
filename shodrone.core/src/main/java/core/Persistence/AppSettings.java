@@ -49,6 +49,8 @@ public class AppSettings {
     private static final String SCHEMA_GENERATION_KEY = "jakarta.persistence.schema-generation.database.action";
     private static final String USE_EVENTFUL_CONTROLLERS = "UseEventfulControllers";
     private static final String SHODRONE_DOMAIN = "ShodroneDomain";
+    private static final String DATABASE_PORT = "shodrone.database.port";
+    private static final String DATABASE_IP = "shodrone.database.ip";
 
     private final Properties applicationProperties = new Properties();
 
@@ -99,6 +101,13 @@ public class AppSettings {
         final Map ret = new HashMap();
         ret.put(SCHEMA_GENERATION_KEY, applicationProperties.getProperty(SCHEMA_GENERATION_KEY));
         return ret;
+    }
+    public String databasePort() {
+        return applicationProperties.getProperty(DATABASE_PORT);
+    }
+
+    public String databaseIP() {
+        return applicationProperties.getProperty(DATABASE_IP);
     }
 
     public String getProperty(final String prop) {
