@@ -2,30 +2,65 @@
 actor "CRM Collaborator" as User
 participant "SendProposalUI" as UI
 participant "SendProposalController" as Controller
+participant "PersistenceContext" as Persistence
+participant "RepositoryFactory" as Factory
 participant "ShowProposalRepository" as Repo
 participant "ProposalDelivery" as Delivery
 
+activate User
+
 User -> UI : request to send proposal
+activate UI
+
 UI -> Controller : fetch available proposals
-Controller -> Repo : findProposalsReadyToSend()
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> Repo : proposals()
+deactivate Factory
+
+activate Repo
+Repo -> Repo : findProposalsReadyToSend()
+activate Repo
+deactivate Repo
+
 Repo --> Controller : list of proposals
+deactivate Repo
+
 Controller --> UI : proposals
+deactivate Controller
 
 UI -> User : show proposals
 User -> UI : select proposal
 
 UI -> Controller : sendProposal(proposalId)
+activate Controller
+
 Controller -> Repo : findProposalById(proposalId)
+activate Repo
+
 Repo --> Controller : proposal
 
-
 Controller -> Delivery : sendProposal(proposal)
+activate Delivery
+
 Delivery --> Controller : delivery confirmation
+deactivate Delivery
+
 alt Proposal is sent
     Controller --> UI : true
     UI --> User : show success message
 else Proposal is not sent
     Controller --> UI : false
+    deactivate Controller
+
     UI --> User : show error (missing document/video/simulation)
+    deactivate UI
 end
 @enduml

@@ -2,37 +2,92 @@
 actor "CRM Manager" as User
 participant "ConfigureTemplateUI" as UI
 participant "ConfigureTemplateController" as Controller
+participant "PersistenceContext" as Persistence
+participant "RepositoryFactory" as Factory
 participant "TemplateValidate" as Validator
 participant "TemplateValidationPlugin" as Plugin
 participant "ShowProposalRepository" as Repo
 participant "ShowProposal" as Proposal
 
+activate User
+
 User -> UI : request template configuration
+activate UI
+
 UI -> Controller : fetch available proposals
-Controller -> Repo : findConfigurableProposals()
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> Repo : proposals()
+deactivate Factory
+
+activate Repo
+Repo -> Repo : findConfigurableProposals()
+activate Repo
+deactivate Repo
+
 Repo --> Controller : list of proposals
+deactivate Repo
+
 Controller --> UI : proposals
+deactivate Controller
 
 UI -> User : show proposals and templates
 User -> UI : select proposal and template
 UI -> Controller: findProposalById(proposalId)
+
+activate Controller
 Controller -> Repo : findProposalById(proposalId)
+
+activate Repo
 Repo --> Controller : proposal
+deactivate Repo
 
 Controller -> Proposal: template(selectedTemplate);
+activate Proposal
+
 Proposal -> Controller : templateContent
+deactivate Proposal
 
 Controller -> Validator : validate(templateContent)
+
+activate Validator
 Validator -> Plugin : validateTemplate(templateContent)
+
+activate Plugin
 Plugin --> Validator : ValidationResult
+deactivate Plugin
+
 Validator --> Controller : ValidationResult
+deactivate Validator
 
 alt Template is valid
     Controller -> Controller : proposal.setTemplate(templateContent)
+    activate Controller
+    deactivate Controller
+
+
     Controller -> Repo : save(proposal)
+    activate Repo
     Repo --> Controller : confirmation
-    Controller --> UI : show success message
+    deactivate Repo
+
+    Controller --> UI : true
+    UI --> User : show success message
+
 else Template is invalid
-    Controller --> UI : show validation errors
+    Controller -> UI : false
+    deactivate Controller
+
+    UI --> User : show validation errors
+    deactivate UI
 end
+
+deactivate User
 @enduml
