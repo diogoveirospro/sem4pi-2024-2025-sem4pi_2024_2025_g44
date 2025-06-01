@@ -49,7 +49,7 @@
 | Show Description               | The description of a show, a document with the sequence of figures from the Shodrone’s catalogue and/or request of new figures.                    |
 | Show Designer                  | A Show Designer who creates figures.                                                                                                               |
 | Show Proposal                  | A proposal generated from a show request.                                                                                                          |
-| Show Proposal Status           | Status of a proposal, accepted, waiting for response, rejected, testing.                                                                           |
+| Show Proposal Status           | Status of a proposal, accepted, ready to send, waiting for response, rejected, testing.                                                            |
 | Show Proposal Template         | A predefined document format used to create and present a drone show proposal to a customer.                                                       |
 | Show Request                   | A customer’s request for a show.                                                                                                                   |
 | Show Request Status            | Status of a request, created or accepted.                                                                                                          |

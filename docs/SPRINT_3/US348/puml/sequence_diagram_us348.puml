@@ -1,0 +1,82 @@
+@startuml
+actor "Drone Tech" as User
+participant "GenerateShowDSLUI" as UI
+participant "GenerateShowDSLController" as Controller
+participant "PersistenceContext" as Persistence
+participant "RepositoryFactory" as Factory
+participant "ShowProposalRepository" as Repo
+participant "ShowProposal" as Proposal
+participant "GenerateShowDSL" as DSLGenerator
+participant "ShowConfiguration" as Configuration
+participant "ShowGrammarLexer" as Lexer
+participant "ShowGrammarParser" as Parser
+participant "ShowDSLDescription" as DSLDescription
+
+activate User
+
+User -> UI : request DSL generation for proposal
+activate UI
+
+UI -> Controller : generateDSL(proposalId)
+activate Controller
+
+Controller -> Persistence : PersistenceContext()
+activate Persistence
+
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> Repo : showProposals()
+deactivate Factory
+
+activate Repo
+Repo -> Repo : findById(proposalId)
+Repo --> Controller : proposal
+deactivate Repo
+
+Controller -> Proposal : getConfiguration()
+activate Proposal
+Proposal --> Controller : configuration
+deactivate Proposal
+
+Controller -> DSLGenerator : generateFrom(configuration)
+activate DSLGenerator
+
+DSLGenerator -> Configuration : getFigures()
+Configuration --> DSLGenerator : list of figures
+
+DSLGenerator -> Lexer : new ShowGrammarLexer(input)
+activate Lexer
+Lexer --> DSLGenerator : token stream
+deactivate Lexer
+
+DSLGenerator -> Parser : new ShowGrammarParser(tokens)
+activate Parser
+Parser -> Parser : parser.start()
+activate Parser
+deactivate Parser
+
+Parser --> DSLGenerator : parse result (success/errors)
+deactivate Parser
+DSLGenerator -> DSLDescription : create DSLDescription
+activate DSLDescription
+deactivate DSLDescription
+
+DSLGenerator --> Controller : DSLDescription
+deactivate DSLGenerator
+
+Controller -> Configuration : addDSLDescription(DSLDescription)
+activate Configuration
+deactivate Configuration
+
+Controller -> Repo : save(proposal)
+activate Repo
+deactivate Repo
+
+Controller --> UI : show success
+deactivate Controller
+UI --> User : show DSL generation success
+deactivate UI
+deactivate User
+@enduml
