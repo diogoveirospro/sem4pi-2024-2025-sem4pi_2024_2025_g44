@@ -37,7 +37,9 @@ public class CreateShowProposalUI extends AbstractFancyUI {
             if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
 
                 ShowRequest showRequest = selectShowRequest();
-                assert showRequest != null;
+                if (showRequest == null) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
                 LocalDate currDate = showRequest.dateOfShow();
                 LocalTime currTime = showRequest.timeOfShow();
                 QuantityOfDrones currQuantityOfDrones = showRequest.quantityOfDrones();
