@@ -18,6 +18,7 @@ import core.ShowRequest.domain.ValueObjects.ShowDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,7 +35,7 @@ public class ShowProposalTest {
     private LocalDate date;
     private LocalTime time;
     private GenerateProposalNumber generateProposalNumber;
-
+    private Duration duration;
 
 
     @BeforeEach
@@ -46,6 +47,7 @@ public class ShowProposalTest {
         insurance = new Insurance("1000.0","€");
         date = LocalDate.now();
         time = LocalTime.now();
+        duration = Duration.ofHours(2); // Example duration
         generateProposalNumber = new GenerateProposalNumber();
     }
 
@@ -68,28 +70,29 @@ public class ShowProposalTest {
         date = LocalDate.parse("12-12-2003", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         time = LocalTime.parse("22:22", DateTimeFormatter.ofPattern("HH:mm"));
         Location location = new Location(40.7128, -74.0060, 10.0); // Example coordinates (New York City)
+        Duration duration = Duration.ofHours(2); // Example duration
         QuantityOfDrones quantityOfDrones = new QuantityOfDrones("12");
         GenerateShowRequestID generateShowRequestID = new GenerateShowRequestID();
 
-        showRequest = new ShowRequest(showDescription, date, time, location, quantityOfDrones, customer, crmCollaborator, generateShowRequestID);
+        showRequest = new ShowRequest(showDescription, date, time,duration, location, quantityOfDrones, customer, crmCollaborator, generateShowRequestID);
         return showRequest;
     }
 
     @Test
     void ensureProposalIncludesTotalNumberOfDrones() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
         assertTrue(proposal.quantityOfDrones().getQuantityOfDrones() > 0);
     }
 
     @Test
     void ensureProposalIsAssociatedWithShowRequest() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
         assertNotNull(proposal.request());
     }
 
     @Test
     void ensureVideoCanBeAddedToProposal() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
         String name = "Test Video";
         Video video = new Video(name,"https://www.youtube.com/watch?v=dQw4w9WgXcQ");
         proposal.addVideo(video);
@@ -100,19 +103,19 @@ public class ShowProposalTest {
 
     @Test
     void ensureCannotAddNullVideo() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
         assertThrows(IllegalArgumentException.class, () -> proposal.addVideo(null));
     }
 
     @Test
     void ensureInitialStatusIsTesting() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
         assertEquals(ShowProposalStatus.TESTING, proposal.status());
     }
 
     @Test
     void ensureCreatorIsAlsoInitialSender() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
         assertEquals(proposal.creator(), proposal.sender());
     }
 }

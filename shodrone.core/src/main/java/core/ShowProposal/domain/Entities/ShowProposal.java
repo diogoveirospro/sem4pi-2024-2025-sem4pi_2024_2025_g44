@@ -11,6 +11,7 @@ import eapli.framework.domain.model.AggregateRoot;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -108,6 +109,13 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
     private Insurance insurance;
 
     /**
+     * The show duration
+     */
+
+    @Column(name = "duration")
+    private Duration duration;
+
+    /**
      * The email of the feedback of the show
      */
     @Embedded
@@ -120,7 +128,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
     protected ShowProposal() {}
 
     public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
-                        QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator) {
+                        QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator, Duration duration) {
         this.request = request;
         this.dateOfShow = dateOfShow;
         this.timeOfShow = timeOfShow;
@@ -129,6 +137,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.creator = creator;
         this.sender = creator; // Initially, the creator is also the sender for simplicity
         this.status = ShowProposalStatus.TESTING;
+        this.duration = duration;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.figures = new ArrayList<>();
@@ -136,7 +145,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
     }
 
     public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
-                        QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator,
+                        QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator, Duration duration,
                         GenerateProposalNumber proposalNumberGenerator) {
         this.request = request;
         this.dateOfShow = dateOfShow;
@@ -149,6 +158,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.figures = new ArrayList<>();
+        this.duration = duration;
         this.proposalNumber = proposalNumberGenerator.generateWithoutRep(); // for testing purposes
     }
 
@@ -207,6 +217,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
 
     public FeedbackEmail feedbackEmail() {
         return feedbackEmail;
+    }
+
+    public Duration duration() {
+        return duration;
     }
 
     public ShowConfiguration configuration() {

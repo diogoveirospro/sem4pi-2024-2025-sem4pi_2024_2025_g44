@@ -16,6 +16,7 @@ import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -42,13 +43,15 @@ public class CreateShowProposalUI extends AbstractFancyUI {
                 }
                 LocalDate currDate = showRequest.dateOfShow();
                 LocalTime currTime = showRequest.timeOfShow();
+                Duration currDuration = showRequest.durationOfShow();
                 QuantityOfDrones currQuantityOfDrones = showRequest.quantityOfDrones();
 
                 LocalDate date = enterValidDate(currDate);
                 LocalTime time = enterValidTime(currTime);
+                Duration duration = enterValidDuration(currDuration);
                 QuantityOfDrones quantityOfDrones = enterValidQuantityOfDrones(currQuantityOfDrones);
                 Insurance insurance = enterValidInsurance();
-                controller.createShowProposal(showRequest, date, time, quantityOfDrones, insurance);
+                controller.createShowProposal(showRequest, date, time, quantityOfDrones, insurance, duration);
                 System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow Proposal created successfully!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
@@ -82,6 +85,43 @@ public class CreateShowProposalUI extends AbstractFancyUI {
             }
         } while (true);
 
+    }
+
+    private Duration enterValidDuration(Duration currDuration) {
+        Duration proposedDuration = useCustomerProposedDuration(currDuration);
+        if (proposedDuration != null) return proposedDuration;
+
+        String durationInput;
+        do {
+            try {
+                durationInput = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new show's duration (in minutes) (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(durationInput)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
+                assert durationInput != null;
+                int minutes = Integer.parseInt(durationInput);
+                if (minutes <= 0) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nDuration must be a positive number. Please try again." + UtilsUI.RESET);
+                    continue;
+                }
+
+                return Duration.ofMinutes(minutes);
+            } catch (NumberFormatException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please enter a valid number." + UtilsUI.RESET);
+            }
+        } while (true);
+    }
+
+    private static Duration useCustomerProposedDuration(Duration currDuration) {
+        boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "The current duration is: " + currDuration.toMinutes() +
+                " minutes. Do you want to change it? (Y/N): " + UtilsUI.RESET);
+        if (!confirm) {
+            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current duration: " + currDuration.toMinutes() + " minutes." + UtilsUI.RESET);
+            return currDuration;
+        }
+        return null;
     }
 
     private String enterValidAmount() {
