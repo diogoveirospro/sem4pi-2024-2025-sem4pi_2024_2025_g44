@@ -30,7 +30,7 @@ class ShowDescriptionTest {
 
     @Test
     void ensureShowDescriptionToStringReturnsCorrectValue() {
-        Location location = new Location("ShowDescription");
-        assertEquals("ShowDescription", location.toString());
+        ShowDescription description = new ShowDescription("ShowDescription");
+        assertEquals("ShowDescription", description.toString());
     }
 }

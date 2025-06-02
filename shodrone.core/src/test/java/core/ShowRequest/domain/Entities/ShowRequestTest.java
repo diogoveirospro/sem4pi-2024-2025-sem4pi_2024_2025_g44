@@ -57,7 +57,7 @@ class ShowRequestTest {
         showDescription = new ShowDescription("Descripton");
         date = LocalDate.parse("12-12-2003", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         time = LocalTime.parse("22:22", DateTimeFormatter.ofPattern("HH:mm"));
-        location = new Location("Porto");
+        location = new Location( 20, 30, 40); // Example coordinates
         quantityOfDrones = new QuantityOfDrones("12");
         GenerateShowRequestID generateShowRequestID = new GenerateShowRequestID();
 
@@ -92,15 +92,40 @@ class ShowRequestTest {
 
     @Test
     void ensureEditedDataIsValidInsideShowRequest() {
-
         assertThrows(IllegalArgumentException.class, () -> {
-
-            showRequest.editInformation(new Location(null), showDescription, date, time, new QuantityOfDrones("-10"));
+            showRequest.editInformation(new Location(-91, 0, 10), showDescription, date, time, new QuantityOfDrones("10"));
         });
 
-        showRequest.editInformation(new Location("Lisbon"), showDescription, date, time, new QuantityOfDrones("101"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, -181, 10), showDescription, date, time, new QuantityOfDrones("10"));
+        });
 
-        assertEquals("Lisbon", showRequest.location().toString());
-        assertEquals("101", showRequest.quantityOfDrones().toString());
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, 0, -1), showDescription, date, time, new QuantityOfDrones("10"));
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, 0, 10), null, date, time, new QuantityOfDrones("10"));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, 0, 10), showDescription, null, time, new QuantityOfDrones("10"));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, 0, 10), showDescription, date, null, new QuantityOfDrones("10"));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, 0, 10), showDescription, date, time, null);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            showRequest.editInformation(new Location(0, 0, 10), showDescription, date, time, new QuantityOfDrones("-1"));
+        });
+
+        Location newLocation = new Location(38.7169, -9.139, 15); // Exemplo: Lisboa
+        QuantityOfDrones newQuantity = new QuantityOfDrones("50");
+
+        showRequest.editInformation(newLocation, showDescription, date, time, newQuantity);
+
+        assertEquals(newLocation, showRequest.location());
+        assertEquals(newQuantity, showRequest.quantityOfDrones());
     }
 }

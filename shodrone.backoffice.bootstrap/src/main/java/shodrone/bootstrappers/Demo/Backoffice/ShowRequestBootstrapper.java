@@ -28,12 +28,13 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
 
     @Override
     public boolean execute() {
-        register("Description", "12-12-2027", "12:12", "Porto", "123", "EA Sports");
-        register("Description2", "13-11-2026", "22:22", "Lisbon", "101", "EA Sports");
-        register("Description3", "14-10-2025", "12:32", "Aveiro", "50", "Ubisoft");
+        register("Description", "12-12-2027", "12:12", 40.7128, -74.0060, 10.0, "123", "EA Sports");
+        register("Description2", "13-11-2026", "22:22", 34.0522, -118.2437, 15.0, "101", "EA Sports");
+        register("Description3", "14-10-2025", "12:32", 51.5074, -0.1278, 20.0, "50", "Ubisoft");
         return true;
     }
-    private void register(String description, String date, String time, String location, String quantityOfDrones, String customerName) {
+
+    private void register(String description, String date, String time, double latitude, double longitude, double altitude, String quantityOfDrones, String customerName) {
         Email email = new Email("bruce.wayne@showdrone.com");
         CRMCollaborator crmCollaborator = collaboratorRepository.findByEmail(email);
         Customer customer = PersistenceContext.repositories().customers().findCustomerByName(new Name(customerName));
@@ -41,7 +42,7 @@ public class ShowRequestBootstrapper extends UsersBootstrapperBase implements Ac
         ShowDescription description1 = new ShowDescription(description);
         LocalDate date1 = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalTime time1 = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
-        Location location1 = new Location(location);
+        Location location1 = new Location(latitude, longitude, altitude);
         QuantityOfDrones quantityOfDrones1 = new QuantityOfDrones(quantityOfDrones);
 
         ShowRequest showRequest = new ShowRequest(description1, date1, time1, location1, quantityOfDrones1, customer, crmCollaborator);

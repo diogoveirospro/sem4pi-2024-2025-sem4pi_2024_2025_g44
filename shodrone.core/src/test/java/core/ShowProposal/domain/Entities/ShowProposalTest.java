@@ -67,7 +67,7 @@ public class ShowProposalTest {
         ShowDescription showDescription = new ShowDescription("Descripton");
         date = LocalDate.parse("12-12-2003", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         time = LocalTime.parse("22:22", DateTimeFormatter.ofPattern("HH:mm"));
-        Location location = new Location("Porto");
+        Location location = new Location(40.7128, -74.0060, 10.0); // Example coordinates (New York City)
         QuantityOfDrones quantityOfDrones = new QuantityOfDrones("12");
         GenerateShowRequestID generateShowRequestID = new GenerateShowRequestID();
 

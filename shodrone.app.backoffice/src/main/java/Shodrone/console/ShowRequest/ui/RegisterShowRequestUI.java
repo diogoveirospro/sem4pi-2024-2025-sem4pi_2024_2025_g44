@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RegisterShowRequestUI extends AbstractFancyUI {
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -92,20 +93,44 @@ public class RegisterShowRequestUI extends AbstractFancyUI {
         } while (true);
     }
 
-    private Location enterValidLocation()
-    {
-        String location;
+    private Location enterValidLocation() {
+        double latitude;
+        double longitude;
+        double altitude;
         do {
             try {
-                location = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the show's location (or type 'cancel' to go back): " + UtilsUI.RESET);
+                do {
+                    latitude = Double.parseDouble(Objects.requireNonNull(UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the latitude (-90 to 90) (or type 'cancel' to go back): " + UtilsUI.RESET)));
+                    if (latitude < -90 || latitude > 90) {
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid latitude. Must be between -90 and 90.\n" + UtilsUI.RESET);
+                        continue;
+                    }
+                    break;
+                } while (true);
 
-                if ("cancel".equalsIgnoreCase(location)) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
-                }
+                do {
+                    longitude = Double.parseDouble(Objects.requireNonNull(UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the longitude (-180 to 180) (or type 'cancel' to go back): " + UtilsUI.RESET)));
+                    if (longitude < -180 || longitude > 180) {
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid longitude. Must be between -180 and 180.\n" + UtilsUI.RESET);
+                        continue;
+                    }
+                    break;
+                } while (true);
 
-                return new Location(location);
+                do {
+                    altitude = Double.parseDouble(Objects.requireNonNull(UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the altitude (>= 0) (or type 'cancel' to go back): " + UtilsUI.RESET)));
+                    if (altitude < 0) {
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid altitude. Must be non-negative.\n" + UtilsUI.RESET);
+                        continue;
+                    }
+                    break;
+                } while (true);
+
+                return new Location(latitude, longitude, altitude);
+            } catch (NumberFormatException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please enter a valid number.\n" + UtilsUI.RESET);
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid location. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
             }
         } while (true);
     }
