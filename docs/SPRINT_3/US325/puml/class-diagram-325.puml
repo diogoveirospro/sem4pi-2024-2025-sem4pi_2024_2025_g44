@@ -1,90 +1,138 @@
 @startuml
 set separator none
+left to right direction
 
 package "Domain" #DDDDDD {
 
-    class Drone <<Entity>> {
+    package "Repository" #DDDDDD {
+        Interface DroneRepository <<Repository>> {
+            + findBySerialNumber(serialNumber: SerialNumber) : Optional<Drone>
+        }
+
+        Interface MaintenanceRepository <<Repository>> {
+            + findByDroneOrderedByDateDesc(drone: Drone) : List<Maintenance>
+        }
+
+        Interface RepositoryFactory <<Factory>> {
+            - RepositoryFactory()
+            + drones() : DroneRepository
+            + maintenances() : MaintenanceRepository
+        }
     }
 
-    class MaintenanceRecord <<Entity>> {
+    class Drone <<Entity>> <<root>> {
+        + serialNumber : SerialNumber
+        + model : Model
+        + status : DroneStatus
+        + language : DroneLanguage
     }
 
-    interface DroneRepository <<Repository>> {
-        + findDroneById(id: String): Drone
+    class Maintenance <<Entity>> <<root>> {
+        + date : Date
+        + type : MaintenanceType
+        + description : Description
+        + technician : Name
     }
 
-    interface RepositoryFactory <<Factory>> {
-        + droneRepository(): DroneRepository
-    }
+    ' Value Objects
+    class SerialNumber <<Value Object>>
+    class MaintenanceType <<Value Object>>
+    class Description <<Value Object>>
+    class Name <<Value Object>>
+    class Date <<Value Object>>
+    class DroneStatus <<Value Object>>
+    class DroneLanguage <<Value Object>>
+    class Model <<Entity>>
 }
 
 package "UI" #DDDDDD {
     class ListMaintenanceHistoryUI <<UI>> {
-        + requestMaintenanceHistory(droneId: String, startDate: Date, endDate: Date)
-        + displayMaintenanceRecords(records: List<MaintenanceRecord>)
     }
 }
 
 package "Controller" #DDDDDD {
     class ListMaintenanceHistoryController <<Controller>> {
-        + listMaintenanceHistory(droneId: String, startDate: Date, endDate: Date): List<MaintenanceRecord>
+        + getMaintenanceHistory(serialNumber: SerialNumber) : List<Maintenance>
     }
 }
 
 package "persistence.impl.jpa" #DDDDDD {
     class JpaDroneRepository <<Repository>> {
-        + findDroneById(id: String): Drone
+        + findBySerialNumber(serialNumber: SerialNumber) : Optional<Drone>
+    }
+
+    class JpaMaintenanceRepository <<Repository>> {
+        + findByDroneOrderedByDateDesc(drone: Drone) : List<Maintenance>
     }
 
     class JpaRepositoryFactory <<Factory>> {
-        - instance
-        + getInstance(): RepositoryFactory
-        + droneRepository(): DroneRepository
+        - JpaRepositoryFactory()
+        + drones() : DroneRepository
+        + maintenances() : MaintenanceRepository
     }
 }
 
 package "persistence.impl.inmemory" #DDDDDD {
     class InMemoryDroneRepository <<Repository>> {
-        + findDroneById(id: String): Drone
+        + findBySerialNumber(serialNumber: SerialNumber) : Optional<Drone>
+    }
+
+    class InMemoryMaintenanceRepository <<Repository>> {
+        + findByDroneOrderedByDateDesc(drone: Drone) : List<Maintenance>
     }
 
     class InMemoryRepositoryFactory <<Factory>> {
-        - instance
-        + getInstance(): RepositoryFactory
-        + droneRepository(): DroneRepository
+        - InMemoryRepositoryFactory()
+        + drones() : DroneRepository
+        + maintenances() : MaintenanceRepository
     }
 }
 
 package "persistence" #DDDDDD {
     class PersistenceContext {
-        + getRepositoryFactory(): RepositoryFactory
+        + repositories() : RepositoryFactory
     }
 }
 
-' Relações entre as classes
+' Relações
+Drone --> "0..*" Maintenance : has
+Drone --> Model : uses
+Drone --> SerialNumber
+Drone --> DroneStatus
+Drone --> DroneLanguage
 
-Drone "1" o-- "0..*" MaintenanceRecord : has
+Maintenance --> MaintenanceType
+Maintenance --> Date
+Maintenance --> Description
+Maintenance --> Name
 
-DroneRepository --> Drone : manages
-RepositoryFactory ..> DroneRepository : droneRepository()
+RepositoryFactory ..> DroneRepository : drones()
+RepositoryFactory ..> MaintenanceRepository : maintenances()
 
-ListMaintenanceHistoryController ..> RepositoryFactory : repositoryFactory
-ListMaintenanceHistoryController ..> DroneRepository : droneRepository()
-ListMaintenanceHistoryController --> Drone : uses
+ListMaintenanceHistoryUI ..> ListMaintenanceHistoryController
+ListMaintenanceHistoryController ..> RepositoryFactory : repositories()
+ListMaintenanceHistoryController ..> DroneRepository : drones()
+ListMaintenanceHistoryController ..> MaintenanceRepository : maintenances()
+ListMaintenanceHistoryController ..> Drone : uses
 
-ListMaintenanceHistoryUI ..> ListMaintenanceHistoryController : controller
+DroneRepository ..> Drone : findBySerialNumber()
+MaintenanceRepository ..> Drone : findByDroneOrderedByDateDesc()
 
-PersistenceContext ..> JpaRepositoryFactory : getInstance()
-PersistenceContext ..> InMemoryRepositoryFactory : getInstance()
-PersistenceContext ..> RepositoryFactory : getRepositoryFactory()
-
-JpaDroneRepository ..|> DroneRepository
-InMemoryDroneRepository ..|> DroneRepository
+PersistenceContext ..> JpaRepositoryFactory : JpaRepositoryFactory()
+PersistenceContext ..> InMemoryRepositoryFactory : InMemoryRepositoryFactory()
 
 JpaRepositoryFactory ..|> RepositoryFactory
-InMemoryRepositoryFactory ..|> RepositoryFactory
+JpaRepositoryFactory ..> JpaDroneRepository
+JpaRepositoryFactory ..> JpaMaintenanceRepository
 
-JpaRepositoryFactory ..> JpaDroneRepository : droneRepository()
-InMemoryRepositoryFactory ..> InMemoryDroneRepository : droneRepository()
+JpaDroneRepository ..|> DroneRepository
+JpaMaintenanceRepository ..|> MaintenanceRepository
+
+InMemoryRepositoryFactory ..|> RepositoryFactory
+InMemoryRepositoryFactory ..> InMemoryDroneRepository
+InMemoryRepositoryFactory ..> InMemoryMaintenanceRepository
+
+InMemoryDroneRepository ..|> DroneRepository
+InMemoryMaintenanceRepository ..|> MaintenanceRepository
 
 @enduml

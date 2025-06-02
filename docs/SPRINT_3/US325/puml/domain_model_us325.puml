@@ -1,43 +1,98 @@
 @startuml
 
+package "Drone " <<aggregate>> {
 
-class SerialNumber <<Value Object>> {
-  -value: int
+    class Drone <<Entity>> <<root>>{
+    }
+
+    class SerialNumber <<Value Object>>{
+    }
+
+    enum DroneStatus <<Value Object>>{
+    }
+
+    class RemovalReason <<Value Object>>{
+    }
+
+    class DroneLanguage <<Value Object>>{
+    }
+
+    class DroneLanguageValidate <<Service>>{
+    }
+
+    'Drone -> x
+    Drone --> "1" DroneStatus: status
+    Drone --> "1" SerialNumber: serialNumber
+    Drone --> "0..1" RemovalReason: removalReason
+    Drone --> "1" DroneLanguage: language
+
+    'DroneLanguageValidate -> x
+    DroneLanguageValidate ..> "1" DroneLanguage: validates
 }
 
-class RemovalReason <<Value Object>> {
-  -reasons: Map<Date, String>
+package "ModelOfDrone " <<aggregate>> {
+
+    class Model <<Entity>> <<root>>{
+    }
+    class ModelName <<Value Object>>{
+    }
+    class Configuration <<Entity>>{
+    }
+
+    class WindSpeed <<Value Object>>{
+    }
+
+    class PositionTolerance <<Value Object>>{
+    }
+
+    enum SafetyStatus <<Value Object>>{
+    }
+
+    'Model -> x
+    Model --> "1" Configuration: configuration
+    Configuration --> "1..*" WindSpeed: windSpeed
+    Configuration --> "1..*" PositionTolerance: positionTolerance
+    Model --> "1" ModelName: modelName
+    Configuration --> SafetyStatus: safetyStatus
+
+
+    'Drone -> x
+    Drone --> "1" Model: uses
+
 }
 
-enum DroneStatus {
-  ACTIVE
-  MAINTENANCE
-  REMOVED
-  BROKEN
+package "Maintenance " <<aggregate>> {
+
+    class Maintenance <<Entity>> <<root>>{
+    }
+
+    enum MaintenanceType <<Value Object>>{
+    }
+
+    'Maintenance -> x
+    Maintenance --> "1" MaintenanceType: type
+
+    'Drone -> x
+    Drone --> "1..*" Maintenance: undergoes
 }
 
-class Model {
-  +modelName: String
+package Shared {
+
+    class Date <<Value Object>>{
+    }
+
+    class Description <<Value Object>>{
+    }
+
+    class Name <<Value Object>>{
+    }
+
+    'Maintenance -> x
+    Maintenance ----> "1" Date: date
+    Maintenance ----> "1" Description: description
+
+    'Model -> x
+    Model ----> "1" Name: modelName
 }
-
-class Drone {
-  -id: Long
-  -serialNumber: SerialNumber
-  -removalReason: RemovalReason
-  -droneStatus: DroneStatus
-  -model: Model
-
-  +Drone(serialNumber: SerialNumber, model: Model, removalReason: RemovalReason, droneStatus: DroneStatus)
-  +getSerialNumber(): SerialNumber
-  +getDroneStatus(): DroneStatus
-  +getModel(): Model
-  +getRemovalReason(): RemovalReason
-  +setDroneStatus(newStatus: DroneStatus)
-}
-
-Drone "1" *-- SerialNumber : embeds
-Drone "1" *-- RemovalReason : embeds
-Drone "1" o-- Model : references
-Drone --> DroneStatus : has status
 
 @enduml
