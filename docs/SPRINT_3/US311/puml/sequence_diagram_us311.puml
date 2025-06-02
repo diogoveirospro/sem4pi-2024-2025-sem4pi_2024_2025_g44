@@ -32,9 +32,9 @@ activate UI
     activate REPOS
     REPOS --> CTRL : repositories
     deactivate REPOS
-    CTRL -> REPOS_SINGLETON : getModelRepository()
+    CTRL -> REPOS_SINGLETON : getShowProposalRepository()
     activate REPOS_SINGLETON
-    REPOS_SINGLETON --> CTRL : modelRepository
+    REPOS_SINGLETON --> CTRL : showProposalRepository
     deactivate REPOS_SINGLETON
     CTRL -> SP_REPO : getShowProposalList()
     activate SP_REPO
@@ -58,9 +58,9 @@ activate UI
         activate REPOS
         REPOS --> CTRL : repositories
         deactivate REPOS
-        CTRL -> REPOS_SINGLETON : getShowProposalRepository()
+        CTRL -> REPOS_SINGLETON : getModelRepository()
         activate REPOS_SINGLETON
-        REPOS_SINGLETON --> CTRL : showProposalRepository
+        REPOS_SINGLETON --> CTRL : modelRepository
         deactivate REPOS_SINGLETON
         CTRL -> MOD_REPO : getModelList()
         activate MOD_REPO
@@ -76,10 +76,27 @@ activate UI
         deactivate UI
          DT -> UI : submits data
          activate UI
-         UI -> UI : getModelDrones()
-         activate UI
-         UI--> UI: modelDroneslist
-         deactivate UI
+         UI -> CTRL : getDrnModelList(selectedModel)
+                 activate CTRL
+
+                 CTRL --> PERS : getRepositoryFactory()
+                 activate PERS
+                 PERS --> CTRL : repositoryFactory
+                 deactivate PERS
+                 CTRL -> REPOS : getInstance()
+                 activate REPOS
+                 REPOS --> CTRL : repositories
+                 deactivate REPOS
+                 CTRL -> REPOS_SINGLETON : getModelRepository()
+                 activate REPOS_SINGLETON
+                 REPOS_SINGLETON --> CTRL : modelRepository
+                 deactivate REPOS_SINGLETON
+                 CTRL -> MOD_REPO : getDrnModelList(selectedModel)
+                 activate MOD_REPO
+                 MOD_REPO --> CTRL : drnModelList
+                 deactivate MOD_REPO
+                 CTRL --> UI : drnModelList
+                 deactivate CTRL
          end loop
 
                 UI --> DT : shows the configuration and asks for confirmation
@@ -105,30 +122,22 @@ activate UI
             deactivate REPOS_SINGLETON
         CTRL -->CTRL : showProposalRepository
         deactivate CTRL
-        CTRL -> CTRL : configureShow(showProposal, configuration)
-        activate CTRL
+
          CTRL -> CONF : createConfig(configuration)
                 activate CONF
                 CONF --> CTRL : configuration
                 deactivate CONF
-
-                CTRL ->SP : setConfig(showConfiguration)
-                activate SP
-                SP --> CTRL : showProposal
-                deactivate SP
-                CTRL -> CTRL : verifyShowProp(showProposal)
+ CTRL -> CTRL : verifyShowPropConfig(configuration)
                 activate CTRL
                 CTRL --> CTRL: true
                 deactivate CTRL
-        CTRL --> CTRL : showProposal
-        deactivate CTRL
-            CTRL -> SP_REPO : save(showProposal)
+                CTRL ->SP** : setConfiguration(configuration)
 
-            activate SP_REPO
+                 CTRL -> SP_REPO : save(showProposal)
 
-           SP_REPO --> CTRL : true
-
-        deactivate SP_REPO
+                activate SP_REPO
+                SP_REPO --> CTRL :
+                deactivate SP_REPO
 
         CTRL --> UI : true
 

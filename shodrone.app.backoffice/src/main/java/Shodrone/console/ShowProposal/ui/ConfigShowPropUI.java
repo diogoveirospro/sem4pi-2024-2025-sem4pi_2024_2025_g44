@@ -30,30 +30,34 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             boolean configuring = true;
             Scanner scanner = new Scanner(System.in);
 
+            int remainingToConfigure = showProposal.quantityOfDrones().getQuantityOfDrones();
             Map<Model, Integer> verificaçao = new LinkedHashMap<>();
-            while (configuring) {
-                int AllQuantity;
+
+            while (configuring && remainingToConfigure > 0) {
+                System.out.println(UtilsUI.CYAN + "\nRemaining drones to configure: " + remainingToConfigure + UtilsUI.RESET);
+
                 Model model = selectModel();
                 if (model == null) continue;
-                if (verificaçao.containsKey(model)) {
-                    AllQuantity = verificaçao.get(model);
-                }else{
-                    AllQuantity = 0;
-                }
+
+                int alreadySelected = verificaçao.getOrDefault(model, 0);
                 Iterable<Drone> drones = controller.getDrnModelList(model);
                 List<Drone> droneList = new ArrayList<>();
                 drones.forEach(droneList::add);
+
                 if (droneList.isEmpty()) {
                     System.out.println(UtilsUI.RED + "No drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
                     continue;
                 }
-                int availableDrones  = droneList.size() - AllQuantity;
+
+                int availableDrones = droneList.size() - alreadySelected;
                 if (availableDrones <= 0) {
                     System.out.println(UtilsUI.RED + "No more drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
                     continue;
                 }
 
-                System.out.print(UtilsUI.BOLD + "Enter the number of drones for model '" + model.identity() + " (" + availableDrones  + " drones available) : " + UtilsUI.RESET);
+                int maxAllowed = Math.min(availableDrones, remainingToConfigure);
+                System.out.print(UtilsUI.BOLD + "Enter number of drones for model '" + model.identity() + "' (Max allowed: " + maxAllowed + "): " + UtilsUI.RESET);
+
                 int quantity;
                 try {
                     quantity = Integer.parseInt(scanner.nextLine());
@@ -61,18 +65,25 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                         System.out.println(UtilsUI.RED + "Invalid quantity!" + UtilsUI.RESET);
                         continue;
                     }
-                    if (quantity > availableDrones) {
-                        System.out.println(UtilsUI.RED + "Not enough drones available. Maximum is " + droneList.size() + "." + UtilsUI.RESET);
+                    if (quantity > maxAllowed) {
+                        System.out.println(UtilsUI.RED + "You can assign at most " + maxAllowed + " drones." + UtilsUI.RESET);
                         continue;
                     }
                 } catch (NumberFormatException e) {
                     System.out.println(UtilsUI.RED + "Please enter a valid number." + UtilsUI.RESET);
                     continue;
                 }
-                List<Drone> selectedDrones = droneList.subList(AllQuantity, AllQuantity + quantity);
+
+                List<Drone> selectedDrones = droneList.subList(alreadySelected, alreadySelected + quantity);
 
                 configBuilder.addDrones(model, selectedDrones);
-                verificaçao.put(model, AllQuantity + quantity);
+                verificaçao.put(model, alreadySelected + quantity);
+                remainingToConfigure -= quantity;
+
+                if (remainingToConfigure <= 0) {
+                    System.out.println(UtilsUI.GREEN + "Drone requirement fulfilled." + UtilsUI.RESET);
+                    break;
+                }
 
                 System.out.print("Add another model? (y/n): ");
                 String more = scanner.nextLine().trim().toLowerCase();
@@ -81,11 +92,13 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 }
             }
 
-            // Mostrar resumo
             System.out.println(UtilsUI.BOLD + "\nConfiguration Summary:" + UtilsUI.RESET);
-            configBuilder.getConfig().forEach((model, drones) ->
-                    System.out.printf(" - Model: %s, Quantity: %d%n", model.identity(), drones.size()));
-
+            configBuilder.getConfig().forEach((model, drones) -> {
+                System.out.printf(" - Model: %s, Quantity: %d%n", model.identity(), drones.size());
+                for (Drone drone : drones) {
+                    System.out.println("    • Drone SerialNumber: " + drone.identity());
+                }
+            });
             System.out.print("\nConfirm configuration? (y/n): ");
             String confirm = scanner.nextLine().trim().toLowerCase();
             if (!confirm.equals("y")) {
@@ -108,6 +121,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             return false;
         }
     }
+
 
     /**
      * Returns the headline/title of the UI screen.
