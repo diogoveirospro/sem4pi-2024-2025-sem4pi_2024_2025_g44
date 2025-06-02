@@ -16,6 +16,7 @@ import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -55,9 +56,10 @@ public class EditShowRequestUI extends AbstractFancyUI {
             Location location = enterValidLocation();
             LocalDate date = enterValidDate();
             LocalTime time = enterValidTime();
+            Duration duration = enterValidDuration();
             QuantityOfDrones quantityOfDrones = enterValidQuantityOfDrones();
 
-            controller.editShowRequest(showRequest, location, showDescription, date, time, quantityOfDrones);
+            controller.editShowRequest(showRequest, location, showDescription, date, time, duration, quantityOfDrones);
             System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow Request information updated successfully!" + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return true;
@@ -74,6 +76,29 @@ public class EditShowRequestUI extends AbstractFancyUI {
             UtilsUI.goBackAndWait();
             return false;
         }
+    }
+
+    private Duration enterValidDuration() {
+        String durationInput;
+        do {
+            try {
+                durationInput = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the new show's duration (in minutes) (or type 'cancel' to go back): " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(durationInput)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
+                int minutes = Integer.parseInt(durationInput);
+                if (minutes <= 0) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nDuration must be a positive number. Please try again." + UtilsUI.RESET);
+                    continue;
+                }
+
+                return Duration.ofMinutes(minutes);
+            } catch (NumberFormatException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please enter a valid number." + UtilsUI.RESET);
+            }
+        } while (true);
     }
 
     @Override

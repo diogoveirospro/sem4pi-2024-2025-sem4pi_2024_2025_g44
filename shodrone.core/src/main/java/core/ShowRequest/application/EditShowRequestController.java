@@ -10,6 +10,7 @@ import core.ShowRequest.domain.ValueObjects.ShowDescription;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import eapli.framework.validations.Preconditions;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -28,9 +29,10 @@ public class EditShowRequestController {
     }
 
 
-    public void editShowRequest(ShowRequest showRequest, Location location, ShowDescription showDescription, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones) {
+    public void editShowRequest(ShowRequest showRequest, Location location, ShowDescription showDescription,
+                                LocalDate date, LocalTime time, Duration duration, QuantityOfDrones quantityOfDrones) {
         Preconditions.noneNull(showRequest);
-        showRequest.editInformation(location, showDescription, date, time, quantityOfDrones);
+        showRequest.editInformation(location, showDescription, date, time, duration, quantityOfDrones);
         showRequestRepository.save(showRequest);
     }
 }
