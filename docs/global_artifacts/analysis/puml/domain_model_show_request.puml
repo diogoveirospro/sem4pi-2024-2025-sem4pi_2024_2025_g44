@@ -44,9 +44,13 @@ package Shared {
     class Description <<Value Object>>{
     }
 
+    class Duration <<Value Object>>{
+    }
+
     'ShowRequest -> x
-    ShowRequest ----> "1" Time : duration
-    ShowRequest ----> "1" Date : startTime
+    ShowRequest ----> "1" Duration : durationOfShow
+    ShowRequest ----> "1" Date : dateOfShow
+    ShowRequest ----> "1" Time : timeOfShow
     ShowRequest ----> "1" QuantityOfDrones: qnt_drones
     ShowRequest ----> "1" Description: description
 
