@@ -1,8 +1,11 @@
 package Shodrone.console.Menu;
 
+import Shodrone.console.AcceptRejectProposal.actions.AcceptRejectProposalAction;
+import Shodrone.console.AnalyseProposal.actions.AnalyseProposalAction;
+import Shodrone.console.SheduledShows.actions.ScheduledShowsAction;
+import Shodrone.console.ShowInfo.actions.ShowInfoAction;
 import core.Persistence.Application;
 import core.User.domain.ShodroneRoles;
-import eapli.framework.actions.Actions;
 import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -14,7 +17,6 @@ import shodrone.presentation.UtilsUI;
 
 /**
  * TODO split this class in more specialized classes for each menu
- *
  */
 public class MainMenu extends AbstractFancyUI {
 
@@ -24,11 +26,31 @@ public class MainMenu extends AbstractFancyUI {
 
     // BIG TITLES SUBMENUS
 
+    private static final String SHOW_PROPOSALS_MENU_TITLE = "  _____   __    __     ____     ___       ___      _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
+            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
+            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
+            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
+            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
+            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
+            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
+            "\n";
+
+    private static final String SHOW_MENU_TITLE = "  _____   __    __     ____     ___       ___      _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
+            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
+            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
+            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
+            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
+            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
+            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
+            "\n";
 
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int HELP_MENU = 8;
+    private static final int ANALYSE_PROPOSAL = 2;
+    private static final int ACCEPT_REJECT_PROPOSAL = 3;
+    private static final int SCHEDULED_SHOWS = 4;
+    private static final int SHOW_INFO = 5;
 
 
     private static final String SEPARATOR_LABEL = "----------------------------";
@@ -77,6 +99,13 @@ public class MainMenu extends AbstractFancyUI {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
 
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
+            mainMenu.addItem(ANALYSE_PROPOSAL, "Analyse Proposal", new AnalyseProposalAction());
+            mainMenu.addItem(ACCEPT_REJECT_PROPOSAL, "Accept/Reject Proposal", new AcceptRejectProposalAction());
+            mainMenu.addItem(SCHEDULED_SHOWS, "Scheduled Shows", new ScheduledShowsAction());
+            mainMenu.addItem(SHOW_INFO, "Show Info", new ShowInfoAction());
+        }
+
         if (!Application.settings().isMenuLayoutHorizontal()) {
             mainMenu.addItem(MenuItem.separator(SEPARATOR_LABEL));
         }
@@ -85,8 +114,6 @@ public class MainMenu extends AbstractFancyUI {
 
         return mainMenu;
     }
-
-
 
 
 }
