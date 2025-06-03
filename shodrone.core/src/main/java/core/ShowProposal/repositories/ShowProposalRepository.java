@@ -10,5 +10,5 @@ public interface ShowProposalRepository extends DomainRepository<ShowProposalNum
     Iterable<ShowProposal> findAllTestingProposalsByShowRequest(ShowRequest request);
     boolean existsByProposalNumber(ShowProposalNumber proposalNumber);
     Iterable<ShowProposal> findConfigurableProposals();
-    ShowProposal findProposalById(ShowProposalNumber proposalNumber);
+    Iterable <ShowProposal> findAllCheckedProposals();
 }

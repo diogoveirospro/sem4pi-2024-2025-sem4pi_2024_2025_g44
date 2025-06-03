@@ -58,25 +58,29 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * The status of the ShowProposal
      */
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private ShowProposalStatus status;
 
     /**
      * The document of the ShowProposal
      */
     @Embedded
+    @Column(name = "document")
     private ShowProposalDocument document;
 
     /**
      * The video of the ShowProposal
      */
+
     @Embedded
+    @Column(name = "video")
     private Video video;
 
     /**
      * The request of the ShowProposal
      */
     @ManyToOne
-    @JoinColumn(name = "request_id", nullable = false)
+    @JoinColumn(name = "request", nullable = false)
     private ShowRequest request;
 
     /**
@@ -122,19 +126,26 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * The quantity of drones of the ShowProposal
      */
     @Embedded
+    @Column(name = "quantityOfDrones")
     private QuantityOfDrones quantityOfDrones;
 
     /**
      * The value of the insurance of the show
      */
     @Embedded
+    @Column(name = "insurance")
     private Insurance insurance;
 
     /**
      * The email of the feedback of the show
      */
     @Embedded
+    @Column(name = "customerFeedback")
     private CustomerFeedback customerFeedback;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "feedbackStatus")
+    private CustFeedbackStatus feedbackStatus;
 
     /**
      * The configuration of the ShowProposal contains Figures and Drones
@@ -159,7 +170,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * @param creator the collaborator who created the proposal
      */
     public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
-                        Duration durationOfShow, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator) {
+                        Duration durationOfShow, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator, CustomerFeedback customerFeedback, CustFeedbackStatus feedbackStatus) {
         this.request = request;
         this.dateOfShow = dateOfShow;
         this.timeOfShow = timeOfShow;
@@ -172,6 +183,8 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = new GenerateProposalNumber().generate();
+        this.customerFeedback = customerFeedback;
+        this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
     /**
@@ -323,6 +336,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         return document;
     }
 
+    public void setShowProposalStatus(ShowProposalStatus status) {
+        this.status = status;
+    }
+
     /**
      * Add a document to the ShowProposal.
      * @param document the ShowProposalDocument to be added
@@ -365,6 +382,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      */
     public void addConfiguration(ShowConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+        public CustFeedbackStatus feedbackStatus() {
+        return feedbackStatus;
     }
 
     /**

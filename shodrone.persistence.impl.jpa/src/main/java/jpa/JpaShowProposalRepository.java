@@ -2,6 +2,7 @@ package jpa;
 
 import core.Persistence.Application;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.CustFeedbackStatus;
 import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowProposal.repositories.ShowProposalRepository;
@@ -64,14 +65,13 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
     }
 
     @Override
-    public ShowProposal findProposalById(ShowProposalNumber proposalNumber) {
+    public Iterable<ShowProposal> findAllCheckedProposals() {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
-                "SELECT sp FROM ShowProposal sp WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
-        query.setParameter("proposalNumber", proposalNumber);
-        List<ShowProposal> results = query.getResultList();
-        if (results.isEmpty()) {
-            return null;
-        }
-        return results.get(0);
+                "SELECT sp FROM ShowProposal sp WHERE sp.feedbackStatus IN (:status1, :status2)", ShowProposal.class);
+        query.setParameter("status1", CustFeedbackStatus.ACCEPTED);
+        query.setParameter("status2", CustFeedbackStatus.REJECTED);
+        return query.getResultList();
     }
+
+
 }

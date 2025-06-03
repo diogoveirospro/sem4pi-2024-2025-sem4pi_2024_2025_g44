@@ -64,13 +64,7 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
     }
 
     @Override
-    public ShowProposal findProposalById(ShowProposalNumber proposalNumber) {
-        Iterable<ShowProposal> proposals = findAll();
-        for (ShowProposal proposal : proposals) {
-            if (proposal.identity().equals(proposalNumber)) {
-                return proposal;
-            }
-        }
+    public Iterable<ShowProposal> findAllCheckedProposals() {
         return null;
     }
 }

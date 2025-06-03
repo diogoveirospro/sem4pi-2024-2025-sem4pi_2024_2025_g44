@@ -13,10 +13,7 @@ import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
 import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
-import Shodrone.console.ShowProposal.ui.AddVideoToProposalUI;
-import Shodrone.console.ShowProposal.ui.ConfigShowPropUI;
-import Shodrone.console.ShowProposal.ui.ConfigureProposalDocumentUI;
-import Shodrone.console.ShowProposal.ui.CreateShowProposalUI;
+import Shodrone.console.ShowProposal.ui.*;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
@@ -439,6 +436,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(ADD_DRONES_TO_SHOW_PROPOSAL_OPTION, "Add Drones to a Show Proposal", new ConfigShowPropUI()::show);
         menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         menu.addItem(CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION, "Configure Template of Show Proposal", new ConfigureProposalDocumentUI()::show);
+        menu.addItem(COLLABORATOR_MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION, "Accept a Show Proposal", new AccShowPropUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }

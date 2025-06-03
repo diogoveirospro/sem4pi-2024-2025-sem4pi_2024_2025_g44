@@ -8,6 +8,7 @@ import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.CustFeedbackStatus;
 import core.ShowProposal.domain.ValueObjects.Insurance;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
@@ -69,7 +70,7 @@ public class CreateShowProposalController {
             throw new IllegalArgumentException("CRM Collaborator does not exist.");
         }
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
-                crmCollaborator);
+                crmCollaborator, null, CustFeedbackStatus.PENDING);
         showProposalRepository.save(showProposal);
     }
 
