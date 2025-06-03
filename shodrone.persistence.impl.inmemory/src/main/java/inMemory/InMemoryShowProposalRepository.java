@@ -50,4 +50,27 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         }
         return false;
     }
+
+    @Override
+    public Iterable<ShowProposal> findConfigurableProposals() {
+        Iterable<ShowProposal> proposals = findAll();
+        List<ShowProposal> configurableProposals = new ArrayList<>();
+        for (ShowProposal proposal : proposals) {
+            if (proposal.isReadyToConfigureDocument()) {
+                configurableProposals.add(proposal);
+            }
+        }
+        return configurableProposals;
+    }
+
+    @Override
+    public ShowProposal findProposalById(ShowProposalNumber proposalNumber) {
+        Iterable<ShowProposal> proposals = findAll();
+        for (ShowProposal proposal : proposals) {
+            if (proposal.identity().equals(proposalNumber)) {
+                return proposal;
+            }
+        }
+        return null;
+    }
 }

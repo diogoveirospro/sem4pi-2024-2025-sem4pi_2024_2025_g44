@@ -1,14 +1,30 @@
 package core.ShowProposal.domain.Entities;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
+import core.CRMManager.domain.Entities.CRMManager;
+import core.Category.domain.Entities.Category;
+import core.Category.domain.ValueObjects.CategoryName;
 import core.Customer.domain.Entities.Customer;
 import core.Customer.domain.ValueObjects.Address;
 import core.Customer.domain.ValueObjects.CustomerType;
 import core.Customer.domain.ValueObjects.VatNumber;
-import core.Shared.domain.ValueObjects.Email;
-import core.Shared.domain.ValueObjects.Name;
-import core.Shared.domain.ValueObjects.PhoneNumber;
-import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.Drone.domain.Entities.Drone;
+import core.Drone.domain.ValueObjects.DroneStatus;
+import core.Drone.domain.ValueObjects.RemovalReason;
+import core.Drone.domain.ValueObjects.SerialNumber;
+import core.Figure.domain.Entities.Figure;
+import core.Figure.domain.ValueObjects.Code;
+import core.Figure.domain.ValueObjects.DSLDescription;
+import core.Figure.domain.ValueObjects.Keyword;
+import core.Figure.domain.ValueObjects.Version;
+import core.ModelOfDrone.domain.Entities.Configuration;
+import core.ModelOfDrone.domain.Entities.Model;
+import core.ModelOfDrone.domain.ValueObjects.ModelName;
+import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
+import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
+import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
+import core.Shared.domain.ValueObjects.*;
+import core.ShowDesigner.domain.Entities.ShowDesigner;
 import core.ShowProposal.application.Service.GenerateProposalNumber;
 import core.ShowProposal.domain.ValueObjects.*;
 import core.ShowRequest.application.Service.GenerateShowRequestID;
@@ -23,6 +39,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,10 +49,14 @@ public class ShowProposalTest {
     private QuantityOfDrones quantDrones;
     private Insurance insurance;
     private CRMCollaborator collaborator;
+    private CRMManager manager;
     private LocalDate date;
     private LocalTime time;
     private GenerateProposalNumber generateProposalNumber;
     private Duration duration;
+    private Figure figure;
+    private Drone drone;
+    private Model model;
 
 
     @BeforeEach
@@ -44,11 +65,71 @@ public class ShowProposalTest {
         collaborator = setUpCollaborator();
         showRequest = setUpRequest(collaborator);
         quantDrones = new QuantityOfDrones("10");
-        insurance = new Insurance("1000.0","€");
+        insurance = new Insurance("1000.0", "€");
         date = LocalDate.now();
         time = LocalTime.now();
         duration = Duration.ofHours(2); // Example duration
         generateProposalNumber = new GenerateProposalNumber();
+        manager = setUpManager();
+        figure = setUpPublicFigure();
+        model = setUpModel();
+        drone = setUpDrone();
+    }
+
+    private Drone setUpDrone() {
+        SerialNumber serialNumber = new SerialNumber(1234);
+        Map<Date, String> reasons = new HashMap<>();
+        Date now = new Date();
+        String wewe = "Test";
+        reasons.put(now, wewe);
+        RemovalReason removalReason = new RemovalReason(reasons);
+        return new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+    }
+
+    private Model setUpModel() {
+        ModelName modelName = new ModelName("TestModel");
+        // Setup Configuration with dummy values
+        WindSpeed ws = new WindSpeed(0, 10);
+        PositionTolerance pt = new PositionTolerance(0.5);
+        Configuration configuration = new Configuration(
+                Map.of(ws, pt),
+                SafetyStatus.SAFE
+        );
+
+        return new Model(modelName, configuration);
+    }
+
+    private Figure setUpPublicFigure() {
+        // Create a Figure object with the required parameters
+        Code code = new Code("FIG-1234");
+        Version version = new Version("1.0.0");
+        Name name = new Name("Test Figure");
+        Description figureDescription = new Description("A test figure");
+        DSLDescription dslDescription = new DSLDescription(List.of("line1", "line2"), "1.0.0");
+
+        Set<Keyword> keywords = new HashSet<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("keyword2"));
+        keywords.add(new Keyword("keyword3"));
+
+        Set<Category> categories = new HashSet<>();
+        categories.add(new Category(new CategoryName("Category1"), new Description("Description1")));
+        categories.add(new Category(new CategoryName("Category2"), new Description("Description2")));
+        categories.add(new Category(new CategoryName("Category3"), new Description("Description3")));
+
+        ShowDesigner showDesigner = new ShowDesigner(new Name("ShowDesigner1"),
+                new PhoneNumber("+351", "912345678"),
+                new Email("showdesigner1@shodrone.com"));
+
+        return new Figure(code, version, name, figureDescription, dslDescription, keywords, categories, showDesigner);
+    }
+
+    private CRMManager setUpManager() {
+        Name crm_name = new Name("Test CRM Manager");
+        PhoneNumber phoneNumber = new PhoneNumber("+351", "999999999");
+        Email crm_email = new Email("crmmanager@email.com");
+
+        return new CRMManager(crm_name, phoneNumber, crm_email);
     }
 
     private CRMCollaborator setUpCollaborator() {
@@ -74,27 +155,30 @@ public class ShowProposalTest {
         QuantityOfDrones quantityOfDrones = new QuantityOfDrones("12");
         GenerateShowRequestID generateShowRequestID = new GenerateShowRequestID();
 
-        showRequest = new ShowRequest(showDescription, date, time,duration, location, quantityOfDrones, customer, crmCollaborator, generateShowRequestID);
+        showRequest = new ShowRequest(showDescription, date, time, duration, location, quantityOfDrones, customer, crmCollaborator, generateShowRequestID);
         return showRequest;
     }
 
     @Test
     void ensureProposalIncludesTotalNumberOfDrones() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
+                quantDrones, insurance, collaborator, generateProposalNumber);
         assertTrue(proposal.quantityOfDrones().getQuantityOfDrones() > 0);
     }
 
     @Test
     void ensureProposalIsAssociatedWithShowRequest() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
         assertNotNull(proposal.request());
     }
 
     @Test
     void ensureVideoCanBeAddedToProposal() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
         String name = "Test Video";
-        Video video = new Video(name,"https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        Video video = new Video(name, "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
         proposal.addVideo(video);
         assertNotNull(proposal.video());
         assertEquals("https://www.youtube.com/watch?v=dQw4w9WgXcQ", proposal.video().url());
@@ -103,19 +187,111 @@ public class ShowProposalTest {
 
     @Test
     void ensureCannotAddNullVideo() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
+                quantDrones, insurance, collaborator, generateProposalNumber);
         assertThrows(IllegalArgumentException.class, () -> proposal.addVideo(null));
     }
 
     @Test
     void ensureInitialStatusIsTesting() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
         assertEquals(ShowProposalStatus.TESTING, proposal.status());
     }
 
     @Test
     void ensureCreatorIsAlsoInitialSender() {
-        ShowProposal proposal = new ShowProposal(showRequest, date, time, quantDrones, insurance, collaborator, duration,generateProposalNumber);
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
         assertEquals(proposal.creator(), proposal.sender());
     }
+
+    @Test
+    void ensureDocumentCanBeAddedToProposal() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        ShowProposalDocument document = new ShowProposalDocument("Test Document Content");
+        proposal.addDocument(document);
+        assertNotNull(proposal.document());
+        assertEquals("Test Document Content", proposal.document().toString());
+    }
+
+    @Test
+    void ensureCannotAddNullDocument() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        assertThrows(IllegalArgumentException.class, () -> proposal.addDocument(null));
+    }
+
+    @Test
+    void ensureCRMManagerCanBeAddedToProposal() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        proposal.addCRMManager(manager);
+        assertNotNull(proposal.crmManager());
+        assertEquals("Test CRM Manager", proposal.crmManager().name().toString());
+    }
+
+    @Test
+    void ensureCannotAddNullCRMManager() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        assertThrows(IllegalArgumentException.class, () -> proposal.addCRMManager(null));
+    }
+
+//    @Test
+//    void ensureProposalIsReadyToConfigureDocument() {
+//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+//                collaborator, generateProposalNumber);
+//        ShowConfiguration configuration = new ShowConfiguration.Builder()
+//                .addFigure(figure)
+//                .addDrone(model, drone)
+//                .build();
+//        proposal.addConfiguration(configuration);
+//        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+//        assertTrue(proposal.isReadyToConfigureDocument());
+//    }
+
+    @Test
+    void ensureProposalCannotConfigureDocumentWithoutRequiredFields() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        assertFalse(proposal.isReadyToConfigureDocument());
+    }
+
+//    @Test
+//    void ensureDocumentIsConfiguredCorrectly() {
+//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+//                collaborator, generateProposalNumber);
+//        ShowConfiguration configuration = new ShowConfiguration.Builder()
+//                .addFigure(figure)
+//                .addDrone(model, drone)
+//                .build();
+//        proposal.addConfiguration(configuration);
+//        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+//        ShowProposalDocument document = proposal.configureDocument("Portuguese", manager);
+//        assertNotNull(document);
+//        assertTrue(document.toString().contains("Representative of Test Customer"));
+//        assertTrue(document.toString().contains("TestModel – 1 units."));
+//    }
+
+//    @Test
+//    void ensureInvalidTemplateThrowsException() {
+//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+//                collaborator, generateProposalNumber);
+//
+//        ShowConfiguration configuration = new ShowConfiguration.Builder()
+//                .addFigure(figure)
+//                .addDrone(model, drone)
+//                .build();
+//        proposal.addConfiguration(configuration);
+//        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+//
+//        String invalidTemplate = "french"; // "french" is not a valid template
+//
+//        assertThrows(IllegalArgumentException.class, () -> {
+//            proposal.configureDocument(invalidTemplate, manager);
+//        });
+//    }
+
 }

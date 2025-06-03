@@ -51,7 +51,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
                 Duration duration = enterValidDuration(currDuration);
                 QuantityOfDrones quantityOfDrones = enterValidQuantityOfDrones(currQuantityOfDrones);
                 Insurance insurance = enterValidInsurance();
-                controller.createShowProposal(showRequest, date, time, quantityOfDrones, insurance, duration);
+                controller.createShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance);
                 System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow Proposal created successfully!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
