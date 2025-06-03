@@ -16,9 +16,9 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implementation: 📝 To Do
+Implementation: 🧪 Testing
 
-Testing: 📝 To Do
+Testing: 🧪 Testing
 
 ## 2. Requirements
 
@@ -149,6 +149,67 @@ placeholders replaced and validation completed.
 
 ## 5. Implementation
 
+The implementation of **US318** followed the design outlined in the previous section. The logic is spread across the 
+domain, application, and presentation layers, respecting the layered and modular architecture defined for the project.
+
+At the domain level, the method `configureDocument(...)` was implemented within the `ShowProposal` aggregate. It handles 
+the process of loading a predefined template, dynamically replacing placeholders with proposal-specific data (customer, 
+date, insurance, video link, drone models, figure names, etc.), and invoking the registered `DocumentValidationPlugin` 
+through the domain service `DocumentValidate`.
+
+Only proposals that are in a valid state — with a configuration, assigned drones and figures, and an associated video — 
+are eligible to configure a document. If the template is invalid or the name provided does not match any predefined 
+option, appropriate exceptions are thrown.
+
+The `TemplateLoaderService` is responsible for resolving the correct template path based on the selected language and 
+customer type (e.g., "Portuguese", "English VIP", etc.), using the paths defined in the `application.properties` file.
+
+The controller `ConfigureProposalDocumentController` coordinates the configuration process, and the UI prompts the user 
+to select an eligible proposal and a template. If validation succeeds, the document is associated with the proposal and 
+persisted.
+
+Relevant commit messages:
+
+- [Implementation of US318](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/26691413a48476381972731b4b1e5ceba7ee3796)
+
 ## 6. Integration/Demonstration
 
+The functionality developed in **US318** was successfully integrated into the Shodrone system. It allows 
+**CRM Managers** to configure the proposal document by selecting a predefined template and applying it to an eligible 
+proposal.
+
+The `ConfigureProposalDocumentUI` presents two selection menus:
+- The first lets the user select a show proposal that is still configurable.
+- The second lets the user select one of the available document templates (e.g., Portuguese, English (VIP), English 
+(Regular)).
+
+The selected template is loaded, processed, and validated. The result is stored as a `ShowProposalDocument`, ready to 
+be included in the final proposal sent to the customer (see US316 and US347).
+
+### Demonstration Instructions
+
+To demonstrate this feature:
+
+1. **Launch the application** via the appropriate script.
+2. **Log in as a CRM Manager**.
+3. Navigate to **Show Proposals → Configure Proposal Document**.
+4. Choose an eligible proposal from the list.
+5. Choose one of the available templates:
+    * "Portuguese"
+    * "English (Regular Customer)"
+    * "English (VIP Customer)"
+6. If successful:
+    * A confirmation message is displayed.
+    * The proposal document is saved and associated with the selected proposal.
+7. If unsuccessful:
+    * An error message is shown (e.g., due to invalid template or missing data).
+
 ## 7. Observations
+
+For the implementation of this project, I used the following sources:
+
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
