@@ -72,7 +72,7 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
         if (false) {
             System.out.println("\n\n------- SERVER DATA -------");
-            new ShodroneServerBootstrapper().execute();
+            //new ShodroneServerBootstrapper().execute();
         }
 
         if (isToRunSampleE2E) {
