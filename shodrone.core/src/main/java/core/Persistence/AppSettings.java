@@ -51,6 +51,9 @@ public class AppSettings {
     private static final String SHODRONE_DOMAIN = "ShodroneDomain";
     private static final String DATABASE_PORT = "shodrone.database.port";
     private static final String DATABASE_IP = "shodrone.database.ip";
+    private static final String TEMPLATE_PATH_PORTUGUESE = "templates.proposal.portuguese";
+    private static final String TEMPLATE_PATH_ENGLISH = "templates.proposal.englishRegular";
+    private static final String TEMPLATE_PATH_ENGLISH_VIP = "templates.proposal.englishVIP";
 
     private final Properties applicationProperties = new Properties();
 
@@ -108,6 +111,18 @@ public class AppSettings {
 
     public String databaseIP() {
         return applicationProperties.getProperty(DATABASE_IP);
+    }
+
+    public String getTemplatePathPortuguese() {
+        return applicationProperties.getProperty(TEMPLATE_PATH_PORTUGUESE);
+    }
+
+    public String getTemplatePathEnglish() {
+        return applicationProperties.getProperty(TEMPLATE_PATH_ENGLISH);
+    }
+
+    public String getTemplatePathEnglishVIP() {
+        return applicationProperties.getProperty(TEMPLATE_PATH_ENGLISH_VIP);
     }
 
     public String getProperty(final String prop) {

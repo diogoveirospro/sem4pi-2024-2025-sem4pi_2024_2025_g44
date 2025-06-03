@@ -3,6 +3,7 @@ package core.ShowProposal.domain.ValueObjects;
 public enum ShowProposalStatus {
 
     ACCEPTED("Accepted"),
+    READY_TO_SEND("Ready to send"),
     REJECTED("Rejected"),
     WAITING_FOR_RESPONSE("Waiting for response"),
     TESTING("Testing");

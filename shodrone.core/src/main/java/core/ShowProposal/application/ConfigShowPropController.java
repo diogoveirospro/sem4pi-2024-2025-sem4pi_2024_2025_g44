@@ -33,7 +33,7 @@ public class ConfigShowPropController {
         if (configuration == null) {
             return false;
         }
-        showProposal.setConfiguration(createConfiguration(configuration));
+        showProposal.addConfiguration(createConfiguration(configuration));
         showProposalRepository.save(showProposal);
         return true;
     }

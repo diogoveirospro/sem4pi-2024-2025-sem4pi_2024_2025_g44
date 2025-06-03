@@ -15,6 +15,7 @@ import Shodrone.console.Figure.actions.SearchCatalogueUI;
 import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
 import Shodrone.console.ShowProposal.ui.AddVideoToProposalUI;
 import Shodrone.console.ShowProposal.ui.ConfigShowPropUI;
+import Shodrone.console.ShowProposal.ui.ConfigureProposalDocumentUI;
 import Shodrone.console.ShowProposal.ui.CreateShowProposalUI;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
@@ -143,8 +144,8 @@ public class MainMenu extends AbstractFancyUI {
     private static final int POWER_USER_USERS_MENU = 2;
     private static final int POWER_USER_CUSTOMER_MENU = 3;
     private static final int POWER_USER_FIGURE_MENU = 4;
-    private static final int POWER_USER_SHOW_PROPOSAL_MENU = 5;
-    private static final int POWER_USER_SHOW_REQUEST_MENU = 6;
+    private static final int POWER_USER_SHOW_REQUEST_MENU = 5;
+    private static final int POWER_USER_SHOW_PROPOSAL_MENU = 6;
     private static final int POWER_USER_FIGURE_CATEGORY_MENU = 7;
     private static final int POWER_USER_DRONE_MENU = 8;
 
@@ -160,9 +161,9 @@ public class MainMenu extends AbstractFancyUI {
     private static final int ADD_DRONES_TO_SHOW_PROPOSAL_OPTION = 2;
     private static final int ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION = 3;
     private static final int ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION = 4;
-    private static final int SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 5;
-    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 6;
-    private static final int CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 7;
+    private static final int CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 5;
+    private static final int SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 6;
+    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 7;
 
     // FIGURE CRM COLLABORATOR MENU
     private static final int LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
@@ -300,11 +301,11 @@ public class MainMenu extends AbstractFancyUI {
             final SubMenu figureMenu = buildFiguresMenu();
             mainMenu.addSubMenu(POWER_USER_FIGURE_MENU, figureMenu);
 
-            final SubMenu showProposalsMenu = buildShowProposalsMenu();
-            mainMenu.addSubMenu(POWER_USER_SHOW_PROPOSAL_MENU, showProposalsMenu);
-
             final SubMenu showRequestMenu = buildShowRequestMenu();
             mainMenu.addSubMenu(POWER_USER_SHOW_REQUEST_MENU, showRequestMenu);
+
+            final SubMenu showProposalsMenu = buildShowProposalsMenu();
+            mainMenu.addSubMenu(POWER_USER_SHOW_PROPOSAL_MENU, showProposalsMenu);
 
             final SubMenu figureCategoryMenu = buildCategoriesMenu();
             mainMenu.addSubMenu(POWER_USER_FIGURE_CATEGORY_MENU, figureCategoryMenu);
@@ -437,6 +438,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
         menu.addItem(ADD_DRONES_TO_SHOW_PROPOSAL_OPTION, "Add Drones to a Show Proposal", new ConfigShowPropUI()::show);
         menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
+        menu.addItem(CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION, "Configure Template of Show Proposal", new ConfigureProposalDocumentUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
@@ -452,6 +454,9 @@ public class MainMenu extends AbstractFancyUI {
 
     private SubMenu buildShowProposalsManagerMenu() {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
+
+        menu.addItem(MANAGER_CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION, "Configure Template of Show Proposal",
+                new ConfigureProposalDocumentUI()::show);
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;

@@ -20,6 +20,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.validations.Preconditions;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -57,16 +58,18 @@ public class CreateShowProposalController {
         return customerRepository.findAllCreatedCustomers();
     }
 
-    public void createShowProposal(ShowRequest showRequest, LocalDate date, LocalTime time, QuantityOfDrones quantityOfDrones, Insurance insurance) {
+    public void createShowProposal(ShowRequest showRequest, LocalDate date, LocalTime time,
+                                   Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance) {
         CRMCollaborator crmCollaborator = getCrmCollaborator();
-        Preconditions.noneNull( showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
+        Preconditions.noneNull( showRequest, date, time, quantityOfDrones, insurance, crmCollaborator, duration);
         if (!showRequestRepository.contains(showRequest)) {
             throw new IllegalArgumentException("Show request does not exist.");
         }
         if (!crmCollaboratorRepository.contains(crmCollaborator)) {
             throw new IllegalArgumentException("CRM Collaborator does not exist.");
         }
-        ShowProposal showProposal = new ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator);
+        ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
+                crmCollaborator);
         showProposalRepository.save(showProposal);
     }
 

@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+
+  class ShowProposal <<Entity>> <<root>>{
+    }
+
+   class ShowConfiguration <<Entity>>{
+      }
+
+   class Drone <<Entity>> <<root>>{
+      }
+
+     class Model <<Entity>> <<root>>{
+      }
+
+    'Model -> x
+      ShowProposal --> "1" ShowConfiguration: showConfiguration
+      Drone --> "1" Model: model
+      ShowConfiguration --> "1..*" Drone: drone
+
+
+@enduml

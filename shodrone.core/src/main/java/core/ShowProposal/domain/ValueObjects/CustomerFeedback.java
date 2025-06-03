@@ -6,9 +6,8 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class ShowProposalTemplate implements ValueObject, Serializable {
-
-    protected ShowProposalTemplate () {
+public class CustomerFeedback implements ValueObject, Serializable {
+    protected CustomerFeedback() {
         // for ORM
     }
 }

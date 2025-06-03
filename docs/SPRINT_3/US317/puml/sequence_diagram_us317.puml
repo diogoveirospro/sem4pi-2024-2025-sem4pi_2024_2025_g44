@@ -1,0 +1,93 @@
+@startuml
+'skinparam monochrome
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "CRM Collaborator" as DT
+participant ":AccShowPropUI" as UI
+participant ":AccShowPropController" as CTRL
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
+participant "showProposalRepository\n:ShowProposalRepository" as SP_REPO
+participant "modelRepository\n:ModelRepository" as MOD_REPO
+participant "configuration\n:Configuration" as CONF
+participant "showProposal\n:ShowProposal" as SP
+
+activate DT
+
+DT -> UI : requests to accept a show proposal
+activate UI
+    UI -> CTRL : getShowProposalCheckedList()
+    activate CTRL
+
+    CTRL --> PERS : getRepositoryFactory()
+    activate PERS
+    PERS --> CTRL : repositoryFactory
+    deactivate PERS
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+    CTRL -> REPOS_SINGLETON : getShowProposalRepository()
+    activate REPOS_SINGLETON
+    REPOS_SINGLETON --> CTRL : showProposalRepository
+    deactivate REPOS_SINGLETON
+    CTRL -> SP_REPO : getShowProposalCheckedList()
+    activate SP_REPO
+    SP_REPO --> CTRL : showProposalCheckedList
+    deactivate SP_REPO
+    CTRL --> UI : showProposalCheckedList
+    deactivate CTRL
+    UI --> DT : shows show proposal checked list and ask to select one
+    deactivate UI
+    DT -> UI : selects one
+    activate UI
+
+
+    activate UI
+    UI -> CTRL : acceptProp(showProposal)
+    activate CTRL
+        CTRL -> CTRL :getShowProposalRepository()
+        activate CTRL
+        CTRL -> PERS : getShowProposalRepository()
+                                                activate PERS
+                                                PERS --> CTRL : repositoryFactory
+                                                deactivate PERS
+        CTRL -> REPOS : getInstance()
+        activate REPOS
+            REPOS --> CTRL : repositories
+        deactivate REPOS
+
+        CTRL -> REPOS_SINGLETON : getShowProposalRepository()
+        activate REPOS_SINGLETON
+            REPOS_SINGLETON --> CTRL : showProposalRepository
+            deactivate REPOS_SINGLETON
+        CTRL -->CTRL : showProposalRepository
+        deactivate CTRL
+
+                CTRL -> CTRL : verifyShowProp(showProposal)
+                activate CTRL
+                CTRL --> CTRL: true
+                deactivate CTRL
+                CTRL ->SP** : setShowProposalStatus(ACCEPTED)
+
+            CTRL -> SP_REPO : save(showProposal)
+
+            activate SP_REPO
+
+           SP_REPO --> CTRL :
+
+        deactivate SP_REPO
+
+        CTRL --> UI : true
+
+    deactivate CTRL
+
+UI --> DT : displays success message
+deactivate DT
+
+@enduml

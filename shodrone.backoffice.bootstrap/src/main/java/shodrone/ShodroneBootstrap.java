@@ -39,7 +39,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * eCafeteria Bootstrapping data app
+ * Shodrone Bootstrapping data app
  */
 @SuppressWarnings("squid:S106")
 public final class ShodroneBootstrap extends ShodroneBaseApplication {

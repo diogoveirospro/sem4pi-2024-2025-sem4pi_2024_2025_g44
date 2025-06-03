@@ -1,0 +1,130 @@
+@startuml
+actor "CRM Collaborator" as User
+participant "ShowInfoUI" as UI
+participant "ShowInfoController" as Controller
+participant "CustomerAppServer" as Server
+participant "MarshlerUnmarshler" as MU
+
+participant "ShodroneUserDTO" as UserDto
+participant "CustomerDTO" as CustDto
+participant "ShowProposalDTO" as PropDto
+participant "ShowRequestDTO" as ReqDto
+participant "ShowDTO" as ShowDto
+
+activate User
+
+User -> UI : request to show the info of a scheduled show
+activate UI
+
+UI -> Controller : listShows()
+activate Controller
+
+Controller -> Controller : getRepresenteeOfCustomer()
+
+activate Controller
+
+Controller -> Server : getShodroneUser(authenticatedUser)
+
+activate Server
+
+Server -> UserDto : toRequest(authenticatedUser)
+
+Server -> Server : socket.sendAndRecv(request)
+
+activate Server
+
+Server -> MU : parseResponseMessageShodroneUser(response)
+
+activate MU
+
+MU -> UserDto : ShodroneUserDTO()
+
+MU -> Server : parseResponseMessageLineShodroneUser(response)
+
+deactivate MU
+
+
+deactivate Server
+
+Server -> Controller : shodroneUser
+
+deactivate Server
+
+Controller -> Server : getCustomerOfRepresentative(shodroneUser)
+
+
+activate Server
+Server -> CustDto : toRequest(authenticatedUser)
+
+Server -> Server : socket.sendAndRecv(request)
+
+activate Server
+
+Server -> MU : parseResponseMessageCustomer(response)
+
+activate MU
+
+MU -> CustDto : CustomerDTO()
+
+MU -> Server : parseResponseMessageLineCustomer(response)
+
+deactivate MU
+
+deactivate Server
+
+Server -> Controller : customer
+deactivate Server
+
+deactivate Controller
+
+Controller -> Server : getShowsByCustomer(customer)
+
+activate Server
+
+Server -> ReqDto : toRequest(customer)
+Server -> Server : socket.sendAndRecv(request)
+activate Server
+Server -> MU : parseResponseMessageShowRequest(response)
+activate MU
+MU -> ReqDto : ShowRequestDTO()
+MU -> Server : parseResponseMessageLineShowRequest(response)
+deactivate MU
+deactivate Server
+
+Server -> PropDto : toRequest(customer)
+
+Server -> Server : socket.sendAndRecv(requests)
+activate Server
+Server -> MU : parseResponseMessageShowProposal(response)
+activate MU
+MU -> PropDto : ShowProposalDTO()
+
+MU -> Server : parseResponseMessageLineShowProposal(response)
+deactivate MU
+
+deactivate Server
+
+Server -> ShowDto : createShowDTOsFromShowProposalsAndRequests(proposals, requests)
+
+Server -> Controller : shows
+
+deactivate Server
+Controller -> UI : shows
+deactivate Controller
+UI -> User : asks to select a show
+
+User -> UI : selects a show
+
+UI -> Controller : obtainShow(selectedShow)
+
+activate Controller
+
+Controller -> UI : show
+
+deactivate Controller
+UI -> User : show info of show
+
+deactivate UI
+deactivate User
+
+@enduml
