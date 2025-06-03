@@ -31,6 +31,7 @@ import eapli.framework.infrastructure.pubsub.EventDispatcher;
 import eapli.framework.io.util.Console;
 import plugins.PluginInitializer;
 import shodrone.bootstrappers.Demo.ShodroneDemoBootstrapper;
+import shodrone.bootstrappers.Server.ShodroneServerBootstrapper;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 import shodrone.bootstrappers.SmokeTests.ShodroneDemoSmokeTester;
 import shodrone.presentation.UtilsUI;
@@ -63,13 +64,16 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
     protected void doMain(final String[] args) {
         handleArgs(args);
 
-        ensureDatabaseFileExists();
-
         System.out.println("\n\n------- MASTER DATA -------");
         new ShodroneBootstrapper().execute();
 
         System.out.println("\n\n------- DEMO DATA -------");
         new ShodroneDemoBootstrapper().execute();
+
+        if (false) {
+            System.out.println("\n\n------- SERVER DATA -------");
+            new ShodroneServerBootstrapper().execute();
+        }
 
         if (isToRunSampleE2E) {
             System.out.println("\n\n------- BASIC SCENARIO -------");
@@ -81,25 +85,6 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
         }
     }
 
-    private void ensureDatabaseFileExists() {
-        String dbFilePath = System.getProperty("user.home") + "/DB/shodrone.app.mv.db";
-        File dbFile = new File(dbFilePath);
-
-        if (!dbFile.exists()) {
-            try {
-                File dbDir = dbFile.getParentFile();
-                if (!dbDir.exists()) {
-                    dbDir.mkdirs();
-                }
-                dbFile.createNewFile();
-                System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nDatabase file created in: " + dbFilePath + UtilsUI.RESET);
-            } catch (IOException e) {
-                System.err.println(UtilsUI.BOLD + UtilsUI.RED + "\nError creating the database file: " + e.getMessage() + UtilsUI.RESET);
-            }
-        } else {
-            System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nDatabase file already exists in: " + dbFilePath + UtilsUI.RESET);
-        }
-    }
 
     private void handleArgs(final String[] args) {
         isToRunSampleE2E = ArrayPredicates.contains(args, "-smoke:e2e");

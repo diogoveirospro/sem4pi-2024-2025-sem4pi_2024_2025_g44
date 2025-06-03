@@ -72,8 +72,8 @@ UI -> UI : asks for date, time, quantity of drones and insurance
 
 UI -> User : Asks for all the necessary information to create a show proposal
 
-User -> UI : provides date, time, quantityOfDrones and the insurance
-UI -> Controller : createShowProposal(showRequest, date, time, quantityOfDrones, insurance)
+User -> UI : provides date, time, duration, quantityOfDrones and the insurance
+UI -> Controller : createShowProposal(showRequest, date, time, quantityOfDrones, insurance, duration)
 activate Controller
 
 Controller -> Controller : getCrmCollaborator()
@@ -123,7 +123,7 @@ deactivate CollaboratorRepo
 
 deactivate Controller
 
-Controller -> Proposal : ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator)
+Controller -> Proposal : ShowProposal(showRequest, date, time, quantityOfDrones, insurance, crmCollaborator, duration)
 
 activate Proposal
 

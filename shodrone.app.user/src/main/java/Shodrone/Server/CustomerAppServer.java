@@ -9,12 +9,26 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import Shodrone.DTO.ShodroneUserDTO;
+import Shodrone.exceptions.FailedRequestException;
+import Shodrone.requests.GetShodroneUserRequest;
 import core.Persistence.Application;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CustomerAppServer {
 	private static final Logger LOGGER = LogManager.getLogger(CustomerAppServer.class);
+
+	public ShodroneUserDTO getShodroneUser(String username) throws IOException, FailedRequestException {
+		final var socket = new ClientSocket();
+		socket.connect();
+		final String request = new GetShodroneUserRequest(username).toRequest();
+		final List<String> response = socket.sendAndRecv(request);
+		socket.stop();
+
+		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		return mu.parseResponseMessageShodroneUser(response);
+	}
 
 	private static class ClientSocket {
 		private Socket sock;

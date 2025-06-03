@@ -1,0 +1,37 @@
+package shodrone.bootstrappers.Server;
+
+import core.Persistence.Application;
+import core.Persistence.PersistenceContext;
+import core.Server.customer.Controller.UserAppServerController;
+import core.User.domain.ShodronePasswordPolicy;
+import eapli.framework.actions.Action;
+import eapli.framework.infrastructure.authz.application.AuthzRegistry;
+import eapli.framework.infrastructure.authz.domain.model.PlainTextEncoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class ShodroneServerBootstrapper implements Action {
+    private static final Logger LOGGER = LogManager.getLogger(ShodroneServerBootstrapper.class);
+    private static final String SERVER_PORT = Application.settings().databasePort();
+
+    @Override
+    public boolean execute() {
+        LOGGER.info("Starting Shodrone customer user Server");
+
+        AuthzRegistry.configure(PersistenceContext.repositories().users(), new ShodronePasswordPolicy(),
+                new PlainTextEncoder());
+
+        LOGGER.info("Configuring the server on port {}", SERVER_PORT);
+        final var server = new CustumerAppServer( buildServerDependencies());
+        server.start(Integer.parseInt(SERVER_PORT), true);
+
+        LOGGER.info("Exiting the server");
+
+        return true;
+    }
+
+    private CustomerAppMessageParser buildServerDependencies() {
+        return new CustomerAppMessageParser( new UserAppServerController(),
+                AuthzRegistry.authenticationService());
+    }
+}

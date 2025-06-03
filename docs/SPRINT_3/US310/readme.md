@@ -54,6 +54,7 @@ The `Show Proposal` aggregate includes:
 - **Date** – Date of the show.
 - **Insurance** – Value of the insurance for the show.
 - **FeedbackEmail** – Email from the customer with feedback on the proposal.
+- **Duration** – Duration of the show.
 
 For this requirement we will add the following elements:
 - **ShowRequest**
@@ -62,6 +63,7 @@ For this requirement we will add the following elements:
 - **Time** 
 - **Date** 
 - **Insurance**
+- **Duration**
 
 The other elements will be added to the system and on other requirements.
 
@@ -94,7 +96,7 @@ The following tests validate the acceptance criteria defined for US310. They ens
 ```java
 @Test
 void ensureProposalIncludesTotalNumberOfDrones() {
-    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time, duration);
     assertTrue(proposal.getQuantityOfDrones() > 0);
 }
 ```
@@ -109,7 +111,7 @@ void ensureProposalIncludesTotalNumberOfDrones() {
 ```java
 @Test
 void ensureProposalUsesPredefinedTemplate() {
-    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time, duration);
     proposal.addTemplate(template);
     assertNotNull(proposal.getTemplate());
     assertEquals(expectedTemplateId, proposal.getTemplate().getId());
@@ -126,7 +128,7 @@ void ensureProposalUsesPredefinedTemplate() {
 ```java
 @Test
 void ensureProposalIsAssociatedWithShowRequest() {
-    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time);
+    ShowProposal proposal = controller.createShowProposal(showRequest, quant_drones, insurance, collaborator, date, time, duration);
     assertNotNull(proposal.getShowRequest());
 }
 ```

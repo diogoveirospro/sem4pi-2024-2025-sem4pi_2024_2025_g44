@@ -4,6 +4,7 @@ import Shodrone.DTO.ShowDTO;
 import Shodrone.console.ShowInfo.controller.ShowInfoController;
 import Shodrone.console.ShowInfo.printer.ShowPrinter;
 import Shodrone.console.ShowInfo.printer.ShowPrinterSmall;
+import Shodrone.exceptions.FailedRequestException;
 import Shodrone.exceptions.UserCancelledException;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -12,6 +13,7 @@ import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +48,14 @@ public class ShowInfoUI extends AbstractFancyUI {
         } catch (UserCancelledException e) {
             System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             return false;
+        } catch (FailedRequestException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed request: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return false;
+        } catch (IOException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNetwork error: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
@@ -53,7 +63,7 @@ public class ShowInfoUI extends AbstractFancyUI {
         }
     }
 
-    private int selectShow() {
+    private int selectShow() throws FailedRequestException, IOException {
         Iterable<ShowDTO> shows = controller.listShows();
         if (shows == null || !shows.iterator().hasNext()) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo shows available." + UtilsUI.RESET);
