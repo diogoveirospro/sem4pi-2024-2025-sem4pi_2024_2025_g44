@@ -1,0 +1,92 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Drone Tech" as DT
+participant ":MaintenanceHistoryUI" as UI
+participant ":MaintenanceHistoryController" as CTRL
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
+participant "droneRepository\n:DroneRepository" as DRONE_REPO
+participant "maintenanceRepository\n:MaintenanceRepository" as MAINT_REPO
+
+activate DT
+
+' Primeiro, usuário solicita lista de drones para escolher
+DT -> UI : request list of drones
+activate UI
+  UI -> CTRL : getDroneList()
+  activate CTRL
+
+  CTRL --> PERS : getRepositoryFactory()
+  activate PERS
+  PERS --> CTRL : repositoryFactory
+  deactivate PERS
+
+  CTRL -> REPOS : getInstance()
+  activate REPOS
+  REPOS --> CTRL : repositories
+  deactivate REPOS
+
+  CTRL -> REPOS_SINGLETON : getDroneRepository()
+  activate REPOS_SINGLETON
+  REPOS_SINGLETON --> CTRL : droneRepository
+  deactivate REPOS_SINGLETON
+
+  CTRL -> DRONE_REPO : findAllActiveDrones()
+  activate DRONE_REPO
+  DRONE_REPO --> CTRL : droneList
+  deactivate DRONE_REPO
+
+  CTRL --> UI : droneList
+  deactivate CTRL
+
+UI --> DT : display drone list
+deactivate UI
+
+' Usuário escolhe o drone e insere o intervalo de datas
+DT -> UI : select drone and input date range (startDate, endDate)
+activate UI
+  UI -> CTRL : getMaintenanceHistory(selectedDroneId, startDate, endDate)
+  activate CTRL
+
+  CTRL --> PERS : getRepositoryFactory()
+  activate PERS
+  PERS --> CTRL : repositoryFactory
+  deactivate PERS
+
+  CTRL -> REPOS : getInstance()
+  activate REPOS
+  REPOS --> CTRL : repositories
+  deactivate REPOS
+
+  CTRL -> REPOS_SINGLETON : getDroneRepository()
+  activate REPOS_SINGLETON
+  REPOS_SINGLETON --> CTRL : droneRepository
+  deactivate REPOS_SINGLETON
+
+  CTRL -> DRONE_REPO : findDroneById(selectedDroneId)
+  activate DRONE_REPO
+  DRONE_REPO --> CTRL : drone
+  deactivate DRONE_REPO
+
+  CTRL -> REPOS_SINGLETON : getMaintenanceRepository()
+  activate REPOS_SINGLETON
+  REPOS_SINGLETON --> CTRL : maintenanceRepository
+  deactivate REPOS_SINGLETON
+
+  CTRL -> MAINT_REPO : findByDroneAndDateRange(drone, startDate, endDate)
+  activate MAINT_REPO
+  MAINT_REPO --> CTRL : maintenanceRecordsList
+  deactivate MAINT_REPO
+
+  CTRL --> UI : maintenanceRecordsList
+  deactivate CTRL
+
+UI --> DT : display maintenance history
+deactivate UI
+deactivate DT
+@enduml

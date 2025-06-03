@@ -1,7 +1,4 @@
 #include "header.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 // Safely allocate memory
 void* safe_malloc(size_t size) {
@@ -12,118 +9,6 @@ void* safe_malloc(size_t size) {
     }
     return ptr;
 }
-
-// Reads a line from the console
-char *read_line(const char *prompt) {
-    printf("%s", prompt);
-
-    size_t buffer_size = 256;
-    char *line = malloc(buffer_size);
-    if (!line) {
-        fprintf(stderr, RED "Memory allocation error.\n" RESET);
-        exit(EXIT_FAILURE);
-    }
-
-    if (fgets(line, buffer_size, stdin) == NULL) {
-        free(line);
-        return NULL;
-    }
-
-    // Remove trailing newline
-    line[strcspn(line, "\n")] = '\0';
-    return line;
-}
-
-// Reads an integer from the console
-int read_int(const char *prompt) {
-    int value;
-    while (true) {
-        char *input = read_line(prompt);
-        if (sscanf(input, "%d", &value) == 1) {
-            free(input);
-            return value;
-        }
-        printf(RED "Invalid input. Please enter an integer.\n" RESET);
-        free(input);
-    }
-}
-
-// Reads a double from the console
-double read_double(const char *prompt) {
-    double value;
-    while (true) {
-        char *input = read_line(prompt);
-        if (sscanf(input, "%lf", &value) == 1) {
-            free(input);
-            return value;
-        }
-        printf(RED "Invalid input. Please enter a number.\n" RESET);
-        free(input);
-    }
-}
-
-// Asks for confirmation (Y/N)
-bool confirm(const char *message) {
-    char *input;
-    while (true) {
-        input = read_line(message);
-        if (strcasecmp(input, "y") == 0) {
-            free(input);
-            return true;
-        } else if (strcasecmp(input, "n") == 0) {
-            free(input);
-            return false;
-        }
-        printf(YELLOW "Please enter 'Y' or 'N'.\n" RESET);
-        free(input);
-    }
-}
-
-// Displays a list with a header
-void show_list(const char *list[], size_t size, const char *header) {
-    printf(BOLD "%s\n" RESET, header);
-    for (size_t i = 0; i < size; ++i) {
-        printf("  %zu - %s\n", i + 1, list[i]);
-    }
-    printf("  0 - Exit\n");
-}
-
-// Allows the user to select an index from a list
-int select_index(const char *list[], size_t size, const char *header) {
-    show_list(list, size, header);
-
-    int index;
-    while (true) {
-        index = read_int("Type your option: ");
-        if (index >= 0 && index <= (int)size) {
-            return index - 1; // Return zero-based index
-        }
-        printf(RED "Invalid option. Please select a valid index.\n" RESET);
-    }
-}
-
-void goBackAndWait() {
-    char input[10]; // Set a maximum size for the input string
-    do {
-        // Clear the input buffer
-        while (getchar() != '\n'); // Clear any characters in the buffer
-
-        printf("\nPress \"0\" to go back: ");
-        fgets(input, sizeof(input), stdin); // Read the line from the console
-
-        // Remove the '\n' that is added by fgets
-        input[strcspn(input, "\n")] = '\0';
-    } while (strcmp(input, "0") != 0); // Continue until the input is ‘0’
-}
-
-void trim_trailing_spaces(char* str) {
-    int len = strlen(str);
-    while (len > 0 && (str[len - 1] == ' ' || str[len - 1] == '\t' || str[len - 1] == '\n')) {
-        str[len - 1] = '\0';  // Replace the last character with '\0'
-        len--;
-    }
-}
-
 
 // Allocates a 3D array for the space (sizeX x sizeY x sizeZ)
 SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ) {
@@ -199,9 +84,89 @@ int get_drone_at(SpaceCell ***space, int x, int y, int z) {
     return space[x][y][z].drone_id;
 }
 
-// Calculate teh distance between two drones
+
+
+
+
+
+
+
+
+
+
+
+
+// calculate the distance between two drones
 double calculate_distance(Position p1, Position p2) {
     return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2) + pow(p1.z - p2.z, 2));
 }
 
+int get_file_size(FILE *fd)
+{
+	int size = 0;
+	int cursor;
+
+	cursor = ftell(fd);
+	fseek(fd, 0, SEEK_END);
+	size = ftell(fd);
+	fseek(fd, 0, cursor);
+
+	return size;
+}
+
+int **int_malloc_matrix(int row, int col)
+{
+	int **arr = (int **) malloc(sizeof(int *) * row);
+
+	if (arr == NULL)
+		end();
+
+	for (int i = 0; i < row; i++)
+	{
+		arr[i] = (int *) malloc(sizeof(int) * col);
+
+		if (arr[i] == NULL)
+			end();
+	}
+	return arr;
+}
+
+void int_free_matrix(int **arr, int row)
+{
+	for (int i = 0; i < row; i++)
+		free(arr[i]);
+	free(arr);
+}
+
+DroneHistory **alloc_history(int n, int c)
+{
+  DroneHistory **list;
+
+  list = (DroneHistory**) malloc(sizeof(DroneHistory *) * n);
+
+  for (int i = 0; i < n; i++) {
+    list[i] = (DroneHistory *) malloc(sizeof(DroneHistory));
+
+    list[i]->positions = malloc(sizeof(Position) * c);
+    list[i]->timestamps = malloc(sizeof(float) * c);
+
+    list[i]->count = 0;
+    list[i]->capacity = c;
+    list[i]->drone_id = i + 1;
+    list[i]->collision_count = 0;
+  }
+
+  return list;
+}
+
+void free_history(DroneHistory **h, int n)
+{
+  for (int i = 0; i < n; i++)
+  {
+    free(h[i]->positions);
+    free(h[i]->timestamps);
+    free(h[i]);
+  }
+  free(h);
+}
 

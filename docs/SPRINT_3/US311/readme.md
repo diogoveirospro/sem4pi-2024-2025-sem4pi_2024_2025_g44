@@ -115,7 +115,7 @@ This document provides an overview of the system design for configuring drone mo
 - **Main Methods:**
   - `getShowProposalList()`: Requests available show proposals.
   - `getModelList()`: Requests a list of drone models for selection.
-  - `getModelDrones()`: Requests the selected number of drones of the selected model.
+  - `getDrnModelList(model)`: Requests the list of physical drones for a selected model.
   - `configureShow(showProposal, configuration)`: Sends the final configuration to the controller.
 
 ---
@@ -123,12 +123,14 @@ This document provides an overview of the system design for configuring drone mo
 ### 🎮 Application Layer
 
 #### :ConfigShowPropController
-- **Role:** Orchestrates the logic of configuring the drone list by coordinating repositories and domain objects.
+- **Role:**  Coordinates the acceptance logic by interacting with repositories and domain objects.
 - **Main Methods:**
   - `getShowProposalList()`: Fetches show proposals using the `ShowProposalRepository`.
   - `getModelList()`: Fetches drone models using the **ModelRepository**.
-  - `configureShow(showProposal, configuration)`: Builds, validates, and saves the configuration.
+  - `getDrnModelList(model)`: Retrieves drones associated with a specific model.
   - `getShowProposalRepository()`: Resolves and caches the repository instance.
+  - `configureShow(showProposal, configuration)`: Builds, validates, and saves the configuration.
+  - `verifyShowPropConfig(configuration)`: Ensures the configuration is valid (no duplicate drones, availability checks, etc.).
 
 ---
 
@@ -153,10 +155,16 @@ This document provides an overview of the system design for configuring drone mo
   - `getModelRepository()`: Retrieves the `ModelRepository` instance.
 
 #### showProposalRepository: ShowProposalRepository
-- **Role:** Handles persistent storage and retrieval of `ShowProposal` entities.
+- **Role:** Manages persistent storage of ShowProposal entities.
 - **Main Methods:**
   - `getShowProposalList()`: Returns all existing show proposals.
   - `save(showProposal)`: Persists the updated show proposal with the new configuration.
+
+#### showProposalRepository: ShowProposalRepository
+- **Role:** Handles persistent storage and retrieval of `ShowProposal` entities.
+- **Main Methods:**
+  - `getModelList()`: Returns the list of available drone models.
+  - `getDrnModelList(model)`: Returns the list of physical drones belonging to a specific model.
 
 #### modelRepository: ModelRepository
 - **Role:** Provides access to drone model data.

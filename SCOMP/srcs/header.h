@@ -1,7 +1,8 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-// Includes
+// ------------ Includes -----------------
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -16,15 +17,18 @@
 #include <sys/stat.h>
 
 
-// Defines
+// ------------ Defines -----------------
+
+//#define LOG_FILE "./log.txt"
 #define CONFIG_FILE "./config.txt"
 #define DRONE_FILE "./drone"
 #define INPUT_FILENAME "file_drone_"
 #define INPUT_FILE_EXTENSION ".txt"
 
-
 #define CONFIG_FILE_MAX_SIZE 10000
 #define MAX_COLLISIONS_LOG 1000
+#define FILENAME_SIZE 500
+#define HISTORY_INIT_CAPACITY 100
 
 #define RESET "\033[0m"
 #define BOLD "\033[1m"
@@ -34,7 +38,78 @@
 #define BLUE "\033[34m"
 #define CYAN "\033[36m"
 
-typedef struct data {
+// ------------ Structs -----------------
+
+typedef struct vector {
+
+  int x;
+  int y;
+  int z;
+
+} Vector;
+
+
+typedef struct position {
+
+  int x;
+  int y;
+  int z;
+
+} Position;
+
+typedef struct message {
+  
+  Position pos;
+
+  int id;
+
+} Message;
+
+
+typedef struct drone_history {
+
+    Position *positions;  // dynamic array of drone positions
+                          //
+    float *timestamps;    // parallel array of timestamps for each position
+                          //
+    int count;            // number of stored positions
+    int capacity;         // current array capacity (for resizing)
+    int drone_id;         // drone id
+    int collision_count;  // number of collisions
+
+} DroneHistory;
+
+
+typedef struct collision_log {
+
+    int drone1;
+    int drone2;
+
+    Position pos1;
+    Position pos2;
+
+    float timestamp;
+
+} CollisionLog;
+
+
+typedef struct space_cell {
+
+    int drone_id; // -1 if empty, else drone id
+                  
+} SpaceCell;
+
+
+// Matrix to map drone index to its Position
+typedef struct drone_position {
+
+    Position pos;
+    int drone_id;
+
+} DronePosition;
+
+
+typedef struct config_file_data {
 
   //config file info
   int max_collisions;
@@ -45,73 +120,69 @@ typedef struct data {
   int max_X;
   int max_Y;
   int max_Z;
-  float timestamp;
+  float timestep;
 
-  //signals
-  struct sigaction sa;
+} ConfigData;
+
+
+typedef struct parent_data {
 
   //pipes
   int up[2];
   int **down;
 
-  //childs info
-  char *state;
+  //childs pids
   int *pids;
+
+  //save which drones ended
+  int *finished;
+
+  //number of drones active
+  int active_drones;
+
+  //number of total collisions
+  int collisions;
 
   //childs created flag
   int childs_created;
 
-} Data;
+  //history list
+  DroneHistory **h_list;
 
-// Structs
-typedef struct position {
-  int x;
-  int y;
-  int z;
-} Position;
+} ParentData;
 
-typedef struct {
+
+typedef struct drone_data {
+
+  //arguments
+  char *inp_dir;
   int id;
-  Position pos;
-  int finished; // 0 = normal message, 1 = drone finished
-} Message;
+  int max_x;
+  int max_y;
+  int max_z;
 
-typedef struct {
-    Position *positions;  // dynamic array of drone positions
-    float *timestamps;    // parallel array of timestamps for each position
-    int count;            // number of stored positions
-    int capacity;         // current array capacity (for resizing)
-    int drone_id;         // drone id
-    int collision_count;  // number of collisions
-} DroneHistory;
+  //script filename
+  char *filename;
 
-typedef struct {
-    int drone1;
-    int drone2;
-    Position pos;
-    float timestamp;
-} CollisionLog;
+} DroneData;
 
-typedef struct space_cell {
-    int drone_id; // -1 if empty, else drone id
-} SpaceCell;
+// ------------ Functions -----------------
 
-// Matrix to map drone index to its Position
-typedef struct drone_position {
-    int drone_id;
-    Position pos;
-} DronePosition;
+void end();
+void terminate();
+void do_report();
 
-// Function declarations
+
+int get_file_size(FILE *fd);
+
+int **int_malloc_matrix(int row, int col);
+void int_free_matrix(int **arr, int row);
+
+
+DroneHistory **alloc_history(int n, int c);
+void free_history(DroneHistory **h, int n);
+
 void* safe_malloc(size_t size);
-char *read_line(const char *prompt);
-int read_int(const char *prompt);
-double read_double(const char *prompt);
-bool confirm(const char *message);
-void show_list(const char *list[], size_t size, const char *header);
-int select_index(const char *list[], size_t size, const char *header);
-void goBackAndWait();
-void trim_trailing_spaces(char* str);
 void set_drone_in_space(SpaceCell ***space, int x, int y, int z, int drone_id);
 void remove_drone_from_space(SpaceCell ***space, int x, int y, int z);
 bool is_cell_empty(SpaceCell ***space, int x, int y, int z);
@@ -121,6 +192,5 @@ SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ);
 void free_space(SpaceCell ***space, int sizeX, int sizeY);
 DronePosition* alloc_drone_positions(int num_drones);
 double calculate_distance(Position p1, Position p2);
-
 
 #endif

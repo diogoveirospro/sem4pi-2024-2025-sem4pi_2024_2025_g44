@@ -93,7 +93,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             }
 
             System.out.println(UtilsUI.BOLD + "\nConfiguration Summary:" + UtilsUI.RESET);
-            showProposal.configuration().dronesByModel().forEach((model, drones) -> {
+            configBuilder.showConfiguration().forEach((model, drones) -> {
                 System.out.printf(" - Model: %s, Quantity: %d%n", model.identity(), drones.size());
                 for (Drone drone : drones) {
                     System.out.println("    • Drone SerialNumber: " + drone.identity());
