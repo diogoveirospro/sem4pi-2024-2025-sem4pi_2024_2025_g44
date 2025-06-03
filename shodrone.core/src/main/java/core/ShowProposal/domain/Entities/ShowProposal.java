@@ -444,7 +444,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         Set<Model> models = configuration.droneModels();
 
         for (Model model : models) {
-            long quantity = configuration.drones().get(model).size();
+            long quantity = configuration.showConfiguration().get(model).size();
             dronesSection.append(model.toString())
                     .append(" – ")
                     .append(quantity)

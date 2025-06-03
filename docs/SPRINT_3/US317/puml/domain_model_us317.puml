@@ -1,0 +1,82 @@
+@startuml
+package "ShowProposal " <<aggregate>>{
+
+    enum ShowProposalStatus <<Value Object>>{
+    }
+
+    class ShowProposal <<Entity>> <<root>>{
+    }
+
+    class ShowProposalDocument <<Value Object>>{
+    }
+
+    class ShowProposalNumber <<Value Object>>{
+    }
+
+    class Insurance <<Value Object>>{
+    }
+
+    class CustomerFeedback <<Value Object>>{
+    }
+
+    class ShowConfiguration <<Entity>>{
+    }
+
+    class Video <<Value Object>>{
+    }
+
+    class DocumentValidate <<Service>> {
+    }
+
+    class ShowDSLDescription <<Value Object>> {
+    }
+
+    class GenerateShowDSL <<Service>> {
+    }
+
+    'ShowProposal -> x
+    ShowProposal --> "1" CustomerFeedback: customerFeedback
+    ShowProposal --> "1" CRMManager: template configured by
+    ShowProposal --> "1" ShowRequest: based on
+    ShowProposal --> "1" ShowProposalStatus: proposalStatus
+    ShowProposal --> "1" ShowProposalDocument: document
+    ShowProposal --> "1" ShowProposalNumber: proposalNumber
+    ShowProposal --> "1" Insurance: insurance
+    ShowProposal --> "1" ShowConfiguration: showConfiguration
+    ShowProposal --> "1" Video: video
+
+    'GenerateShowDSL -> x
+    GenerateShowDSL ..> ShowConfiguration: uses
+    GenerateShowDSL --> ShowDSLDescription: returns
+
+    'DocumentValidate -> x
+    DocumentValidate ..> "1" ShowProposalDocument: validates
+
+    'ShowConfiguration -> x
+    ShowConfiguration --> "0..1" ShowDSLDescription: showDSLDescription
+}
+
+
+package Shared {
+
+    class Time <<Value Object>>{
+    }
+
+    class Date <<Value Object>>{
+    }
+
+    class Duration <<Value Object>>{
+    }
+
+    class QuantityOfDrones <<Value Object>>{
+    }
+
+    'ShowProposal -> x
+    ShowProposal ----> "1" QuantityOfDrones: qnt_drones
+    ShowProposal ----> "1" Time: timeOfShow
+    ShowProposal ----> "1" Date: dateOfShow
+    ShowProposal ----> "1" Duration: durationOfShow
+
+}
+
+@enduml
