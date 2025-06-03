@@ -21,35 +21,42 @@
  *
  */
 
-Data s;
+ConfigData c;
+ParentData s;
+
 SpaceCell ***space;
 DronePosition *drone_positions;
-DroneHistory **histories;
 CollisionLog collision_log[MAX_COLLISIONS_LOG];
-int collision_log_count = 0;
-
 int **collision_state = NULL; // 0: no collision, 1: collision
-// remove later
-void do_report(void);
-void terminate(void);
 
 void end()
 {
-  raise(SIGINT);
-  exit(EXIT_FAILURE);
+  raise(SIGUSR2);
 }
 
-int get_file_size(FILE *fd)
+void handler_sigusr2(int sig)
 {
-	int size = 0;
-	int cursor;
+	(void) sig;
 
-	cursor = ftell(fd);
-	fseek(fd, 0, SEEK_END);
-	size = ftell(fd);
-	fseek(fd, 0, cursor);
+	if (s.childs_created)
+	{
+		for (int i = 0; i < c.num_drones; i++)
+			kill(s.pids[i], SIGKILL);
 
-	return size;
+		for (int i = 0; i < c.num_drones; i++)
+			wait(NULL);
+	}
+  exit(1);
+}
+
+void set_up_signals()
+{
+  struct sigaction sa;
+
+	memset(&sa, 0, sizeof(sa));
+	sigfillset(&sa.sa_mask);
+	sa.sa_handler = handler_sigusr2;
+	sigaction(SIGUSR2, &sa, NULL);
 }
 
 void parse_data(char *str)
@@ -57,31 +64,31 @@ void parse_data(char *str)
 	char d[] = "=\n";
 
 	strtok(str, d);
-	s.inp_dir = strdup(strtok(NULL, d));
+	c.inp_dir = strdup(strtok(NULL, d));
 
 	strtok(NULL, d);
-	s.out_dir = strdup(strtok(NULL, d));
+	c.out_dir = strdup(strtok(NULL, d));
 
 	strtok(NULL, d);
-	s.max_collisions = atoi(strtok(NULL, d));
+	c.max_collisions = atoi(strtok(NULL, d));
 
 	strtok(NULL, d);
-	s.num_drones = atoi(strtok(NULL, d));
+	c.num_drones = atoi(strtok(NULL, d));
 
-    strtok(NULL, d);
-    s.drone_radius = atoi(strtok(NULL, d));
-
-	strtok(NULL, d);
-	s.max_X = atoi(strtok(NULL, d));
+  strtok(NULL, d);
+  c.drone_radius = atoi(strtok(NULL, d));
 
 	strtok(NULL, d);
-	s.max_Y = atoi(strtok(NULL, d));
+	c.max_X = atoi(strtok(NULL, d));
 
 	strtok(NULL, d);
-	s.max_Z = atoi(strtok(NULL, d));
+	c.max_Y = atoi(strtok(NULL, d));
 
 	strtok(NULL, d);
-	s.timestamp = atof(strtok(NULL, d));
+	c.max_Z = atoi(strtok(NULL, d));
+
+	strtok(NULL, d);
+	c.timestep = atof(strtok(NULL, d));
 }
 
 void process_config_file()
@@ -98,8 +105,12 @@ void process_config_file()
 	if (str == NULL)
 		end();
 
-	if (fread(str, sizeof(char), size + 1, fd) <= 0)
-		end();
+  int n = fread(str, sizeof(char), size, fd);
+
+  str[size] = '\0';
+
+  if (n <= 0)
+    end();
 
 	fclose(fd);
 
@@ -108,486 +119,460 @@ void process_config_file()
 	free(str);
 }
 
-void handler_sigint(int sig)
-{
-	(void) sig;
-
-	if (s.childs_created)
-	{
-		for (int i = 0; i < s.num_drones; i++)
-			kill(s.pids[i], SIGKILL);
-
-		for (int i = 0; i < s.num_drones; i++)
-			wait(NULL);
-	}
-
-	exit(1);
-}
-
-void set_up_signals()
-{
-/*	sigset_t set;
-
-	sigfillset(&set);
-	sigdelset(&set, SIGUSR1);
-	sigdelset(&set, SIGINT);
-	sigprocmask(SIG_BLOCK, &set, NULL);
-*/
-	struct sigaction sa;
-
-	memset(&sa, 0, sizeof(sa));
-	sigfillset(&sa.sa_mask);
-	sigdelset(&sa.sa_mask, SIGINT);
-	sa.sa_handler = handler_sigint;
-	sigaction(SIGINT, &sa, NULL);
-}
-
-int **int_malloc_matrix(int row, int col)
-{
-	int **arr = (int **) malloc(sizeof(int *) * row);
-
-	if (arr == NULL)
-		end();
-
-	for (int i = 0; i < row; i++)
-	{
-		arr[i] = (int *) malloc(sizeof(int) * col);
-
-		if (arr[i] == NULL)
-			end();
-	}
-	return arr;
-}
-
-void int_free_matrix(int **arr, int row)
-{
-	for (int i = 0; i < row; i++)
-		free(arr[i]);
-	free(arr);
-}
-
-void free_drone_history(DroneHistory *history) {
-    if (!history) return;
-    free(history->positions);
-    free(history->timestamps);
-    free(history);
-}
-
 void set_up_childs()
 {
-  int **down = int_malloc_matrix(s.num_drones, 2);
+  int **down = int_malloc_matrix(c.num_drones, 2);
 
 	char str_i[10];
+	char str_x[10];
+	char str_y[10];
+	char str_z[10];
+
 	pid_t pid;
 
-	s.state = (char *) malloc(sizeof(char) * s.num_drones);
-
-	if (s.state == NULL)
-		end();
-	memset(s.state, 0, sizeof(char) * s.num_drones);
-
-	s.pids = (int *) malloc(sizeof(int) * s.num_drones);
+	s.pids = (int *) malloc(sizeof(int) * c.num_drones);
 
 	if (s.pids == NULL)
 		end();
-	memset(s.pids, 0, sizeof(int) * s.num_drones);
+	memset(s.pids, 0, sizeof(int) * c.num_drones);
 
 	if (pipe(s.up))
 		end();
 
-	for (int i = 0; i < s.num_drones; i++)
+	for (int i = 0; i < c.num_drones; i++)
 	{
 		if (pipe(down[i]))
 			end();
 
 		pid = fork();
 
-
 		if (pid == 0)
 		{
-			close(s.up[0]);		// child doesnt need read side on up pipe
+			close(s.up[0]);		    // child doesnt need read side on up pipe
 
 			dup2(down[i][0], 0);	// child reads from fd 0 to get info from pipe down
 
-			dup2(s.up[1], 1);	// child writes to fd 1 to write info to pipe up
+			dup2(s.up[1], 1);	    // child writes to fd 1 to write info to pipe up
 
-			close(down[i][1]);	// child doesnt need write side on down pipe
+			close(down[i][1]);	  // child doesnt need write side on down pipe
 
 			snprintf(str_i, sizeof(str_i), "%d", i + 1);
-			execl(DRONE_FILE, DRONE_FILE, str_i, s.inp_dir, NULL);
+			snprintf(str_x, sizeof(str_x), "%d", c.max_X);
+			snprintf(str_y, sizeof(str_y), "%d", c.max_Y);
+			snprintf(str_z, sizeof(str_z), "%d", c.max_Z);
+			execl(DRONE_FILE, DRONE_FILE, c.inp_dir, str_i, str_x, str_y, str_z, NULL);
 
-			kill(getppid(), SIGINT);
+			kill(getppid(), SIGUSR2);
 		}
-		close(down[i][0]);		// parent doesnt need read side on down pipe
+		close(down[i][0]);		  // parent doesnt need read side on down pipe
+
 		s.pids[i] = pid;
+
 		drone_positions[i].drone_id = i + 1;
 	}
-	close(s.up[1]);				// parent doesnt need write side on up pipe
+	close(s.up[1]);				    // parent doesnt need write side on up pipe
 
 	s.down = down;
 	s.childs_created = 1;
 }
 
-DroneHistory* init_drone_history(int drone_id, int initial_capacity) {
-    DroneHistory *history = malloc(sizeof(DroneHistory));
-    if (!history) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
+void add_position_timestamp(DroneHistory *h, Position pos, float timestamp)
+{
+  if (h->count == h->capacity)
+  {
+    int new_capacity = h->capacity * 2;
+    Position *new_positions = realloc(h->positions, new_capacity * sizeof(Position));
+    float *new_timestamps = realloc(h->timestamps, new_capacity * sizeof(float));
+
+    if (!new_positions || !new_timestamps)
+    {
+      perror("realloc");
+      // In the event of an error, we can continue with the old memory to avoid losses
+      free(new_positions);
+      free(new_timestamps);
+      return;
     }
 
-    history->positions = malloc(initial_capacity * sizeof(Position));
-    history->timestamps = malloc(initial_capacity * sizeof(float));
-    if (!history->positions || !history->timestamps) {
-        perror("malloc");
-        free(history->positions);
-        free(history->timestamps);
-        free(history);
-        exit(EXIT_FAILURE);
-    }
+    h->positions = new_positions;
+    h->timestamps = new_timestamps;
+    h->capacity = new_capacity;
+  }
 
-    history->count = 0;
-    history->capacity = initial_capacity;
-    history->drone_id = drone_id;
-	history->collision_count = 0;
-
-    return history;
-}
-
-void add_position_timestamp(DroneHistory *history, Position pos, float timestamp) {
-    if (history->count == history->capacity) {
-        int new_capacity = history->capacity * 2;
-        Position *new_positions = realloc(history->positions, new_capacity * sizeof(Position));
-        float *new_timestamps = realloc(history->timestamps, new_capacity * sizeof(float));
-
-        if (!new_positions || !new_timestamps) {
-            perror("realloc");
-            // In the event of an error, we can continue with the old memory to avoid losses
-            free(new_positions);
-            free(new_timestamps);
-            return;
-        }
-
-        history->positions = new_positions;
-        history->timestamps = new_timestamps;
-        history->capacity = new_capacity;
-    }
-
-    history->positions[history->count] = pos;
-    history->timestamps[history->count] = timestamp;
-    history->count++;
+  h->positions[h->count] = pos;
+  h->timestamps[h->count] = timestamp;
+  h->count++;
 }
 
 
 // Check number of collisions between drones
-int check_collisions(int collision_distance, int *pids, DronePosition *drone_positions, int num_drones, float current_timestamp) {
-    int new_collisions = 0;
-    for (int i = 0; i < num_drones; i++) {
-        for (int j = i + 1; j < num_drones; j++) {
-            double dist = calculate_distance(drone_positions[i].pos, drone_positions[j].pos);
-            if (dist <= collision_distance) {
-                if (collision_state[i][j] == 0) {
-                    // New Collision!
-                    kill(pids[i], SIGUSR1);
-                    kill(pids[j], SIGUSR1);
-                    histories[i]->collision_count++;
-                    histories[j]->collision_count++;
-                    new_collisions++;
+int check_collisions(int iter)
+{
+  int new_collisions = 0;
+  int collision_distance = c.drone_radius * 2;
+  int current_timestamp = iter * c.timestep;
 
-                    collision_log[collision_log_count].drone1 = i + 1;
-                    collision_log[collision_log_count].drone2 = j + 1;
-                    collision_log[collision_log_count].pos = drone_positions[i].pos; // uses the position of drone1 but could be drone2 as well
-                    collision_log[collision_log_count].timestamp = current_timestamp;
-                    collision_log_count++;
+  double distance;
 
-                    collision_state[i][j] = 1;
-                    collision_state[j][i] = 1;
-                }
-            } else {
-                // They are no longer in collision, reset
-                collision_state[i][j] = 0;
-                collision_state[j][i] = 0;
-            }
+  for (int i = 0; i < c.num_drones; i++)
+    for (int j = i + 1; j < c.num_drones; j++)
+    {
+      distance = calculate_distance(drone_positions[i].pos, drone_positions[j].pos);
+
+      if (distance <= collision_distance)
+      {
+        if (collision_state[i][j] == 0)
+        {
+          // New Collision!
+          kill(s.pids[i], SIGUSR1);
+          kill(s.pids[j], SIGUSR1);
+
+          s.h_list[i]->collision_count++;
+          s.h_list[j]->collision_count++;
+
+          new_collisions++;
+
+          collision_log[s.collisions].drone1 = i + 1;
+          collision_log[s.collisions].drone2 = j + 1;
+          collision_log[s.collisions].pos1 = drone_positions[i].pos;
+          collision_log[s.collisions].pos2 = drone_positions[j].pos;
+          collision_log[s.collisions].timestamp = current_timestamp;
+
+          s.collisions++;
+
+          collision_state[i][j] = 1;
+          collision_state[j][i] = 1;
         }
+      } 
+      else
+      {
+        // They are no longer in collision, reset
+        collision_state[i][j] = 0;
+        collision_state[j][i] = 0;
+      }
     }
-    return new_collisions;
+  return new_collisions;
 }
 
-// Handle collision limit exceeded
-void handle_collision_limit_exceeded(int *finished) {
-    fprintf(stderr, "\n%sCollision limit exceeded. Terminating...%s\n", RED, RESET);
-    // Notify all drones to terminate
-    for (int i = 0; i < s.num_drones; i++) {
-        if (!finished[i]) {
-            kill(s.pids[i], SIGKILL);
-        }
-    }
-    // Wait for all drones to terminate
-    for (int i = 0; i < s.num_drones; i++) {
-        waitpid(s.pids[i], NULL, 0);
-    }
-    free(finished);
-    do_report();
-    terminate();
+// verify if drone terminated
+// returns 1 if terminated
+// returns 0 if not terminated
+int verify_drone_termination(Message m)
+{
+  if (m.pos.x == -1 || m.pos.y == -1 || m.pos.z == -1)
+    return 1;
+  return 0;
 }
 
-void send_continue_flag(int drone_idx, bool should_continue) {
-    write(s.down[drone_idx][1], &should_continue, sizeof(bool));
-}
-
-void send_timestep(int drone_idx, int timestep) {
-    write(s.down[drone_idx][1], &timestep, sizeof(int));
-}
-
-void repeat() {
-    Message m;
-    int t = 0;
-    int active_drones = s.num_drones;
-    int *finished = calloc(s.num_drones, sizeof(int));
-    int collision_distance = s.drone_radius * 2;
-    int collisions = 0;
-
-    if (!finished) {
-        perror("calloc");
-        exit(EXIT_FAILURE);
-    }
-
-    while (active_drones > 0) {
-        // Send timestep to each drone at the start of the round
-        for (int i = 0; i < s.num_drones; i++) {
-            if (!finished[i])
-                send_timestep(i, t);
-        }
-
-        // Track which drones have sent their message for this timestep
-        int *received = calloc(s.num_drones, sizeof(int));
-        int received_count = 0;
-
-        while (received_count < active_drones) {
-            ssize_t n = read(s.up[0], &m, sizeof(Message));
-            int idx = m.id - 1;
-            if (m.finished == 1) {
-                finished[idx] = 1;
-                received[idx] = 1;
-                active_drones--;
-                received_count++;
-                continue;
-            }
-            if (finished[idx] || received[idx]) {
-                continue;
-            }
-            if (n == 0) {
-                // EOF: a drone has exited
-                // Find which drone exited and mark as terminated
-                for (int i = 0; i < s.num_drones; i++) {
-                    if (!finished[i] && !received[i]) {
-                        finished[i] = 1;
-                        active_drones--;
-                        break;
-                    }
-                }
-                continue;
-            } else if (n < 0) {
-                perror("read");
-                continue;
-            }
-
-            if (finished[idx] || received[idx]) {
-                // Already terminated or already received for this timestep
-                continue;
-            }
-
-            int x = m.pos.x;
-            int y = m.pos.y;
-            int z = m.pos.z;
-
-            if (x < 0 || x >= s.max_X || y < 0 || y >= s.max_Y || z < 0 || z >= s.max_Z) {
-                fprintf(stderr, RED "Invalid drone position %d: %d,%d,%d\n" RESET, m.id, x, y, z);
-                received[idx] = 1;
-                received_count++;
-                continue;
-            }
-
-            add_position_timestamp(histories[idx], m.pos, t * s.timestamp);
-            move_drone(space, drone_positions, idx, m.pos, s.max_X, s.max_Y, s.max_Z);
-
-            received[idx] = 1;
-            received_count++;
-        }
-        free(received);
-
-        // Check for collisions
-		float current_time = t * s.timestamp;
-        collisions += check_collisions(collision_distance, s.pids, drone_positions, s.num_drones, current_time);
-
-        // Check if the number of collisions exceeds the limit
-        if (collisions >= s.max_collisions){
-            handle_collision_limit_exceeded(finished);
-        }
-
-        for (int i = 0; i < s.num_drones; i++) {
-            if (!finished[i]){
-                send_continue_flag(i, true);
-            }
-        }
-        t++;
-    }
-
-    free(finished);
+// updates position in all needed places
+void update_position(Message m, int iter)
+{
+  // TODO: improve this condition. Supposed to check if invalid position.
+  // if so, remove this drone from the matrix
+  if (verify_drone_termination(m))
+  {
+    ;
+  }
+  else
+  {
+    add_position_timestamp(s.h_list[m.id - 1], m.pos, iter * c.timestep);
+    move_drone(space, drone_positions, m.id - 1, m.pos, c.max_X, c.max_Y, c.max_Z);
+  }
 }
 
 
+// reads message from up pipe
+Message read_msg()
+{
+  Message m;
+
+  read(s.up[0], &m, sizeof(Message));
+
+  return m;
+}
+
+// reads all childs messages
+// saves each one to specific places
+// if drone ended, remove him
+//
+// return 0 to continue program
+// return -1 in case no more drones
+int manage_drones(int iter)
+{
+  int msg_received_cnt = 0;
+  int msg_expected_cnt = s.active_drones;
+
+  Message m;
+
+  while (msg_received_cnt < msg_expected_cnt)
+  {
+    m = read_msg();
+
+    if (verify_drone_termination(m))
+    {
+      s.finished[m.id - 1] = 1;
+      s.active_drones--;
+    } 
+
+    msg_received_cnt++;
+
+    update_position(m, iter);
+  }
+
+  if (s.active_drones == 0)
+    return -1;
+  return 0;
+}
+
+// checks for collision limit
+int process_position(int iter)
+{
+  static int collisions = 0;
+
+  collisions += check_collisions(iter);
+
+  if (collisions >= c.max_collisions)
+    return -1;
+  return 0;
+}
+
+// send green flag to specific child
+void send_green_flag(int i)
+{  
+  write(s.down[i][1], (char []){'Z'}, sizeof(char));
+}
+
+// send msg to sync all drones
+void sync_drones()
+{
+  for (int i = 0; i < c.num_drones; i++)
+    if (!s.finished[i])
+      send_green_flag(i);
+}
+
+// repeats process of reading position
+// checking collision
+// updating position
+// syncing drones
+// repeat
+//
+// if manage_drones returns -1
+// means no more active drones
+//
+// if process_position returns -1
+// means collision limit exceeded
+void start_loop()
+{
+  int n_iter = 0;
+
+  while (1)
+  {
+    if (manage_drones(n_iter) == -1)
+      break;
+
+    if (process_position(n_iter) == -1)
+      break;
+
+    sync_drones();
+
+    n_iter++;
+  }
+}
+
+// generates report file
 void do_report()
 {
-    // File name with timestamp
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
+  // File name with timestamp
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);
 
-    char filename[100];
-    snprintf(filename, sizeof(filename),
-             "simulation_report_%02d_%02d_%02d_%02d_%02d.txt",
-             t->tm_mday, t->tm_mon + 1, t->tm_year % 100,
-             t->tm_hour, t->tm_min);
+  char filename[100];
 
-    char path[256];
-    snprintf(path, sizeof(path), "%s/%s", s.out_dir, filename);
+  snprintf(filename, sizeof(filename),
+           "simulation_report_%02d_%02d_%02d_%02d_%02d_%02d.txt",
+           t->tm_mday, t->tm_mon + 1, t->tm_year % 100,
+           t->tm_hour, t->tm_min, t->tm_sec);
 
-	// Create output directory if it doesn't exist
-    if (mkdir(s.out_dir, 0777) == -1 && errno != EEXIST) {
-        perror("Error creating output directory");
-        return;
+  char path[256];
+
+  snprintf(path, sizeof(path), "%s/%s", c.out_dir, filename);
+
+  // Create output directory if it doesn't exist
+  if (mkdir(c.out_dir, 0777) == -1 && errno != EEXIST)
+  {
+    perror("Parent: Error creating output directory");
+    return;
+  }
+
+  FILE *f = fopen(path, "w");
+  if (!f)
+  {
+    perror("Parent: Error creating report file");
+    return;
+  }
+
+  // Header
+  fprintf(f, "Simulation Report - Shodrone\n\n");
+  fprintf(f, "Total drones: %d\n\n", c.num_drones);
+
+  DroneHistory *h;
+
+  // Status of each drone
+  fprintf(f, "\nDrone Execution Summary:\n\n");
+
+  for (int i = 0; i < c.num_drones; i++)
+  {
+    h = s.h_list[i];
+    fprintf(f, "Drone %d: %d steps, %d collisions\n",
+            h->drone_id, h->count, h->collision_count);
+  }
+
+  // Drone Position History
+  fprintf(f, "\n\nDrone Position History:\n\n");
+
+  for (int i = 0; i < c.num_drones; i++)
+  {
+    h = s.h_list[i];
+    fprintf(f, "Drone %d:\n", h->drone_id);
+
+    for (int j = 0; j < h->count; j++)
+    {
+      fprintf(f, "  [t = %.2f] (%d, %d, %d)\n", 
+              h->timestamps[j],
+              h->positions[j].x,
+              h->positions[j].y,
+              h->positions[j].z);
     }
+    fprintf(f, "\n");
+  }
 
-    FILE *f = fopen(path, "w");
-    if (!f) {
-        perror("Error creating report file");
-        return;
+  // Collisions (detailed log)
+  fprintf(f, "\nCollision Log:\n");
+
+  if (s.collisions == 0) 
+    fprintf(f, "None\n");
+  else
+  {
+    for (int i = 0; i < s.collisions; i++)
+    {
+      CollisionLog *cl = &collision_log[i];
+
+      fprintf(f, "[t = %.2f] Drones %d (%d, %d, %d) and %d (%d, %d, %d) collided\n", 
+              cl->timestamp, cl->drone1, cl->pos1.x, cl->pos1.y, cl->pos1.z, cl->drone2, 
+              cl->pos2.x, cl->pos2.y, cl->pos2.z);
     }
+  }
 
-    // Header
-    fprintf(f, "Simulation Report - Shodrone\n\n");
-    fprintf(f, "Total drones: %d\n\n", s.num_drones);
+  // Final result
+  fprintf(f, "\nValidation Result: %s\n", 
+          s.collisions >= c.max_collisions ? "FAILED" : "VALIDATED");
 
-    // Status of each drone
-    fprintf(f, "Drone Execution Summary:\n");
-    for (int i = 0; i < s.num_drones; i++) {
-        DroneHistory *h = histories[i];
-        fprintf(f, "Drone %d: %d steps, %d collisions\n",
-                h->drone_id, h->count, h->collision_count);
-    }
-
-	// Drone Position History
-	fprintf(f, "\nDrone Position History:\n");
-    for (int i = 0; i < s.num_drones; i++) {
-        DroneHistory *h = histories[i];
-        fprintf(f, "Drone %d:\n", h->drone_id);
-        for (int j = 0; j < h->count; j++) {
-            fprintf(f, "  [t = %.2f] (%d, %d, %d)\n",
-                    h->timestamps[j],
-                    h->positions[j].x,
-                    h->positions[j].y,
-                    h->positions[j].z);
-        }
-        fprintf(f, "\n");
-    }
-
-    // Collisions (detailed log)
-	fprintf(f, "\nCollision Log:\n");
-	if (collision_log_count == 0) {
-		fprintf(f, "None\n");
-	} else {
-		for (int i = 0; i < collision_log_count; i++) {
-			CollisionLog *cl = &collision_log[i];
-			fprintf(f, "[t = %.2f] Drones %d and %d collided at position (%d, %d, %d)\n",
-					cl->timestamp, cl->drone1, cl->drone2,
-					cl->pos.x, cl->pos.y, cl->pos.z);
-		}
-	}
-
-    // Final result
-    fprintf(f, "\nValidation Result: %s\n",
-            collision_log_count >= s.max_collisions ? "FAILED" : "VALIDATED");
-
-    fclose(f);
-    fprintf(stderr, GREEN "\nSimulation report saved to %s\n" RESET, path);
+  fclose(f);
+  fprintf(stderr, GREEN "\nSimulation report saved to %s\n" RESET, path);
 }
 
 void terminate()
 {
-  int_free_matrix(collision_state, s.num_drones);
-  int_free_matrix(s.down, s.num_drones);
-  // Free the histories
-    for (int i = 0; i < s.num_drones; i++) {
-        free_drone_history(histories[i]);
-    }
-    free(histories);
-  free_space(space, s.max_X, s.max_Y);
+  int_free_matrix(collision_state, c.num_drones);
+
+  free_space(space, c.max_X, c.max_Y);
   free(drone_positions);
-  printf(GREEN "\nDone\n" RESET);
+
+
+
+  free_history(s.h_list, c.num_drones);
+
+  int_free_matrix(s.down, c.num_drones);
+
+  free(s.pids);
+  free(s.finished);
+
+  printf(GREEN "\nDone!\n" RESET);
+
   exit(0);
 }
 
-void start() {
-    set_up_signals();
+void allocate_structs()
+{
+  collision_state = int_malloc_matrix(c.num_drones, c.num_drones);
 
-    collision_state = int_malloc_matrix(s.num_drones, s.num_drones);
-    for (int i = 0; i < s.num_drones; i++){
-        for (int j = 0; j < s.num_drones; j++){
-            collision_state[i][j] = 0;
-        }
-    }
-    space = alloc_space(s.max_X, s.max_Y, s.max_Z);
+  for (int i = 0; i < c.num_drones; i++)
+    for (int j = 0; j < c.num_drones; j++)
+      collision_state[i][j] = 0;
 
-    drone_positions = alloc_drone_positions(s.num_drones);
+  space = alloc_space(c.max_X, c.max_Y, c.max_Z);
 
-    // Initialises the histories for each drone
-    histories = malloc(s.num_drones * sizeof(DroneHistory*));
-    for (int i = 0; i < s.num_drones; i++) {
-        histories[i] = init_drone_history(i + 1, 100);  // initial capacity 100 positions
-    }
+  drone_positions = alloc_drone_positions(c.num_drones);
 
-    set_up_childs();
 
-    repeat();
 
-    do_report();
+  s.h_list = alloc_history(c.num_drones, HISTORY_INIT_CAPACITY);
 
-    terminate();
+  s.finished = (int *) calloc(c.num_drones, sizeof(int));
+  s.active_drones = c.num_drones;
+  s.collisions = 0;
 }
 
+void debug_config_file()
+{
+  printf(CYAN "\nSimulation Configurations:\n" RESET);
+  printf("Input Directory: %s\n", c.inp_dir);
+  printf("Output Directory: %s\n", c.out_dir);
+  printf("Maximum collisions: %d\n", c.max_collisions);
+  printf("Number of Drones: %d\n", c.num_drones);
+  printf("Drone Radius: %d\n", c.drone_radius);
+  printf("Maximum Coordinate X: %d\n", c.max_X);
+  printf("Maximum Coordinate Y: %d\n", c.max_Y);
+  printf("Maximum Coordinate Z: %d\n", c.max_Z);
+  printf("Timestep: %f\n\n", c.timestep);
+}
+
+void process_comand_line_args(char **argv)
+{
+  c.inp_dir = argv[1];
+  c.out_dir = argv[2];
+  c.max_collisions = atoi(argv[3]);
+  c.num_drones = atoi(argv[4]);
+  c.drone_radius = atoi(argv[5]);
+  c.max_X = atoi(argv[6]);
+  c.max_Y = atoi(argv[7]);
+  c.max_Z = atoi(argv[8]);
+  c.timestep = atof(argv[9]);
+}
+
+//void set_up_log_file();
 
 // argv[1] inp_dir
 // argv[2] out_dir
 // argv[3] max_collisions
 // argv[4] num_drones
+// argv[5] drone_radius
+// argv[6] max_X
+// argv[7] max_Y
+// argv[8] max_Z
+// argv[9] timestep
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
+
+ // set_up_log_file();
+
   if (argc == 1)
     process_config_file();
   else if (argc == 9)
-  {
-    s.inp_dir = argv[1];
-    s.out_dir = argv[2];
-    s.max_collisions = atoi(argv[3]);
-    s.num_drones = atoi(argv[4]);
-    s.drone_radius = atoi(argv[5]);
-	s.max_X = atoi(argv[6]);
-	s.max_Y = atoi(argv[7]);
-	s.max_Z = atoi(argv[8]);
-	s.timestamp = atof(argv[9]);
-  }
+    process_comand_line_args(argv);
   else
     end();
 
-  printf(CYAN "\nSimulation Configurations:\n" RESET);
-  printf("Input Directory: %s\n", s.inp_dir);
-  printf("Output Directory: %s\n", s.out_dir);
-  printf("Maximum collisions: %d\n", s.max_collisions);
-  printf("Number of Drones: %d\n", s.num_drones);
-  printf("Drone Radius: %d\n", s.drone_radius);
-  printf("Maximum Coordinate X: %d\n", s.max_X);
-  printf("Maximum Coordinate Y: %d\n", s.max_Y);
-  printf("Maximum Coordinate Z: %d\n", s.max_Z);
-  printf("Timestamp: %f\n\n", s.timestamp);
+  //debug_config_file();
+  
+  set_up_signals();
 
-  start();
+  allocate_structs();
+
+  set_up_childs();
+
+  start_loop();
+
+  do_report();
+
+  terminate();
 }

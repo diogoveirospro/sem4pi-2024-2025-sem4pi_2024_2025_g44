@@ -5,6 +5,8 @@ UTILS_FILE=utils.c
 PARENT_EXEC=parent
 DRONE_EXEC=drone
 
+REPORT_FOLDER=./ReportFolder
+
 CC=gcc
 FLAGS=
 
@@ -23,6 +25,7 @@ $(DRONE_EXEC): $(DRONE_FILE) $(UTILS_FILE)
 
 clean:
 	@$(RM) $(PARENT_EXEC) $(DRONE_EXEC)
+	@$(RM) $(REPORT_FOLDER)/*
 
 re: clean all
 
