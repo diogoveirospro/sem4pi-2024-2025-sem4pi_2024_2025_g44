@@ -1,11 +1,11 @@
 @startuml
 actor "CRM Manager" as User
-participant "ConfigureTemplateUI" as UI
-participant "ConfigureTemplateController" as Controller
+participant "ConfigureProposalDocumentUI" as UI
+participant "ConfigureProposalDocumentController" as Controller
 participant "PersistenceContext" as Persistence
 participant "RepositoryFactory" as Factory
-participant "TemplateValidate" as Validator
-participant "TemplateValidationPlugin" as Plugin
+participant "DocumentValidate" as Validator
+participant "DocumentValidationPlugin" as Plugin
 participant "ShowProposalRepository" as Repo
 participant "ShowProposal" as Proposal
 
@@ -14,7 +14,7 @@ activate User
 User -> UI : request template configuration
 activate UI
 
-UI -> Controller : fetch available proposals
+UI -> Controller : configurableProposalList()
 activate Controller
 
 Controller -> Persistence : PersistenceContext()
@@ -40,25 +40,20 @@ deactivate Controller
 
 UI -> User : show proposals and templates
 User -> UI : select proposal and template
-UI -> Controller: findProposalById(proposalId)
+UI -> Controller: configureDocument(proposal, selectedTemplate, crmManager)
 
 activate Controller
-Controller -> Repo : findProposalById(proposalId)
 
-activate Repo
-Repo --> Controller : proposal
-deactivate Repo
-
-Controller -> Proposal: template(selectedTemplate);
+Controller -> Proposal: configureDocument(selectedTemplate, crmManager);
 activate Proposal
 
-Proposal -> Controller : templateContent
+Proposal -> Controller : documentContent
 deactivate Proposal
 
-Controller -> Validator : validate(templateContent)
+Controller -> Validator : validate(documentContent)
 
 activate Validator
-Validator -> Plugin : validateTemplate(templateContent)
+Validator -> Plugin : validateDocument(documentContent)
 
 activate Plugin
 Plugin --> Validator : ValidationResult
@@ -67,8 +62,8 @@ deactivate Plugin
 Validator --> Controller : ValidationResult
 deactivate Validator
 
-alt Template is valid
-    Controller -> Controller : proposal.setTemplate(templateContent)
+alt documentContent is valid
+    Controller -> Controller : proposal.addDocument(documentContent)
     activate Controller
     deactivate Controller
 
@@ -81,7 +76,7 @@ alt Template is valid
     Controller --> UI : true
     UI --> User : show success message
 
-else Template is invalid
+else documentContent is invalid
     Controller -> UI : false
     deactivate Controller
 

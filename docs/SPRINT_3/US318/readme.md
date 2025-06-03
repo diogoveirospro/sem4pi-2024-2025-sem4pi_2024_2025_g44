@@ -1,106 +1,154 @@
-# US 318
+# US 318 – Templates for Show Proposals
 
 ## 1. Context
 
-This user story is being developed as part of Sprint 3. It introduces the functionality that allows a CRM Manager to
-configure and validate a proposal template before sending it to a customer. The template defines the structure and
-content of the document that will be delivered to the customer during the show proposal process.
+This user story is part of Sprint 3 and introduces the functionality that allows a CRM Manager to configure the 
+**template** used to format the **proposal document** sent to the customer. The template defines the structure and 
+content of the final document generated during the proposal process.
 
-The validation ensures that the template is compatible with the system and conforms to the expected structure. The
-plugin used for validation must already be registered in the system (as defined in US317), and it will be invoked to
-check the correctness of the template formatting.
+To ensure that the document follows the expected structure, the system must validate the selected template before it 
+is accepted. This validation is performed using a plugin, which must already be registered in the system (as described 
+in US317).
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing  
+Analysis: 🧪 Testing
 
-Design: 🧪 Testing  
+Design: 🧪 Testing
 
-Implementation: 📝 To Do  
+Implementation: 📝 To Do
 
 Testing: 📝 To Do
 
 ## 2. Requirements
 
-**As a** CRM Manager,
+**As a** CRM Manager,  
 <br>
-**I want** to be able to configure the template that formats the document,
+**I want** to be able to configure the template that formats the document to be sent to the customer,  
 <br>
-**So that** it can be sent to the customer.
+**So that** the proposal document follows a standard structure and can be generated and sent correctly.
 
 ### Acceptance Criteria:
 
-- **US318.1** The plugin used to validate the proposal template must be previously registered in the system.
-- **US318.2** The configured template must be validated before it is accepted for use in proposals.
-- **US318.3** In case of invalid formatting, an appropriate error must be returned to the user.
+- **US318.1** The proposal must contain a valid configuration, including assigned drones and figures, before a document 
+template can be configured.
+- **US318.2** The plugin used to validate the proposal document must be previously registered in the system.
+- **US318.3** In case of invalid formatting, a descriptive error must be returned to the user.
+- **US318.4** Only predefined and valid templates can be used for document configuration. Any attempt to use an 
+unrecognised template must be rejected.
 
 ### Dependencies/References:
 
-- **_US347 – Proposal Generation_**: This user story uses the configured template to validate and generate the proposal
-document. The template defined in US318 must be available and valid for US347 to execute successfully.
+- **_US347 – Proposal Generation_**: The document configured in this user story will be used to generate the final 
+proposal file. It must be valid for US347 to execute successfully.
+- **_US317 – Plugin Registration_**: The plugin responsible for validation must be registered beforehand.
 
 ## 3. Analysis
 
-This user story focuses on validating the proposal template configured by the CRM Manager. The template will be used to
-generate documents sent to customers when proposing a drone show.
+This user story focuses on allowing the CRM Manager to configure and validate the template that defines the structure 
+of the proposal document. The document is later generated based on this template and sent to the customer.
 
-The domain includes a `ShowProposalTemplate` value object that encapsulates the raw content of the template to be validated.
-The validation is performed by the `TemplateValidate` domain service, which invokes a plugin registered in the system
-(see [US317](../US317/readme.md)). The validation plugin checks whether the template includes all required tags and 
-follows the correct format.
+The domain model includes a `ShowProposalDocument` value object, which encapsulates the raw content of the template. 
+The validation is performed by the `DocumentValidate` domain service, which delegates the task to a plugin 
+(`DocumentValidationPlugin`) registered in the system.
 
-Validation is mandatory: a template cannot be used in the system unless it passes validation. If the validation fails,
-the system returns a descriptive error message and prevents the use of the invalid template.
+Validation is required before a document template can be associated with a proposal. If the template is invalid, the 
+system returns a validation error and prevents its use.
 
-The following diagram shows the current domain model for the `ShowProposal` aggregate, including the newly introduced
-components `ShowProposalTemplate` and `TemplateValidate`:
+The following diagram shows the relevant portion of the domain model within the `ShowProposal` aggregate, including 
+`ShowProposalDocument` and `DocumentValidate`.
 
 ![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
 ## 4. Design
 
-This section presents the design adopted for implementing **US318 – Configure Proposal Template**. 
-The following diagram and explanation detail the interaction between the user interface, controller, validation service, 
-plugin, domain model, and persistence layer.
+This section presents the design adopted for implementing **US318 – Configure Proposal Document**.  
+The following sequence diagram and explanation detail the interaction between the user interface, controller, 
+validation service, plugin, domain model, and repository.
 
 ### 4.1 Realisation
 
-The sequence diagram below illustrates the realisation of **US318 – Configure Proposal Template**.
+The process begins in the UI (`ConfigureProposalDocumentUI`), where the CRM Manager initiates the configuration of a 
+proposal document. The UI requests from the controller the list of proposals that are still eligible for configuration.
 
-The process begins in the user interface (`ConfigureTemplateUI`), where the **CRM Manager** initiates the configuration 
-of a proposal template. The UI requests a list of proposals eligible for template configuration by invoking the 
-controller. The `ConfigureTemplateController` retrieves these proposals from the `ShowProposalRepository`, filtering 
-those that can still be configured.
+The `ConfigureProposalDocumentController` accesses the `ShowProposalRepository` to retrieve proposals that are in a 
+configurable state. The CRM Manager selects one of them and a predefined template type (e.g., "Portuguese", 
+"English VIP", etc.).
 
-Once the CRM Manager selects a specific proposal and provides a template, the controller retrieves the corresponding 
-`ShowProposal` from the repository using its identifier.
+The controller loads the corresponding `ShowProposal` and the template content. The selected content is then validated 
+through the `DocumentValidate` domain service. The validation logic is delegated to the `DocumentValidationPlugin`, 
+which ensures that the content is syntactically and structurally correct.
 
-The selected template is passed to the domain service `TemplateValidate`, which is responsible for validating its 
-syntax and structure. The validation logic is delegated to a plugin (`TemplateValidationPlugin`), previously registered 
-in the system as part of **US317**. The plugin analyses the template and returns a `ValidationResult` indicating whether 
-it is valid or contains errors.
+If validation is successful, the template content is stored as a `ShowProposalDocument` and assigned to the proposal. 
+The proposal is saved in the repository. If validation fails, the CRM Manager is notified, and the operation is aborted.
 
-If the validation succeeds, the template is set on the `ShowProposal`, and the updated proposal is persisted through 
-the repository. If the validation fails, the UI displays the corresponding error messages to the user, and the 
-configuration is aborted.
+This design separates responsibilities clearly:
 
-This design ensures a clear separation of concerns:
-
-* The **UI** handles user input and feedback.
-* The **controller** coordinates the flow and validation.
-* The **domain** retains ownership of proposal data and template assignment.
-* The **plugin** encapsulates validation logic, promoting modularity and reuse.
+- The **UI** manages user input and feedback.
+- The **controller** orchestrates the interaction between domain logic and persistence.
+- The **domain service** encapsulates the validation logic.
+- The **plugin** allows pluggable validation strategies, supporting future extensibility.
 
 ![Sequence Diagram for US318](images/sequence_diagram_us318.svg)
 
 ### 4.2. Acceptance Tests
 
+The following tests validate the acceptance criteria defined for **US318 – Configure Proposal Document**. They ensure 
+that a document template can only be configured and accepted when all required conditions are met: a complete proposal, 
+a valid plugin, and a properly formatted template.
+
+---
+
+#### **Test 1: Proposal is not ready for document configuration if required data is missing**
+**Refers to Acceptance Criteria:** _US318.1_  
+**Description:** Ensures that a proposal without necessary data (e.g., configuration, video, etc.) cannot proceed 
+with document configuration.
+
+```java
+@Test
+void ensureProposalCannotConfigureDocumentWithoutRequiredFields() {
+    // Setup: create a ShowProposal with missing configuration or customer information
+    // Action: call isReadyToConfigureDocument() on the proposal
+    // Assert: verify the method returns false
+}
+```
+
+---
+
+#### **Test 2: Valid proposal configures document correctly**
+
+**Refers to Acceptance Criteria:** *US318.1 + US318.2*
+**Description:** Confirms that a complete and valid proposal successfully configures a document template, with all 
+placeholders replaced and validation completed.
+
+```java
+@Test
+    void ensureDocumentIsConfiguredCorrectly() {
+    // Setup: create a ShowProposal with configuration, video and template content
+    // Action: call proposal.configureDocument(template, manager)
+    // Assert: resulting document contains replaced values (e.g., customer name, model info)
+}
+```
+
+---
+
+#### **Test 3: Only predefined templates can be used**
+**Refers to Acceptance Criteria:** _US318.4_  
+**Description:** Ensures that if an unrecognised template identifier is used (i.e., not one of the predefined valid options), the system throws an error and blocks document configuration.
+
+```java
+@Test
+    void ensureInvalidTemplateThrowsException() {
+        // Setup: create a valid ShowProposal with configuration and video
+        // Use an invalid template name (e.g., "french", which is not configured)
+        // Action: call proposal.configureDocument("french", manager)
+        // Assert: IllegalArgumentException is thrown due to unrecognised template
+    }
+
+```
 
 ## 5. Implementation
 
-
 ## 6. Integration/Demonstration
-
-
 
 ## 7. Observations

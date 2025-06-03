@@ -213,7 +213,7 @@ package "ShowProposal " <<aggregate>>{
     class ShowProposal <<Entity>> <<root>>{
     }
 
-    class ShowProposalTemplate <<Value Object>>{
+    class ShowProposalDocument <<Value Object>>{
     }
 
     class ShowProposalNumber <<Value Object>>{
@@ -231,7 +231,7 @@ package "ShowProposal " <<aggregate>>{
     class Video <<Value Object>>{
     }
 
-    class TemplateValidate <<Service>> {
+    class DocumentValidate <<Service>> {
     }
 
     class ShowDSLDescription <<Value Object>> {
@@ -246,7 +246,7 @@ package "ShowProposal " <<aggregate>>{
     ShowProposal --> "1" CRMManager: template configured by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
-    ShowProposal --> "1" ShowProposalTemplate: template
+    ShowProposal --> "1" ShowProposalDocument: document
     ShowProposal --> "1" ShowProposalNumber: proposalNumber
     ShowProposal --> "1" Insurance: insurance
     ShowProposal --> "1" ShowConfiguration: showConfiguration
@@ -256,8 +256,8 @@ package "ShowProposal " <<aggregate>>{
     GenerateShowDSL ..> ShowConfiguration: uses
     GenerateShowDSL --> ShowDSLDescription: returns
 
-    'TemplateValidate -> x
-    TemplateValidate ..> "1" ShowProposalTemplate: validates
+    'DocumentValidate -> x
+    DocumentValidate ..> "1" ShowProposalDocument: validates
 
     'ShowConfiguration -> x
     ShowConfiguration --> "1..*" Model: models
