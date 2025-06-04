@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.ParseException;
+import java.util.Arrays;
 
 public class CustomerAppMessageParser {
     private static final Logger LOGGER = LogManager.getLogger(CustomerAppMessageParser.class);
@@ -38,14 +39,18 @@ public class CustomerAppMessageParser {
         // Default to unknown request
         UserAppRequest request = new UnknownRequest(inputLine);
 
-        // Parse to determine the type of request and validate syntax
-        String[] tokens;
         try {
-            tokens = CsvLineMarshaler.tokenize(inputLine).toArray(new String[0]);
-            if ("GET_SHODRONE_USER".equals(tokens[0])) {
+            // Extrair o comando diretamente
+            int firstSpaceIndex = inputLine.indexOf(' ');
+            String command = (firstSpaceIndex == -1) ? inputLine : inputLine.substring(0, firstSpaceIndex);
+
+            // Dividir a linha em tokens, preservando valores entre aspas
+            String[] tokens = inputLine.split(" ");
+
+            if ("GET_SHODRONE_USER".equals(command)) {
                 request = parseGetShodroneUser(inputLine, tokens);
             }
-        } catch (final ParseException e) {
+        } catch (final Exception e) {
             LOGGER.info("Unable to parse request: {}", inputLine);
             request = new BadRequest(inputLine, "Unable to parse request");
         }
@@ -93,16 +98,11 @@ public class CustomerAppMessageParser {
  */
 
     private UserAppRequest parseGetShodroneUser(final String inputLine, final String[] tokens) {
+        // Check if the number of tokens is correct
         if (tokens.length != 2) {
             return new BadRequest(inputLine, "Wrong number of parameters");
-        } else if (!isStringParam(tokens[1])) {
-            return new BadRequest(inputLine, "Username must be inside quotes");
         } else {
             return new GetShodroneUserRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
         }
-    }
-
-    private boolean isStringParam(final String string) {
-        return string.length() >= 2 && string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"';
     }
 }
