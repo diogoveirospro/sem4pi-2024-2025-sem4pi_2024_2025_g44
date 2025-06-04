@@ -4,7 +4,8 @@ import core.CRMManager.domain.Entities.CRMManager;
 import core.CRMManager.repositories.CRMManagerRepository;
 import core.Persistence.PersistenceContext;
 import core.ShowProposal.application.Service.ProposalDocumentGenerator;
-import core.ShowProposal.application.Service.ValidationResult;
+import core.ShowProposal.application.Service.plugin.DocumentGenerationPluginFactory;
+import core.ShowProposal.application.Service.plugin.DocumentGeneratorPlugin;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
 import core.ShowProposal.repositories.ShowProposalRepository;
@@ -27,7 +28,7 @@ public class ConfigureProposalDocumentController {
         String documentContent = proposal.configureDocument(selectedTemplate, crmManager);
 
         try {
-            ShowProposalDocument showProposalDocument = generateDocument(proposal, documentContent);
+            ShowProposalDocument showProposalDocument = generateDocument(documentContent);
             proposal.addDocument(showProposalDocument);
             showProposalRepository.save(proposal);
             return true;
@@ -36,9 +37,10 @@ public class ConfigureProposalDocumentController {
         }
     }
 
-    private ShowProposalDocument generateDocument(ShowProposal proposal, String documentContent) {
-        ProposalDocumentGenerator documentValidate = new ProposalDocumentGenerator();
-        return documentValidate.generateDocument(proposal, documentContent);
+    private ShowProposalDocument generateDocument(String documentContent) {
+        DocumentGeneratorPlugin plugin = DocumentGenerationPluginFactory.getInstance();
+        ProposalDocumentGenerator documentValidate = new ProposalDocumentGenerator(plugin);
+        return documentValidate.generateDocument(documentContent);
     }
 
     public Iterable<ShowProposal> configurableProposalList() {

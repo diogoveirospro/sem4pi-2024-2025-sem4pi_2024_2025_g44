@@ -1,17 +1,16 @@
-package core.Category.application.Service.plugin;
+package core.ShowProposal.application.Service.plugin;
 
-public class TemplateValidationPluginFactory {
+public class DocumentGenerationPluginFactory {
+    private static DocumentGeneratorPlugin instance;
 
-    private static TemplateValidationPlugin instance;
-
-    public static TemplateValidationPlugin getInstance() {
+    public static DocumentGeneratorPlugin getInstance() {
         if (instance == null) {
             throw new IllegalStateException("No TemplateValidationPlugin implementation registered.");
         }
         return instance;
     }
 
-    public static void registerInstance(TemplateValidationPlugin customInstance) {
+    public static void registerInstance(DocumentGeneratorPlugin customInstance) {
         if (instance != null) {
             throw new IllegalStateException("TemplateValidationPlugin implementation already registered.");
         }

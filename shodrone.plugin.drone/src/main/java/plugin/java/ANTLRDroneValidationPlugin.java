@@ -1,7 +1,7 @@
 package plugin.java;
 
-import core.Category.application.Service.*;
-import core.Category.application.Service.plugin.TemplateValidationPlugin;
+import core.Drone.application.Service.*;
+import core.Drone.application.Service.plugin.DroneValidationPlugin;
 import gen.DroneLexer;
 import gen.DroneParser;
 import org.antlr.v4.runtime.*;
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ANTLRTemplateValidationPlugin implements TemplateValidationPlugin {
+public class ANTLRDroneValidationPlugin implements DroneValidationPlugin {
 
     @Override
-    public TemplateValidationResult validateTemplate(String code) {
+    public DroneValidationResult validateTemplate(String code) {
         if (code == null || code.isBlank()) {
-            return new TemplateValidationResult(false, List.of("DSL input is empty or null"));
+            return new DroneValidationResult(false, List.of("Drone language input is empty or null"));
         }
 
         CharStream input = CharStreams.fromString(code);
@@ -40,7 +40,7 @@ public class ANTLRTemplateValidationPlugin implements TemplateValidationPlugin {
         parser.start();
 
         // Return validation result
-        return new TemplateValidationResult(errors.isEmpty(), errors);
+        return new DroneValidationResult(errors.isEmpty(), errors);
     }
 }
 

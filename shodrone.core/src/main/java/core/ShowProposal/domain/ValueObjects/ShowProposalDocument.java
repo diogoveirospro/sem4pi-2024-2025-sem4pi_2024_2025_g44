@@ -16,7 +16,7 @@ public class ShowProposalDocument implements ValueObject, Serializable {
         // for ORM
     }
 
-    public ShowProposalDocument(String documentContent) {
+    public ShowProposalDocument(String documentContent, String filePath) {
         if (documentContent == null || documentContent.isEmpty()) {
             throw new IllegalArgumentException("Document content cannot be null or empty");
         }
