@@ -18,21 +18,44 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package shodrone.bootstrappers.Server.protocol;
+package Server.protocol;
+
+import eapli.framework.csv.CsvRecord;
 
 /**
  *
  * @author Paulo Gandra Sousa 03/06/2020
  *
  */
-public class BadRequest extends BaseErrorRequest {
+public abstract class BaseErrorRequest extends UserAppRequest {
 
-    public BadRequest(final String request, final String errorDescription) {
-        super(request, errorDescription);
+    private final String errorDescription;
+
+    protected BaseErrorRequest(final String request, final String errorDescription) {
+        super(null, request);
+        this.errorDescription = errorDescription;
+    }
+
+    protected BaseErrorRequest(final String request) {
+        super(null, request);
+        this.errorDescription = null;
     }
 
     @Override
-    protected String messageType() {
-        return "ERROR_IN_REQUEST";
+    public String execute() {
+        // nothing to do, just build the response
+        return buildResponse();
     }
+
+    protected String buildResponse() {
+        final Object[] fields = {
+                messageType(),
+                request,
+                errorDescription
+        };
+        final boolean[] mask = { false, true, true };
+        return CsvRecord.valueOf(fields, mask).toString() + "\n";
+    }
+
+    protected abstract String messageType();
 }

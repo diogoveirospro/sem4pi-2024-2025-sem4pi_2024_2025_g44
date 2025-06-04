@@ -31,13 +31,8 @@ import eapli.framework.infrastructure.pubsub.EventDispatcher;
 import eapli.framework.io.util.Console;
 import plugins.PluginInitializer;
 import shodrone.bootstrappers.Demo.ShodroneDemoBootstrapper;
-import shodrone.bootstrappers.Server.ShodroneServerBootstrapper;
 import shodrone.bootstrappers.ShodroneBootstrapper;
 import shodrone.bootstrappers.SmokeTests.ShodroneDemoSmokeTester;
-import shodrone.presentation.UtilsUI;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Shodrone Bootstrapping data app
@@ -69,11 +64,6 @@ public final class ShodroneBootstrap extends ShodroneBaseApplication {
 
         System.out.println("\n\n------- DEMO DATA -------");
         new ShodroneDemoBootstrapper().execute();
-
-        if (false) {
-            System.out.println("\n\n------- SERVER DATA -------");
-            //new ShodroneServerBootstrapper().execute();
-        }
 
         if (isToRunSampleE2E) {
             System.out.println("\n\n------- BASIC SCENARIO -------");

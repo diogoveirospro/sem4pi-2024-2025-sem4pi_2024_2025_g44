@@ -1,6 +1,6 @@
 package Shodrone.DTO;
 
-public class ShowRequest {
+public class ShowRequestDTO {
 
     public String showRequestNumber;
     public String showDescription;
@@ -10,8 +10,8 @@ public class ShowRequest {
     public Long quantityOfDrones;
     public String showDuration;
 
-    public ShowRequest(String showRequestNumber, String showDescription, String showLocation,
-                       String showDate, String showTime, Long quantityOfDrones, String showDuration) {
+    public ShowRequestDTO(String showRequestNumber, String showDescription, String showLocation,
+                          String showDate, String showTime, Long quantityOfDrones, String showDuration) {
         this.showRequestNumber = showRequestNumber;
         this.showDescription = showDescription;
         this.showLocation = showLocation;

@@ -18,7 +18,7 @@ import java.util.List;
 public class ShowInfoController {
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private List<ShowDTO> shows;
-    private CustomerAppServer server;
+    private final CustomerAppServer server = new CustomerAppServer();
 
     public Iterable<ShowDTO> listShows() throws FailedRequestException, IOException {
         CustomerDTO customer = getCustomerOfCurrentUser();
@@ -28,6 +28,7 @@ public class ShowInfoController {
     private CustomerDTO getCustomerOfCurrentUser() throws FailedRequestException, IOException {
         SystemUser currentUser = authz.session().get().authenticatedUser();
         ShodroneUserDTO shodroneUser = server.getShodroneUser(currentUser.username().toString());
+        System.out.println("Current user: " + shodroneUser.username);
         return null;
     }
 

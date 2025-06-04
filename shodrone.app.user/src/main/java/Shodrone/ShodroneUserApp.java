@@ -10,7 +10,7 @@ import shodrone.ShodroneBaseApplication;
 import shodrone.authz.ui.LoginUI;
 import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
 
-public class ShodroneUserApp extends ShodroneBaseApplication {
+public class   ShodroneUserApp extends ShodroneBaseApplication {
     private ShodroneUserApp () {
 
     }

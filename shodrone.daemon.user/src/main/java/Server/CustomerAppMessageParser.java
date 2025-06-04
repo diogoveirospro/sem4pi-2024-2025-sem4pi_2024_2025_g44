@@ -1,13 +1,14 @@
-package shodrone.bootstrappers.Server;
+package Server;
 
-import core.Server.customer.Controller.UserAppServerController;
+import Server.protocol.BadRequest;
+import Server.protocol.GetShodroneUserRequest;
+import Server.protocol.UnknownRequest;
+import Server.protocol.UserAppRequest;
+import core.Daemon.customerApp.Controller.UserAppServerController;
 import eapli.framework.csv.util.CsvLineMarshaler;
 import eapli.framework.infrastructure.authz.application.Authenticator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import shodrone.bootstrappers.Server.protocol.BadRequest;
-import shodrone.bootstrappers.Server.protocol.UnknownRequest;
-import shodrone.bootstrappers.Server.protocol.UserAppRequest;
 
 import java.text.ParseException;
 
@@ -31,21 +32,18 @@ public class CustomerAppMessageParser {
      * Parse and build the request.
      *
      * @param inputLine
-     *
      * @return
      */
     public UserAppRequest parse(final String inputLine) {
-        // as a fallback make sure we return unknown
+        // Default to unknown request
         UserAppRequest request = new UnknownRequest(inputLine);
 
-        // parse to determine which type of request and if it is syntactically valid
+        // Parse to determine the type of request and validate syntax
         String[] tokens;
         try {
             tokens = CsvLineMarshaler.tokenize(inputLine).toArray(new String[0]);
-            if ("GET_AVAILABLE_MEALS".equals(tokens[0])) {
-                //request = parseGetAvailableMeals(inputLine, tokens);
-            } else if ("BOOK_A_MEAL".equals(tokens[0])) {
-                //request = parseBookAMeal(inputLine, tokens);
+            if ("GET_SHODRONE_USER".equals(tokens[0])) {
+                request = parseGetShodroneUser(inputLine, tokens);
             }
         } catch (final ParseException e) {
             LOGGER.info("Unable to parse request: {}", inputLine);
@@ -54,6 +52,7 @@ public class CustomerAppMessageParser {
 
         return request;
     }
+
 
 /*
     private BookingProtocolRequest parseBookAMeal(final String inputLine, final String[] tokens) {
@@ -92,4 +91,18 @@ public class CustomerAppMessageParser {
     }
 
  */
+
+    private UserAppRequest parseGetShodroneUser(final String inputLine, final String[] tokens) {
+        if (tokens.length != 2) {
+            return new BadRequest(inputLine, "Wrong number of parameters");
+        } else if (!isStringParam(tokens[1])) {
+            return new BadRequest(inputLine, "Username must be inside quotes");
+        } else {
+            return new GetShodroneUserRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
+        }
+    }
+
+    private boolean isStringParam(final String string) {
+        return string.length() >= 2 && string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"';
+    }
 }

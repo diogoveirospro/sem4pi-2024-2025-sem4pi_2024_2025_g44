@@ -1,9 +1,8 @@
-package shodrone.bootstrappers.Server;
+package Server;
 
+import Server.protocol.UserAppRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import shodrone.bootstrappers.Server.protocol.UserAppRequest;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

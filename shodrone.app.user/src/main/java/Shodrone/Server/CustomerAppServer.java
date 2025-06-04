@@ -19,17 +19,6 @@ import org.apache.logging.log4j.Logger;
 public class CustomerAppServer {
 	private static final Logger LOGGER = LogManager.getLogger(CustomerAppServer.class);
 
-	public ShodroneUserDTO getShodroneUser(String username) throws IOException, FailedRequestException {
-		final var socket = new ClientSocket();
-		socket.connect();
-		final String request = new GetShodroneUserRequest(username).toRequest();
-		final List<String> response = socket.sendAndRecv(request);
-		socket.stop();
-
-		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
-		return mu.parseResponseMessageShodroneUser(response);
-	}
-
 	private static class ClientSocket {
 		private Socket sock;
 		private PrintWriter output;
@@ -57,6 +46,7 @@ public class CustomerAppServer {
 			while ((line = input.readLine()) != null && !line.isEmpty()) {
 				response.add(line);
 			}
+			System.out.println("Received response: " + response);
 			LOGGER.debug("Received message:\n----\n{}\n----", response);
 			return response;
 		}
@@ -73,11 +63,13 @@ public class CustomerAppServer {
 		}
 	}
 
-	public List<String> sendRequest(String request) throws IOException {
-		ClientSocket socket = new ClientSocket();
+	public ShodroneUserDTO getShodroneUser(String username) throws IOException, FailedRequestException {
+		final var socket = new ClientSocket();
 		socket.connect();
-		List<String> response = socket.sendAndRecv(request);
+		final String request = new GetShodroneUserRequest(username).toRequest();
+		final List<String> response = socket.sendAndRecv(request);
 		socket.stop();
-		return response;
+		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		return mu.parseResponseMessageShodroneUser(response);
 	}
 }

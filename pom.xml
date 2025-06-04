@@ -21,6 +21,7 @@
 		<module>shodrone.plugin.proposal</module>
         <module>shodrone.plugin.show</module>
         <module>shodrone.plugins</module>
+        <module>shodrone.daemon.user</module>
     </modules>
 	<version>0.1.0</version>
 
