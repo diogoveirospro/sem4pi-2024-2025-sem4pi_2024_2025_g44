@@ -2,6 +2,8 @@
 
 # Base name of grammars
 GRAMMAR_BASE = Figure
+# Package name for the generated Java files
+PACKAGE = gen
 
 # Output directory for the generated Java files
 OUT_DIR = ../../java/gen
@@ -13,3 +15,4 @@ clean:
 
 generate:
 	@antlr4 -Dlanguage=Java -visitor -no-listener -o $(OUT_DIR) $(GRAMMAR_BASE)Lexer.g4 $(GRAMMAR_BASE)Parser.g4
+	@sed -i '1s|^|package '$(PACKAGE)';\n|' $(OUT_DIR)/$(GRAMMAR_BASE)Lexer.java

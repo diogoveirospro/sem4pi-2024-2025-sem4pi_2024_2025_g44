@@ -1,7 +1,7 @@
 parser grammar FigureParser;
 
 @header {
-package gen
+package gen;
 }
 
 options { tokenVocab=FigureLexer; }
