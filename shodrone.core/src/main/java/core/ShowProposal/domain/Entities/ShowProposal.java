@@ -418,7 +418,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * @param selectedTemplate the template to be used for configuring the document
      * @return the configured document content
      */
-    public ShowProposalDocument configureDocument(String selectedTemplate, CRMManager crmManager) {
+    public String configureDocument(String selectedTemplate, CRMManager crmManager) {
         String documentContent;
         try{
             documentContent = new TemplateLoaderService().getTemplateContent(selectedTemplate);
@@ -492,7 +492,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
 
         documentContent = documentContent.replace("[position in show] – [figure name]", figuresSection.toString().trim());
 
-        return new ShowProposalDocument(documentContent);
+        return documentContent;
 
     }
 }

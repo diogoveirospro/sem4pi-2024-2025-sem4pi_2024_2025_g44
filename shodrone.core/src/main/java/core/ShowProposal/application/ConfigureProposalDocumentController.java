@@ -3,7 +3,7 @@ package core.ShowProposal.application;
 import core.CRMManager.domain.Entities.CRMManager;
 import core.CRMManager.repositories.CRMManagerRepository;
 import core.Persistence.PersistenceContext;
-import core.ShowProposal.application.Service.DocumentValidate;
+import core.ShowProposal.application.Service.ProposalDocumentGenerator;
 import core.ShowProposal.application.Service.ValidationResult;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
@@ -24,19 +24,21 @@ public class ConfigureProposalDocumentController {
             throw new IllegalArgumentException("Template cannot be null or empty.");
         }
 
-        ShowProposalDocument documentContent = proposal.configureDocument(selectedTemplate, crmManager);
+        String documentContent = proposal.configureDocument(selectedTemplate, crmManager);
 
-        if (validate(documentContent.toString()).errors().isEmpty()) {
-            proposal.addDocument(documentContent);
+        try {
+            ShowProposalDocument showProposalDocument = generateDocument(proposal, documentContent);
+            proposal.addDocument(showProposalDocument);
             showProposalRepository.save(proposal);
             return true;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error generating document: " + e.getMessage(), e);
         }
-        return false;
     }
 
-    private ValidationResult validate(String documentContent) {
-        DocumentValidate documentValidate = new DocumentValidate();
-        return documentValidate.validateDocument(documentContent);
+    private ShowProposalDocument generateDocument(ShowProposal proposal, String documentContent) {
+        ProposalDocumentGenerator documentValidate = new ProposalDocumentGenerator();
+        return documentValidate.generateDocument(proposal, documentContent);
     }
 
     public Iterable<ShowProposal> configurableProposalList() {

@@ -1,14 +1,13 @@
-# US 318 – Templates for Show Proposals
+# US 318
 
 ## 1. Context
 
-This user story is part of Sprint 3 and introduces the functionality that allows a CRM Manager to configure the 
-**template** used to format the **proposal document** sent to the customer. The template defines the structure and 
+This user story is part of Sprint 3 and introduces the functionality that allows a CRM Manager to configure the
+**template** used to format the **proposal document** sent to the customer. The template defines the structure and
 content of the final document generated during the proposal process.
 
-To ensure that the document follows the expected structure, the system must validate the selected template before it 
-is accepted. This validation is performed using a plugin, which must already be registered in the system (as described 
-in US317).
+To ensure that the document follows the expected structure, the system must validate and process the selected template
+before it is accepted. This processing is performed using a plugin, which must already be registered in the system
 
 ### 1.1 List of issues
 
@@ -41,55 +40,55 @@ unrecognised template must be rejected.
 
 - **_US347 – Proposal Generation_**: The document configured in this user story will be used to generate the final 
 proposal file. It must be valid for US347 to execute successfully.
-- **_US317 – Plugin Registration_**: The plugin responsible for validation must be registered beforehand.
 
 ## 3. Analysis
 
-This user story focuses on allowing the CRM Manager to configure and validate the template that defines the structure 
-of the proposal document. The document is later generated based on this template and sent to the customer.
+This user story focuses on allowing the CRM Manager to configure the proposal document using a predefined template.
+The template is loaded, validated, and processed to produce a properly formatted document that will later be sent to
+the customer.
 
-The domain model includes a `ShowProposalDocument` value object, which encapsulates the raw content of the template. 
-The validation is performed by the `DocumentValidate` domain service, which delegates the task to a plugin 
-(`DocumentValidationPlugin`) registered in the system.
+The domain model includes a `ShowProposalDocument` value object, which encapsulates the content of the generated
+document. The generation is handled by the `ProposalDocumentGenerator` domain service, which delegates the logic to
+a plugin implementing `DocumentGenerationPlugin`.
 
-Validation is required before a document template can be associated with a proposal. If the template is invalid, the 
-system returns a validation error and prevents its use.
+The process includes:
+- Verifying that the proposal is in a valid state (configuration, video, etc.)
+- Replacing placeholders with real proposal data
+- Validating the final result
 
-The following diagram shows the relevant portion of the domain model within the `ShowProposal` aggregate, including 
-`ShowProposalDocument` and `DocumentValidate`.
+The following diagram shows the relevant portion of the domain model within the `ShowProposal` aggregate.
 
 ![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
-## 4. Design
-
-This section presents the design adopted for implementing **US318 – Configure Proposal Document**.  
-The following sequence diagram and explanation detail the interaction between the user interface, controller, 
-validation service, plugin, domain model, and repository.
+This section presents the design adopted for implementing **US318 – Configure Proposal Document**.
 
 ### 4.1 Realisation
 
-The process begins in the UI (`ConfigureProposalDocumentUI`), where the CRM Manager initiates the configuration of a 
-proposal document. The UI requests from the controller the list of proposals that are still eligible for configuration.
-
-The `ConfigureProposalDocumentController` accesses the `ShowProposalRepository` to retrieve proposals that are in a 
-configurable state. The CRM Manager selects one of them and a predefined template type (e.g., "Portuguese", 
-"English VIP", etc.).
-
-The controller loads the corresponding `ShowProposal` and the template content. The selected content is then validated 
-through the `DocumentValidate` domain service. The validation logic is delegated to the `DocumentValidationPlugin`, 
-which ensures that the content is syntactically and structurally correct.
-
-If validation is successful, the template content is stored as a `ShowProposalDocument` and assigned to the proposal. 
-The proposal is saved in the repository. If validation fails, the CRM Manager is notified, and the operation is aborted.
-
-This design separates responsibilities clearly:
-
-- The **UI** manages user input and feedback.
-- The **controller** orchestrates the interaction between domain logic and persistence.
-- The **domain service** encapsulates the validation logic.
-- The **plugin** allows pluggable validation strategies, supporting future extensibility.
+The following sequence diagram illustrates the interaction flow between the user interface, controller, domain service,
+plugin, and repository:
 
 ![Sequence Diagram for US318](images/sequence_diagram_us318.svg)
+
+The process begins in the `ConfigureProposalDocumentUI`, where the CRM Manager initiates the configuration. The UI
+requests proposals eligible for document configuration from the controller. The controller loads the proposals from
+the `ShowProposalRepository`.
+
+Once the manager selects a proposal and a template type, the controller invokes the method
+`configureDocument(...)` on the selected proposal. The proposal returns the raw template content.
+
+The controller passes the proposal and the content to the domain service `ProposalDocumentGenerator`, which calls the
+plugin `DocumentGenerationPlugin`. The plugin generates a full `ShowProposalDocument` based on the data and
+template content.
+
+If successful, the controller sets the document on the proposal and saves it. Otherwise, an error is raised and shown
+to the user.
+
+This design ensures:
+
+- The **UI** handles interaction.
+- The **controller** manages coordination and persistence.
+- The **domain service** processes the document.
+- The **plugin** encapsulates template logic and enables extensibility.
 
 ### 4.2. Acceptance Tests
 
@@ -149,60 +148,53 @@ placeholders replaced and validation completed.
 
 ## 5. Implementation
 
-The implementation of **US318** followed the design outlined in the previous section. The logic is spread across the 
-domain, application, and presentation layers, respecting the layered and modular architecture defined for the project.
+The implementation of **US318** is distributed across the domain, application, and presentation layers.
 
-At the domain level, the method `configureDocument(...)` was implemented within the `ShowProposal` aggregate. It handles 
-the process of loading a predefined template, dynamically replacing placeholders with proposal-specific data (customer, 
-date, insurance, video link, drone models, figure names, etc.), and invoking the registered `DocumentValidationPlugin` 
-through the domain service `DocumentValidate`.
+* **Domain layer**:
 
-Only proposals that are in a valid state — with a configuration, assigned drones and figures, and an associated video — 
-are eligible to configure a document. If the template is invalid or the name provided does not match any predefined 
-option, appropriate exceptions are thrown.
+   * `ShowProposal.configureDocument()` handles the configuration process, performing placeholder replacement using
+     data from the proposal and customer.
+   * The `ProposalDocumentGenerator` service delegates to the plugin to generate and validate the content.
 
-The `TemplateLoaderService` is responsible for resolving the correct template path based on the selected language and 
-customer type (e.g., "Portuguese", "English VIP", etc.), using the paths defined in the `application.properties` file.
+* **Application layer**:
 
-The controller `ConfigureProposalDocumentController` coordinates the configuration process, and the UI prompts the user 
-to select an eligible proposal and a template. If validation succeeds, the document is associated with the proposal and 
-persisted.
+   * `ConfigureProposalDocumentController` orchestrates the process.
+
+* **Infrastructure layer**:
+
+   * The plugin implements the logic to validate the structure of the final document.
+   * `TemplateLoaderService` reads the template content from the file system based on user selection.
 
 Relevant commit messages:
 
-- [Implementation of US318](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/26691413a48476381972731b4b1e5ceba7ee3796)
+* [Implementation of US318](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/26691413a48476381972731b4b1e5ceba7ee3796)
 
 ## 6. Integration/Demonstration
 
-The functionality developed in **US318** was successfully integrated into the Shodrone system. It allows 
-**CRM Managers** to configure the proposal document by selecting a predefined template and applying it to an eligible 
-proposal.
+This functionality was successfully integrated into the **Shodrone** system.
 
-The `ConfigureProposalDocumentUI` presents two selection menus:
-- The first lets the user select a show proposal that is still configurable.
-- The second lets the user select one of the available document templates (e.g., Portuguese, English (VIP), English 
-(Regular)).
+### UI Flow
 
-The selected template is loaded, processed, and validated. The result is stored as a `ShowProposalDocument`, ready to 
-be included in the final proposal sent to the customer (see US316 and US347).
+1. User logs in as a **CRM Manager**
+2. Navigates to **Show Proposals → Configure Proposal Document**
+3. Selects a proposal from the list of eligible proposals
+4. Selects one of the predefined templates:
 
-### Demonstration Instructions
+   * Portuguese
+   * English (Regular)
+   * English (VIP)
+5. If successful:
 
-To demonstrate this feature:
+   * A document is generated and saved in the proposal
+   * A success message is shown
+6. If unsuccessful:
 
-1. **Launch the application** via the appropriate script.
-2. **Log in as a CRM Manager**.
-3. Navigate to **Show Proposals → Configure Proposal Document**.
-4. Choose an eligible proposal from the list.
-5. Choose one of the available templates:
-    * "Portuguese"
-    * "English (Regular Customer)"
-    * "English (VIP Customer)"
-6. If successful:
-    * A confirmation message is displayed.
-    * The proposal document is saved and associated with the selected proposal.
-7. If unsuccessful:
-    * An error message is shown (e.g., due to invalid template or missing data).
+   * An error is shown and no changes are persisted
+
+### Notes
+
+* The configured document will later be delivered to the customer in **US316**
+* All templates are preloaded from `application.properties`
 
 ## 7. Observations
 

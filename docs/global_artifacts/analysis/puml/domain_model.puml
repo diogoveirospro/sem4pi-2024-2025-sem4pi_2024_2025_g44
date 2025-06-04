@@ -231,7 +231,7 @@ package "ShowProposal " <<aggregate>>{
     class Video <<Value Object>>{
     }
 
-    class DocumentValidate <<Service>> {
+    class ProposalDocumentGenerator <<Service>> {
     }
 
     class ShowDSLDescription <<Value Object>> {
@@ -256,8 +256,8 @@ package "ShowProposal " <<aggregate>>{
     GenerateShowDSL ..> ShowConfiguration: uses
     GenerateShowDSL --> ShowDSLDescription: returns
 
-    'DocumentValidate -> x
-    DocumentValidate ..> "1" ShowProposalDocument: validates
+    'ProposalDocumentGenerator -> x
+    ProposalDocumentGenerator ..> "1" ShowProposalDocument: validates & generates
 
     'ShowConfiguration -> x
     ShowConfiguration --> "1..*" Model: models
@@ -268,20 +268,20 @@ package "ShowProposal " <<aggregate>>{
 
 package "ProposalDelivery " <<aggregate>> {
 
-    class ProposalDeliveryInfo <<Entity>> <<root>> {
+    class ProposalDelivery <<Entity>> <<root>> {
     }
 
     class ProposalDeliveryCode <<Value Object>> {
     }
 
-    class ProposalDeliveryStatus <<Value Object>> {
+    enum ProposalDeliveryStatus <<Value Object>> {
     }
 
-    ProposalDeliveryInfo --> "1" ShowProposal: deliveredProposal
-    ProposalDeliveryInfo --> "1" Customer: customer
-    ProposalDeliveryInfo --> "1" ProposalDeliveryCode: code
-    ProposalDeliveryInfo --> "1" ProposalDeliveryStatus: status
-    ProposalDeliveryInfo --> "1" CRMCollaborator: deliveredBy
+    ProposalDelivery --> "1" ShowProposal: deliveredProposal
+    ProposalDelivery --> "1" Customer: customer
+    ProposalDelivery --> "1" ProposalDeliveryCode: code
+    ProposalDelivery --> "1" ProposalDeliveryStatus: status
+    ProposalDelivery --> "1" CRMCollaborator: deliveredBy
 }
 
 package "ShowDesigner " <<aggregate>>{

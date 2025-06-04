@@ -1,11 +1,5 @@
 @startuml
 
-package "Customer " <<aggregate>> {
-
-    class Customer <<Entity>> <<root>>{
-    }
-}
-
 package "CRMCollaborator " <<aggregate>> {
 
     class CRMCollaborator <<Entity>> <<root>>{
@@ -64,7 +58,7 @@ package "ShowProposal " <<aggregate>>{
     class Video <<Value Object>>{
     }
 
-    class DocumentValidate <<Service>> {
+    class ProposalDocumentGenerator <<Service>> {
     }
 
     class ShowDSLDescription <<Value Object>> {
@@ -89,31 +83,13 @@ package "ShowProposal " <<aggregate>>{
     GenerateShowDSL ..> ShowConfiguration: uses
     GenerateShowDSL --> ShowDSLDescription: returns
 
-    'DocumentValidate -> x
-    DocumentValidate ..> "1" ShowProposalDocument: validates
+    'ProposalDocumentGenerator -> x
+    ProposalDocumentGenerator ..> "1" ShowProposalDocument: validates & generates
 
     'ShowConfiguration -> x
     ShowConfiguration --> "1..*" Model: models
     ShowConfiguration --> "1..*" Figure: figures
     ShowConfiguration --> "0..1" ShowDSLDescription: showDSLDescription
-}
-
-package "ProposalDelivery " <<aggregate>> {
-
-    class ProposalDeliveryInfo <<Entity>> <<root>> {
-    }
-
-    class ProposalDeliveryCode <<Value Object>> {
-    }
-
-    class ProposalDeliveryStatus <<Value Object>> {
-    }
-
-    ProposalDeliveryInfo --> "1" ShowProposal: deliveredProposal
-    ProposalDeliveryInfo --> "1" Customer: customer
-    ProposalDeliveryInfo --> "1" ProposalDeliveryCode: code
-    ProposalDeliveryInfo --> "1" ProposalDeliveryStatus: status
-    ProposalDeliveryInfo --> "1" CRMCollaborator: deliveredBy
 }
 
 package Shared {
@@ -135,9 +111,6 @@ package Shared {
     ShowProposal ----> "1" Time: timeOfShow
     ShowProposal ----> "1" Date: dateOfShow
     ShowProposal ----> "1" Duration: durationOfShow
-
-    'ProposalDelivery -> x
-    ProposalDeliveryInfo --> "1" Date: deliveredAt
 }
 
 @enduml

@@ -4,8 +4,8 @@ participant "ConfigureProposalDocumentUI" as UI
 participant "ConfigureProposalDocumentController" as Controller
 participant "PersistenceContext" as Persistence
 participant "RepositoryFactory" as Factory
-participant "DocumentValidate" as Validator
-participant "DocumentValidationPlugin" as Plugin
+participant "ProposalDocumentGenerator" as Generator
+participant "DocumentGenerationPlugin" as Plugin
 participant "ShowProposalRepository" as Repo
 participant "ShowProposal" as Proposal
 
@@ -29,8 +29,6 @@ deactivate Factory
 
 activate Repo
 Repo -> Repo : findConfigurableProposals()
-activate Repo
-deactivate Repo
 
 Repo --> Controller : list of proposals
 deactivate Repo
@@ -47,42 +45,32 @@ activate Controller
 Controller -> Proposal: configureDocument(selectedTemplate, crmManager);
 activate Proposal
 
-Proposal -> Controller : documentContent
+Proposal -> Controller : documentTemplateContent
 deactivate Proposal
 
-Controller -> Validator : validate(documentContent)
+Controller -> Generator : generateDocument(proposal, documentTemplateContent)
 
-activate Validator
-Validator -> Plugin : validateDocument(documentContent)
+activate Generator
+Generator -> Plugin : processDocument(proposal, template)
 
 activate Plugin
-Plugin --> Validator : ValidationResult
+Plugin --> Generator : showProposalDocument(content + path)
 deactivate Plugin
 
-Validator --> Controller : ValidationResult
-deactivate Validator
+Generator --> Controller : showProposalDocument
+deactivate Generator
 
-alt documentContent is valid
-    Controller -> Controller : proposal.addDocument(documentContent)
-    activate Controller
-    deactivate Controller
+Controller -> Proposal : addDocument(showProposalDocument)
 
+Controller -> Repo : save(proposal)
+activate Repo
+Repo --> Controller : confirmation
+deactivate Repo
 
-    Controller -> Repo : save(proposal)
-    activate Repo
-    Repo --> Controller : confirmation
-    deactivate Repo
+Controller --> UI : true
+UI --> User : show success message
 
-    Controller --> UI : true
-    UI --> User : show success message
-
-else documentContent is invalid
-    Controller -> UI : false
-    deactivate Controller
-
-    UI --> User : show validation errors
-    deactivate UI
-end
-
+deactivate Controller
+deactivate UI
 deactivate User
 @enduml

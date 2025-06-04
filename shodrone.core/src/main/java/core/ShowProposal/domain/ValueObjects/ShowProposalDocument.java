@@ -10,6 +10,8 @@ public class ShowProposalDocument implements ValueObject, Serializable {
 
     String documentContent;
 
+    String filePath;
+
     protected ShowProposalDocument() {
         // for ORM
     }
