@@ -48,10 +48,10 @@ activate Proposal
 Proposal -> Controller : documentTemplateContent
 deactivate Proposal
 
-Controller -> Generator : generateDocument(proposal, documentTemplateContent)
+Controller -> Generator : generateDocument(documentTemplateContent)
 
 activate Generator
-Generator -> Plugin : processDocument(proposal, template)
+Generator -> Plugin : processDocument(documentTemplateContent)
 
 activate Plugin
 Plugin --> Generator : showProposalDocument(content + path)
@@ -61,6 +61,8 @@ Generator --> Controller : showProposalDocument
 deactivate Generator
 
 Controller -> Proposal : addDocument(showProposalDocument)
+activate Proposal
+deactivate Proposal
 
 Controller -> Repo : save(proposal)
 activate Repo

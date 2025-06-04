@@ -60,6 +60,8 @@ The following diagram shows the relevant portion of the domain model within the 
 
 ![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
+## 4. Design
+
 This section presents the design adopted for implementing **US318 – Configure Proposal Document**.
 
 ### 4.1 Realisation
@@ -69,26 +71,32 @@ plugin, and repository:
 
 ![Sequence Diagram for US318](images/sequence_diagram_us318.svg)
 
-The process begins in the `ConfigureProposalDocumentUI`, where the CRM Manager initiates the configuration. The UI
-requests proposals eligible for document configuration from the controller. The controller loads the proposals from
-the `ShowProposalRepository`.
+The process starts in the `ConfigureProposalDocumentUI`, where the **CRM Manager** initiates the document configuration
+process. The UI requests the list of proposals eligible for document configuration by calling the controller. The
+`ConfigureProposalDocumentController` uses the `PersistenceContext` and the `RepositoryFactory` to access the
+`ShowProposalRepository`, from which it retrieves all proposals still in a configurable state.
 
-Once the manager selects a proposal and a template type, the controller invokes the method
-`configureDocument(...)` on the selected proposal. The proposal returns the raw template content.
+Once the CRM Manager selects a proposal and a predefined template type (e.g., "Portuguese", "English VIP", etc.), the
+controller invokes the method `configureDocument(...)` on the selected proposal. The proposal returns the corresponding
+raw document template content.
 
-The controller passes the proposal and the content to the domain service `ProposalDocumentGenerator`, which calls the
-plugin `DocumentGenerationPlugin`. The plugin generates a full `ShowProposalDocument` based on the data and
-template content.
+This content is passed to the domain service `ProposalDocumentGenerator`, which is responsible for generating the final
+document. The generator calls the `DocumentGenerationPlugin`, which performs the actual template processing and returns
+a `ShowProposalDocument` containing the filled content and document path.
 
-If successful, the controller sets the document on the proposal and saves it. Otherwise, an error is raised and shown
-to the user.
+If the generation is successful, the controller sets the document on the proposal using `addDocument(...)`, then persists
+the updated proposal via the repository.
 
-This design ensures:
+If any step fails (e.g., due to an invalid template or plugin failure), an appropriate error is returned and shown to
+the user.
 
-- The **UI** handles interaction.
-- The **controller** manages coordination and persistence.
-- The **domain service** processes the document.
-- The **plugin** encapsulates template logic and enables extensibility.
+This design ensures a clean separation of responsibilities:
+
+- The **UI** handles user interaction and selection.
+- The **controller** orchestrates the coordination between UI, domain logic, and persistence.
+- The **domain service** encapsulates the logic for template processing.
+- The **plugin** contains the actual logic for transforming the template into a complete proposal document.
+- The **repository** manages data retrieval and persistence.
 
 ### 4.2. Acceptance Tests
 
