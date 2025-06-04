@@ -4,15 +4,17 @@ participant "SendProposalUI" as UI
 participant "SendProposalController" as Controller
 participant "PersistenceContext" as Persistence
 participant "RepositoryFactory" as Factory
-participant "ShowProposalRepository" as Repo
-participant "ProposalDelivery" as Delivery
+participant "ShowProposalRepository" as ProposalRepo
+participant "ProposalDeliveryInfoRepository" as DeliveryRepo
+participant "ProposalDelivery" as DeliveryService
+participant "ProposalDeliveryInfo" as DeliveryInfo
 
 activate User
 
 User -> UI : request to send proposal
 activate UI
 
-UI -> Controller : fetch available proposals
+UI -> Controller : fetch proposals ready to send
 activate Controller
 
 Controller -> Persistence : PersistenceContext()
@@ -22,16 +24,20 @@ Persistence -> Factory : repositories()
 deactivate Persistence
 
 activate Factory
-Factory -> Repo : proposals()
+Factory -> ProposalRepo : proposals()
+activate ProposalRepo
+
+ProposalRepo -> ProposalRepo : findProposalsReadyToSend()
+Factory -> DeliveryRepo : delivery()
 deactivate Factory
+activate DeliveryRepo
 
-activate Repo
-Repo -> Repo : findProposalsReadyToSend()
-activate Repo
-deactivate Repo
+deactivate DeliveryRepo
+deactivate DeliveryRepo
 
-Repo --> Controller : list of proposals
-deactivate Repo
+
+ProposalRepo --> Controller : list of proposals
+deactivate ProposalRepo
 
 Controller --> UI : proposals
 deactivate Controller
@@ -39,28 +45,32 @@ deactivate Controller
 UI -> User : show proposals
 User -> UI : select proposal
 
-UI -> Controller : sendProposal(proposalId)
+UI -> Controller : sendProposal(proposal)
 activate Controller
 
-Controller -> Repo : findProposalById(proposalId)
-activate Repo
+Controller -> DeliveryService : generateDeliveryInfo(proposal)
+activate DeliveryService
 
-Repo --> Controller : proposal
+DeliveryService -> DeliveryInfo : create with proposal, customer, code
+activate DeliveryInfo
+DeliveryInfo --> DeliveryService : new DeliveryInfo
+deactivate DeliveryInfo
 
-Controller -> Delivery : sendProposal(proposal)
-activate Delivery
+DeliveryService -> DeliveryRepo : save(DeliveryInfo)
+deactivate DeliveryService
 
-Delivery --> Controller : delivery confirmation
-deactivate Delivery
+DeliveryRepo --> Controller : confirmation
+deactivate DeliveryRepo
 
 alt Proposal is sent
-    Controller --> UI : true
-    UI --> User : show success message
+    Controller --> UI : show success + delivery code
+    UI --> User : show success message and code
 else Proposal is not sent
-    Controller --> UI : false
-    deactivate Controller
-
-    UI --> User : show error (missing document/video/simulation)
-    deactivate UI
+    Controller --> UI : error
+    UI --> User : show error (e.g., missing doc/video)
 end
+
+deactivate Controller
+deactivate UI
+deactivate User
 @enduml

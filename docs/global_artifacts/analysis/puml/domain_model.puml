@@ -266,22 +266,16 @@ package "ShowProposal " <<aggregate>>{
 
 }
 
-package "ProposalDelivery " <<aggregate>> {
+package "ProposalDeliveryInfo " <<aggregate>> {
 
-    class ProposalDelivery <<Entity>> <<root>> {
+    class ProposalDeliveryInfo <<Entity>> <<root>>{
     }
 
-    class ProposalDeliveryCode <<Value Object>> {
-    }
+    'ProposalDeliveryInfo -> x
+    ProposalDeliveryInfo --> "1" ShowProposal: proposal
+    ProposalDeliveryInfo --> "1" CRMCollaborator: sent by
+    ProposalDeliveryInfo --> "1" Customer: customer
 
-    enum ProposalDeliveryStatus <<Value Object>> {
-    }
-
-    ProposalDelivery --> "1" ShowProposal: deliveredProposal
-    ProposalDelivery --> "1" Customer: customer
-    ProposalDelivery --> "1" ProposalDeliveryCode: code
-    ProposalDelivery --> "1" ProposalDeliveryStatus: status
-    ProposalDelivery --> "1" CRMCollaborator: deliveredBy
 }
 
 package "ShowDesigner " <<aggregate>>{
