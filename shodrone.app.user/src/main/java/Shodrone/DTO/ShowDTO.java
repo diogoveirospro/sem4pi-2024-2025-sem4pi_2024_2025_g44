@@ -24,6 +24,8 @@ public class ShowDTO {
                    List<String> figuresConfiguration, String showDescription, String showLocation,
                    String showDate, String showTime, Long quantityOfDrones, double insuranceValue,
                    String insuranceCurrency, String showDuration) {
+        this.requestNumber = requestNumber;
+        this.proposalNumber = proposalNumber;
         this.droneConfiguration = droneConfiguration;
         this.videoUrl = videoUrl;
         this.videoTitle = videoTitle;

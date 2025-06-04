@@ -1,9 +1,6 @@
 package Server;
 
-import Server.protocol.BadRequest;
-import Server.protocol.GetShodroneUserRequest;
-import Server.protocol.UnknownRequest;
-import Server.protocol.UserAppRequest;
+import Server.protocol.*;
 import core.Daemon.customerApp.Controller.UserAppServerController;
 import eapli.framework.csv.util.CsvLineMarshaler;
 import eapli.framework.infrastructure.authz.application.Authenticator;
@@ -36,19 +33,19 @@ public class CustomerAppMessageParser {
      * @return
      */
     public UserAppRequest parse(final String inputLine) {
-        // Default to unknown request
         UserAppRequest request = new UnknownRequest(inputLine);
 
         try {
-            // Extrair o comando diretamente
             int firstSpaceIndex = inputLine.indexOf(' ');
             String command = (firstSpaceIndex == -1) ? inputLine : inputLine.substring(0, firstSpaceIndex);
 
-            // Dividir a linha em tokens, preservando valores entre aspas
             String[] tokens = inputLine.split(" ");
 
             if ("GET_SHODRONE_USER".equals(command)) {
                 request = parseGetShodroneUser(inputLine, tokens);
+            }
+            if ("GET_CUSTOMER".equals(command)) {
+                request = parseGetCustomer(inputLine, tokens);
             }
         } catch (final Exception e) {
             LOGGER.info("Unable to parse request: {}", inputLine);
@@ -98,11 +95,18 @@ public class CustomerAppMessageParser {
  */
 
     private UserAppRequest parseGetShodroneUser(final String inputLine, final String[] tokens) {
-        // Check if the number of tokens is correct
         if (tokens.length != 2) {
             return new BadRequest(inputLine, "Wrong number of parameters");
         } else {
             return new GetShodroneUserRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
+        }
+    }
+
+    private UserAppRequest parseGetCustomer(final String inputLine, final String[] tokens) {
+        if (tokens.length != 2) {
+            return new BadRequest(inputLine, "Wrong number of parameters");
+        } else {
+            return new GetCustomerRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
         }
     }
 }

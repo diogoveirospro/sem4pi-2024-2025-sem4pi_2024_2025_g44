@@ -1,5 +1,6 @@
 package core.Daemon.customerApp.Controller;
 
+import core.Customer.domain.Entities.Customer;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.PersistenceContext;
 import core.ShowProposal.repositories.ShowProposalRepository;
@@ -17,5 +18,9 @@ public class UserAppServerController {
     public ShodroneUser getShodroneUserByUsername(String username) {
         Username userUsername = Username.valueOf(username);
         return userRepository.findByUsername(userUsername);
+    }
+
+    public Customer getCustomerByRepresentativeEmail(String repEmail) {
+        return customerRepository.findCustomerByRepresentativeEmail(repEmail);
     }
 }

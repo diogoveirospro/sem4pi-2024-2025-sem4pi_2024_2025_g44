@@ -53,4 +53,17 @@ public class InMemoryCustomerRepository extends InMemoryDomainRepository<Custome
         }
         return null;
     }
+
+    @Override
+    public Customer findCustomerByRepresentativeEmail(String repEmail) {
+        Iterable<Customer> customers = findAll();
+        for (Customer customer : customers) {
+            for (CustomerRepresentative representative : customer.representativesOfCustomer()) {
+                if (representative.email().toString().equals(repEmail)) {
+                    return customer;
+                }
+            }
+        }
+        return null;
+    }
 }

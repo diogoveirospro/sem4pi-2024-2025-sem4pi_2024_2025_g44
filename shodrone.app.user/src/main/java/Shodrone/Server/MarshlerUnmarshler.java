@@ -1,6 +1,8 @@
 package Shodrone.Server;
 
+import Shodrone.DTO.CustomerDTO;
 import Shodrone.DTO.ShodroneUserDTO;
+import Shodrone.DTO.ShowDTO;
 import Shodrone.exceptions.FailedRequestException;
 
 import java.util.List;
@@ -36,5 +38,31 @@ public class MarshlerUnmarshler {
                 || messageType.equals("UNKNOWN_REQUEST") || messageType.equals("ERROR_IN_REQUEST")) {
             throw new FailedRequestException(messageType + ":" + tokens[tokens.length - 1].trim());
         }
+    }
+
+    public CustomerDTO parseResponseMessageCustomer(List<String> response) throws FailedRequestException {
+        checkForErrorMessage(response);
+
+        if (response.size() < 2) {
+            throw new IllegalArgumentException("Response does not contain enough data");
+        }
+
+        String[] data = response.get(1).split(",");
+        for (int i = 0; i < data.length; i++) {
+            data[i] = data[i].replace("\"", "").trim();
+        }
+
+        if (data.length < 2) {
+            throw new IllegalArgumentException("Invalid response format. Expected at least 2 fields: companyName, VatNumber");
+        }
+
+        String companyName = data[0];
+        String vatNumber = data[1];
+
+        return new CustomerDTO(companyName, vatNumber);
+    }
+
+    public ShowDTO parseResponseMessageShow(List<String> response) {
+        return null;
     }
 }

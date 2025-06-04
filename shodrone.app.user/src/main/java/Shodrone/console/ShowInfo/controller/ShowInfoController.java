@@ -3,9 +3,8 @@ package Shodrone.console.ShowInfo.controller;
 import Shodrone.DTO.CustomerDTO;
 import Shodrone.DTO.ShodroneUserDTO;
 import Shodrone.DTO.ShowDTO;
-import Shodrone.Server.CustomerAppServer;
+import Shodrone.Server.CustomerAppProtocolProxy;
 import Shodrone.exceptions.FailedRequestException;
-import core.User.domain.Entities.ShodroneUser;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -18,7 +17,7 @@ import java.util.List;
 public class ShowInfoController {
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
     private List<ShowDTO> shows;
-    private final CustomerAppServer server = new CustomerAppServer();
+    private final CustomerAppProtocolProxy server = new CustomerAppProtocolProxy();
 
     public Iterable<ShowDTO> listShows() throws FailedRequestException, IOException {
         CustomerDTO customer = getCustomerOfCurrentUser();
@@ -28,8 +27,12 @@ public class ShowInfoController {
     private CustomerDTO getCustomerOfCurrentUser() throws FailedRequestException, IOException {
         SystemUser currentUser = authz.session().get().authenticatedUser();
         ShodroneUserDTO shodroneUser = server.getShodroneUser(currentUser.username().toString());
-        System.out.println("Current user: " + shodroneUser.username);
-        return null;
+        if (shodroneUser == null) {
+            throw new FailedRequestException("User not found");
+        }
+        CustomerDTO customer = server.getCustomers(shodroneUser.email);
+        System.out.println("Customer: " + customer.companyName);
+        return customer;
     }
 
     public ShowDTO obtainShow(int selectedShow) {
