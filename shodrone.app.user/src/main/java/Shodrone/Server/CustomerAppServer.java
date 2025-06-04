@@ -46,7 +46,6 @@ public class CustomerAppServer {
 			while ((line = input.readLine()) != null && !line.isEmpty()) {
 				response.add(line);
 			}
-			System.out.println("Received response: " + response);
 			LOGGER.debug("Received message:\n----\n{}\n----", response);
 			return response;
 		}

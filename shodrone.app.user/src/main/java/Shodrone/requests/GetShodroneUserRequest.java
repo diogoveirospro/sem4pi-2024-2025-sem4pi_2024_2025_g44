@@ -8,7 +8,7 @@ public class GetShodroneUserRequest {
     }
 
     public String toRequest() {
-        return "GET_SHODRONE_USER \"" + username + "\"";
+        return "GET_SHODRONE_USER " + username;
     }
 
     public String username() {
