@@ -3,6 +3,7 @@ package core.ShowProposal.domain.Entities;
 import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
+import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
 import eapli.framework.domain.model.DomainEntity;
 import jakarta.persistence.*;
 
@@ -11,20 +12,16 @@ import java.security.DrbgParameters;
 import java.util.*;
 
 @Entity
-@Table(name = "show_configuration")
 public class ShowConfiguration implements Serializable, DomainEntity<Long> {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ElementCollection
-    @CollectionTable(name = "show_proposal_config", joinColumns = @JoinColumn(name = "configuration_id"))
-    @MapKeyJoinColumn(name = "model_id")
-    @Column(name = "drone_list")
-    private Map<Model, List<Drone>> showConfiguration = new LinkedHashMap<>();
+    // Relacionamento com ShowConfigurationEntry
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "show_configuration_id") // FK na tabela ShowConfigurationEntry
+    private List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -34,24 +31,31 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     )
     private Set<Figure> figures = new LinkedHashSet<>();
 
-
     protected ShowConfiguration() {
+        // Required by JPA
     }
 
     public ShowConfiguration(Builder builder) {
         if (builder.showConfiguration.isEmpty()) {
             throw new IllegalArgumentException("Drone configuration cannot be empty");
         }
-        this.showConfiguration = new LinkedHashMap<>(builder.showConfiguration);
+        this.showConfiguration = new ArrayList<>(showConfiguration);
         this.figures = new LinkedHashSet<>(builder.figures);
     }
 
-    public Map<Model, List<Drone>> showConfiguration() {
+    public List<ShowConfigurationEntry> showConfiguration() {
         return showConfiguration;
     }
 
     public Set<Model> droneModels() {
-        return showConfiguration.keySet();
+        Set<Model> droneModels = new HashSet<>();
+        for (ShowConfigurationEntry entry : showConfiguration) {
+            if (entry.drone() == null || entry.model() == null) {
+                throw new IllegalStateException("Drone or its model cannot be null in ShowConfigurationEntry");
+            }
+           droneModels.add(entry.model());
+        }
+        return droneModels;
     }
 
     public Set<Figure> figures() {
@@ -61,40 +65,42 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @Override
     public boolean sameAs(Object other) {
         if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (!(other instanceof ShowConfiguration)) return false;
         ShowConfiguration that = (ShowConfiguration) other;
-        return Objects.equals(id, that.id);
+        return Objects.equals(showConfiguration, that.showConfiguration);
     }
 
     @Override
     public Long identity() {
-        return id;
+        return this.id;
     }
 
+    /**
+     * Builder pattern for constructing ShowConfiguration.
+     */
     public static class Builder {
-        private final Map<Model, List<Drone>> showConfiguration = new LinkedHashMap<>();
+        private final List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
         private final Set<Figure> figures = new LinkedHashSet<>();
 
-        public Map<Model, List<Drone>> showConfiguration() {
-            return showConfiguration;
-        }
-        public Builder addDrones(Model model, List<Drone> drones) {
-            this.showConfiguration.computeIfAbsent(model, k -> new ArrayList<>()).addAll(drones);
+        public Builder addDrones(ShowConfigurationEntry showConfigurationEntry) {
+            this.showConfiguration.add(showConfigurationEntry);
             return this;
+        }
+
+        public ShowConfiguration build() {
+            return new ShowConfiguration(this);
+        }
+        public List<ShowConfigurationEntry> showConfiguration() {
+            return showConfiguration;
         }
 
         public Builder addFigure(Figure figure) {
             this.figures.add(figure);
             return this;
         }
-
         public Builder addFigures(Collection<Figure> figures) {
             this.figures.addAll(figures);
             return this;
-        }
-
-        public ShowConfiguration build() {
-            return new ShowConfiguration(this);
         }
     }
 }

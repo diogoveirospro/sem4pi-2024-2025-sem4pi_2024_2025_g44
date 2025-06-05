@@ -11,4 +11,5 @@ public interface CustomerRepository extends DomainRepository<VatNumber,Customer>
     Iterable<Customer> findAllCreatedCustomers();
     Iterable<CustomerRepresentative> findAllActiveCustomerRepresentatives(Customer customer);
     Customer findCustomerByName(Name name);
+    Customer findCustomerByRepresentativeEmail(String repEmail);
 }

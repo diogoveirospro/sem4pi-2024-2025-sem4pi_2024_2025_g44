@@ -9,15 +9,19 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import Shodrone.DTO.CustomerDTO;
 import Shodrone.DTO.ShodroneUserDTO;
+import Shodrone.DTO.ShowDTO;
 import Shodrone.exceptions.FailedRequestException;
+import Shodrone.requests.GetCustomerOfRepresentativeRequest;
 import Shodrone.requests.GetShodroneUserRequest;
+import Shodrone.requests.GetShowsOfCustomerRequest;
 import core.Persistence.Application;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CustomerAppServer {
-	private static final Logger LOGGER = LogManager.getLogger(CustomerAppServer.class);
+public class CustomerAppProtocolProxy {
+	private static final Logger LOGGER = LogManager.getLogger(CustomerAppProtocolProxy.class);
 
 	private static class ClientSocket {
 		private Socket sock;
@@ -70,5 +74,25 @@ public class CustomerAppServer {
 		socket.stop();
 		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
 		return mu.parseResponseMessageShodroneUser(response);
+	}
+
+	public CustomerDTO getCustomers(String email) throws IOException, FailedRequestException {
+		final var socket = new ClientSocket();
+		socket.connect();
+		final String request = new GetCustomerOfRepresentativeRequest(email).toRequest();
+		final List<String> response = socket.sendAndRecv(request);
+		socket.stop();
+		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		return mu.parseResponseMessageCustomer(response);
+	}
+
+	public Iterable<ShowDTO> getShows(String customerVatNumber) throws IOException, FailedRequestException {
+		final var socket = new ClientSocket();
+		socket.connect();
+		final String request = new GetShowsOfCustomerRequest(customerVatNumber).toRequest();
+		final List<String> response = socket.sendAndRecv(request);
+		socket.stop();
+		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		return mu.parseResponseMessageShow(response);
 	}
 }

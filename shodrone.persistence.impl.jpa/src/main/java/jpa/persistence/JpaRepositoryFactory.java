@@ -27,10 +27,12 @@ import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.CRMManager.repositories.CRMManagerRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
+import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
@@ -192,6 +194,21 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	@Override
 	public CRMManagerRepository crmManagers() {
 		return new JpaCRMManagerRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public ProposalDeliveryInfoRepository deliveries(TransactionalContext autoTx) {
+		return new JpaProposalDeliveryInfoRepository(autoTx);
+	}
+
+	@Override
+	public ProposalDeliveryInfoRepository deliveries() {
+		return new JpaProposalDeliveryInfoRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public ShowReportingRepository shows() {
+		return new JpaShowReportingRepository();
 	}
 
 }

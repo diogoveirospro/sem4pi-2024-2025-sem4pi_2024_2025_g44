@@ -28,10 +28,12 @@ import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.CRMManager.repositories.CRMManagerRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Drone.repositories.DroneRepository;
 
 import core.Figure.repositories.FigureRepository;
+import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowDesigner.repositories.ShowDesignerRepository;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.repositories.ShowRequestRepository;
@@ -113,4 +115,12 @@ public interface RepositoryFactory {
     CRMManagerRepository crmManagers(TransactionalContext autoTx);
 
     CRMManagerRepository crmManagers();
+
+    ProposalDeliveryInfoRepository deliveries(TransactionalContext autoTx);
+
+    ProposalDeliveryInfoRepository deliveries();
+
+    // Reporting repositories
+
+    ShowReportingRepository shows();
 }

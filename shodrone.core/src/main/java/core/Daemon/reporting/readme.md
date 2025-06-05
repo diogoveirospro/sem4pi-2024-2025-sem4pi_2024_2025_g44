@@ -1,0 +1,1 @@
+# All files related to reporting should be placed in this directory.

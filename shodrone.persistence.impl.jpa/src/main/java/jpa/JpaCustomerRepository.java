@@ -7,10 +7,13 @@ import core.Customer.domain.ValueObjects.CustomerStatus;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Customer.repositories.CustomerRepository;
 import core.Persistence.Application;
+import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import jakarta.persistence.TypedQuery;
+
+import java.util.List;
 
 public class JpaCustomerRepository extends JpaAutoTxRepository<Customer, VatNumber, VatNumber> implements CustomerRepository {
 
@@ -42,9 +45,21 @@ public class JpaCustomerRepository extends JpaAutoTxRepository<Customer, VatNumb
 
     @Override
     public Customer findCustomerByName(Name name) {
-        final TypedQuery <Customer> query = entityManager().createQuery(
+        final TypedQuery<Customer> query = entityManager().createQuery(
                 "SELECT c FROM Customer c WHERE c.name = :name", Customer.class);
         query.setParameter("name", name);
         return query.getSingleResult();
     }
+
+    @Override
+    public Customer findCustomerByRepresentativeEmail(String repEmail) {
+        Email email = new Email(repEmail);
+        final TypedQuery<Customer> query = entityManager().createQuery(
+                "SELECT c FROM Customer c JOIN c.representatives r WHERE r.email = :repEmail",
+                Customer.class);
+        query.setParameter("repEmail", email);
+        return query.getSingleResult();
+
+    }
+
 }

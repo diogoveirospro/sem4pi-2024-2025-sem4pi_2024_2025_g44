@@ -11,11 +11,20 @@ import inMemory.persistence.InMemoryInitializer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * In-memory implementation of the ShowProposalRepository.
+ * This repository is used for testing purposes and does not persist data.
+ */
 public class InMemoryShowProposalRepository extends InMemoryDomainRepository<ShowProposal, ShowProposalNumber> implements ShowProposalRepository {
+
     static {
         InMemoryInitializer.init();
     }
 
+    /**
+     * Finds all show proposals with the status of TESTING.
+     * @return an iterable collection of ShowProposal objects that are in the TESTING status.
+     */
     @Override
     public Iterable<ShowProposal> findAllTestingProposals() {
         Iterable<ShowProposal> proposals = findAll();
@@ -28,6 +37,11 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         return proposalList;
     }
 
+    /**
+     * Finds all show proposals that are in the TESTING status for a specific show request.
+     * @param request the ShowRequest for which to find testing proposals
+     * @return an iterable collection of ShowProposal objects that are in the TESTING status for the given request.
+     */
     @Override
     public Iterable<ShowProposal> findAllTestingProposalsByShowRequest(ShowRequest request) {
         Iterable<ShowProposal> proposals = findAll();
@@ -40,6 +54,11 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         return proposalList;
     }
 
+    /**
+     * Checks if a proposal with the given proposal number exists in the repository.
+     * @param proposalNumber the ShowProposalNumber to check for existence
+     * @return true if a proposal with the given number exists, false otherwise
+     */
     @Override
     public boolean existsByProposalNumber(ShowProposalNumber proposalNumber) {
         Iterable<ShowProposal> proposals = findAll();
@@ -51,6 +70,10 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         return false;
     }
 
+    /**
+     * Finds all show proposals that are ready to be configured.
+     * @return an iterable collection of ShowProposal objects that are ready to be configured.
+     */
     @Override
     public Iterable<ShowProposal> findConfigurableProposals() {
         Iterable<ShowProposal> proposals = findAll();
@@ -63,8 +86,35 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         return configurableProposals;
     }
 
+    /**
+     * Finds all show proposals that have been checked.
+     * @return an iterable collection of ShowProposal objects that have been checked.
+     */
     @Override
     public Iterable<ShowProposal> findAllCheckedProposals() {
-        return null;
+        Iterable<ShowProposal> proposals = findAll();
+        List<ShowProposal> checkedProposals = new ArrayList<>();
+        for (ShowProposal proposal : proposals) {
+            if (proposal.status().equals(ShowProposalStatus.ACCEPTED) || proposal.status().equals(ShowProposalStatus.REJECTED)) {
+                checkedProposals.add(proposal);
+            }
+        }
+        return checkedProposals;
+    }
+
+    /**
+     * Finds all show proposals that are ready to be sent.
+     * @return an iterable collection of ShowProposal objects that are ready to be sent.
+     */
+    @Override
+    public Iterable<ShowProposal> findProposalsReadyToSend() {
+        Iterable<ShowProposal> proposals = findAll();
+        List<ShowProposal> readyToSendProposals = new ArrayList<>();
+        for (ShowProposal proposal : proposals) {
+            if (proposal.status().equals(ShowProposalStatus.READY_TO_SEND)) {
+                readyToSendProposals.add(proposal);
+            }
+        }
+        return readyToSendProposals;
     }
 }

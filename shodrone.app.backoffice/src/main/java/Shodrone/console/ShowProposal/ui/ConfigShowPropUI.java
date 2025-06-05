@@ -5,11 +5,11 @@ import Shodrone.console.Model.printer.ModelPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Drone.domain.Entities.Drone;
-import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.application.ConfigShowPropController;
 import core.ShowProposal.domain.Entities.ShowConfiguration;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -31,7 +31,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             Scanner scanner = new Scanner(System.in);
 
             int remainingToConfigure = showProposal.quantityOfDrones().getQuantityOfDrones();
-            Map<Model, Integer> verificaçao = new LinkedHashMap<>();
+            Map<Model, Integer> verification = new LinkedHashMap<>();
 
             while (configuring && remainingToConfigure > 0) {
                 System.out.println(UtilsUI.CYAN + "\nRemaining drones to configure: " + remainingToConfigure + UtilsUI.RESET);
@@ -39,7 +39,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 Model model = selectModel();
                 if (model == null) continue;
 
-                int alreadySelected = verificaçao.getOrDefault(model, 0);
+                int alreadySelected = verification.getOrDefault(model, 0);
                 Iterable<Drone> drones = controller.getDrnModelList(model);
                 List<Drone> droneList = new ArrayList<>();
                 drones.forEach(droneList::add);
@@ -75,9 +75,11 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 }
 
                 List<Drone> selectedDrones = droneList.subList(alreadySelected, alreadySelected + quantity);
+                for (Drone drone : selectedDrones) {
+                    configBuilder.addDrones(new ShowConfigurationEntry(model, drone));
+                }
 
-                configBuilder.addDrones(model, selectedDrones);
-                verificaçao.put(model, alreadySelected + quantity);
+                verification.put(model, alreadySelected + quantity);
                 remainingToConfigure -= quantity;
 
                 if (remainingToConfigure <= 0) {
@@ -93,12 +95,23 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             }
 
             System.out.println(UtilsUI.BOLD + "\nConfiguration Summary:" + UtilsUI.RESET);
-            configBuilder.showConfiguration().forEach((model, drones) -> {
+
+            Map<Model, List<Drone>> groupedByModel = new LinkedHashMap<>();
+            for (ShowConfigurationEntry entry : configBuilder.showConfiguration()) {
+                groupedByModel
+                        .computeIfAbsent(entry.model(), k -> new ArrayList<>())
+                        .add(entry.drone());
+            }
+
+            for (Map.Entry<Model, List<Drone>> entry : groupedByModel.entrySet()) {
+                Model model = entry.getKey();
+                List<Drone> drones = entry.getValue();
                 System.out.printf(" - Model: %s, Quantity: %d%n", model.identity(), drones.size());
                 for (Drone drone : drones) {
                     System.out.println("    • Drone SerialNumber: " + drone.identity());
                 }
-            });
+            }
+
             System.out.print("\nConfirm configuration? (y/n): ");
             String confirm = scanner.nextLine().trim().toLowerCase();
             if (!confirm.equals("y")) {
@@ -122,23 +135,11 @@ public class ConfigShowPropUI extends AbstractFancyUI {
         }
     }
 
-
-    /**
-     * Returns the headline/title of the UI screen.
-     *
-     * @return the headline string.
-     */
     @Override
     public String headline() {
         return "Add a Drone to the Inventory";
     }
 
-    /**
-     * Prompts the user to select a model from the list of available drone models.
-     *
-     * @return the selected {@link Model} or null if none are available.
-     * @throws UserCancelledException if the user cancels the action.
-     */
     private ShowProposal selectProposal() {
         Iterable<ShowProposal> showProposals = controller.getShowProposalList();
 
@@ -150,7 +151,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
         List<ShowProposal> showProposalList = new ArrayList<>();
         showProposals.forEach(showProposalList::add);
 
-        ListWidget<ShowProposal> showProposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Model: \n" +
+        ListWidget<ShowProposal> showProposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Show Proposal: \n" +
                 UtilsUI.RESET, showProposalList, new ShowProposalPrinter());
         showProposalListWidget.show();
 
@@ -198,5 +199,4 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             }
         } while (true);
     }
-
 }

@@ -2,14 +2,18 @@
 actor "CRM Collaborator" as User
 participant "ShowInfoUI" as UI
 participant "ShowInfoController" as Controller
+participant "CustomerAppProtocolProxy" as Proxy
 participant "CustomerAppServer" as Server
+participant "CustomerAppMessageParser" as Parser
+participant "UserAppServerController" as ServerController
 participant "MarshlerUnmarshler" as MU
-
+participant "GetShodroneUserRequest" as ReqUser
 participant "ShodroneUserDTO" as UserDto
 participant "CustomerDTO" as CustDto
-participant "ShowProposalDTO" as PropDto
-participant "ShowRequestDTO" as ReqDto
 participant "ShowDTO" as ShowDto
+participant "ShodroneUserRepository" as ShodroneUserRepo
+participant "CustomerRepository" as CustRepo
+participant "ShowReportingRepository" as ShowRepo
 
 activate User
 
@@ -23,92 +27,167 @@ Controller -> Controller : getRepresenteeOfCustomer()
 
 activate Controller
 
-Controller -> Server : getShodroneUser(authenticatedUser)
+Controller -> Proxy : getShodroneUser(authenticatedUser)
+
+activate Proxy
+
+Proxy -> ReqUser : toRequest(authenticatedUser)
+
+Proxy -> Proxy : socket.sendAndRecv(request)
+
+activate Proxy
+
+Proxy -> Server : sendRequest(request)
 
 activate Server
 
-Server -> UserDto : toRequest(authenticatedUser)
+Server -> Parser : parse(request)
 
-Server -> Server : socket.sendAndRecv(request)
+Server -> Parser : execute(request)
 
-activate Server
+activate Parser
 
-Server -> MU : parseResponseMessageShodroneUser(response)
+Parser -> ServerController : parseGetShodroneUser()
+
+activate ServerController
+
+ServerController -> ShodroneUserRepo : getShodroneUserByUsername(username)
+
+
+ServerController -> Parser : response
+
+deactivate ServerController
+
+Parser -> Server : response
+deactivate Parser
+Server -> Proxy : response
+
+deactivate Server
+
+
+
+Proxy -> MU : parseResponseMessageShodroneUser(response)
 
 activate MU
 
 MU -> UserDto : ShodroneUserDTO()
 
-MU -> Server : parseResponseMessageLineShodroneUser(response)
+MU -> Proxy : parseResponseMessageLineShodroneUser(response)
 
 deactivate MU
 
 
-deactivate Server
+deactivate Proxy
 
-Server -> Controller : shodroneUser
+Proxy -> Controller : shodroneUser
 
-deactivate Server
+deactivate Proxy
 
-Controller -> Server : getCustomerOfRepresentative(shodroneUser)
+Controller -> Proxy : getCustomerOfRepresentative(shodroneUser)
 
+
+activate Proxy
+Proxy -> CustDto : toRequest(authenticatedUser)
+
+Proxy -> Proxy : socket.sendAndRecv(request)
+
+activate Proxy
+
+Proxy -> Server : sendRequest(request)
 
 activate Server
-Server -> CustDto : toRequest(authenticatedUser)
 
-Server -> Server : socket.sendAndRecv(request)
+Server -> Parser : parse(request)
 
-activate Server
+Server -> Parser : execute(request)
 
-Server -> MU : parseResponseMessageCustomer(response)
+activate Parser
+
+Parser -> ServerController : GetCustomerRequest()
+
+activate ServerController
+
+ServerController -> CustRepo : getCustomerByRepresentativeEmail(String repEmail)
+
+
+ServerController -> Parser : response
+
+deactivate ServerController
+
+Parser -> Server : response
+deactivate Parser
+Server -> Proxy : response
+
+deactivate Server
+
+
+Proxy -> MU : parseResponseMessageCustomer(response)
 
 activate MU
 
 MU -> CustDto : CustomerDTO()
 
-MU -> Server : parseResponseMessageLineCustomer(response)
+MU -> Proxy : parseResponseMessageLineCustomer(response)
 
 deactivate MU
 
-deactivate Server
+deactivate Proxy
 
-Server -> Controller : customer
-deactivate Server
+Proxy -> Controller : customer
+deactivate Proxy
 
 deactivate Controller
 
-Controller -> Server : getShowsByCustomer(customer)
+Controller -> Proxy : getShowsByCustomer(customer)
+
+activate Proxy
+
+Proxy -> ShowDto : toRequest(customer)
+
+Proxy -> Proxy : socket.sendAndRecv(request)
+activate Proxy
+
+Proxy -> Server : sendRequest(request)
 
 activate Server
 
-Server -> ReqDto : toRequest(customer)
-Server -> Server : socket.sendAndRecv(request)
-activate Server
-Server -> MU : parseResponseMessageShowRequest(response)
+Server -> Parser : parse(request)
+
+Server -> Parser : execute(request)
+
+activate Parser
+
+Parser -> ServerController : GetShowsRequest()
+
+activate ServerController
+
+ServerController -> ShowRepo : findShowsOfCustomer(vatNumber)
+
+
+ServerController -> Parser : response
+
+deactivate ServerController
+
+Parser -> Server : response
+deactivate Parser
+Server -> Proxy : response
+
+deactivate Server
+
+
+Proxy -> MU : parseResponseMessageShow(response)
 activate MU
-MU -> ReqDto : ShowRequestDTO()
-MU -> Server : parseResponseMessageLineShowRequest(response)
-deactivate MU
-deactivate Server
+MU -> ShowDto : ShowDTO()
 
-Server -> PropDto : toRequest(customer)
-
-Server -> Server : socket.sendAndRecv(requests)
-activate Server
-Server -> MU : parseResponseMessageShowProposal(response)
-activate MU
-MU -> PropDto : ShowProposalDTO()
-
-MU -> Server : parseResponseMessageLineShowProposal(response)
+MU -> Proxy : parseResponseMessageLineShow(response)
 deactivate MU
 
-deactivate Server
+deactivate Proxy
 
-Server -> ShowDto : createShowDTOsFromShowProposalsAndRequests(proposals, requests)
 
-Server -> Controller : shows
+Proxy -> Controller : shows
 
-deactivate Server
+deactivate Proxy
 Controller -> UI : shows
 deactivate Controller
 UI -> User : asks to select a show

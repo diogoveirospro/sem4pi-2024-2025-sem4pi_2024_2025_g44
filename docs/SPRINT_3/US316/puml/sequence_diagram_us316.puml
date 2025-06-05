@@ -6,7 +6,6 @@ participant "PersistenceContext" as Persistence
 participant "RepositoryFactory" as Factory
 participant "ShowProposalRepository" as ProposalRepo
 participant "ProposalDeliveryInfoRepository" as DeliveryRepo
-participant "ProposalDelivery" as DeliveryService
 participant "ProposalDeliveryInfo" as DeliveryInfo
 
 activate User
@@ -14,7 +13,7 @@ activate User
 User -> UI : request to send proposal
 activate UI
 
-UI -> Controller : fetch proposals ready to send
+UI -> Controller : listReadyToSendProposals()
 activate Controller
 
 Controller -> Persistence : PersistenceContext()
@@ -25,16 +24,10 @@ deactivate Persistence
 
 activate Factory
 Factory -> ProposalRepo : proposals()
+deactivate Factory
 activate ProposalRepo
 
 ProposalRepo -> ProposalRepo : findProposalsReadyToSend()
-Factory -> DeliveryRepo : delivery()
-deactivate Factory
-activate DeliveryRepo
-
-deactivate DeliveryRepo
-deactivate DeliveryRepo
-
 
 ProposalRepo --> Controller : list of proposals
 deactivate ProposalRepo
@@ -45,30 +38,33 @@ deactivate Controller
 UI -> User : show proposals
 User -> UI : select proposal
 
-UI -> Controller : sendProposal(proposal)
+UI -> Controller : sendProposal(proposal, crmCollaborator)
 activate Controller
 
-Controller -> DeliveryService : generateDeliveryInfo(proposal)
-activate DeliveryService
-
-DeliveryService -> DeliveryInfo : create with proposal, customer, code
+Controller -> DeliveryInfo : sendProposal(proposal, crmCollaborator)
 activate DeliveryInfo
-DeliveryInfo --> DeliveryService : new DeliveryInfo
+
+DeliveryInfo --> Controller : delivery
 deactivate DeliveryInfo
 
-DeliveryService -> DeliveryRepo : save(DeliveryInfo)
-deactivate DeliveryService
+Controller -> Persistence : PersistenceContext()
+activate Persistence
 
-DeliveryRepo --> Controller : confirmation
+Persistence -> Factory : repositories()
+deactivate Persistence
+
+activate Factory
+Factory -> DeliveryRepo : deliveries()
+deactivate Factory
+activate DeliveryRepo
+
+DeliveryRepo -> DeliveryRepo : save(delivery)
+
+DeliveryRepo --> Controller : saveDelivery
 deactivate DeliveryRepo
 
-alt Proposal is sent
-    Controller --> UI : show success + delivery code
-    UI --> User : show success message and code
-else Proposal is not sent
-    Controller --> UI : error
-    UI --> User : show error (e.g., missing doc/video)
-end
+Controller --> UI : show success + delivery code
+UI --> User : show success message and code
 
 deactivate Controller
 deactivate UI

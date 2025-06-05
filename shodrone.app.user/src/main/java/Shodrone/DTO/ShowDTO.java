@@ -8,33 +8,30 @@ public class ShowDTO {
     public String proposalNumber;
     public String requestNumber;
     public Map<String, List<String>> droneConfiguration;
-    public String videoUrl;
-    public String videoTitle;
+    public String video;
     public List<String> figuresConfiguration;
     public String showDescription;
     public String showLocation;
     public String showDate;
     public String showTime;
     public Long quantityOfDrones;
-    public double insuranceValue;
-    public String insuranceCurrency;
+    public String insurance;
     public String showDuration;
 
-    public ShowDTO(String requestNumber, String proposalNumber,Map<String, List<String>> droneConfiguration, String videoUrl, String videoTitle,
+    public ShowDTO(String requestNumber, String proposalNumber,Map<String, List<String>> droneConfiguration, String video,
                    List<String> figuresConfiguration, String showDescription, String showLocation,
-                   String showDate, String showTime, Long quantityOfDrones, double insuranceValue,
-                   String insuranceCurrency, String showDuration) {
+                   String showDate, String showTime, Long quantityOfDrones, String insurance, String showDuration) {
+        this.requestNumber = requestNumber;
+        this.proposalNumber = proposalNumber;
         this.droneConfiguration = droneConfiguration;
-        this.videoUrl = videoUrl;
-        this.videoTitle = videoTitle;
+        this.video = video;
         this.figuresConfiguration = figuresConfiguration;
         this.showDescription = showDescription;
         this.showLocation = showLocation;
         this.showDate = showDate;
         this.showTime = showTime;
         this.quantityOfDrones = quantityOfDrones;
-        this.insuranceValue = insuranceValue;
-        this.insuranceCurrency = insuranceCurrency;
+        this.insurance = insurance;
         this.showDuration = showDuration;
     }
 }
