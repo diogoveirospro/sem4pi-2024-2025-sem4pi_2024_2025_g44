@@ -473,14 +473,14 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         StringBuilder dronesSection = new StringBuilder();
         Set<Model> models = configuration.droneModels();
 
-        for (Model model : models) {
+       /* for (Model model : models) {
             long quantity = configuration.showConfiguration().get(model).size();
             dronesSection.append(model.toString())
                     .append(" – ")
                     .append(quantity)
                     .append(" unidades.")
                     .append(System.lineSeparator());
-        }
+        }*/
 
         documentContent = documentContent.replace("[model] – [quantity] units.", dronesSection.toString().trim());
         documentContent = documentContent.replace("[model] – [quantity] unidades.", dronesSection.toString().trim());
