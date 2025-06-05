@@ -60,24 +60,41 @@ Other elements not relevant to this functionality are omitted for simplicity.
 
 ## 5. Tests
 
-The tests for this requirement are not required as the domain logic is already tested in previous requirements. 
+The implementation of US373 is based on the design and analysis presented in the previous sections. The code is organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the demonstration of the information of a show. And didn't diverge from the design.
+
+The coding Commit messages related to this requirement are as follows:
+- [Started doing us373 of sprint 3](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/df4c781930d7195a96206ede2c89474d13237829)
+- [Was able to make the sockets work correctly](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/7daf4df7052ffa4017a930a94c9bef83a6746bb7)
+- [Added the socket for Customers](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/b9b848c38d5198c7393804bcaa43325ff36d72b6)
+- [Made the socket for shows and made a reporting repository to get the information of show proposal and request](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/fcfa75e6d8e0df900720fbbd0cbac81e84db2b98)
 
 ## 6. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+To integrate the new functionality with the existing system, we followed these steps:
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `ShowReportingRepository` was created to include both show proposal and request information.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to the showing of a show. This includes methods for retrieving show information, validating the input, and sending it to the client.
+3. **UI Layer**: The user interface was updated to include forms and views for viewing the shows. This includes input validation and error handling.
+
+To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
 ## 7. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+To demonstrate the functionality, follow these steps:
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+1. **Launch the application via the user application**.
+2. **Log in as a Representative of a Customer**.
+3. Navigate to the **Show information** section.
+4. Select the show you want to visualise.
 
 ## 8. Observations
 
-*This section should be used to include any content that does not fit any of the previous sections.*
+For the implementation of this project, we used the following sources:
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
+- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
+- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
+- **Socket Programming**: We used Java's built-in socket programming capabilities to implement the communication between the client and server for retrieving show information.
+- **Reporting Repository**: A custom repository was created to handle the retrieval of show proposal and request information, allowing for efficient querying and data retrieval.
