@@ -2,6 +2,7 @@ package core.ShowProposal.domain.Entities;
 
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.CRMManager.domain.Entities.CRMManager;
+import core.Customer.domain.Entities.Customer;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
@@ -334,6 +335,14 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      */
     public ShowProposalDocument document() {
         return document;
+    }
+
+    /**
+     * Return the customer associated with the ShowProposal.
+     * @return the Customer linked to this ShowProposal
+     */
+    public Customer customer() {
+        return request.customer();
     }
 
     public void setShowProposalStatus(ShowProposalStatus status) {

@@ -104,10 +104,14 @@ package "ProposalDeliveryInfo " <<aggregate>> {
     class ProposalDeliveryInfo <<Entity>> <<root>>{
     }
 
+    class ProposalDeliveryInfoCode <<Value Object>> {
+    }
+
     'ProposalDeliveryInfo -> x
     ProposalDeliveryInfo --> "1" ShowProposal: proposal
     ProposalDeliveryInfo --> "1" CRMCollaborator: sent by
     ProposalDeliveryInfo --> "1" Customer: customer
+    ProposalDeliveryInfo --> "1" ProposalDeliveryInfoCode: code
 
 }
 
