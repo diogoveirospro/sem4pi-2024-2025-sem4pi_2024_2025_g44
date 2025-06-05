@@ -87,33 +87,62 @@ The process begins when the CRM Collaborator opens the **Send Proposal** interfa
 
 ![Sequence Diagram for US316](images/sequence_diagram_us316.svg)
 
-### 4.2. Acceptance Tests
-
-The following tests validate the acceptance criteria defined for **US316 – Send Show Proposal to Customer**.  
-They ensure that a proposal is only sent when it contains the generated document.
-They also ensure that appropriate errors are raised when attempting to send incomplete proposals.
-
----
-
-#### **Test 1: Proposal is not ready to be sent if required elements are missing**
-**Refers to Acceptance Criteria:** _US316.1_  
-**Description:** Ensures that a proposal without a configured document is not eligible to be sent to the customer.
-
-```java
-@Test
-void ensureProposalCannotBeSentIfIncomplete() {
-    // Setup: create a valid ShowRequest and collaborators
-    // Create a ShowProposal with insurance, time, date, and assigned collaborator
-    // NOT configure the proposal document
-
-    // Action: call isReadyToSend() on the ShowProposal
-
-    // Assert: isReadyToSend() must return false because required fields are missing
-}
-```
-
 ## 5. Implementation
+
+The implementation of **US316** is distributed across the domain, application, and presentation layers, following the 
+principles of layered architecture.
+
+### Domain Layer
+
+- A new aggregate root `ProposalDeliveryInfo` was introduced in the `ProposalDelivery` aggregate. This entity stores:
+   * The associated `ShowProposal`.
+   * The `Customer`.
+   * A unique `ProposalDeliveryCode`.
+   * A `ProposalDeliveryStatus`.
+
+- The domain service `ProposalDelivery` is responsible for validating the proposal state and creating the 
+- `ProposalDeliveryInfo` instance.
+
+### Application Layer
+
+- The `SendProposalController` orchestrates the process, interacting with the domain service and repositories.
+
+### Infrastructure Layer
+
+- The `ProposalDeliveryInfoRepository` handles persistence of delivery records, allowing future retrieval by the customer.
+- A code generation utility may be used internally to ensure uniqueness of the delivery code.
+
+This approach ensures a clear separation of concerns and supports future evolution — such as integrating with the 
+customer application via sockets or HTTP to retrieve proposals using the code.
+
+Relevant commit messages:
+
+- [Possible Implementation of US316](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/abca01fd983324f3f82bac6eab37776fdc416a9e)
 
 ## 6. Integration/Demonstration
 
+The functionality developed in **US316** was successfully integrated into the Shodrone system.
+
+### Demonstration Instructions
+
+1. Log in as a CRM Collaborator.
+2. Navigate to the **Send Proposal** menu.
+3. Select a valid proposal (must have video and document).
+4. Observe the delivery code generated and shown.
+
+### Notes
+
+- This feature depends on prior completion of **US315 (video)** and **US318 (document)**.
+- No real email or message is sent; only a code is shown.
+- The customer app will later use this code to retrieve the proposal.
+
 ## 7. Observations
+
+For the implementation of this project, I used the following sources:
+
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools developed by our department (ISEP).
+- **eCafeteria Project**: A reference project developed by our department, used as a source of inspiration for similar
+  functionalities and a guide for best practices.
+- **JPA (Hibernate)**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
+

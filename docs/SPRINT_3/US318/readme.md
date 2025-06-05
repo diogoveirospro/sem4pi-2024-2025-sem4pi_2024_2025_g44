@@ -181,7 +181,7 @@ Relevant commit messages:
 
 This functionality was successfully integrated into the **Shodrone** system.
 
-### UI Flow
+### Demonstration Instructions
 
 1. User logs in as a **CRM Manager**
 2. Navigates to **Show Proposals → Configure Proposal Document**
