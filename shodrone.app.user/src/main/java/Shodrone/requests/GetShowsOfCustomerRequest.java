@@ -1,9 +1,9 @@
 package Shodrone.requests;
 
-public class getShowsOfCustomerRequest {
+public class GetShowsOfCustomerRequest {
     private final String vatNumber;
 
-    public getShowsOfCustomerRequest(String vatNumber) {
+    public GetShowsOfCustomerRequest(String vatNumber) {
         this.vatNumber = vatNumber;
     }
 

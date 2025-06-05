@@ -11,7 +11,7 @@ public class ShowPrinter implements Visitor<ShowDTO> {
     public void visit(ShowDTO visitee) {
         System.out.printf(
                 "\nShow Description: %s\nLocation: %s\nDate: %s\nTime: %s\nDuration: %s\n" +
-                        "Quantity of Drones: %d\nInsurance Value: %.2f %s\nVideo Title: %s\nVideo URL: %s\n" +
+                        "Quantity of Drones: %d\nInsurance: %s\nVideo: %s\n" +
                         "Figures Configuration: %s\nDrone Configuration:\n%s\n",
                 visitee.showDescription,
                 visitee.showLocation,
@@ -19,10 +19,8 @@ public class ShowPrinter implements Visitor<ShowDTO> {
                 visitee.showTime,
                 visitee.showDuration,
                 visitee.quantityOfDrones,
-                visitee.insuranceValue,
-                visitee.insuranceCurrency,
-                visitee.videoTitle,
-                visitee.videoUrl,
+                visitee.insurance,
+                visitee.video,
                 formatList(visitee.figuresConfiguration),
                 formatMap(visitee.droneConfiguration)
         );

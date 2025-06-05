@@ -21,7 +21,12 @@ public class ShowInfoController {
 
     public Iterable<ShowDTO> listShows() throws FailedRequestException, IOException {
         CustomerDTO customer = getCustomerOfCurrentUser();
-        return null;
+        Iterable<ShowDTO> list = server.getShows(customer.VatNumber);
+        if (list == null) {
+            throw new FailedRequestException("No shows found for the customer");
+        }
+        shows = (List<ShowDTO>) list;
+        return list;
     }
 
     private CustomerDTO getCustomerOfCurrentUser() throws FailedRequestException, IOException {
@@ -30,9 +35,7 @@ public class ShowInfoController {
         if (shodroneUser == null) {
             throw new FailedRequestException("User not found");
         }
-        CustomerDTO customer = server.getCustomers(shodroneUser.email);
-        System.out.println("Customer: " + customer.companyName);
-        return customer;
+        return server.getCustomers(shodroneUser.email);
     }
 
     public ShowDTO obtainShow(int selectedShow) {

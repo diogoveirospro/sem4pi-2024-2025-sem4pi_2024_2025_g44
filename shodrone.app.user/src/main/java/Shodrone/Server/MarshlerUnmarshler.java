@@ -5,7 +5,10 @@ import Shodrone.DTO.ShodroneUserDTO;
 import Shodrone.DTO.ShowDTO;
 import Shodrone.exceptions.FailedRequestException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MarshlerUnmarshler {
     public ShodroneUserDTO parseResponseMessageShodroneUser(List<String> response) throws FailedRequestException {
@@ -62,7 +65,89 @@ public class MarshlerUnmarshler {
         return new CustomerDTO(companyName, vatNumber);
     }
 
-    public ShowDTO parseResponseMessageShow(List<String> response) {
-        return null;
+    public Iterable<ShowDTO> parseResponseMessageShow(List<String> response) throws FailedRequestException {
+        checkForErrorMessage(response);
+
+        List<ShowDTO> shows = new ArrayList<>();
+
+        response.remove(0);
+
+        for (String line : response) {
+            List<String> tokens = splitRespectingQuotes(line);
+
+            if (tokens.size() < 12) {
+                throw new IllegalArgumentException("Invalid response format. Expected 12 fields.");
+            }
+
+            String requestNumber = tokens.get(0);
+            String proposalNumber = tokens.get(1);
+            Map<String, List<String>> droneConfiguration = parseDroneConfiguration(tokens.get(2));
+            String video = tokens.get(3);
+            List<String> figuresConfiguration = parseFiguresConfiguration(tokens.get(4));
+            String showDescription = tokens.get(5);
+            String showLocation = tokens.get(6);
+            String showDate = tokens.get(7);
+            String showTime = tokens.get(8);
+            Long quantityOfDrones = Long.parseLong(tokens.get(9));
+            String insurance = tokens.get(10);
+            String showDuration = tokens.get(11);
+
+            shows.add(new ShowDTO(requestNumber, proposalNumber, droneConfiguration, video,
+                    figuresConfiguration, showDescription, showLocation, showDate, showTime,
+                    quantityOfDrones, insurance, showDuration));
+        }
+
+        return shows;
+    }
+
+    private Map<String, List<String>> parseDroneConfiguration(String token) {
+        Map<String, List<String>> droneConfig = new HashMap<>();
+        String[] models = token.split(";");
+
+        for (String modelEntry : models) {
+            String[] parts = modelEntry.split(":");
+            if (parts.length == 2) {
+                String modelName = parts[0].trim();
+                String[] drones = parts[1].split(",");
+                List<String> droneList = new ArrayList<>();
+                for (String drone : drones) {
+                    droneList.add(drone.trim());
+                }
+                droneConfig.put(modelName, droneList);
+            }
+        }
+        return droneConfig;
+    }
+
+    private List<String> parseFiguresConfiguration(String token) {
+        String[] figures = token.split(",");
+        List<String> figureList = new ArrayList<>();
+        for (String figure : figures) {
+            figureList.add(figure.trim());
+        }
+        return figureList;
+    }
+
+    private List<String> splitRespectingQuotes(String line) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder currentToken = new StringBuilder();
+        boolean insideQuotes = false;
+
+        for (char c : line.toCharArray()) {
+            if (c == '\"') {
+                insideQuotes = !insideQuotes;
+            } else if (c == ',' && !insideQuotes) {
+                tokens.add(currentToken.toString().trim());
+                currentToken.setLength(0);
+            } else {
+                currentToken.append(c);
+            }
+        }
+
+        if (currentToken.length() > 0) {
+            tokens.add(currentToken.toString().trim());
+        }
+
+        return tokens;
     }
 }

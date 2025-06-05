@@ -15,6 +15,7 @@ import Shodrone.DTO.ShowDTO;
 import Shodrone.exceptions.FailedRequestException;
 import Shodrone.requests.GetCustomerOfRepresentativeRequest;
 import Shodrone.requests.GetShodroneUserRequest;
+import Shodrone.requests.GetShowsOfCustomerRequest;
 import core.Persistence.Application;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,10 +86,10 @@ public class CustomerAppProtocolProxy {
 		return mu.parseResponseMessageCustomer(response);
 	}
 
-	public ShowDTO getShows(String showId) throws IOException, FailedRequestException {
+	public Iterable<ShowDTO> getShows(String customerVatNumber) throws IOException, FailedRequestException {
 		final var socket = new ClientSocket();
 		socket.connect();
-		final String request = new GetShodroneUserRequest(showId).toRequest();
+		final String request = new GetShowsOfCustomerRequest(customerVatNumber).toRequest();
 		final List<String> response = socket.sendAndRecv(request);
 		socket.stop();
 		final MarshlerUnmarshler mu = new MarshlerUnmarshler();

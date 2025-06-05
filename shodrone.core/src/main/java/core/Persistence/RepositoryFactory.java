@@ -28,6 +28,7 @@ import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.CRMManager.repositories.CRMManagerRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Drone.repositories.DroneRepository;
 
@@ -118,4 +119,8 @@ public interface RepositoryFactory {
     ProposalDeliveryInfoRepository deliveries(TransactionalContext autoTx);
 
     ProposalDeliveryInfoRepository deliveries();
+
+    // Reporting repositories
+
+    ShowReportingRepository shows();
 }

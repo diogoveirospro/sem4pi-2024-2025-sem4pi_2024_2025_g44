@@ -47,6 +47,9 @@ public class CustomerAppMessageParser {
             if ("GET_CUSTOMER".equals(command)) {
                 request = parseGetCustomer(inputLine, tokens);
             }
+            if ("GET_SHOWS".equals(command)) {
+                request = parseGetShows(inputLine, tokens);
+            }
         } catch (final Exception e) {
             LOGGER.info("Unable to parse request: {}", inputLine);
             request = new BadRequest(inputLine, "Unable to parse request");
@@ -107,6 +110,14 @@ public class CustomerAppMessageParser {
             return new BadRequest(inputLine, "Wrong number of parameters");
         } else {
             return new GetCustomerRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
+        }
+    }
+
+    private UserAppRequest parseGetShows(final String inputLine, final String[] tokens) {
+        if (tokens.length != 2) {
+            return new BadRequest(inputLine, "Wrong number of parameters");
+        } else {
+            return new GetShowsRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
         }
     }
 }
