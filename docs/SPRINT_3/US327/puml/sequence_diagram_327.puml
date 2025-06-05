@@ -12,7 +12,6 @@ participant ":UsageTimeController" as CTRL
 participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS
 participant ":DroneRepository" as DRONE_REPO
-participant "Database" as DB
 
 activate DT
 
@@ -47,10 +46,10 @@ activate UI
         DRONE_REPO --> CTRL : time registered
         deactivate DRONE_REPO
 
-        CTRL -> DB : saveUsageTime(droneId, usageTime)
-        activate DB
-        DB --> CTRL : success
-        deactivate DB
+        CTRL -> DRONE_REPO : save(usageTime)
+        activate DRONE_REPO
+        DRONE_REPO --> CTRL : success
+        deactivate DRONE_REPO
 
         CTRL --> UI : show success message
     else if drone is inactive

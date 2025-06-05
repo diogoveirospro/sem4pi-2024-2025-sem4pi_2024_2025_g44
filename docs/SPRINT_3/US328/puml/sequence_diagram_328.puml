@@ -13,7 +13,6 @@ participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS
 participant ":DroneRepository" as DRONE_REPO
 participant ":MaintenanceRepository" as MAINT_REPO
-participant "Database" as DB
 
 activate DT
 
