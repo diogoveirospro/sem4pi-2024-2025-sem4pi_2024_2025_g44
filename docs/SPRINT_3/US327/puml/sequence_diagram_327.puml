@@ -1,0 +1,64 @@
+@startuml
+'skinparam monochrome
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Drone Tech" as DT
+participant ":UsageTimeUI" as UI
+participant ":UsageTimeController" as CTRL
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":DroneRepository" as DRONE_REPO
+participant "Database" as DB
+
+activate DT
+
+DT -> UI : request to register drone usage time (droneId, usageTime)
+activate UI
+    UI -> CTRL : collect usage time data (HH:MM)
+    activate CTRL
+
+    CTRL --> PERS : getRepositoryFactory()
+    activate PERS
+    PERS --> CTRL : repositoryFactory
+    deactivate PERS
+
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+
+    CTRL -> REPOS : getDroneRepository()
+    activate REPOS
+    REPOS --> CTRL : droneRepository
+    deactivate REPOS
+
+    CTRL -> DRONE_REPO : findBySerialNumber(droneId)
+    activate DRONE_REPO
+    DRONE_REPO --> CTRL : drone (exists, active status)
+    deactivate DRONE_REPO
+
+    alt if drone is active
+        CTRL -> DRONE_REPO : registerUsageTime(droneId, usageTime)
+        activate DRONE_REPO
+        DRONE_REPO --> CTRL : time registered
+        deactivate DRONE_REPO
+
+        CTRL -> DB : saveUsageTime(droneId, usageTime)
+        activate DB
+        DB --> CTRL : success
+        deactivate DB
+
+        CTRL --> UI : show success message
+    else if drone is inactive
+        CTRL --> UI : show error message ("Drone is not active")
+    end
+
+    deactivate CTRL
+UI --> DT : display result (success or error)
+deactivate UI
+deactivate DT
+@enduml

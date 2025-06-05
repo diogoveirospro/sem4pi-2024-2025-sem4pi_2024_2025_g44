@@ -1,0 +1,65 @@
+@startuml
+'skinparam monochrome
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Drone Tech" as DT
+participant ":MaintenanceUI" as UI
+participant ":MaintenanceController" as CTRL
+participant ":Persistence" as PERS
+participant ":RepositoryFactory" as REPOS
+participant ":DroneRepository" as DRONE_REPO
+participant ":MaintenanceRepository" as MAINT_REPO
+participant "Database" as DB
+
+activate DT
+
+DT -> UI : request to list drones needing preventive maintenance
+activate UI
+    UI -> CTRL : getDronesNeedingMaintenance()
+    activate CTRL
+
+    CTRL --> PERS : getRepositoryFactory()
+    activate PERS
+    PERS --> CTRL : repositoryFactory
+    deactivate PERS
+
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+
+    CTRL -> REPOS : getDroneRepository()
+    activate REPOS
+    REPOS --> CTRL : droneRepository
+    deactivate REPOS
+
+    CTRL -> DRONE_REPO : findActiveDrones()
+    activate DRONE_REPO
+    DRONE_REPO --> CTRL : activeDronesList
+    deactivate DRONE_REPO
+
+    loop for each drone in activeDronesList
+        CTRL -> MAINT_REPO : getUsageTime(drone.id)
+        activate MAINT_REPO
+        MAINT_REPO --> CTRL : usageTime
+        deactivate MAINT_REPO
+
+        CTRL -> MAINT_REPO : getMaintenanceLimit(drone.model)
+        activate MAINT_REPO
+        MAINT_REPO --> CTRL : maintenanceLimit
+        deactivate MAINT_REPO
+
+        alt if usageTime exceeds maintenanceLimit
+            CTRL -> UI : showDroneNeedsMaintenance(drone, usageTime, maintenanceLimit)
+        end
+    end
+    deactivate CTRL
+
+UI --> DT : display list of drones needing maintenance
+deactivate UI
+deactivate DT
+@enduml
