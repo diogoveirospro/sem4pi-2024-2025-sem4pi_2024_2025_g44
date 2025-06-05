@@ -18,7 +18,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNumber> {
@@ -438,10 +440,8 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.crmManager = crmManager;
 
         // If the template has the name of the Customer Representative
-        if (documentContent.contains("[Customer Representative Name]")) {
-            documentContent = documentContent.replace("[Customer Representative Name]",
-                    "Representative of " + request.customer().name());
-        }
+        documentContent = documentContent.replace("[Customer Representative Name]",
+                "Representative of " + request.customer().name());
 
         // Write the Customer's information
         documentContent = documentContent.replace("[Company Name]", request.customer().name().toString());
@@ -472,15 +472,27 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         // List of Used Drones
         StringBuilder dronesSection = new StringBuilder();
         Set<Model> models = configuration.droneModels();
+        Map<Model, Long> modelsQuantities = configuration.showConfiguration().stream()
+                .collect(Collectors.groupingBy(ShowConfigurationEntry::model, Collectors.counting()));
 
-       /* for (Model model : models) {
-            long quantity = configuration.showConfiguration().get(model).size();
-            dronesSection.append(model.toString())
-                    .append(" – ")
-                    .append(quantity)
-                    .append(" unidades.")
-                    .append(System.lineSeparator());
-        }*/
+        for (Model model : models) {
+            Long quantity = modelsQuantities.get(model);
+            if (quantity != null) {
+                if (selectedTemplate.contains("unidades")) {
+                    dronesSection.append(model.identity().toString())
+                            .append(" – ")
+                            .append(quantity)
+                            .append(" unidades.")
+                            .append(System.lineSeparator());
+                } else {
+                    dronesSection.append(model.identity().toString())
+                            .append(" – ")
+                            .append(quantity)
+                            .append(" units.")
+                            .append(System.lineSeparator());
+                }
+            }
+        }
 
         documentContent = documentContent.replace("[model] – [quantity] units.", dronesSection.toString().trim());
         documentContent = documentContent.replace("[model] – [quantity] unidades.", dronesSection.toString().trim());
