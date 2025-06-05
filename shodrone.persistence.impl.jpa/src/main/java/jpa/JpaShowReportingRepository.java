@@ -3,8 +3,11 @@ package jpa;
 import core.Customer.domain.ValueObjects.VatNumber;
 import core.Daemon.reporting.shows.ShowReporting;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
+import core.Drone.domain.Entities.Drone;
+import core.ModelOfDrone.domain.Entities.Model;
 import core.Persistence.Application;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaTransactionalContext;
@@ -42,10 +45,13 @@ public class JpaShowReportingRepository extends JpaTransactionalContext implemen
         for (Map.Entry<ShowRequest, ShowProposal> entry : map.entrySet()) {
             ShowRequest request = entry.getKey();
             ShowProposal proposal = entry.getValue();
+
+            Map<Model, List<Drone>> droneConfiguration = createMapOfModelsAndDrones(proposal);
+
             ShowReporting show = new ShowReporting(
                     proposal.identity(),
                     request.identity(),
-                    proposal.configuration().showConfiguration(),
+                    droneConfiguration,
                     proposal.video(),
                     proposal.configuration().figures(),
                     request.showDescription(),
@@ -59,6 +65,16 @@ public class JpaShowReportingRepository extends JpaTransactionalContext implemen
             shows.add(show);
         }
         return shows;
+    }
+
+    private static Map<Model, List<Drone>> createMapOfModelsAndDrones(ShowProposal proposal) {
+        Map<Model, List<Drone>> droneConfiguration = new HashMap<>();
+        for (ShowConfigurationEntry entryConfig : proposal.configuration().showConfiguration()) {
+            droneConfiguration
+                    .computeIfAbsent(entryConfig.model(), k -> new ArrayList<>())
+                    .add(entryConfig.drone());
+        }
+        return droneConfiguration;
     }
 
     private static Map<ShowRequest, ShowProposal> mapOfShowsInformation(List<ShowProposal> acceptedProposals) {
