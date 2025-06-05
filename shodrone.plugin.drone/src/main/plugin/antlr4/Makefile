@@ -1,4 +1,4 @@
-# Makefile for generating ANTLR4 code in Java for the Figure grammar
+# Makefile for generating ANTLR4 code in Java for the Drone grammar
 
 # Base name of grammars
 GRAMMAR_BASE = Drone
