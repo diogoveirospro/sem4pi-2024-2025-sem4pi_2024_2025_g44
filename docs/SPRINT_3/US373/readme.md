@@ -34,7 +34,7 @@ Test: To Do
 
 ### Dependencies
 
-- This requirement depends on [US317](../../SPRINT_3/US317/readme.md), as a proposal must be accepted before we can get the show information. (The show becomes scheduled after wards).
+- This requirement depends on [US371](../../SPRINT_3/US371/readme.md), as a proposal must be accepted before we can get the show information. (The show becomes scheduled after wards).
 
 ---
 
