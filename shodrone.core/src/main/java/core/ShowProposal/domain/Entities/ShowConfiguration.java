@@ -19,9 +19,8 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relacionamento com ShowConfigurationEntry
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "show_configuration_id") // FK na tabela ShowConfigurationEntry
+    @JoinColumn(name = "show_configuration_id")
     private List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
 
     @ManyToMany

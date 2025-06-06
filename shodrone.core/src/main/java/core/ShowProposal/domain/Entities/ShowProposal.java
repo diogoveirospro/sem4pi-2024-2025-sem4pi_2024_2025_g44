@@ -173,7 +173,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * @param creator the collaborator who created the proposal
      */
     public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
-                        Duration durationOfShow, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator, CustomerFeedback customerFeedback, CustFeedbackStatus feedbackStatus) {
+                        Duration durationOfShow, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator) {
         this.request = request;
         this.dateOfShow = dateOfShow;
         this.timeOfShow = timeOfShow;
@@ -186,7 +186,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = new GenerateProposalNumber().generate();
-        this.customerFeedback = customerFeedback;
+        this.customerFeedback = null;
         this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
@@ -216,6 +216,8 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = proposalNumberGenerator.generateWithoutRep(); // for testing purposes
+        this.customerFeedback = null;
+        this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
     /**
