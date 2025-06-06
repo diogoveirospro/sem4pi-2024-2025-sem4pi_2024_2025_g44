@@ -1,67 +1,153 @@
-# US 101
-
-*This is an example template*
+# US 326
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
-
+This task aims to complete the requirements of US326 of sprint 3, where the system must allow Drone Techs to register maintenance record for a drone. The focus is on finalizing the analysis and design, and implementing and testing this functionality.
 ### 1.1 List of issues
 
-Analysis:
-
-Design:
-
-Implement:
-
-Test:
-
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: Doing
+- **Testing**: Doing
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
-*Example*
-
-**US G101** As {Ator} I Want...
+**As** a Drone Tech,  
+**I want** to register a maintenance record for a drone,  
+**So that** I can track the history of performed maintenances.
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
-
+- **AC01**: Only drones that are active can have maintenance registered.
+- **AC02**: The maintenance record must include type, date, description (optional), and technician (optional).
+- **AC03**: The system must persist the maintenance record after validation.
+- **AC04**: The maintenance type must be selected from existing types.
+- 
 **Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+- Depends on [US241](../../SPRINT_2/US241/readme.md) for drone registration.
+- Depends on [US321](../../SPRINT_3/US321/readme.md) for management of maintenance types.
+
+### Client Clarifications:
+
+> - Any Drone Tech can add maintenance records.
+> - Maintenance types are configured by Drone Techs.
+> - The system should prevent registering maintenance for removed drones.
+
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+### Drone Aggregate
+
+The Drone aggregate includes:
+- **SerialNumber**
+- **DroneStatus**
+- **MaintenanceList**
+
+Only drones with **active** status are allowed to be updated.
+
+
+### Maintenance Aggregate
+
+Represents the performed maintenance:
+- **Date**
+- **MaintenanceType**
+- **Description** (optional)
+- **Technician** (optional)
+
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+Architecture follows a layered structure: UI, Controller, Repositories, Domain.
+
+### 👤 Actor
+
+#### Drone Tech
+- **Role**: The user who performs and records maintenance.
+- **Interaction**: Selects a drone and fills the maintenance data.
+
+
+
+### 💻 UI Layer
+
+#### :MaintenanceUI
+- **Methods**:
+    - `enterDroneSerialNumber()`
+    - `selectMaintenanceType()`
+    - `enterDateAndDescription()`
+    - `confirm()`
+    - `showSuccessMessage()` / `showErrorMessage()`
+
+
+
+### 🎮 Application Layer
+
+#### :MaintenanceController
+- **Methods**:
+    - `addMaintenance(droneId, type, date, description, technician)`
+
+
+
+### 🗃 Persistence Layer
+
+#### :Persistence
+- `getRepositoryFactory()`
+
+
+### 🏗 Repository Layer
+
+#### :RepositoryFactory
+- `getDroneRepository()`
+- `getMaintenanceRepository()`
+
+#### :DroneRepository
+- `findBySerialNumber(droneId)`
+
+#### :MaintenanceRepository
+- `save(maintenanceRecord)`
+
+
+### 🧠 Domain Layer
+
+#### :Maintenance
+- `create()`
+- Encapsulates the maintenance data and rules.
+
+
+### 🔁 Process Flow Summary
+
+1. Drone Tech initiates the maintenance registration.
+2. UI collects drone ID and maintenance data.
+3. Controller verifies if drone exists and is active.
+4. Controller constructs maintenance record and persists it.
+5. UI displays confirmation.
+
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US326 Sequence Diagram](images/sequence_diagram_us326.svg "US326 Sequence Diagram")
 
 ### 4.3. Applied Patterns
 
 ### 4.4. Acceptance Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+### Test 1: Register maintenance for active drone
 
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
+**Refers to AC01, AC02, AC03**
+```java
+@Test
+void ensureMaintenanceIsRegistered() {
+    // setup: active drone, valid maintenance type
+    // action: controller.addMaintenance(...)
+    // assert: maintenance is persisted successfully
+}
 
 ```
 @Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+void ensureCannotAddToRemovedDrone() {
+// setup: removed drone
+// action: controller.addMaintenance(...)
+// expect: exception thrown
 }
 ````
 
