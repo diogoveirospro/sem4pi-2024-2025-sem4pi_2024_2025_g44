@@ -8,10 +8,7 @@
 *.ctxt
 
 # Ingnore Target directory
-**/target/**
-
-#Allow Executable JAR files in target
-!**/target/*.jar
+target/
 
 # Still allow Maven wrapper jar
 !.mvn/wrapper/maven-wrapper.jar
