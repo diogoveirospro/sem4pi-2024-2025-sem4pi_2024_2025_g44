@@ -47,6 +47,6 @@ public class Location implements Serializable, ValueObject {
 
     @Override
     public String toString() {
-        return "Location: latitude=" + latitude + ", longitude=" + longitude + ", altitude=" + altitude;
+        return latitude + ", " + longitude + ", " + altitude;
     }
 }

@@ -1,52 +1,5 @@
 package core.ProposalDeliveryInfo.domain.Entities;
 
-import core.CRMCollaborator.domain.Entities.CRMCollaborator;
-import core.CRMManager.domain.Entities.CRMManager;
-import core.Category.domain.Entities.Category;
-import core.Category.domain.ValueObjects.CategoryName;
-import core.Customer.domain.Entities.Customer;
-import core.Customer.domain.ValueObjects.Address;
-import core.Customer.domain.ValueObjects.CustomerType;
-import core.Customer.domain.ValueObjects.VatNumber;
-import core.Drone.domain.Entities.Drone;
-import core.Drone.domain.ValueObjects.DroneStatus;
-import core.Drone.domain.ValueObjects.RemovalReason;
-import core.Drone.domain.ValueObjects.SerialNumber;
-import core.Figure.domain.Entities.Figure;
-import core.Figure.domain.ValueObjects.Code;
-import core.Figure.domain.ValueObjects.DSLDescription;
-import core.Figure.domain.ValueObjects.Keyword;
-import core.Figure.domain.ValueObjects.Version;
-import core.ModelOfDrone.domain.Entities.Configuration;
-import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
-import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
-import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
-import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
-import core.Shared.domain.ValueObjects.*;
-import core.ShowDesigner.domain.Entities.ShowDesigner;
-import core.ShowProposal.application.Service.GenerateProposalNumber;
-import core.ShowProposal.domain.Entities.ShowConfiguration;
-import core.ShowProposal.domain.Entities.ShowProposal;
-import core.ShowProposal.domain.ValueObjects.Insurance;
-import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
-import core.ShowProposal.domain.ValueObjects.Video;
-import core.ShowRequest.application.Service.GenerateShowRequestID;
-import core.ShowRequest.domain.Entities.ShowRequest;
-import core.ShowRequest.domain.ValueObjects.Location;
-import core.ShowRequest.domain.ValueObjects.ShowDescription;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class ProposalDeliveryInfoTest {
 
 //    private ShowProposal proposal;

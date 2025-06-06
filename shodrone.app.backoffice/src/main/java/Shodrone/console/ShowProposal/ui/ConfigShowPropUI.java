@@ -1,13 +1,12 @@
 package Shodrone.console.ShowProposal.ui;
 
-import Shodrone.console.Drone.ui.ListDroneUI;
 import Shodrone.console.Model.printer.ModelPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Drone.domain.Entities.Drone;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.application.ConfigShowPropController;
-import core.ShowProposal.domain.Entities.ShowConfiguration;
+import core.ShowProposal.domain.Entities.ShowConfigurationBuilder;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
 import eapli.framework.presentation.console.ListWidget;
@@ -26,7 +25,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             ShowProposal showProposal = selectProposal();
             if (showProposal == null) return false;
 
-            ShowConfiguration.Builder configBuilder = new ShowConfiguration.Builder();
+            ShowConfigurationBuilder configBuilder = new ShowConfigurationBuilder();
             boolean configuring = true;
             Scanner scanner = new Scanner(System.in);
 

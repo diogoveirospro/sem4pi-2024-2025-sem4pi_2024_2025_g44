@@ -2,12 +2,9 @@ package core.ShowProposal.domain.ValueObjects;
 
 import core.Drone.domain.Entities.Drone;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ShowProposal.domain.Entities.ShowConfiguration;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @Entity

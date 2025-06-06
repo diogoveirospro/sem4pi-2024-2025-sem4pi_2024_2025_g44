@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -147,7 +146,7 @@ public class ShowProposalTest {
         CustomerType type = CustomerType.REGULAR;
         Customer customer = new Customer(name, address, vat, type);
 
-        ShowDescription showDescription = new ShowDescription("Descripton");
+        ShowDescription showDescription = new ShowDescription("Description");
         date = LocalDate.parse("12-12-2003", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         time = LocalTime.parse("22:22", DateTimeFormatter.ofPattern("HH:mm"));
         Location location = new Location(40.7128, -74.0060, 10.0); // Example coordinates (New York City)
@@ -239,18 +238,21 @@ public class ShowProposalTest {
         assertThrows(IllegalArgumentException.class, () -> proposal.addCRMManager(null));
     }
 
-//    @Test
-//    void ensureProposalIsReadyToConfigureDocument() {
-//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
-//                collaborator, generateProposalNumber);
-//        ShowConfiguration configuration = new ShowConfiguration.Builder()
-//                .addFigure(figure)
-//                .addDrone(model, drone)
-//                .build();
-//        proposal.addConfiguration(configuration);
-//        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-//        assertTrue(proposal.isReadyToConfigureDocument());
-//    }
+    @Test
+    void ensureProposalIsReadyToConfigureDocument() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+        assertTrue(proposal.isReadyToConfigureDocument());
+    }
 
     @Test
     void ensureProposalCannotConfigureDocumentWithoutRequiredFields() {
@@ -259,51 +261,103 @@ public class ShowProposalTest {
         assertFalse(proposal.isReadyToConfigureDocument());
     }
 
-//    @Test
-//    void ensureDocumentIsConfiguredCorrectly() {
-//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
-//                collaborator, generateProposalNumber);
-//        ShowConfiguration configuration = new ShowConfiguration.Builder()
-//                .addFigure(figure)
-//                .addDrone(model, drone)
-//                .build();
-//        proposal.addConfiguration(configuration);
-//        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-//        ShowProposalDocument document = proposal.configureDocument("Portuguese", manager);
-//        assertNotNull(document);
-//        assertTrue(document.toString().contains("Representative of Test Customer"));
-//        assertTrue(document.toString().contains("TestModel – 1 units."));
-//    }
+    @Test
+    void ensureDocumentPortugueseIsConfiguredCorrectly() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
 
-//    @Test
-//    void ensureInvalidTemplateThrowsException() {
-//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
-//                collaborator, generateProposalNumber);
-//
-//        ShowConfiguration configuration = new ShowConfiguration.Builder()
-//                .addFigure(figure)
-//                .addDrone(model, drone)
-//                .build();
-//        proposal.addConfiguration(configuration);
-//        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-//
-//        String invalidTemplate = "french"; // "french" is not a valid template
-//
-//        assertThrows(IllegalArgumentException.class, () -> {
-//            proposal.configureDocument(invalidTemplate, manager);
-//        });
-//    }
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
 
-//    @Test
-//    void testAddShowDSLDescriptionValid() {
-//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
-//        ShowDSLDescription description = new ShowDSLDescription("Valid DSL Description");
-//        ShowConfiguration configuration = new ShowConfiguration.Builder().build();
-//        proposal.addConfiguration(configuration);
-//        proposal.addShowDSLDescription(description);
-//
-//        assertEquals(proposal.configuration().showDSLDescription(), description);
-//    }
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+        String document = proposal.configureDocument("Portuguese", manager);
+        assertNotNull(document);
+        assertTrue(document.contains("Referência " + proposal.identity().proposalNumber()));
+        assertTrue(document.contains("TestModel – 1 unidades."));
+    }
+
+    @Test
+    void ensureDocumentEnglishConfiguredCorrectly() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+        String document = proposal.configureDocument("English (Regular Customer)", manager);
+        assertNotNull(document);
+        assertTrue(document.contains("Reference " + proposal.identity().proposalNumber()));
+        assertTrue(document.contains("TestModel – 1 units."));
+    }
+
+    @Test
+    void ensureDocumentEnglishVIPIsConfiguredCorrectly() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+        String document = proposal.configureDocument("English (VIP Customer)", manager);
+        assertNotNull(document);
+        assertTrue(document.contains("Representative of Test Customer"));
+        assertTrue(document.contains("TestModel – 1 units."));
+    }
+
+    @Test
+    void ensureInvalidTemplateThrowsException() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
+                collaborator, generateProposalNumber);
+
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+
+        String invalidTemplate = "french"; // "french" is not a valid template
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            proposal.configureDocument(invalidTemplate, manager);
+        });
+    }
+
+    @Test
+    void testAddShowDSLDescriptionValid() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowDSLDescription description = new ShowDSLDescription("Valid DSL Description");
+
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+
+        proposal.addShowDSLDescription(description);
+
+        assertEquals(proposal.configuration().showDSLDescription(), description);
+    }
 
     @Test
     void testAddShowDSLDescriptionNullThrowsException() {
@@ -318,13 +372,19 @@ public class ShowProposalTest {
         assertThrows(IllegalStateException.class, () -> proposal.addShowDSLDescription(description));
     }
 
-//    @Test
-//    void testIsReadyToGenerateShowDSLTrue() {
-//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
-//        ShowConfiguration configuration = new ShowConfiguration.Builder().addFigure(figure).build();
-//        proposal.addConfiguration(configuration);
-//        assertTrue(proposal.isReadyToGenerateShowDSL());
-//    }
+    @Test
+    void testIsReadyToGenerateShowDSLTrue() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        assertTrue(proposal.isReadyToGenerateShowDSL());
+    }
 
     @Test
     void testIsReadyToGenerateShowDSLFalseNoConfiguration() {
@@ -332,11 +392,16 @@ public class ShowProposalTest {
         assertFalse(proposal.isReadyToGenerateShowDSL());
     }
 
-//    @Test
-//    void testIsReadyToGenerateShowDSLFalseNoFigures() {
-//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
-//        ShowConfiguration configuration = new ShowConfiguration.Builder().build();
-//        proposal.addConfiguration(configuration);
-//        assertFalse(proposal.isReadyToGenerateShowDSL());
-//    }
+    @Test
+    void testIsReadyToGenerateShowDSLFalseNoFigures() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        assertFalse(proposal.isReadyToGenerateShowDSL());
+    }
 }

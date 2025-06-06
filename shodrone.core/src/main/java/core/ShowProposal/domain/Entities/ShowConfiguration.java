@@ -1,6 +1,5 @@
 package core.ShowProposal.domain.Entities;
 
-import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
@@ -9,7 +8,6 @@ import eapli.framework.domain.model.DomainEntity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.security.DrbgParameters;
 import java.util.*;
 
 @Entity
@@ -39,13 +37,22 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         // Required by JPA
     }
 
-    public ShowConfiguration(Builder builder) {
-        if (builder.showConfiguration.isEmpty()) {
+    public ShowConfiguration(ShowConfigurationBuilder builder) {
+        if (builder.showConfiguration().isEmpty()) {
             throw new IllegalArgumentException("Drone configuration cannot be empty");
         }
-        this.showConfiguration = new ArrayList<>(showConfiguration);
-        this.figures = new LinkedHashSet<>(builder.figures);
+        this.showConfiguration = new ArrayList<>(builder.showConfiguration());
+        this.figures = new LinkedHashSet<>(builder.figures());
     }
+
+    public ShowConfiguration(List<ShowConfigurationEntry> showConfiguration, Set<Figure> figures) {
+        if (showConfiguration.isEmpty()) {
+            throw new IllegalArgumentException("Drone configuration cannot be empty");
+        }
+        this.showConfiguration = showConfiguration;
+        this.figures = figures;
+    }
+
 
     public List<ShowConfigurationEntry> showConfiguration() {
         return showConfiguration;
@@ -100,34 +107,5 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @Override
     public Long identity() {
         return this.id;
-    }
-
-    /**
-     * Builder pattern for constructing ShowConfiguration.
-     */
-    public static class Builder {
-        private final List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
-        private final Set<Figure> figures = new LinkedHashSet<>();
-
-        public Builder addDrones(ShowConfigurationEntry showConfigurationEntry) {
-            this.showConfiguration.add(showConfigurationEntry);
-            return this;
-        }
-
-        public ShowConfiguration build() {
-            return new ShowConfiguration(this);
-        }
-        public List<ShowConfigurationEntry> showConfiguration() {
-            return showConfiguration;
-        }
-
-        public Builder addFigure(Figure figure) {
-            this.figures.add(figure);
-            return this;
-        }
-        public Builder addFigures(Collection<Figure> figures) {
-            this.figures.addAll(figures);
-            return this;
-        }
     }
 }

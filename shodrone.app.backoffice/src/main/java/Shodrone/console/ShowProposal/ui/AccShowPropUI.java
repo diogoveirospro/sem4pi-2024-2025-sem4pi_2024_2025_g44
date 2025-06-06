@@ -1,15 +1,9 @@
 package Shodrone.console.ShowProposal.ui;
 
-import Shodrone.console.Drone.ui.ListDroneUI;
-import Shodrone.console.Model.printer.ModelPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
-import core.Drone.domain.Entities.Drone;
-import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.application.AccShowPropController;
-import core.ShowProposal.application.ConfigShowPropController;
-import core.ShowProposal.domain.Entities.ShowConfiguration;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;

@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -446,16 +447,17 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
                 "Representative of " + request.customer().name());
 
         // Write the Customer's information
-        documentContent = documentContent.replace("[Company Name]", request.customer().name().toString());
+        documentContent = documentContent.replace("[Company name]", request.customer().name().toString());
         documentContent = documentContent.replace("[Address with postal code and country]",
                 request.customer().address().toString());
-        documentContent = documentContent.replace("[VAT Number]", request.customer().vat().toString());
+        documentContent = documentContent.replace("[VAT Number]", "VAT: " + request.customer().vat().vatNumber());
 
         // Write the Show Proposal's information
-        documentContent = documentContent.replace("[proposal number]", proposalNumber.toString());
-        documentContent = documentContent.replace("[show proposal number]", proposalNumber.toString());
+        documentContent = documentContent.replace("[proposal number]", proposalNumber.proposalNumber());
+        documentContent = documentContent.replace("[show proposal number]", proposalNumber.proposalNumber());
 
-        documentContent = documentContent.replace("[date]", createdAt.toLocalDate().toString());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        documentContent = documentContent.replace("[date]", createdAt.toLocalDate().format(dateFormatter));
 
         documentContent = documentContent.replace("[link to show video]", video.url());
         documentContent = documentContent.replace("[link to show's simulation video]", video.url());
@@ -467,9 +469,16 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
 
         documentContent = documentContent.replace("[GPS coordinates of the location]", request.location().toString());
 
-        documentContent = documentContent.replace("[date of the event]", dateOfShow.toString());
-        documentContent = documentContent.replace("[time of the event]", timeOfShow.toString());
-        documentContent = documentContent.replace("[duration]", durationOfShow.toString());
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        String formattedDate = dateOfShow.format(dateFormatter);
+        String formattedTime = timeOfShow.format(timeFormatter);
+
+        String formattedDuration = String.valueOf(durationOfShow.toMinutes());
+
+        documentContent = documentContent.replace("[date of the event]", formattedDate);
+        documentContent = documentContent.replace("[time of the event]", formattedTime);
+        documentContent = documentContent.replace("[duration]", formattedDuration);
 
         // List of Used Drones
         StringBuilder dronesSection = new StringBuilder();
@@ -477,16 +486,21 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         Map<Model, Long> modelsQuantities = configuration.showConfiguration().stream()
                 .collect(Collectors.groupingBy(ShowConfigurationEntry::model, Collectors.counting()));
 
-        for (Model model : models) {
-            Long quantity = modelsQuantities.get(model);
-            if (quantity != null) {
-                if (selectedTemplate.contains("unidades")) {
+        if (documentContent.contains("[model] – [quantity] unidades.")){
+            for (Model model : models) {
+                Long quantity = modelsQuantities.get(model);
+                if (quantity != null) {
                     dronesSection.append(model.identity().toString())
                             .append(" – ")
                             .append(quantity)
                             .append(" unidades.")
                             .append(System.lineSeparator());
-                } else {
+                }
+            }
+        } else {
+            for (Model model : models) {
+                Long quantity = modelsQuantities.get(model);
+                if (quantity != null) {
                     dronesSection.append(model.identity().toString())
                             .append(" – ")
                             .append(quantity)
@@ -514,6 +528,8 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         }
 
         documentContent = documentContent.replace("[position in show] – [figure name]", figuresSection.toString().trim());
+
+        documentContent = documentContent.replace("...", "");
 
         return documentContent;
 
