@@ -9,7 +9,7 @@
         <version>0.1.0</version>
     </parent>
 
-    <artifactId>shodrone.plugins</artifactId>
+    <artifactId>plugins</artifactId>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>

@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>lapr4</groupId>
-            <artifactId>shodrone.plugins</artifactId>
+            <artifactId>plugins</artifactId>
             <version>0.1.0</version>
             <scope>compile</scope>
         </dependency>
