@@ -294,4 +294,49 @@ public class ShowProposalTest {
 //        });
 //    }
 
+//    @Test
+//    void testAddShowDSLDescriptionValid() {
+//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+//        ShowDSLDescription description = new ShowDSLDescription("Valid DSL Description");
+//        ShowConfiguration configuration = new ShowConfiguration.Builder().build();
+//        proposal.addConfiguration(configuration);
+//        proposal.addShowDSLDescription(description);
+//
+//        assertEquals(proposal.configuration().showDSLDescription(), description);
+//    }
+
+    @Test
+    void testAddShowDSLDescriptionNullThrowsException() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        assertThrows(IllegalArgumentException.class, () -> proposal.addShowDSLDescription(null));
+    }
+
+    @Test
+    void testAddShowDSLDescriptionWithoutConfigurationThrowsException() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowDSLDescription description = new ShowDSLDescription("Valid DSL Description");
+        assertThrows(IllegalStateException.class, () -> proposal.addShowDSLDescription(description));
+    }
+
+//    @Test
+//    void testIsReadyToGenerateShowDSLTrue() {
+//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+//        ShowConfiguration configuration = new ShowConfiguration.Builder().addFigure(figure).build();
+//        proposal.addConfiguration(configuration);
+//        assertTrue(proposal.isReadyToGenerateShowDSL());
+//    }
+
+    @Test
+    void testIsReadyToGenerateShowDSLFalseNoConfiguration() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        assertFalse(proposal.isReadyToGenerateShowDSL());
+    }
+
+//    @Test
+//    void testIsReadyToGenerateShowDSLFalseNoFigures() {
+//        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+//        ShowConfiguration configuration = new ShowConfiguration.Builder().build();
+//        proposal.addConfiguration(configuration);
+//        assertFalse(proposal.isReadyToGenerateShowDSL());
+//    }
 }

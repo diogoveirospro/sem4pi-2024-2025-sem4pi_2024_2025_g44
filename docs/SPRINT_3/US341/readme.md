@@ -68,29 +68,29 @@ validation:
 
 ## 4. Design
 
-This section outlines the design adopted for implementing **US341 – Validate Figure Description**. The system allows a  
+This section outlines the design adopted for implementing **US341 – Validate Figure Description**. The system allows a 
 Show Designer to enter a figure's DSL description, which must be validated before the figure can be added to the catalogue.
 
 ### 4.1 Realisation
 
-The sequence diagram below presents the full validation flow, highlighting the separation of responsibilities between the  
+The sequence diagram below presents the full validation flow, highlighting the separation of responsibilities between the 
 user interface, domain service, plugin infrastructure, and ANTLR-generated components.
 
-The validation process is initiated by the Show Designer through the `AddFigureToCatalogueUI`, where the DSL code and other  
-figure-related metadata are entered. The UI component delegates validation to the domain service `DSLValidate`, which  
+The validation process is initiated by the Show Designer through the `AddFigureToCatalogueUI`, where the DSL code and other 
+figure-related metadata are entered. The UI component delegates validation to the domain service `DSLValidate`, which 
 interacts with the plugin registered via **US340**.
 
-The plugin exposes a `validateDSL(code)` method and internally leverages ANTLR-generated components, specifically  
+The plugin exposes a `validateDSL(code)` method and internally leverages ANTLR-generated components, specifically 
 `FigureLexer` and `FigureParser`, to perform lexical and syntactic analysis. The process includes:
 
 - Lexical analysis performed by `FigureLexer`
 - Syntax parsing through `FigureParser`, starting from the root rule
 - Collection of validation results and reporting of syntax errors (if any)
 
-Upon successful validation, the UI proceeds to call the controller to persist the figure. Otherwise, it displays the  
+Upon successful validation, the UI proceeds to call the controller to persist the figure. Otherwise, it displays the 
 validation errors to the user and halts the process.
 
-This design ensures that **only syntactically valid DSL descriptions are accepted**, promoting data integrity and consistency  
+This design ensures that **only syntactically valid DSL descriptions are accepted**, promoting data integrity and consistency 
 across the system.
 
 [Full Grammar](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#full-grammar)

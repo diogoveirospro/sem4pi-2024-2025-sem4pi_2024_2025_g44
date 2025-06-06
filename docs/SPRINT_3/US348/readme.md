@@ -16,9 +16,9 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implementation: 📝 To Do
+Implementation: 🧪 Testing
 
-Testing: 📝 To Do
+Testing: 🧪 Testing
 
 ## 2. Requirements
 
@@ -91,78 +91,56 @@ This design ensures that:
 
 ![Sequence Diagram for US348](images/sequence_diagram_us348.svg)
 
-### 4.2. Acceptance Tests
-
-The following tests were designed to validate the acceptance criteria defined for **US348**. These focus on verifying 
-the correctness of the DSL generation process and its integration within the domain layer, particularly the 
-`GenerateShowDSL` service and the `ShowConfiguration` entity.
-
----
-
-#### **Test 1: DSL is generated based on figures**
-**Refers to Acceptance Criteria:** _US348.1_  
-**Description:** Ensures that the generated DSL description reflects the figures included in the show configuration.
-
-```java
-@Test
-public void testDSLGenerationReflectsFigures() {
-    // Setup: create a ShowConfiguration with a list of Figure objects
-    // Action: call GenerateShowDSL.generateFrom(configuration)
-    // Assert: verify that the returned DSL string includes references to the configured figures
-}
-````
-
----
-
-#### **Test 2: DSL is assigned to configuration**
-
-**Refers to Acceptance Criteria:** *US348.3*
-**Description:** Ensures that the DSL description is stored inside the configuration once generated.
-
-```java
-@Test
-public void testDSLIsAssociatedWithConfiguration() {
-    // Setup: create a ShowConfiguration without a DSL description
-    // Action: call GenerateShowDSL.generateFrom(configuration) and assign it
-    // Assert: verify that configuration.getDSLDescription() returns a non-null object
-}
-```
-
----
-
-#### **Test 4: Description is persisted in proposal**
-
-**Refers to Acceptance Criteria:** *US348.4*
-**Description:** Ensures that once the DSL is generated and set on the configuration, the proposal is saved with the 
-updated state.
-
-```java
-@Test
-public void testProposalWithDSLIsPersisted() {
-    // Setup: create a ShowProposal with valid configuration
-    // Action: set the DSL description on configuration
-    // Assert: verify that the configuration exists in the show proposal
-}
-```
-
----
-
-#### **Test 5: DSL is not generated for empty configuration**
-
-**Negative Case**
-**Description:** Ensures that an error or empty result is returned if no figures are present in the configuration.
-
-```java
-@Test
-public void testDSLGenerationFailsWithNoFigures() {
-    // Setup: create a ShowConfiguration with no figures
-    // Action: call GenerateShowDSL.generateFrom(configuration)
-    // Assert: expect an empty DSL string or specific exception (depending on implementation)
-}
-```
-
 ## 5. Implementation
+
+The implementation of **US348** focused on enabling the generation of a DSL-based high-level description for a drone 
+show based on its configured figures.
+
+A new application service, `GenerateShowDSL`, was created to encapsulate the generation logic. This service obtains the
+list of figures from the `ShowConfiguration` and generates a DSL representation using predefined grammar rules. The DSL 
+content is then validated using the plugin `ANTLRShowDSLValidatorPlugin`, which uses ANTLR-generated components 
+(`ShowLexer`, `ShowParser`) to ensure syntactic correctness.
+
+If validation succeeds, a new `ShowDSLDescription` value object is created and associated with the show proposal. The 
+proposal is then persisted through the repository.
+
+The entire logic is isolated in the application layer and service, preserving the domain model integrity and ensuring
+modular design.
+
+Relevant commit messages:
+
+* [Possible Implementation of US348](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/dbc26f2dc870e325a25a2180bd620333b330df34)
 
 ## 6. Integration/Demonstration
 
+The functionality developed in **US348** was successfully integrated into the Drone Tech’s workflow via the 
+`GenerateShowDSLUI`.
+
+When the Drone Tech selects a proposal marked as ready, the system fetches its configuration and invokes the 
+`GenerateShowDSL` service. The generated DSL is validated and, if successful, saved in the proposal. Otherwise, the 
+validation errors are shown to the user for correction.
+
+This ensures that only valid DSL descriptions are persisted, protecting the consistency of the domain and preparing 
+the show for downstream processing such as simulation and code generation.
+
+### Demonstration Instructions
+
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](readme.md)).
+2. **Log in as a Drone Tech**.
+3. Navigate to the **Show Proposals** section.
+4. Select the **Generate Show DSL** option.
+5. Choose a proposal marked as ready for generation.
+6. If the generation and validation succeed, a success message is shown; otherwise, validation errors are displayed 
+7. and the DSL is not saved.
+
 ## 7. Observations
+
+* The validation process was implemented using **ANTLR 4**, a powerful parser generator for building DSLs.
+* The grammar used is defined and documented in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md).
+* No unit tests were implemented for this user story, as validation is triggered exclusively from the user interface
+  and is indirectly verified through the figure registration flow.
+* The `DSLValidate` service and the plugin were designed for reuse, ensuring that future use cases can rely on
+  centralized validation logic.
+* The `eCafeteria` project and **EAPLI Framework** served as references for structural and architectural alignment.
