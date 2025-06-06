@@ -173,7 +173,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * @param creator the collaborator who created the proposal
      */
     public ShowProposal(ShowRequest request, LocalDate dateOfShow, LocalTime timeOfShow,
-                        Duration durationOfShow, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator, CustomerFeedback customerFeedback, CustFeedbackStatus feedbackStatus) {
+                        Duration durationOfShow, QuantityOfDrones quantityOfDrones, Insurance insurance, CRMCollaborator creator) {
         this.request = request;
         this.dateOfShow = dateOfShow;
         this.timeOfShow = timeOfShow;
@@ -186,7 +186,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = new GenerateProposalNumber().generate();
-        this.customerFeedback = customerFeedback;
+        this.customerFeedback = null;
         this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
@@ -216,6 +216,8 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = proposalNumberGenerator.generateWithoutRep(); // for testing purposes
+        this.customerFeedback = null;
+        this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
     /**
@@ -515,5 +517,27 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
 
         return documentContent;
 
+    }
+
+    /**
+     * Adds a ShowDSLDescription to the ShowProposal's configuration.
+     * @param showDSLDescription the ShowDSLDescription to be added
+     */
+    public void addShowDSLDescription(ShowDSLDescription showDSLDescription) {
+        if (showDSLDescription == null) {
+            throw new IllegalArgumentException("Show DSL Description cannot be null.");
+        }
+        if (configuration == null) {
+            throw new IllegalStateException("Configuration must be set before adding Show DSL Description.");
+        }
+        configuration.addShowDSLDescription(showDSLDescription);
+    }
+
+    /**
+     * Checks if the ShowProposal is ready to generate Show DSL.
+     * @return true if the ShowProposal has a configuration with figures, false otherwise
+     */
+    public boolean isReadyToGenerateShowDSL(){
+        return configuration != null && configuration.figures() != null && !configuration.figures().isEmpty();
     }
 }

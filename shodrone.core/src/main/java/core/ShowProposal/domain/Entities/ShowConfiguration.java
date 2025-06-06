@@ -4,6 +4,7 @@ import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
+import core.ShowProposal.domain.ValueObjects.ShowDSLDescription;
 import eapli.framework.domain.model.DomainEntity;
 import jakarta.persistence.*;
 
@@ -18,9 +19,8 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relacionamento com ShowConfigurationEntry
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "show_configuration_id") // FK na tabela ShowConfigurationEntry
+    @JoinColumn(name = "show_configuration_id")
     private List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
 
     @ManyToMany
@@ -30,6 +30,10 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
             inverseJoinColumns = @JoinColumn(name = "figure_id")
     )
     private Set<Figure> figures = new LinkedHashSet<>();
+
+    @Embedded
+    @Column(name = "show_dsl_description")
+    private ShowDSLDescription showDSLDescription;
 
     protected ShowConfiguration() {
         // Required by JPA
@@ -58,8 +62,31 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         return droneModels;
     }
 
+    /**
+     * Returns the set of figures associated with this ShowConfiguration.
+     * @return a Set of Figure objects
+     */
     public Set<Figure> figures() {
         return figures;
+    }
+
+    /**
+     * Returns the ShowDSLDescription associated with this ShowConfiguration.
+     * @return the ShowDSLDescription object
+     */
+    public ShowDSLDescription showDSLDescription() {
+        return showDSLDescription;
+    }
+
+    /**
+     * Adds a ShowDSLDescription to the ShowConfiguration.
+     * @param showDSLDescription the ShowDSLDescription to add
+     */
+    public void addShowDSLDescription(ShowDSLDescription showDSLDescription) {
+        if (showDSLDescription == null) {
+            throw new IllegalArgumentException("Show DSL Description cannot be null");
+        }
+        this.showDSLDescription = showDSLDescription;
     }
 
     @Override

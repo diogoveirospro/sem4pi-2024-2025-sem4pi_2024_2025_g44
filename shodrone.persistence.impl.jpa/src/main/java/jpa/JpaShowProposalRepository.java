@@ -126,4 +126,17 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
         return query.getResultList();
     }
 
+    /**
+     * Finds all ShowProposals that have all the necessary information to generate a Show DSL.
+     * @return an iterable collection of ShowProposals that are ready to generate Show DSL
+     */
+    @Override
+    public Iterable<ShowProposal> findProposalsReadyGenerateShowDSL() {
+        final TypedQuery<ShowProposal> query = entityManager().createQuery(
+                "SELECT sp FROM ShowProposal sp WHERE sp.configuration IS NOT NULL " +
+                        "AND sp.configuration.figures IS NOT EMPTY",
+                ShowProposal.class);
+        return query.getResultList();
+    }
+
 }

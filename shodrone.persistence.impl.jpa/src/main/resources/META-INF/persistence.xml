@@ -48,6 +48,7 @@
     <!-- Show Proposal Aggregate -->
     <class>core.ShowProposal.domain.Entities.ShowProposal</class>
     <class>core.ShowProposal.domain.Entities.ShowConfiguration</class>
+    <class>core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry</class>
 
     <!-- Proposal Delivery Info Aggregate -->
     <class>core.ProposalDeliveryInfo.domain.Entities.ProposalDeliveryInfo</class>
@@ -66,6 +67,15 @@
       <property name="jakarta.persistence.jdbc.password" value="password"/>
       <property name="jakarta.persistence.schema-generation.database.action" value= "update"/>
       <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+      <!-- Hibernate C3PO Connection Pooling -->
+      <property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
+      <property name="hibernate.c3p0.min_size" value="5" />
+      <property name="hibernate.c3p0.max_size" value="20" />
+      <property name="hibernate.c3p0.timeout" value="300" />
+      <property name="hibernate.c3p0.max_statements" value="50" />
+      <property name="hibernate.c3p0.idle_test_period" value="120" />
+
     </properties>
 
   </persistence-unit>

@@ -70,7 +70,7 @@ public class CreateShowProposalController {
             throw new IllegalArgumentException("CRM Collaborator does not exist.");
         }
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
-                crmCollaborator, null, CustFeedbackStatus.PENDING);
+                crmCollaborator);
         showProposalRepository.save(showProposal);
     }
 

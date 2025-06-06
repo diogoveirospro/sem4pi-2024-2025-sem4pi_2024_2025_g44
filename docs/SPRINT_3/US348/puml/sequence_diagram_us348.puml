@@ -5,19 +5,20 @@ participant "GenerateShowDSLController" as Controller
 participant "PersistenceContext" as Persistence
 participant "RepositoryFactory" as Factory
 participant "ShowProposalRepository" as Repo
+participant "GenerateShowDSL" as Service
 participant "ShowProposal" as Proposal
-participant "GenerateShowDSL" as DSLGenerator
 participant "ShowConfiguration" as Configuration
-participant "ShowGrammarLexer" as Lexer
-participant "ShowGrammarParser" as Parser
-participant "ShowDSLDescription" as DSLDescription
+participant "ANTLRShowDSLValidatorPlugin" as Plugin
+participant "ShowLexer" as Lexer
+participant "ShowParser" as Parser
+participant "ShowDSLDescription" as ShowDSLDescription
 
 activate User
 
 User -> UI : request DSL generation for proposal
 activate UI
 
-UI -> Controller : generateDSL(proposalId)
+UI -> Controller : proposalListReadyGenerateShowDSL()
 activate Controller
 
 Controller -> Persistence : PersistenceContext()
@@ -27,56 +28,100 @@ Persistence -> Factory : repositories()
 deactivate Persistence
 
 activate Factory
-Factory -> Repo : showProposals()
+Factory -> Repo : proposals()
 deactivate Factory
 
 activate Repo
-Repo -> Repo : findById(proposalId)
-Repo --> Controller : proposal
+Repo -> Repo : findProposalsReadyGenerateShowDSL()
+
+Repo --> Controller : list of proposals
 deactivate Repo
 
-Controller -> Proposal : getConfiguration()
+Controller --> UI : proposals
+deactivate Controller
+
+UI -> User : show proposals
+User -> UI : select proposal
+
+UI -> Controller : generateDSL(proposal)
+activate Controller
+
+Controller -> Service : generateFrom(proposal)
+activate Service
+
+Service -> Proposal : getConfiguration()
 activate Proposal
-Proposal --> Controller : configuration
+Proposal --> Service : configuration
 deactivate Proposal
 
-Controller -> DSLGenerator : generateFrom(configuration)
-activate DSLGenerator
+Service -> Configuration : getFigures()
+activate Configuration
 
-DSLGenerator -> Configuration : getFigures()
-Configuration --> DSLGenerator : list of figures
+Configuration --> Service : list of figures
+deactivate Configuration
 
-DSLGenerator -> Lexer : new ShowGrammarLexer(input)
+Service -> Service : createShowDSLContent(figures)
+activate Service
+deactivate Service
+
+Service -> Plugin : validate(ShowDSLContent)
+activate Plugin
+
+Plugin -> Lexer : new ShowLexer(input)
 activate Lexer
-Lexer --> DSLGenerator : token stream
+
+Lexer --> Plugin : token stream
 deactivate Lexer
 
-DSLGenerator -> Parser : new ShowGrammarParser(tokens)
+Plugin -> Parser : new ShowParser(tokens)
 activate Parser
+
 Parser -> Parser : parser.start()
 activate Parser
 deactivate Parser
 
-Parser --> DSLGenerator : parse result (success/errors)
+Parser --> Plugin : parse result (success/errors)
 deactivate Parser
-DSLGenerator -> DSLDescription : create DSLDescription
-activate DSLDescription
-deactivate DSLDescription
 
-DSLGenerator --> Controller : DSLDescription
-deactivate DSLGenerator
+Plugin -> Service : ValidationResult
+deactivate Plugin
 
-Controller -> Configuration : addDSLDescription(DSLDescription)
-activate Configuration
-deactivate Configuration
+alt Validation successful
+    Service -> ShowDSLDescription : create ShowDSLDescription
+    activate ShowDSLDescription
+    deactivate ShowDSLDescription
 
-Controller -> Repo : save(proposal)
-activate Repo
-deactivate Repo
+    Service --> Controller : ShowDSLDescription
+    deactivate Service
 
-Controller --> UI : show success
-deactivate Controller
-UI --> User : show DSL generation success
-deactivate UI
-deactivate User
+    Controller -> Proposal : addShowDSLDescription(DSLDescription)
+    activate Proposal
+    deactivate Proposal
+
+    Controller -> Repo : save(proposal)
+    activate Repo
+    deactivate Repo
+
+    Controller --> UI : show success
+    deactivate Controller
+
+    UI --> User : show DSL generation success
+    deactivate UI
+    deactivate User
+
+else Validation failed
+    Service -> Controller : show validation errors
+    activate Service
+    deactivate Service
+    activate Controller
+
+    Controller -> UI : show validation errors
+    deactivate Controller
+    activate UI
+
+    UI --> User : show validation errors
+    activate User
+    deactivate UI
+    deactivate User
+end
 @enduml

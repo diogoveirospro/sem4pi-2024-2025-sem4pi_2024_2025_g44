@@ -132,11 +132,7 @@ public class MainMenu extends AbstractFancyUI {
 
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
-    private static final int CREATE_MODEL_OPTION = 1;
-
-    private static final int ADD_DRONE_OPTION = 2;
-    private static final int REMOVE_DRONE_OPTION = 3;
-    private static final int LIST_DRONES_OPTION = 4;
+    private static final int DRONE_TECH_SHOW_PROPOSALS_MENU = 3;
 
     // POWER USER MENUS
     private static final int POWER_USER_USERS_MENU = 2;
@@ -161,7 +157,8 @@ public class MainMenu extends AbstractFancyUI {
     private static final int ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION = 4;
     private static final int CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 5;
     private static final int SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION = 6;
-    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 7;
+    private static final int GENERATE_SHOW_DSL_OPTION = 7;
+    private static final int MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION = 8;
 
     // FIGURE CRM COLLABORATOR MENU
     private static final int LIST_FIGURE_PUBLIC_CATALOGUE_OPTION = 1;
@@ -190,6 +187,12 @@ public class MainMenu extends AbstractFancyUI {
     private static final int LIST_CATEGORIES_OPTION = 3;
     private static final int ACTIVATE_DEACTIVATE_CATEGORY_OPTION = 4;
 
+    // DRONES DRONE TECH MENU
+    private static final int CREATE_MODEL_OPTION = 1;
+    private static final int ADD_DRONE_OPTION = 2;
+    private static final int REMOVE_DRONE_OPTION = 3;
+    private static final int LIST_DRONES_OPTION = 4;
+
     // PROPOSAL COLLABORATOR MENU
     private static final int COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION = 1;
     private static final int COLLABORATOR_ADD_DRONES_TO_SHOW_PROPOSAL_OPTION = 2;
@@ -200,6 +203,9 @@ public class MainMenu extends AbstractFancyUI {
 
     // PROPOSAL MANAGER MENU
     private static final int MANAGER_CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION = 1;
+
+    // PROPOSAL DRONE TECH MENU
+    private static final int DRONE_TECH_GENERATE_SHOW_DSL_OPTION = 1;
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -287,6 +293,9 @@ public class MainMenu extends AbstractFancyUI {
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.DRONETECH)) {
             final SubMenu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(DRONE_MENU, dronesMenu);
+
+            final SubMenu showProposalsMenu = buildShowProposalsDroneTechMenu();
+            mainMenu.addSubMenu(DRONE_TECH_SHOW_PROPOSALS_MENU, showProposalsMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)) {
@@ -376,6 +385,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(REGISTER_SHOW_REQUEST_OPTION, "Register new Show Request", new RegisterShowRequestUI()::show);
         menu.addItem(LIST_SHOW_REQUESTS_OPTION, "List All Show Requests", new ListShowRequestsUI()::show);
         menu.addItem(EDIT_SHOW_REQUEST_OPTION, "Edit a Show Request", new EditShowRequestUI()::show);
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -389,6 +399,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(LIST_CUSTOMER_REPRESENTATIVES_OPTION, "List the Representatives of a Customer", new ListCustomerRepresentativesUI()::show);
         menu.addItem(EDIT_CUSTOMER_REPRESENTATIVE_OPTION, "Edit a Customer Representative", new EditCustomerRepresentativeUI()::show);
         menu.addItem(DISABLE_CUSTOMER_REPRESENTATIVE_OPTION, "Deactivate a Customer Representative", new DeactivateCustomerRepresentativeUI()::show);
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -400,6 +411,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(REGISTER_USER_OPTION, "Register User", new RegisterUserUI()::show);
         menu.addItem(LIST_USERS_OPTION, "List All Users", new ListUsersUI()::show);
         menu.addItem(ACTIVATE_DEACTIVATE_USER_OPTION, "Disable and Enable Users", new DisableEnableUserUI()::show);
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -425,6 +437,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(ADD_DRONE_OPTION, "Add a Drone to the Inventory", new AddDroneUI()::show);
         menu.addItem(REMOVE_DRONE_OPTION, "Remove a Drone from Inventory", new RemoveDroneUI()::show);
         menu.addItem(LIST_DRONES_OPTION, "List a Model of Drone", new ListDroneUI()::show);
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -439,7 +452,9 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         menu.addItem(CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION, "Configure Template of Show Proposal", new ConfigureProposalDocumentUI()::show);
         menu.addItem(SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION, "Send Show Proposal to Customer", new SendProposalUI()::show);
+        menu.addItem(GENERATE_SHOW_DSL_OPTION, "Generate Show DSL", new GenerateShowDSLUI()::show);
         menu.addItem(MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION, "Accept a Show Proposal", new AccShowPropUI()::show);
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
@@ -452,6 +467,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(COLLABORATOR_ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         menu.addItem(COLLABORATOR_SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION, "Send Show Proposal to Customer", new SendProposalUI()::show);
         menu.addItem(COLLABORATOR_MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION, "Accept a Show Proposal", new AccShowPropUI()::show);
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -462,6 +478,15 @@ public class MainMenu extends AbstractFancyUI {
 
         menu.addItem(MANAGER_CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION, "Configure Template of Show Proposal",
                 new ConfigureProposalDocumentUI()::show);
+
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+        return menu;
+    }
+
+    private SubMenu buildShowProposalsDroneTechMenu(){
+        final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
+
+        menu.addItem(DRONE_TECH_GENERATE_SHOW_DSL_OPTION, "Generate Show DSL", new GenerateShowDSLUI()::show);
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
