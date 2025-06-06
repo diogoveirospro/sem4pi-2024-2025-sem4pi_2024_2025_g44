@@ -516,4 +516,26 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         return documentContent;
 
     }
+
+    /**
+     * Adds a ShowDSLDescription to the ShowProposal's configuration.
+     * @param showDSLDescription the ShowDSLDescription to be added
+     */
+    public void addShowDSLDescription(ShowDSLDescription showDSLDescription) {
+        if (showDSLDescription == null) {
+            throw new IllegalArgumentException("Show DSL Description cannot be null.");
+        }
+        if (configuration == null) {
+            throw new IllegalStateException("Configuration must be set before adding Show DSL Description.");
+        }
+        configuration.addShowDSLDescription(showDSLDescription);
+    }
+
+    /**
+     * Checks if the ShowProposal is ready to generate Show DSL.
+     * @return true if the ShowProposal has a configuration with figures, false otherwise
+     */
+    public boolean isReadyToGenerateShowDSL(){
+        return configuration != null && configuration.figures() != null && !configuration.figures().isEmpty();
+    }
 }

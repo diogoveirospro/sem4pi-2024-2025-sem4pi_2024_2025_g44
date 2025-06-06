@@ -74,7 +74,7 @@ The controller creates a new `PersistenceContext` and obtains access to the `Sho
 
 The generation of the DSL description is delegated to the `GenerateShowDSL` domain service. This service applies the 
 predefined DSL grammar to the set of `Figure` elements included in the configuration. Internally, the service uses 
-ANTLR-generated components, namely `ShowGrammarLexer` and `ShowGrammarParser`, to perform lexical and syntactic analysis 
+ANTLR-generated components, namely `ShowLexer` and `ShowParser`, to perform lexical and syntactic analysis 
 over the configuration.
 
 The final result is encapsulated in a `ShowDSLDescription` value object, which represents the textual description of 

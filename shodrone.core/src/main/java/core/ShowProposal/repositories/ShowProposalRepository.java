@@ -44,4 +44,11 @@ public interface ShowProposalRepository extends DomainRepository<ShowProposalNum
      * @return an iterable collection of ShowProposal objects that are ready to be sent.
      */
     Iterable<ShowProposal> findProposalsReadyToSend();
+
+    /**
+     * Finds all Show Proposals that have all the necessary information to generate a Show DSL.
+     * @return an iterable collection of ShowProposal objects that are ready to generate Show DSL.
+     */
+    Iterable<ShowProposal> findProposalsReadyGenerateShowDSL();
 }
+

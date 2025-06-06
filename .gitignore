@@ -39,4 +39,6 @@ replay_pid*
 # Figure Plugin
 shodrone.plugin.figure/gen
 shodrone.plugin.drone/gen
+shodrone.plugin.show/gen
+shodrone.plugin.proposal/gen
 

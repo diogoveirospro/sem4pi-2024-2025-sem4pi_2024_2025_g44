@@ -117,4 +117,20 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         }
         return readyToSendProposals;
     }
+
+    /**
+     * Finds all Show Proposals that have all the necessary information to generate a Show DSL.
+     * @return an iterable collection of ShowProposal objects that are ready to generate Show DSL.
+     */
+    @Override
+    public Iterable<ShowProposal> findProposalsReadyGenerateShowDSL() {
+        Iterable<ShowProposal> proposals = findAll();
+        List<ShowProposal> readyToGenerateDSLProposals = new ArrayList<>();
+        for (ShowProposal proposal : proposals) {
+            if (proposal.isReadyToGenerateShowDSL()) {
+                readyToGenerateDSLProposals.add(proposal);
+            }
+        }
+        return readyToGenerateDSLProposals;
+    }
 }
