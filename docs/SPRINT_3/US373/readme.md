@@ -52,7 +52,7 @@ Other elements not relevant to this functionality are omitted for simplicity.
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+In this section, we describe the design approach adopted for implementing **US373 - Get Show Info**. The sequence diagram defines the main components involved in showing information of a show to a user, showing a clear separation of concerns between the UI, application logic, domain model, and persistence layer. And a clear separation of user app and server app.
 
 ### 4.1. Realization
 
@@ -76,6 +76,8 @@ To integrate the new functionality with the existing system, we followed these s
 1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern. The `ShowReportingRepository` was created to include both show proposal and request information.
 2. **Controller Layer**: The controller was updated to include methods for handling requests related to the showing of a show. This includes methods for retrieving show information, validating the input, and sending it to the client.
 3. **UI Layer**: The user interface was updated to include forms and views for viewing the shows. This includes input validation and error handling.
+4. **Socket Communication**: We implemented socket communication to allow the user application to request show information from the server application. The server listens for incoming requests and responds with the relevant show details.
+5. **Reporting Repository**: A custom repository was created to handle the retrieval of show proposal and request information, allowing for efficient querying and data retrieval.
 
 To run the project, follow the instructions in the [README.md](../../../readme.md) file located in the root directory of the project. This file contains detailed instructions on how to set up the development environment, run the application, and execute the tests.
 
@@ -97,4 +99,3 @@ For the implementation of this project, we used the following sources:
 - **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
 - **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.
 - **Socket Programming**: We used Java's built-in socket programming capabilities to implement the communication between the client and server for retrieving show information.
-- **Reporting Repository**: A custom repository was created to handle the retrieval of show proposal and request information, allowing for efficient querying and data retrieval.

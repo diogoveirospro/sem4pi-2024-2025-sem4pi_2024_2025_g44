@@ -1,5 +1,5 @@
 @startuml
-actor "CRM Collaborator" as User
+actor "Customer Representative" as User
 participant "ShowInfoUI" as UI
 participant "ShowInfoController" as Controller
 participant "CustomerAppProtocolProxy" as Proxy
