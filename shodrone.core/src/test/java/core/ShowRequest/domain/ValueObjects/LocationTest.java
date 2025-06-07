@@ -10,7 +10,7 @@ class LocationTest {
     void ensureLocationIsCreatedSuccessfully() {
         Location location = new Location(38.7169, -9.139, 15.0); // Example: Lisbon coordinates
         assertNotNull(location);
-        assertEquals("Location: latitude=38.7169, longitude=-9.139, altitude=15.0", location.toString());
+        assertEquals("38.7169, -9.139, 15.0", location.toString());
     }
 
     @Test
@@ -43,6 +43,6 @@ class LocationTest {
     @Test
     void ensureLocationToStringReturnsCorrectValue() {
         Location location = new Location(38.7169, -9.139, 15.0);
-        assertEquals("Location: latitude=38.7169, longitude=-9.139, altitude=15.0", location.toString());
+        assertEquals("38.7169, -9.139, 15.0", location.toString());
     }
 }
