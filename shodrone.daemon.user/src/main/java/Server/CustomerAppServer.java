@@ -108,15 +108,10 @@ public class CustomerAppServer {
      *            thread.
      */
     public void start(final int port, final boolean blocking) {
-        System.out.println("2");
         if (blocking) {
-            System.out.println("3");
             listen(port);
-            System.out.println("Stopped listening on port " + port);
         } else {
-            System.out.println("Created a new thread to listen on port " + port);
             new Thread(() -> listen(port)).start();
         }
-        System.out.println("Finished starting server on port " + port);
     }
 }
