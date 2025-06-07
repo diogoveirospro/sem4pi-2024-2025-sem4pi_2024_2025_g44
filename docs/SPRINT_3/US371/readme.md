@@ -1,86 +1,120 @@
-# US 101
-
-*This is an example template*
+# US 371
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This user story is part of Sprint 3 and introduces the functionality that allows a **Customer** to accept or reject a 
+show proposal and optionally provide feedback on it.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: 🧪 Testing
 
-Design:
+Design: 🧪 Testing
 
-Implement:
+Implementation: 🚧 Doing
 
-Test:
-
+Testing: 📝 To Do
+ 
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As a Customer,**  
+<br>
+**I want** to accept or reject a proposal,  
+<br>
+**So that** I can express whether I agree with the show plan and optionally share my opinion.
 
-*Example*
+### 2.1 Acceptance Criteria
 
-**US G101** As {Ator} I Want...
+* **US371.1** The customer must be able to accept or reject a proposal.
+* **US371.2** The customer should be able to optionally provide textual feedback.
+* **US371.3** The system must update the proposal status and store any given feedback.
+* **US371.4** This action must be available only for proposals currently pending decision.
 
-**Acceptance Criteria:**
+### 2.2 Dependencies and References
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
-
-**Dependencies/References:**
-
-*Regarding this requirement we understand that it relates to...*
+* **US370 – Analyse a proposal**: to view the proposal before taking action.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+This user story focuses on enabling the customer to accept or reject a previously delivered proposal, and optionally 
+provide feedback.
+
+All required domain elements are already in place:
+
+- `ShowProposal` entity includes:
+    - `proposalStatus` (of type `ShowProposalStatus`)
+    - `customerFeedback` (of type `CustomerFeedback`)
+- The proposal is linked to the customer via the `ProposalDeliveryInfo` aggregate.
+
+The system must ensure that:
+- Only proposals with status `WAITING FOR RESPONSE` can be accepted or rejected.
+- The customer's response is persisted in the `ShowProposal` instance.
+- Optional feedback is stored in the associated `CustomerFeedback` value object.
+
+There is **no need to modify the domain model**, only to apply its existing operations correctly.
+
+### Responsibilities per component
+
+- **Customer App**: UI element to choose between accept/reject and optionally submit feedback.
+- **Customer App Protocol Proxy**: constructs and sends an `AcceptRejectProposalRequest` over the socket.
+- **Customer App Server**:
+    - Parses and validates the request.
+    - Verifies the current proposal status.
+    - Applies the decision (updates status and feedback).
+    - Returns success/failure response.
+
+![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+This section presents the design adopted for implementing **US371 – Accept/Reject Proposal**.
 
-### 4.1. Realization
+### 4.1 Realisation
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+The following sequence diagram illustrates the interaction flow between the user interface, controller, proxy, server, 
+and repositories:
 
-### 4.3. Applied Patterns
+![Sequence Diagram for US371](images/sequence_diagram_us371.svg)
 
-### 4.4. Acceptance Tests
+The process begins in the `SendFeedbackProposalUI`, where the **Customer** requests to view all show proposals that are 
+pending a decision. The UI triggers the `SendFeedbackProposalController`, which initiates a multistep lookup process to 
+retrieve the customer identity and corresponding pending proposals.
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+The controller first requests the associated `ShodroneUser` using the authenticated user credentials. This request is 
+serialized and sent through the network via the `CustomerAppProtocolProxy`, using a TCP socket. On the server side, the 
+`CustomerAppServer` receives the request, which is parsed and processed by the `CustomerAppMessageParser` and delegated 
+to the `UserAppServerController`. The controller queries the `ShodroneUserRepository` and returns the user information, 
+which is sent back through the same communication chain and deserialized by the `MarshallerUnmarshaller`.
 
-**Test 1:** *Verifies that it is not possible to ...*
+Once the user information is available, the controller proceeds to retrieve the `Customer` entity and finally the list 
+of proposals pending decision using the `DeliveryReportingRepository`.
 
-**Refers to Acceptance Criteria:** US101.1
+After the list of pending proposals is displayed, the customer selects one and is prompted to accept or reject it, 
+optionally providing textual feedback.
 
+Upon submission, the controller invokes the `sendFeedbackProposal(...)` method, which constructs a 
+`SendFeedbackProposalRequest` and sends it through the proxy using a TCP socket. The request is parsed on the server 
+side and routed to the `handleFeedbackProposal()` method of the `UserAppServerController`.
 
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
+This method uses the `ShowProposalRepository` to locate and update the selected proposal with the customer’s decision 
+and feedback. The result is wrapped in a `SendFeedbackProposalResponse`, which is sent back through the network, 
+deserialized, and returned to the controller. The UI then shows a confirmation message to the user.
+
+This design ensures a clear separation of concerns:
+
+- The **UI** handles user input and interaction.
+- The **controller** coordinates between user interaction, proxy communication, and business logic.
+- The **proxy** is responsible for request formatting and communication via sockets.
+- The **parser** interprets messages and delegates them to the appropriate server-side logic.
+- The **server controller** encapsulates the domain logic and updates the aggregate state.
+- The **repositories** are used for reading (`DeliveryReportingRepository`) and writing (`ShowProposalRepository`) 
+domain data.
+
+### 4.2. Acceptance Tests
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
-
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
-
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
-
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
-
 ## 7. Observations
-
-*This section should be used to include any content that does not fit any of the previous sections.*
-
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
-
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*

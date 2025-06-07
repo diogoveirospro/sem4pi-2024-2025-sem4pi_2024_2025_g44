@@ -1,0 +1,244 @@
+@startuml
+actor "Customer" as User
+participant "SendFeedbackProposalUI" as UI
+participant "SendFeedbackProposalController" as Controller
+participant "CustomerAppProtocolProxy" as Proxy
+participant "GetShodroneUserRequest" as RequestUser
+participant "CustomerAppServer" as Server
+participant "CustomerAppMessageParser" as Parser
+participant "UserAppServerController" as ServerController
+participant "ShodroneUserRepository" as ShodroneUserRepo
+participant "MarshallerUnmarshaller" as MU
+participant "ShodroneUserDTO" as UserDTO
+participant "CustomerDTO" as CustomerDTO
+participant "CustomerRepository" as CustomerRepo
+participant "ProposalDTO" as ProposalDTO
+participant "DeliveryReportingRepository" as DeliveryRepo
+participant "SendFeedbackProposalRequest" as Request
+participant "ShowProposalRepository" as ProposalRepo
+participant "SendFeedbackProposalResponse" as Response
+
+activate User
+
+User -> UI : request to accept/reject pending proposals
+activate UI
+
+UI -> Controller : listProposals()
+activate Controller
+
+Controller -> Controller : getRepresenteeOfCustomer()
+
+Controller -> Proxy : getShodroneUser(authenticatedUser)
+activate Proxy
+
+Proxy -> RequestUser : toRequest(authenticatedUser)
+activate RequestUser
+deactivate RequestUser
+
+Proxy -> Proxy : socket.sendAndReceive(request)
+
+Proxy -> Server : sendRequest(request)
+activate Server
+
+Server -> Parser : parse(request)
+activate Parser
+
+Server -> Parser : execute(request)
+
+Parser -> ServerController : parseGetShodroneUser()
+activate ServerController
+
+ServerController -> ShodroneUserRepo : getShodroneUserByUsername(username)
+activate ShodroneUserRepo
+deactivate ShodroneUserRepo
+
+ServerController --> Parser : response
+deactivate ServerController
+
+Parser --> Server : response
+deactivate Parser
+
+Server --> Proxy : response
+deactivate Server
+
+Proxy -> MU : parseResponseMessageShodroneUser(response)
+activate MU
+
+MU -> UserDTO : ShodroneUserDTO()
+activate UserDTO
+deactivate UserDTO
+
+MU --> Proxy : parseResponseMessageLineShodroneUser(response)
+deactivate MU
+
+Proxy --> Controller : shodroneUser
+deactivate Proxy
+
+
+
+Controller -> Proxy : getCustomerOfRepresentative(shodroneUser)
+activate Proxy
+
+Proxy -> CustomerDTO : toRequest(authenticatedUser)
+activate CustomerDTO
+deactivate CustomerDTO
+
+Proxy -> Proxy : socket.sendAndReceive(request)
+
+Proxy -> Server : sendRequest(request)
+activate Server
+
+Server -> Parser : parse(request)
+activate Parser
+
+Server -> Parser : execute(request)
+
+Parser -> ServerController : GetCustomerRequest()
+activate ServerController
+
+ServerController -> CustomerRepo : getCustomerByRepresentativeEmail(String repEmail)
+activate CustomerRepo
+deactivate CustomerRepo
+
+ServerController --> Parser : response
+deactivate ServerController
+
+Parser --> Server : response
+deactivate Parser
+
+Server --> Proxy : response
+deactivate Server
+
+Proxy -> MU : parseResponseMessageCustomer(response)
+activate MU
+
+MU -> CustomerDTO : CustomerDTO()
+activate CustomerDTO
+deactivate CustomerDTO
+
+MU --> Proxy : parseResponseMessageLineCustomer(response)
+deactivate MU
+
+
+
+Proxy --> Controller : customer
+deactivate Proxy
+
+Controller -> Proxy : getProposalsByCustomer(customer)
+activate Proxy
+
+Proxy -> ProposalDTO : toRequest(customer)
+activate ProposalDTO
+deactivate ProposalDTO
+
+Proxy -> Proxy : socket.sendAndReceive(request)
+
+Proxy -> Server : sendRequest(request)
+activate Server
+
+Server -> Parser : parse(request)
+activate Parser
+
+Server -> Parser : execute(request)
+
+Parser -> ServerController : GetProposalsRequest()
+activate ServerController
+
+ServerController -> DeliveryRepo : findProposalsOfCustomer(vatNumber)
+activate DeliveryRepo
+deactivate DeliveryRepo
+
+ServerController --> Parser : response
+deactivate ServerController
+
+Parser --> Server : response
+deactivate Parser
+
+Server --> Proxy : response
+deactivate Server
+
+Proxy -> MU : parseResponseMessageProposal(response)
+activate MU
+
+MU -> ProposalDTO : ProposalDTO()
+activate ProposalDTO
+deactivate ProposalDTO
+
+MU --> Proxy : parseResponseMessageLineShow(response)
+deactivate MU
+
+Proxy --> Controller : proposals
+deactivate Proxy
+
+Controller --> UI : proposals
+deactivate Controller
+
+
+
+UI --> User : asks to select a proposal
+
+User -> UI : selects a proposal
+
+UI --> User : asks feedback on proposal
+
+User -> UI : accept/reject + feedback
+
+
+
+UI -> Controller : sendFeedbackProposal(proposalId, decision, feedback)
+activate Controller
+
+Controller -> Proxy : sendFeedbackProposal(proposalId, decision, feedback)
+activate Proxy
+
+Proxy -> Request : toRequest(proposalId, decision, feedback)
+activate Request
+deactivate Request
+
+Proxy -> Proxy : socket.sendAndReceive(request)
+
+Proxy -> Server : sendRequest(request)
+activate Server
+
+Server -> Parser : parse(request)
+activate Parser
+
+Server -> Parser : execute(request)
+
+Parser -> ServerController : handleFeedbackProposal()
+activate ServerController
+
+ServerController -> ProposalRepo : updateProposalStatusAndFeedback(proposalId, decision, feedback)
+activate ProposalRepo
+deactivate ProposalRepo
+
+ServerController --> Parser : response
+deactivate ServerController
+
+Parser --> Server : response
+deactivate Parser
+
+Server --> Proxy : response
+deactivate Server
+
+Proxy -> MU : parseResponseMessage(response)
+activate MU
+
+MU -> Response : FeedbackProposalResponse()
+activate Response
+deactivate Response
+
+MU --> Proxy : parseResponse()
+deactivate MU
+
+Proxy --> Controller : success/failure
+deactivate Proxy
+
+Controller --> UI : show confirmation
+deactivate Controller
+
+UI --> User : confirmation: feedback successfully submitted
+deactivate UI
+deactivate User
+
+@enduml
