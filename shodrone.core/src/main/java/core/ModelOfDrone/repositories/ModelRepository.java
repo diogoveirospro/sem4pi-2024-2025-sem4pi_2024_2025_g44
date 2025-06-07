@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ModelRepository extends DomainRepository<Designation, Model> {
-    boolean validateModel(ModelName modelName);
-
     Iterable<Model> findAllModels();
-
-    boolean createModel(ModelName modelName, Configuration config);
 
 }

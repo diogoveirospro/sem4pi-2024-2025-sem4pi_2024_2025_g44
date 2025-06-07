@@ -10,7 +10,11 @@ import core.Persistence.*;
 import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.validations.Preconditions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 public class CreateModelController {
     private ModelRepository modelRepository = PersistenceContext.repositories().models();
@@ -19,8 +23,20 @@ public class CreateModelController {
     }
 
     public boolean createModel(ModelName modelName, Configuration config){
-        return modelRepository.createModel(modelName, config);
+        if (!validateModel(modelName)) {
+            return false;
+        }
+        Model model = new Model(modelName, config);
+        modelRepository.save(model);
+        return true;
     }
-
+    public boolean validateModel(ModelName modelName) {
+        for (Model model : modelRepository.findAllModels()) {
+            if (model.sameAs(modelName)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

@@ -9,6 +9,7 @@ import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.general.domain.model.Designation;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
+import jakarta.persistence.TypedQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,52 +41,14 @@ public class JpaModelRepository extends JpaAutoTxRepository<Model, Designation, 
     }
 
     /**
-     * Creates and saves a new drone model with the given name and configuration,
-     * if it does not already exist.
-     *
-     * @param modelName the name of the model
-     * @param config    the wind speed and tolerance configuration
-     * @return {@code true} if the model was created successfully, {@code false} if a model with the same name already exists
-     */
-    @Override
-    public boolean createModel(ModelName modelName, Configuration config) {
-        if (!validateModel(modelName)) {
-            return false;
-        }
-        Model model = new Model(modelName, config);
-        save(model);
-        return true;
-    }
-
-    /**
-     * Validates that a drone model with the given name does not already exist.
-     *
-     * @param modelName the model name to validate
-     * @return {@code true} if no model with the same name exists, {@code false} otherwise
-     */
-    @Override
-    public boolean validateModel(ModelName modelName) {
-        Iterable<Model> models = findAll();
-        for (Model model : models) {
-            if (model.sameAs(modelName)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Retrieves all drone models stored in the repository.
+     * Retrieves all drone models using a JPQL query.
      *
      * @return an iterable collection of all models
      */
     @Override
     public Iterable<Model> findAllModels() {
-        Iterable<Model> models = findAll();
-        List<Model> result = new ArrayList<>();
-        for (Model model : models) {
-            result.add(model);
-        }
-        return result;
+        final TypedQuery<Model> query = entityManager().createQuery(
+                "SELECT m FROM Model m", Model.class);
+        return query.getResultList();
     }
 }

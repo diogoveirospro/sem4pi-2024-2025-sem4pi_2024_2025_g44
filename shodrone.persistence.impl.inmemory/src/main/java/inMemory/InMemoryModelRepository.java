@@ -18,28 +18,6 @@ public class InMemoryModelRepository extends InMemoryDomainRepository<Model, Des
         InMemoryInitializer.init();
     }
 
-
-    //US240
-    @Override
-    public boolean createModel(ModelName modelName, Configuration config) {
-       if (!validateModel(modelName)){ return false;}
-        Model model = new Model(modelName, config);
-        save(model);
-        return true;
-    }
-
-    @Override
-    public boolean validateModel(ModelName modelName) {
-        Iterable<Model> models = findAll();
-
-        for (Model model : models){
-            if (model.sameAs(modelName)){
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     public Iterable<Model> findAllModels() {
         Iterable<Model> models = findAll();

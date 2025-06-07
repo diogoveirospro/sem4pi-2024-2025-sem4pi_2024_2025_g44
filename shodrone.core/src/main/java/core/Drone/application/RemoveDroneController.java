@@ -1,6 +1,7 @@
 package core.Drone.application;
 
 import core.Drone.domain.Entities.Drone;
+import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.repositories.DroneRepository;
 import core.ModelOfDrone.domain.Entities.Model;
@@ -19,7 +20,33 @@ public class RemoveDroneController {
 
 
     public boolean removeDrone(Drone drone, String removReason) {
-        return droneRepository.removeDrone(drone, removReason);
+        Iterable<Drone> drones = droneRepository.findAllDronesInventory();
+
+        if (!validateRemoval(drone, drones)) {
+            return false;
+        }
+
+        addDrnRemovData(drone, removReason);
+        changeDrnStatRemv(drone);
+        droneRepository.save(drone);
+        return true;
+    }
+
+    public boolean validateRemoval(Drone drone, Iterable<Drone> drones) {
+        for (Drone droneTest : drones) {
+            if (drone.equals(droneTest) && drone.droneStatus().equals(DroneStatus.ACTIVE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addDrnRemovData(Drone drone, String removReason) {
+        drone.removalReason().addReason(removReason);
+    }
+
+    public void changeDrnStatRemv(Drone drone) {
+        drone.setDroneStatus(DroneStatus.REMOVED);
     }
 
     public Iterable<Drone> listDrones() {
