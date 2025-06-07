@@ -2,7 +2,7 @@
 
 ## 1. Description of the Project
 
-This project is an app for the company **Shodrone**. \
+This project is composed of multiple apps for the company **Shodrone**. \
 The application has a console line interface. \
 It allows the client to request and schedule a show. \
 The show consists of a sequence of figures represented by drones. \
