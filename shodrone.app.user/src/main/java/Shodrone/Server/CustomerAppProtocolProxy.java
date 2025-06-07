@@ -73,6 +73,7 @@ public class CustomerAppProtocolProxy {
 		final List<String> response = socket.sendAndRecv(request);
 		socket.stop();
 		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		System.out.println("Response: " + response);
 		return mu.parseResponseMessageShodroneUser(response);
 	}
 

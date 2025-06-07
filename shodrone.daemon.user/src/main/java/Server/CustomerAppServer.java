@@ -37,6 +37,7 @@ public class CustomerAppServer {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     LOGGER.debug("Received message:----\n{}\n----", inputLine);
+                    System.out.println("Received message:----\n" + inputLine + "\n----");
                     final UserAppRequest request = parser.parse(inputLine);
                     final String response = request.execute();
                     out.println(response);
