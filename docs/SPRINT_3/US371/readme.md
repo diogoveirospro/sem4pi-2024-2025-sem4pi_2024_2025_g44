@@ -24,14 +24,14 @@ Testing: 📝 To Do
 <br>
 **So that** I can express whether I agree with the show plan and optionally share my opinion.
 
-### 2.1 Acceptance Criteria
+### Acceptance Criteria:
 
 * **US371.1** The customer must be able to accept or reject a proposal.
 * **US371.2** The customer should be able to optionally provide textual feedback.
 * **US371.3** The system must update the proposal status and store any given feedback.
 * **US371.4** This action must be available only for proposals currently pending decision.
 
-### 2.2 Dependencies and References
+### Dependencies/References
 
 * **US370 – Analyse a proposal**: to view the proposal before taking action.
 
