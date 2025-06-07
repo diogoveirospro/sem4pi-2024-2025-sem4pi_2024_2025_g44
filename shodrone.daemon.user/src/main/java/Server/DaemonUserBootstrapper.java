@@ -19,9 +19,10 @@ public class DaemonUserBootstrapper {
         AuthzRegistry.configure(PersistenceContext.repositories().users(), new ShodronePasswordPolicy(),
                 new PlainTextEncoder());
         LOGGER.info("Configuring the server on port {}", SERVER_PORT);
-        final var server = new CustumerAppServer(buildServerDependencies());
+        System.out.println("1");
+        final var server = new CustomerAppServer(buildServerDependencies());
         server.start(Integer.parseInt(SERVER_PORT), true);
-
+        System.out.println("failed to start server");
         LOGGER.info("Exiting the server");
         System.exit(0);
     }

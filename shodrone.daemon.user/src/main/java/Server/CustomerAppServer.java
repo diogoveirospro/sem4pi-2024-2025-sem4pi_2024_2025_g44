@@ -10,9 +10,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class CustumerAppServer {
+public class CustomerAppServer {
 
-    private static final Logger LOGGER = LogManager.getLogger(CustumerAppServer.class);
+    private static final Logger LOGGER = LogManager.getLogger(CustomerAppServer.class);
     /**
      * Client socket.
      *
@@ -76,7 +76,7 @@ public class CustumerAppServer {
 
 
 
-    public CustumerAppServer(final CustomerAppMessageParser parser) {
+    public CustomerAppServer(final CustomerAppMessageParser parser) {
         this.parser = parser;
     }
 
@@ -108,10 +108,15 @@ public class CustumerAppServer {
      *            thread.
      */
     public void start(final int port, final boolean blocking) {
+        System.out.println("2");
         if (blocking) {
+            System.out.println("3");
             listen(port);
+            System.out.println("Stopped listening on port " + port);
         } else {
+            System.out.println("Created a new thread to listen on port " + port);
             new Thread(() -> listen(port)).start();
         }
+        System.out.println("Finished starting server on port " + port);
     }
 }
