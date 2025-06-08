@@ -83,13 +83,7 @@ void ensureValidDroneProgramPasses() {
 **Refers to Acceptance Criteria:** _US345.3_
 
 ```java
-@Test
-void ensureInvalidInstructionFailsValidation() {
-    String code = "flyToTheMoon(999);";
-    ValidationResult result = validator.validate(code);
-    assertFalse(result.isSuccess());
-    assertTrue(result.getErrors().get(0).contains("no viable alternative"));
-}
+
 ```
 
 ## 5. Implementation
