@@ -54,7 +54,7 @@ public class AccShowPropUI extends AbstractFancyUI {
      * @throws UserCancelledException if the user cancels the action.
      */
     private ShowProposal selectProposal() {
-        Iterable<ShowProposal> showProposals = controller.getShowProposalChekedList();
+        Iterable<ShowProposal> showProposals = controller.getShowProposalCheckedList();
 
         if (showProposals == null || !showProposals.iterator().hasNext()) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo show proposal available." + UtilsUI.RESET);

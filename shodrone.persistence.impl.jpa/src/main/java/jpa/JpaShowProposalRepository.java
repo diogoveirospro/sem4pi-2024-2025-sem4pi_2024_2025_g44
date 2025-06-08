@@ -2,19 +2,14 @@ package jpa;
 
 import core.Persistence.Application;
 import core.ShowProposal.domain.Entities.ShowProposal;
-import core.ShowProposal.domain.ValueObjects.CustFeedbackStatus;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
 import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
-import core.ShowRequest.domain.ValueObjects.ShowRequestID;
-import core.ShowRequest.repositories.ShowRequestRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import jakarta.persistence.TypedQuery;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JPA implementation of the ShowProposalRepository interface.
@@ -109,8 +104,8 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
     public Iterable<ShowProposal> findAllCheckedProposals() {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
                 "SELECT sp FROM ShowProposal sp WHERE sp.feedbackStatus IN (:status1, :status2)", ShowProposal.class);
-        query.setParameter("status1", CustFeedbackStatus.ACCEPTED);
-        query.setParameter("status2", CustFeedbackStatus.REJECTED);
+        query.setParameter("status1", CustomerFeedbackStatus.ACCEPTED);
+        query.setParameter("status2", CustomerFeedbackStatus.REJECTED);
         return query.getResultList();
     }
 
@@ -137,6 +132,18 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                         "AND sp.configuration.figures IS NOT EMPTY",
                 ShowProposal.class);
         return query.getResultList();
+    }
+
+    public boolean updateProposalStatusAndFeedback(String proposalNumber,String decision, String feedback) {
+        final TypedQuery<ShowProposal> query = entityManager().createQuery(
+                "UPDATE ShowProposal sp SET sp.status = :status, sp.feedbackStatus = :feedbackStatus " +
+                        "WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
+        query.setParameter("status", decision);
+        query.setParameter("feedbackStatus", feedback);
+        query.setParameter("proposalNumber", proposalNumber);
+
+        int updatedCount = query.executeUpdate();
+        return updatedCount > 0;
     }
 
 }

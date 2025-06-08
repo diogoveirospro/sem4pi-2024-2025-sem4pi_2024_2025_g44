@@ -1,36 +1,50 @@
 package Shodrone.DTO;
 
-import java.util.List;
-import java.util.Map;
-
+/**
+ * Data Transfer Object for Show Proposal.
+ * This class is used to transfer show proposal data between different layers of the application.
+ */
 public class ShowProposalDTO {
 
+    /**
+     * Unique identifier for the show proposal.
+     */
     public String proposalNumber;
-    public String dateOfProposal;
-    public String timeOfProposal;
-    public Long quantityOfDrones;
-    public double insuranceValue;
-    public String insuranceCurrency;
-    public String showDuration;
-    public String videoUrl;
-    public String videoTitle;
-    public List<String> figuresConfiguration;
-    public Map<String, List<String>> droneConfiguration;
 
+    /**
+     * Date of the proposal in the format YYYY-MM-DD.
+     */
+    public String dateOfProposal;
+
+    /**
+     * Time of the proposal in the format HH:MM.
+     */
+    public String timeOfProposal;
+
+    /**
+     * Duration of the show in the format HH:MM.
+     */
+    public String showDuration;
+
+    /**
+     * Location where the show will take place.
+     */
+    public String showLocation;
+
+    /**
+     * ShowProposalDTO constructor.
+     * @param proposalNumber Unique identifier for the show proposal.
+     * @param dateOfProposal Date of the proposal in the format YYYY-MM-DD.
+     * @param timeOfProposal Time of the proposal in the format HH:MM.
+     * @param showDuration Duration of the show in the format HH:MM.
+     * @param showLocation Location where the show will take place.
+     */
     public ShowProposalDTO(String proposalNumber, String dateOfProposal, String timeOfProposal,
-                           Long quantityOfDrones, double insuranceValue, String insuranceCurrency,
-                           String showDuration, String videoUrl, String videoTitle,
-                           List<String> figuresConfiguration, Map<String, List<String>> droneConfiguration) {
+                           String showDuration, String showLocation) {
         this.proposalNumber = proposalNumber;
         this.dateOfProposal = dateOfProposal;
         this.timeOfProposal = timeOfProposal;
-        this.quantityOfDrones = quantityOfDrones;
-        this.insuranceValue = insuranceValue;
-        this.insuranceCurrency = insuranceCurrency;
         this.showDuration = showDuration;
-        this.videoUrl = videoUrl;
-        this.videoTitle = videoTitle;
-        this.figuresConfiguration = figuresConfiguration;
-        this.droneConfiguration = droneConfiguration;
+        this.showLocation = showLocation;
     }
 }

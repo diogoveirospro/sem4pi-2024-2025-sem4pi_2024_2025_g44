@@ -3,6 +3,7 @@ package Shodrone.Server;
 import Shodrone.DTO.CustomerDTO;
 import Shodrone.DTO.ShodroneUserDTO;
 import Shodrone.DTO.ShowDTO;
+import Shodrone.DTO.ShowProposalDTO;
 import Shodrone.exceptions.FailedRequestException;
 
 import java.util.ArrayList;
@@ -10,7 +11,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MarshlerUnmarshler {
+/**
+ * MarshallerUnmarshaller class is responsible for parsing response messages
+ * from the server and converting them into appropriate DTOs.
+ * It checks for error messages and handles the parsing of user, customer,
+ * show, proposal, and feedback responses.
+ */
+public class MarshallerUnmarshaller {
+
+    /**
+     * Parses the response message for a Shodrone user.
+     * @param response the response message from the server
+     * @return ShodroneUserDTO containing user details
+     * @throws FailedRequestException if the response contains an error message
+     */
     public ShodroneUserDTO parseResponseMessageShodroneUser(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
 
@@ -33,6 +47,11 @@ public class MarshlerUnmarshler {
         return new ShodroneUserDTO(email, username, phoneNumber);
     }
 
+    /**
+     * Checks the response for error messages and throws an exception if an error is found.
+     * @param response the response message from the server
+     * @throws FailedRequestException if an error message is found in the response
+     */
     private void checkForErrorMessage(final List<String> response) throws FailedRequestException {
         final String[] tokens = response.get(0).split(",");
         final String messageType = tokens[0].trim();
@@ -43,6 +62,12 @@ public class MarshlerUnmarshler {
         }
     }
 
+    /**
+     * Parses the response message for a customer.
+     * @param response the response message from the server
+     * @return CustomerDTO containing customer details
+     * @throws FailedRequestException if the response contains an error message
+     */
     public CustomerDTO parseResponseMessageCustomer(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
 
@@ -65,6 +90,12 @@ public class MarshlerUnmarshler {
         return new CustomerDTO(companyName, vatNumber);
     }
 
+    /**
+     * Parses the response message for shows.
+     * @param response the response message from the server
+     * @return an iterable of ShowDTO containing show details
+     * @throws FailedRequestException if the response contains an error message
+     */
     public Iterable<ShowDTO> parseResponseMessageShow(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
 
@@ -100,6 +131,11 @@ public class MarshlerUnmarshler {
         return shows;
     }
 
+    /**
+     * Parses the drone configuration from a token.
+     * @param token the token containing drone configuration
+     * @return a map of drone models and their corresponding drones
+     */
     private Map<String, List<String>> parseDroneConfiguration(String token) {
         Map<String, List<String>> droneConfig = new HashMap<>();
         String[] models = token.split(";");
@@ -119,6 +155,11 @@ public class MarshlerUnmarshler {
         return droneConfig;
     }
 
+    /**
+     * Parses the figures configuration from a token.
+     * @param token the token containing figures configuration
+     * @return a list of figures
+     */
     private List<String> parseFiguresConfiguration(String token) {
         String[] figures = token.split(",");
         List<String> figureList = new ArrayList<>();
@@ -128,6 +169,11 @@ public class MarshlerUnmarshler {
         return figureList;
     }
 
+    /**
+     * Splits a line into tokens, respecting quoted strings.
+     * @param line the line to split
+     * @return a list of tokens
+     */
     private List<String> splitRespectingQuotes(String line) {
         List<String> tokens = new ArrayList<>();
         StringBuilder currentToken = new StringBuilder();
@@ -149,5 +195,62 @@ public class MarshlerUnmarshler {
         }
 
         return tokens;
+    }
+
+    /**
+     * Parses the response message for show proposals.
+     * @param response the response message from the server
+     * @return an iterable of ShowProposalDTO containing proposal details
+     * @throws FailedRequestException if the response contains an error message
+     */
+    public Iterable<ShowProposalDTO> parseResponseMessageProposal(List<String> response) throws FailedRequestException {
+        checkForErrorMessage(response);
+
+        List<ShowProposalDTO> proposals = new ArrayList<>();
+
+        response.remove(0);
+
+        for (String line : response) {
+            List<String> tokens = splitRespectingQuotes(line);
+
+            if (tokens.size() < 4) {
+                throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
+            }
+
+            String proposalNumber = tokens.get(0);
+            String showDate = tokens.get(1);
+            String showTime = tokens.get(2);
+            String showDuration = tokens.get(3);
+            String showLocation = tokens.get(4);
+
+            proposals.add(new ShowProposalDTO(proposalNumber, showDate, showTime, showDuration, showLocation));
+        }
+
+        return proposals;
+    }
+
+    /**
+     * Parses the response message for feedback on a proposal.
+     * @param response the response message from the server
+     * @return true if the proposal was accepted or rejected, false otherwise
+     * @throws FailedRequestException if the response contains an error message
+     */
+    public boolean parseResponseMessageFeedback(List<String> response) throws FailedRequestException {
+        checkForErrorMessage(response);
+
+        response.remove(0);
+
+        for (String line : response) {
+            List<String> tokens = splitRespectingQuotes(line);
+
+            if (tokens.size() < 3) {
+                throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
+            }
+            String decision = tokens.get(1);
+
+            return decision.equalsIgnoreCase("ACCEPTED") || decision.equalsIgnoreCase("REJECTED");
+        }
+
+        return false;
     }
 }

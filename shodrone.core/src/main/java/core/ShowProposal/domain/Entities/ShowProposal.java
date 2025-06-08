@@ -147,10 +147,6 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
     @Column(name = "customerFeedback")
     private CustomerFeedback customerFeedback;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "feedbackStatus")
-    private CustFeedbackStatus feedbackStatus;
-
     /**
      * The configuration of the ShowProposal contains Figures and Drones
      */
@@ -188,7 +184,6 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = new GenerateProposalNumber().generate();
         this.customerFeedback = null;
-        this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
     /**
@@ -218,7 +213,6 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         this.updatedAt = LocalDateTime.now();
         this.proposalNumber = proposalNumberGenerator.generateWithoutRep(); // for testing purposes
         this.customerFeedback = null;
-        this.feedbackStatus = CustFeedbackStatus.PENDING;
     }
 
     /**
@@ -375,6 +369,17 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
     }
 
     /**
+     * Add customer feedback to the ShowProposal.
+     * @param customerFeedback the CustomerFeedback to be added
+     */
+    public void addCustomerFeedback(CustomerFeedback customerFeedback) {
+        if (customerFeedback == null) {
+            throw new IllegalArgumentException("Customer feedback cannot be null.");
+        }
+        this.customerFeedback = customerFeedback;
+    }
+
+    /**
      * Return the show configuration of the ShowProposal.
      * @return the ShowConfiguration associated with this ShowProposal
      */
@@ -396,10 +401,6 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      */
     public void addConfiguration(ShowConfiguration configuration) {
         this.configuration = configuration;
-    }
-
-        public CustFeedbackStatus feedbackStatus() {
-        return feedbackStatus;
     }
 
     /**

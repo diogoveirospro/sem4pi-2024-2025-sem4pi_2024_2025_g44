@@ -2,15 +2,16 @@ package core.ShowProposal.application;
 
 import core.Persistence.PersistenceContext;
 import core.ShowProposal.domain.Entities.ShowProposal;
-import core.ShowProposal.domain.ValueObjects.CustFeedbackStatus;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowProposal.repositories.ShowProposalRepository;
+import eapli.framework.application.UseCaseController;
 
-import javax.swing.plaf.PanelUI;
-
+@UseCaseController
 public class AccShowPropController {
     private final ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
-    public Iterable<ShowProposal> getShowProposalChekedList(){
+
+    public Iterable<ShowProposal> getShowProposalCheckedList(){
         return showProposalRepository.findAllCheckedProposals();
     }
 
@@ -25,7 +26,7 @@ public class AccShowPropController {
         if (showProposal == null) {
             return false;
         }
-        if (showProposal.feedbackStatus() == CustFeedbackStatus.PENDING) {
+        if (showProposal.customerFeedback().feedbackStatus() == CustomerFeedbackStatus.PENDING) {
             return false;
         }
         return true;

@@ -50,5 +50,14 @@ public interface ShowProposalRepository extends DomainRepository<ShowProposalNum
      * @return an iterable collection of ShowProposal objects that are ready to generate Show DSL.
      */
     Iterable<ShowProposal> findProposalsReadyGenerateShowDSL();
+
+    /**
+     * Updates the status and feedback of a proposal identified by its proposal number.
+     * @param proposalNumber the ShowProposalNumber of the proposal to update
+     * @param decision the new status to set for the proposal
+     * @param feedback the feedback to set for the proposal
+     * @return true if the update was successful, false otherwise
+     */
+    boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback);
 }
 

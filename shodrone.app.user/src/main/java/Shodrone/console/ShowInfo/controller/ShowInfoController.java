@@ -35,7 +35,7 @@ public class ShowInfoController {
         if (shodroneUser == null) {
             throw new FailedRequestException("User not found");
         }
-        return server.getCustomers(shodroneUser.email);
+        return server.getCustomerOfRepresentative(shodroneUser.email);
     }
 
     public ShowDTO obtainShow(int selectedShow) {

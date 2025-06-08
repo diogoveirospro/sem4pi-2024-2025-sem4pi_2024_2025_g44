@@ -24,6 +24,7 @@ import core.CRMCollaborator.repositories.CRMCollaboratorRepository;
 import core.CRMManager.repositories.CRMManagerRepository;
 import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
+import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
@@ -153,6 +154,11 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	@Override
 	public ShowReportingRepository shows() {
 		return new InMemoryShowReportingRepository();
+	}
+
+	@Override
+	public DeliveryReportingRepository deliveriesReporting() {
+		return new InMemoryDeliveryReportingRepository();
 	}
 
 	@Override

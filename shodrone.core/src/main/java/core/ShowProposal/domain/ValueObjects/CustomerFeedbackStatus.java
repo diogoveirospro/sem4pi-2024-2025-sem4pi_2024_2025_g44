@@ -1,12 +1,12 @@
 package core.ShowProposal.domain.ValueObjects;
 
-public enum CustFeedbackStatus {
+public enum CustomerFeedbackStatus {
     ACCEPTED("Accepted"),
     REJECTED("Rejected"),
     PENDING("Pending");
     private final String status;
 
-    CustFeedbackStatus(String status) {
+    CustomerFeedbackStatus(String status) {
         this.status = status;
     }
 

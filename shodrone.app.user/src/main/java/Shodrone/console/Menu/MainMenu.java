@@ -1,6 +1,6 @@
 package Shodrone.console.Menu;
 
-import Shodrone.console.AcceptRejectProposal.actions.AcceptRejectProposalAction;
+import Shodrone.console.SendFeedbackProposal.actions.SendFeedbackProposalAction;
 import Shodrone.console.AnalyseProposal.actions.AnalyseProposalAction;
 import Shodrone.console.SheduledShows.actions.ScheduledShowsAction;
 import Shodrone.console.ShowInfo.actions.ShowInfoAction;
@@ -101,7 +101,7 @@ public class MainMenu extends AbstractFancyUI {
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
             mainMenu.addItem(ANALYSE_PROPOSAL, "Analyse Proposal", new AnalyseProposalAction());
-            mainMenu.addItem(ACCEPT_REJECT_PROPOSAL, "Accept/Reject Proposal", new AcceptRejectProposalAction());
+            mainMenu.addItem(ACCEPT_REJECT_PROPOSAL, "Accept/Reject Proposal", new SendFeedbackProposalAction());
             mainMenu.addItem(SCHEDULED_SHOWS, "Scheduled Shows", new ScheduledShowsAction());
             mainMenu.addItem(SHOW_INFO, "Show Info", new ShowInfoAction());
         }

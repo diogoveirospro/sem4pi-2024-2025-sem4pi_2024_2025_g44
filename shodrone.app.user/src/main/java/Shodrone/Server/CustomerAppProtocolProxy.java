@@ -12,17 +12,26 @@ import java.util.List;
 import Shodrone.DTO.CustomerDTO;
 import Shodrone.DTO.ShodroneUserDTO;
 import Shodrone.DTO.ShowDTO;
+import Shodrone.DTO.ShowProposalDTO;
 import Shodrone.exceptions.FailedRequestException;
-import Shodrone.requests.GetCustomerOfRepresentativeRequest;
-import Shodrone.requests.GetShodroneUserRequest;
-import Shodrone.requests.GetShowsOfCustomerRequest;
+import Shodrone.requests.*;
 import core.Persistence.Application;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Proxy for the Customer App Protocol, handling communication with the server.
+ */
 public class CustomerAppProtocolProxy {
+
+	/**
+	 * Logger for the CustomerAppProtocolProxy class.
+	 */
 	private static final Logger LOGGER = LogManager.getLogger(CustomerAppProtocolProxy.class);
 
+	/**
+	 * ClientSocket class handles the connection to the server, sending and receiving messages.
+	 */
 	private static class ClientSocket {
 		private Socket sock;
 		private PrintWriter output;
@@ -44,7 +53,7 @@ public class CustomerAppProtocolProxy {
 			LOGGER.debug("Sent message\n-----\n{}\n-----", request);
 		}
 
-		public List<String> recv() throws IOException {
+		public List<String> receive() throws IOException {
 			List<String> response = new ArrayList<>();
 			String line;
 			while ((line = input.readLine()) != null && !line.isEmpty()) {
@@ -54,9 +63,9 @@ public class CustomerAppProtocolProxy {
 			return response;
 		}
 
-		public List<String> sendAndRecv(String request) throws IOException {
+		public List<String> sendAndReceive(String request) throws IOException {
 			send(request);
-			return recv();
+			return receive();
 		}
 
 		public void stop() throws IOException {
@@ -66,34 +75,97 @@ public class CustomerAppProtocolProxy {
 		}
 	}
 
+	/**
+	 * Retrieves a Shodrone user by username.
+	 *
+	 * @param username the username of the Shodrone user
+	 * @return ShodroneUserDTO containing user details
+	 * @throws IOException if an I/O error occurs
+	 * @throws FailedRequestException if the request fails
+	 */
 	public ShodroneUserDTO getShodroneUser(String username) throws IOException, FailedRequestException {
 		final var socket = new ClientSocket();
 		socket.connect();
 		final String request = new GetShodroneUserRequest(username).toRequest();
-		final List<String> response = socket.sendAndRecv(request);
+		final List<String> response = socket.sendAndReceive(request);
 		socket.stop();
-		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
 		System.out.println("Response: " + response);
 		return mu.parseResponseMessageShodroneUser(response);
 	}
 
-	public CustomerDTO getCustomers(String email) throws IOException, FailedRequestException {
+	/**
+	 * Retrieves the customer associated with a representative by email.
+	 *
+	 * @param email the email of the representative
+	 * @return CustomerDTO containing customer details
+	 * @throws IOException if an I/O error occurs
+	 * @throws FailedRequestException if the request fails
+	 */
+	public CustomerDTO getCustomerOfRepresentative(String email) throws IOException, FailedRequestException {
 		final var socket = new ClientSocket();
 		socket.connect();
 		final String request = new GetCustomerOfRepresentativeRequest(email).toRequest();
-		final List<String> response = socket.sendAndRecv(request);
+		final List<String> response = socket.sendAndReceive(request);
 		socket.stop();
-		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
 		return mu.parseResponseMessageCustomer(response);
 	}
 
+	/**
+	 * Retrieves the shows associated with a customer by VAT number.
+	 *
+	 * @param customerVatNumber the VAT number of the customer
+	 * @return Iterable of ShowDTO containing show details
+	 * @throws IOException if an I/O error occurs
+	 * @throws FailedRequestException if the request fails
+	 */
 	public Iterable<ShowDTO> getShows(String customerVatNumber) throws IOException, FailedRequestException {
 		final var socket = new ClientSocket();
 		socket.connect();
 		final String request = new GetShowsOfCustomerRequest(customerVatNumber).toRequest();
-		final List<String> response = socket.sendAndRecv(request);
+		final List<String> response = socket.sendAndReceive(request);
 		socket.stop();
-		final MarshlerUnmarshler mu = new MarshlerUnmarshler();
+		final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
 		return mu.parseResponseMessageShow(response);
+	}
+
+	/**
+	 * Retrieves proposals delivered to a customer by VAT number.
+	 *
+	 * @param customerVatNumber the VAT number of the customer
+	 * @return Iterable of ShowProposalDTO containing proposal details
+	 * @throws IOException if an I/O error occurs
+	 * @throws FailedRequestException if the request fails
+	 */
+	public Iterable<ShowProposalDTO> getProposalsDelivered(String customerVatNumber)
+			throws IOException, FailedRequestException {
+		final var socket = new ClientSocket();
+		socket.connect();
+		final String request = new GetProposalsOfCustomerRequest(customerVatNumber).toRequest();
+		final List<String> response = socket.sendAndReceive(request);
+		socket.stop();
+		final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
+		return mu.parseResponseMessageProposal(response);
+	}
+
+	/**
+	 * Sends feedback on a proposal identified by its proposal number.
+	 * @param proposalNumber the proposal number to identify the proposal
+	 * @param decision the decision on the proposal (e.g., ACCEPTED, REJECTED)
+	 * @param feedback the feedback text to provide on the proposal
+	 * @return true if the feedback was successfully sent, false otherwise
+	 * @throws IOException if an I/O error occurs
+	 * @throws FailedRequestException if the request fails
+	 */
+	public boolean sendFeedbackProposal(String proposalNumber, String decision, String feedback)
+			throws IOException, FailedRequestException {
+		final var socket = new ClientSocket();
+		socket.connect();
+		final String request = new SendFeedbackProposalRequest(proposalNumber, decision, feedback).toRequest();
+		final List<String> response = socket.sendAndReceive(request);
+		socket.stop();
+		final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
+		return mu.parseResponseMessageFeedback(response);
 	}
 }
