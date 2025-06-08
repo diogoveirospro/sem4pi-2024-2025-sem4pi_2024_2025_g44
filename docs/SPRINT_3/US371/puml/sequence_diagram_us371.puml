@@ -4,16 +4,19 @@ participant "SendFeedbackProposalUI" as UI
 participant "SendFeedbackProposalController" as Controller
 participant "CustomerAppProtocolProxy" as Proxy
 participant "GetShodroneUserRequest" as RequestUser
+participant "ClientSocket" as Socket
 participant "CustomerAppServer" as Server
 participant "CustomerAppMessageParser" as Parser
 participant "UserAppServerController" as ServerController
 participant "ShodroneUserRepository" as ShodroneUserRepo
 participant "MarshallerUnmarshaller" as MU
 participant "ShodroneUserDTO" as UserDTO
+participant "GetCustomerOfRepresentativeRequest" as GetCustomerRequest
 participant "CustomerDTO" as CustomerDTO
 participant "CustomerRepository" as CustomerRepo
-participant "ProposalDTO" as ProposalDTO
+participant "GetProposalsOfCustomerRequest" as GetProposalsRequest
 participant "DeliveryReportingRepository" as DeliveryRepo
+participant "ProposalDTO" as ProposalDTO
 participant "SendFeedbackProposalRequest" as Request
 participant "ShowProposalRepository" as ProposalRepo
 participant "SendFeedbackProposalResponse" as Response
@@ -26,8 +29,6 @@ activate UI
 UI -> Controller : listProposals()
 activate Controller
 
-Controller -> Controller : getRepresenteeOfCustomer()
-
 Controller -> Proxy : getShodroneUser(authenticatedUser)
 activate Proxy
 
@@ -35,9 +36,10 @@ Proxy -> RequestUser : toRequest(authenticatedUser)
 activate RequestUser
 deactivate RequestUser
 
-Proxy -> Proxy : socket.sendAndReceive(request)
+Proxy -> Socket : sendAndReceive(request)
+activate Socket
 
-Proxy -> Server : sendRequest(request)
+Socket -> Server : send(request)
 activate Server
 
 Server -> Parser : parse(request)
@@ -45,10 +47,10 @@ activate Parser
 
 Server -> Parser : execute(request)
 
-Parser -> ServerController : parseGetShodroneUser()
+Parser -> ServerController : getShodroneUserByUsername(username)
 activate ServerController
 
-ServerController -> ShodroneUserRepo : getShodroneUserByUsername(username)
+ServerController -> ShodroneUserRepo : findByUsername(username)
 activate ShodroneUserRepo
 deactivate ShodroneUserRepo
 
@@ -58,8 +60,11 @@ deactivate ServerController
 Parser --> Server : response
 deactivate Parser
 
-Server --> Proxy : response
+Server --> Socket : response
 deactivate Server
+
+Socket --> Proxy : response
+deactivate Socket
 
 Proxy -> MU : parseResponseMessageShodroneUser(response)
 activate MU
@@ -79,13 +84,14 @@ deactivate Proxy
 Controller -> Proxy : getCustomerOfRepresentative(shodroneUser)
 activate Proxy
 
-Proxy -> CustomerDTO : toRequest(authenticatedUser)
-activate CustomerDTO
-deactivate CustomerDTO
+Proxy -> GetCustomerRequest : toRequest(authenticatedUser)
+activate GetCustomerRequest
+deactivate GetCustomerRequest
 
-Proxy -> Proxy : socket.sendAndReceive(request)
+Proxy -> Socket : sendAndReceive(request)
+activate Socket
 
-Proxy -> Server : sendRequest(request)
+Socket -> Server : send(request)
 activate Server
 
 Server -> Parser : parse(request)
@@ -93,10 +99,10 @@ activate Parser
 
 Server -> Parser : execute(request)
 
-Parser -> ServerController : GetCustomerRequest()
+Parser -> ServerController : getCustomerByRepresentativeEmail(repEmail)
 activate ServerController
 
-ServerController -> CustomerRepo : getCustomerByRepresentativeEmail(String repEmail)
+ServerController -> CustomerRepo : findCustomerByRepresentativeEmail(repEmail)
 activate CustomerRepo
 deactivate CustomerRepo
 
@@ -106,8 +112,11 @@ deactivate ServerController
 Parser --> Server : response
 deactivate Parser
 
-Server --> Proxy : response
+Server --> Socket : response
 deactivate Server
+
+Socket --> Proxy : response
+deactivate Socket
 
 Proxy -> MU : parseResponseMessageCustomer(response)
 activate MU
@@ -124,16 +133,17 @@ deactivate MU
 Proxy --> Controller : customer
 deactivate Proxy
 
-Controller -> Proxy : getProposalsByCustomer(customer)
+Controller -> Proxy : getProposalsDelivered(customer)
 activate Proxy
 
-Proxy -> ProposalDTO : toRequest(customer)
-activate ProposalDTO
-deactivate ProposalDTO
+Proxy -> GetProposalsRequest : toRequest(customer)
+activate GetProposalsRequest
+deactivate GetProposalsRequest
 
-Proxy -> Proxy : socket.sendAndReceive(request)
+Proxy -> Socket : sendAndReceive(request)
+activate Socket
 
-Proxy -> Server : sendRequest(request)
+Socket -> Server : send(request)
 activate Server
 
 Server -> Parser : parse(request)
@@ -141,10 +151,10 @@ activate Parser
 
 Server -> Parser : execute(request)
 
-Parser -> ServerController : GetProposalsRequest()
+Parser -> ServerController : getDeliveryProposalsOfCustomer(vatNumber)
 activate ServerController
 
-ServerController -> DeliveryRepo : findProposalsOfCustomer(vatNumber)
+ServerController -> DeliveryRepo : findAllProposalsByCustomer(vatNumber)
 activate DeliveryRepo
 deactivate DeliveryRepo
 
@@ -154,8 +164,11 @@ deactivate ServerController
 Parser --> Server : response
 deactivate Parser
 
-Server --> Proxy : response
+Server --> Socket : response
 deactivate Server
+
+Socket --> Proxy : response
+deactivate Socket
 
 Proxy -> MU : parseResponseMessageProposal(response)
 activate MU
@@ -185,19 +198,20 @@ User -> UI : accept/reject + feedback
 
 
 
-UI -> Controller : sendFeedbackProposal(proposalId, decision, feedback)
+UI -> Controller : sendFeedbackProposal(proposalNumber, decision, feedback)
 activate Controller
 
-Controller -> Proxy : sendFeedbackProposal(proposalId, decision, feedback)
+Controller -> Proxy : sendFeedbackProposal(proposalNumber, decision, feedback)
 activate Proxy
 
-Proxy -> Request : toRequest(proposalId, decision, feedback)
+Proxy -> Request : toRequest(proposalNumber, decision, feedback)
 activate Request
 deactivate Request
 
-Proxy -> Proxy : socket.sendAndReceive(request)
+Proxy -> Socket : sendAndReceive(request)
+activate Socket
 
-Proxy -> Server : sendRequest(request)
+Socket -> Server : send(request)
 activate Server
 
 Server -> Parser : parse(request)
@@ -205,10 +219,10 @@ activate Parser
 
 Server -> Parser : execute(request)
 
-Parser -> ServerController : handleFeedbackProposal()
+Parser -> ServerController : handleProposalFeedback(proposalNumber, decision, feedback)
 activate ServerController
 
-ServerController -> ProposalRepo : updateProposalStatusAndFeedback(proposalId, decision, feedback)
+ServerController -> ProposalRepo : updateProposalStatusAndFeedback(proposalNumber, decision, feedback)
 activate ProposalRepo
 deactivate ProposalRepo
 
@@ -218,10 +232,13 @@ deactivate ServerController
 Parser --> Server : response
 deactivate Parser
 
-Server --> Proxy : response
+Server --> Socket : response
 deactivate Server
 
-Proxy -> MU : parseResponseMessage(response)
+Socket --> Proxy : response
+deactivate Socket
+
+Proxy -> MU : parseResponseMessageFeedback(response)
 activate MU
 
 MU -> Response : FeedbackProposalResponse()
@@ -231,7 +248,7 @@ deactivate Response
 MU --> Proxy : parseResponse()
 deactivate MU
 
-Proxy --> Controller : success/failure
+Proxy --> Controller : accepted/rejected
 deactivate Proxy
 
 Controller --> UI : show confirmation

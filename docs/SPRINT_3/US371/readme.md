@@ -11,7 +11,7 @@ Analysis: 🧪 Testing
 
 Design: 🧪 Testing
 
-Implementation: 🚧 Doing
+Implementation: 🧪 Testing
 
 Testing: 📝 To Do
  
@@ -72,44 +72,49 @@ This section presents the design adopted for implementing **US371 – Accept/Rej
 
 ### 4.1 Realisation
 
-The following sequence diagram illustrates the interaction flow between the user interface, controller, proxy, server, 
-and repositories:
+The following sequence diagram illustrates the interaction flow between the user interface, controller, network proxy, 
+socket layer, server components, and repositories:
 
 ![Sequence Diagram for US371](images/sequence_diagram_us371.svg)
 
 The process begins in the `SendFeedbackProposalUI`, where the **Customer** requests to view all show proposals that are 
-pending a decision. The UI triggers the `SendFeedbackProposalController`, which initiates a multistep lookup process to 
-retrieve the customer identity and corresponding pending proposals.
+pending a decision. The UI triggers the `SendFeedbackProposalController`, which initiates a multistep lookup process 
+to determine the authenticated user and fetch the proposals addressed to their customer account.
 
-The controller first requests the associated `ShodroneUser` using the authenticated user credentials. This request is 
-serialized and sent through the network via the `CustomerAppProtocolProxy`, using a TCP socket. On the server side, the 
-`CustomerAppServer` receives the request, which is parsed and processed by the `CustomerAppMessageParser` and delegated 
-to the `UserAppServerController`. The controller queries the `ShodroneUserRepository` and returns the user information, 
-which is sent back through the same communication chain and deserialized by the `MarshallerUnmarshaller`.
+First, the controller retrieves the authenticated `ShodroneUser` by delegating to the `CustomerAppProtocolProxy`. The 
+proxy constructs a `GetShodroneUserRequest` and sends it via TCP using the `ClientSocket`. The `CustomerAppServer` 
+receives and parses the request through the `CustomerAppMessageParser`, which delegates the operation to the 
+`UserAppServerController`. The user repository (`ShodroneUserRepository`) is queried, and the result is returned to the 
+client, where the `MarshallerUnmarshaller` deserializes the response into a `ShodroneUserDTO`.
 
-Once the user information is available, the controller proceeds to retrieve the `Customer` entity and finally the list 
-of proposals pending decision using the `DeliveryReportingRepository`.
+With the user data retrieved, the controller continues by requesting the `Customer` information and then the list of 
+show proposals pending feedback. The proxy builds and sends respective requests (`GetCustomerOfRepresentativeRequest`, 
+`GetProposalsOfCustomerRequest`) through the socket. On the server side, the `CustomerRepository` and the 
+`DeliveryReportingRepository` are queried to retrieve the relevant data. The resulting proposals are returned and 
+presented to the customer.
 
-After the list of pending proposals is displayed, the customer selects one and is prompted to accept or reject it, 
-optionally providing textual feedback.
+After reviewing the available proposals, the customer selects one and is prompted to accept or reject it, optionally 
+providing textual feedback.
 
-Upon submission, the controller invokes the `sendFeedbackProposal(...)` method, which constructs a 
-`SendFeedbackProposalRequest` and sends it through the proxy using a TCP socket. The request is parsed on the server 
-side and routed to the `handleFeedbackProposal()` method of the `UserAppServerController`.
+When the feedback is submitted, the controller calls `sendFeedbackProposal(...)` on the proxy. A 
+`SendFeedbackProposalRequest` is constructed and sent via the `ClientSocket`. On the server side, the 
+`handleProposalFeedback(...)` method in the `UserAppServerController` processes the request. This method accesses the 
+`ShowProposalRepository`, where the matching proposal is located and its state updated according to the customer's 
+decision and feedback. The proposal is then persisted.
 
-This method uses the `ShowProposalRepository` to locate and update the selected proposal with the customer’s decision 
-and feedback. The result is wrapped in a `SendFeedbackProposalResponse`, which is sent back through the network, 
-deserialized, and returned to the controller. The UI then shows a confirmation message to the user.
+A `SendFeedbackProposalResponse` is created and returned to the client, where it is parsed and interpreted. The 
+controller then informs the UI of the outcome, and a confirmation message is shown to the customer.
 
 This design ensures a clear separation of concerns:
 
-- The **UI** handles user input and interaction.
-- The **controller** coordinates between user interaction, proxy communication, and business logic.
-- The **proxy** is responsible for request formatting and communication via sockets.
-- The **parser** interprets messages and delegates them to the appropriate server-side logic.
-- The **server controller** encapsulates the domain logic and updates the aggregate state.
-- The **repositories** are used for reading (`DeliveryReportingRepository`) and writing (`ShowProposalRepository`) 
-domain data.
+- The **UI** manages user interaction and decision capture.
+- The **controller** coordinates between user actions and the domain logic.
+- The **network proxy** handles message preparation and socket communication.
+- The **socket layer** abstracts low-level network transport.
+- The **message parser** interprets incoming requests and responses.
+- The **server controller** executes the domain logic and updates aggregate state.
+- The **repositories** provide persistent access to both customer-related information (`DeliveryReportingRepository`, 
+`CustomerRepository`) and proposal lifecycle (`ShowProposalRepository`).
 
 ### 4.2. Acceptance Tests
 
