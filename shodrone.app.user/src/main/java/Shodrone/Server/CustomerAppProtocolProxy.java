@@ -27,8 +27,8 @@ public class CustomerAppProtocolProxy {
 		private Socket sock;
 		private PrintWriter output;
 		private BufferedReader input;
-		private final String address = Application.settings().databaseIP();
-		private final String port = Application.settings().databasePort();
+		private final String address = Application.settings().serverIP();
+		private final String port = Application.settings().serverPort();
 
 		public void connect() throws IOException {
 			InetAddress serverIP = InetAddress.getByName(address);

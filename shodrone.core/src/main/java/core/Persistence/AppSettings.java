@@ -49,8 +49,9 @@ public class AppSettings {
     private static final String SCHEMA_GENERATION_KEY = "jakarta.persistence.schema-generation.database.action";
     private static final String USE_EVENTFUL_CONTROLLERS = "UseEventfulControllers";
     private static final String SHODRONE_DOMAIN = "ShodroneDomain";
+    private static final String SERVER_PORT = "shodrone.server.port";
     private static final String DATABASE_PORT = "shodrone.database.port";
-    private static final String DATABASE_IP = "shodrone.database.ip";
+    private static final String SERVER_IP = "shodrone.server.ip";
     private static final String TEMPLATE_PATH_PORTUGUESE = "templates.proposal.portuguese";
     private static final String TEMPLATE_PATH_ENGLISH = "templates.proposal.englishRegular";
     private static final String TEMPLATE_PATH_ENGLISH_VIP = "templates.proposal.englishVIP";
@@ -105,12 +106,16 @@ public class AppSettings {
         ret.put(SCHEMA_GENERATION_KEY, applicationProperties.getProperty(SCHEMA_GENERATION_KEY));
         return ret;
     }
-    public String databasePort() {
-        return applicationProperties.getProperty(DATABASE_PORT);
+    public String serverPort() {
+        return applicationProperties.getProperty(SERVER_PORT);
     }
 
-    public String databaseIP() {
-        return applicationProperties.getProperty(DATABASE_IP);
+    public String serverIP() {
+        return applicationProperties.getProperty(SERVER_IP);
+    }
+
+    public String databasePort() {
+        return applicationProperties.getProperty(DATABASE_PORT);
     }
 
     public String getTemplatePathPortuguese() {

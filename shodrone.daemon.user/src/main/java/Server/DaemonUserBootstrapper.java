@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DaemonUserBootstrapper {
     private static final Logger LOGGER = LogManager.getLogger(DaemonUserBootstrapper.class);
-    private static final String SERVER_PORT = Application.settings().databasePort();
+    private static final String SERVER_PORT = Application.settings().serverPort();
 
 
     public static void main(final String[] args) {
