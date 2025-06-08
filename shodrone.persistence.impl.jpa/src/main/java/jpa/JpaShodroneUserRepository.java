@@ -5,16 +5,16 @@ import core.Shared.domain.ValueObjects.Email;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
+import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.infrastructure.authz.domain.model.Username;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
 public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser, Long, Username> implements ShodroneUserRepository {
 
     /**
      * Constructor for JPA ShodroneUser Repository.
+     *
      * @param autoTx the transactional context
      */
     public JpaShodroneUserRepository(final TransactionalContext autoTx) {
@@ -23,6 +23,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
 
     /**
      * Constructor for JPA ShodroneUser Repository.
+     *
      * @param persistenceUnitName the name of the persistence unit
      */
     public JpaShodroneUserRepository(final String persistenceUnitName) {
@@ -31,15 +32,16 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
 
     /**
      * Finds a ShodroneUser by username.
+     *
      * @param username the username of the ShodroneUser
      * @return the ShodroneUser with the given username
      */
     @Override
     public ShodroneUser findByUsername(Username username) {
-        final TypedQuery<ShodroneUser> query = entityManager().createQuery(
-                "SELECT u FROM ShodroneUser u JOIN u.systemUser s WHERE s.username = :username", ShodroneUser.class);
-        query.setParameter("username", username);
-        return query.getSingleResult();
+        final TypedQuery<ShodroneUser> shodroneUserQuery = entityManager().createQuery(
+                "SELECT u FROM ShodroneUser u WHERE u.systemUser.username = :username", ShodroneUser.class);
+        shodroneUserQuery.setParameter("username", username.toString());
+        return shodroneUserQuery.getSingleResult();
     }
 
     @Override
