@@ -16,6 +16,8 @@ import Shodrone.DTO.ShowProposalDTO;
 import Shodrone.exceptions.FailedRequestException;
 import Shodrone.requests.*;
 import core.Persistence.Application;
+import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
+import core.ShowProposal.domain.Entities.ShowProposal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -168,4 +170,20 @@ public class CustomerAppProtocolProxy {
 		final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
 		return mu.parseResponseMessageFeedback(response);
 	}
+
+	public ProposalDeliveryInfoCode getProposalDeliveryInfoCode(String proposalNumber) {
+		try {
+			final var socket = new ClientSocket();
+			socket.connect();
+			final String request = new GetProposalDeliveryCodeRequest(proposalNumber).toRequest();
+			final List<String> response = socket.sendAndReceive(request);
+			socket.stop();
+			final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
+			return mu.parseResponseMessageProposalDeliveryInfoCode(response);
+		} catch (IOException | FailedRequestException e) {
+			LOGGER.error("Error retrieving proposal delivery info code: {}", e.getMessage());
+			return null;
+		}
+	}
+
 }
