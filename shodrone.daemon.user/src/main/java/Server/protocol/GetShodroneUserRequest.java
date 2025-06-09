@@ -14,12 +14,10 @@ public class GetShodroneUserRequest extends UserAppRequest {
     @Override
     public String execute() {
         try {
-            System.out.println("Executing GetShodroneUserRequest for username: " + username);
             ShodroneUser user = controller.getShodroneUserByUsername(username);
             if (user == null) {
                 return buildBadRequest("User not found");
             }
-            System.out.println("User found: " + user.user().username());
             return buildResponse(user);
         } catch (Exception e) {
             return buildServerError("An error occurred while processing the request");

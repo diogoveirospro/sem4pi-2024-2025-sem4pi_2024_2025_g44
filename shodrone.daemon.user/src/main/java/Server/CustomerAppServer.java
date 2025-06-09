@@ -1,18 +1,28 @@
 package Server;
 
+import Server.protocol.ThreadProcess.RequestMessage;
 import Server.protocol.UserAppRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
 public class CustomerAppServer {
-
     private static final Logger LOGGER = LogManager.getLogger(CustomerAppServer.class);
+
+    private final BlockingQueue<RequestMessage> requestQueue;
+
+    public CustomerAppServer(final BlockingQueue<RequestMessage> requestQueue) {
+        this.requestQueue = requestQueue;
+    }
+
     /**
      * Client socket.
      *
@@ -20,33 +30,40 @@ public class CustomerAppServer {
      */
     private static class ClientHandler extends Thread {
         private Socket clientSocket;
-        private final CustomerAppMessageParser parser;
+        private final BlockingQueue<RequestMessage> requestQueue;
 
-        public ClientHandler(final Socket socket, final CustomerAppMessageParser parser) {
+        public ClientHandler(final Socket socket, final BlockingQueue<RequestMessage> requestQueue) {
             this.clientSocket = socket;
-            this.parser = parser;
+            this.requestQueue = requestQueue;
         }
 
         @Override
         public void run() {
             final var clientIP = clientSocket.getInetAddress();
-            LOGGER.debug("Acepted connection from {}:{}", clientIP.getHostAddress(), clientSocket.getPort());
+            LOGGER.debug("Accepted connection from {}:{}", clientIP.getHostAddress(), clientSocket.getPort());
 
             try (var out = new PrintWriter(clientSocket.getOutputStream(), true);
                  var in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     LOGGER.debug("Received message:----\n{}\n----", inputLine);
                     System.out.println("Received message:----\n" + inputLine + "\n----");
-                    final UserAppRequest request = parser.parse(inputLine);
-                    final String response = request.execute();
+
+                    // Send to processor
+                    RequestMessage message = new RequestMessage(inputLine);
+                    requestQueue.put(message); // Send to DB port
+                    String response = message.responseQueue.take(); // Wait for DB to respond
+
                     out.println(response);
                     LOGGER.debug("Sent message:----\n{}\n----", response);
-                    if (request.isGoodbye()) {
+
+                    // Note: No more request.isGoodbye() here since we don't parse in this thread
+                    if (inputLine.trim().equalsIgnoreCase("GOODBYE")) {
                         break;
                     }
                 }
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 LOGGER.error(e);
             } finally {
                 try {
@@ -56,30 +73,11 @@ public class CustomerAppServer {
                     LOGGER.error("While closing the client socket {}:{}", clientIP.getHostAddress(),
                             clientSocket.getPort(), e);
                 }
-                // null the reference to ensure it will be caught by the garbage collector
                 clientSocket = null;
-
-                // helper debug - SHOULD NOT BE USED IN PRODUCTION CODE!!!
-                if (LOGGER.isDebugEnabled()) {
-                    final int finalThreadCount = Thread.activeCount();
-                    LOGGER.debug("Ending client thread - final thread count: {}", finalThreadCount);
-                    final Thread[] t = new Thread[finalThreadCount];
-                    final int n = Thread.enumerate(t);
-                    for (var i = 0; i < n; i++) {
-                        LOGGER.debug("T {}: {}", t[i].getId(), t[i].getName());
-                    }
-                }
             }
         }
     }
 
-    private final CustomerAppMessageParser parser;
-
-
-
-    public CustomerAppServer(final CustomerAppMessageParser parser) {
-        this.parser = parser;
-    }
 
     /**
      * Wait for connections.
@@ -93,12 +91,13 @@ public class CustomerAppServer {
         try (var serverSocket = new ServerSocket(port)) {
             while (true) {
                 final var clientSocket = serverSocket.accept();
-                new ClientHandler(clientSocket, parser).start();
+                new ClientHandler(clientSocket, requestQueue).start();
             }
         } catch (final IOException e) {
             LOGGER.error(e);
         }
     }
+
 
     /**
      * Wait for connections.

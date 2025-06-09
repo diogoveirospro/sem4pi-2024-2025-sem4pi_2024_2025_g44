@@ -55,6 +55,7 @@ public class AppSettings {
     private static final String TEMPLATE_PATH_PORTUGUESE = "templates.proposal.portuguese";
     private static final String TEMPLATE_PATH_ENGLISH = "templates.proposal.englishRegular";
     private static final String TEMPLATE_PATH_ENGLISH_VIP = "templates.proposal.englishVIP";
+    private static final String QUEUE_CAPACITY = "server.queue.capacity";
 
     private final Properties applicationProperties = new Properties();
 
@@ -132,6 +133,10 @@ public class AppSettings {
 
     public String getProperty(final String prop) {
         return applicationProperties.getProperty(prop);
+    }
+
+    public String queueCapacity() {
+        return applicationProperties.getProperty(QUEUE_CAPACITY);
     }
 
     public boolean useEventfulControllers() {
