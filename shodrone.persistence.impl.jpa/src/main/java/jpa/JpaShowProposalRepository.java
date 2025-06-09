@@ -90,7 +90,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                         "AND sp.timeOfShow IS NOT NULL " +
                         "AND sp.durationOfShow IS NOT NULL " +
                         "AND sp.configuration.figures IS NOT NULL AND sp.configuration.figures IS NOT EMPTY " +
-                        "AND sp.configuration.drone_list IS NOT NULL AND sp.configuration.drone_list IS NOT EMPTY",
+                        "AND sp.configuration.showConfiguration IS NOT NULL AND sp.configuration.showConfiguration IS NOT EMPTY",
                 ShowProposal.class
         );
         return query.getResultList();
