@@ -170,3 +170,162 @@ void free_history(DroneHistory **h, int n)
   free(h);
 }
 
+#include "header.h"
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+// ---------------- Shared Memory Functions ----------------
+
+// Creates a shared memory file and returns its file descriptor
+int create_shared_memory(const char *name, size_t size) {
+    int fd = shm_open(name, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("shm_open");
+        exit(EXIT_FAILURE);
+    }
+    if (ftruncate(fd, size) == -1) {
+        perror("ftruncate");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+    return fd;
+}
+
+// Maps the shared memory to the process's address space and returns a pointer to it
+SharedMemory* attach_shared_memory(int fd, size_t size) {
+    void *addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (addr == MAP_FAILED) {
+        perror("mmap");
+        return NULL;
+    }
+    return addr;
+}
+
+// Detaches the shared memory from the process's address space
+void detach_shared_memory(void* shmaddr, size_t size) {
+    if (munmap(shmaddr, size) == -1) {
+        perror("munmap");
+    }
+}
+
+// Removes the shared memory file from the system
+void clear_shared_memory(const char *name) {
+    if (shm_unlink(name) == -1) {
+        perror("shm_unlink");
+    }
+}
+
+// Resizes the shared memory file to a new size
+void resize_shared_memory(int fd, size_t new_size) {
+    if (ftruncate(fd, new_size) == -1) {
+        perror("ftruncate (resize)");
+    }
+}
+
+// Updates a specific index in the shared memory with a new value
+void change_drone_state(SharedMemory *shm, int idx, SharedDroneState value) {
+    shm->drones[idx] = value;
+}
+
+// Updates the collision log in the shared memory
+void update_collision_log(SharedMemory *shm, CollisionLog *log, int count) {
+    shm->collision_log = log; // might be necessary to change
+    shm->collision_count = count;
+}
+
+// Close file descriptor for shared memory
+void close_shared_memory(int fd) {
+    if (close(fd) == -1) {
+        perror("close");
+    }
+}
+
+// ---------------- Mutex and Condition Variables Functions ----------------
+
+void init_mutex(pthread_mutex_t* mutex) {
+    pthread_mutex_init(mutex, NULL);
+}
+
+void clear_mutex(pthread_mutex_t* mutex) {
+    pthread_mutex_destroy(mutex);
+}
+
+void lock_mutex(pthread_mutex_t *mutex) {
+    pthread_mutex_lock(mutex);
+}
+
+void unlock_mutex(pthread_mutex_t *mutex) {
+    pthread_mutex_unlock(mutex);
+}
+
+void init_cond(pthread_cond_t* cond) {
+    pthread_cond_init(cond, NULL);
+}
+
+void clear_cond(pthread_cond_t* cond) {
+    pthread_cond_destroy(cond);
+}
+
+void wait_cond(pthread_cond_t *cond, pthread_mutex_t *mutex) {
+    pthread_cond_wait(cond, mutex);
+}
+
+void signal_cond(pthread_cond_t *cond) {
+    pthread_cond_signal(cond);
+}
+
+// ---------------- Semaphore Functions ----------------
+
+sem_t* init_semaphore(const char *name, int value) {
+    sem_t *sem = sem_open(name, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, value);
+    if (sem == SEM_FAILED) {
+        perror("Error while initializing semaphore");
+        exit(EXIT_FAILURE);
+    }
+    return sem;
+}
+
+void clear_semaphore(const char *name, sem_t *sem) {
+    sem_close(sem);
+    sem_unlink(name);
+}
+
+void post_semaphore(sem_t *sem) {
+    sem_post(sem);
+}
+
+void wait_semaphore(sem_t *sem) {
+    sem_wait(sem);
+}
+
+int get_semaphore_value(sem_t *sem) {
+    int value;
+    if (sem_getvalue(sem, &value) == -1) {
+        perror("Error getting semaphore value");
+        return -1;
+    }
+    return value;
+}
+
+// ---------------- Thread Functions ----------------
+
+void create_threads(pthread_t *threads, int n, void *(*start_routine)(void *), void **args) {
+    for (int i = 0; i < n; i++) {
+        if (pthread_create(&threads[i], NULL, start_routine, args ? args[i] : NULL) != 0) {
+            perror("Error while creating thread");
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
+void join_threads(pthread_t *threads, int n) {
+    for (int i = 0; i < n; i++) {
+        pthread_join(threads[i], NULL);
+    }
+}
+
+void end_thread() {
+    pthread_exit(NULL);
+
+}
+

@@ -8,7 +8,7 @@ DRONE_EXEC=drone
 REPORT_FOLDER=./ReportFolder
 
 CC=gcc
-FLAGS=
+FLAGS=-pthread -lrt
 
 RM=rm -f
 

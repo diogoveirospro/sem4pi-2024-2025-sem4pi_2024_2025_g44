@@ -15,6 +15,10 @@
 #include <math.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <semaphore.h>
+#include <pthread.h>
 
 
 // ------------ Defines -----------------
@@ -165,6 +169,77 @@ typedef struct drone_data {
   char *filename;
 
 } DroneData;
+
+// ------------ Possible Structs to use for shared memory -----------------
+
+typedef struct {
+  int drone_id;
+  Position pos;
+  int active;
+  int collision_count;
+} SharedDroneState;
+
+typedef struct {
+    int num_drones;
+    SharedDroneState *drones; // They are pointers but the values will be defined by the parent
+    CollisionLog *collision_log;
+    int collision_count;
+    sem_t *semaphores;
+    int *finished;
+    int Can_Write; // Probably not needed because of semaphores
+    int Can_Read; // Probably not needed because of semaphores
+} SharedMemory;
+
+
+typedef struct {
+    size_t size; // size of the shared memory
+    int fd; // file descriptor for the shared memory
+} SharedMemoryFileInfo; // Information about the shared memory file
+
+typedef struct {
+    pthread_t *threads;
+    int num_threads;
+} ParentThreads;
+
+typedef struct {
+    pthread_mutex_t mutex;
+    pthread_cond_t cond_collision;
+} ParentMutex;
+
+// ------------ Possible functions to use for shared memory -----------------
+
+// Shared Memory Functions
+int create_shared_memory(const char *name, size_t size);
+SharedMemory* attach_shared_memory(int fd, size_t size);
+void detach_shared_memory(void* shmaddr, size_t size);
+void clear_shared_memory(const char *name);
+void resize_shared_memory(int fd, size_t new_size);
+void change_drone_state(SharedMemory *shm, int idx, SharedDroneState value);
+void update_collision_log(SharedMemory *shm, CollisionLog *log, int count);
+void close_shared_memory(int fd);
+
+// Mutex and Condition Variable Functions
+void init_mutex(pthread_mutex_t* mutex);
+void init_cond(pthread_cond_t* cond);
+void lock_mutex(pthread_mutex_t *mutex);
+void unlock_mutex(pthread_mutex_t *mutex);
+void wait_cond(pthread_cond_t *cond, pthread_mutex_t *mutex);
+void signal_cond(pthread_cond_t *cond);
+void clear_mutex(pthread_mutex_t* mutex);
+void clear_cond(pthread_cond_t* cond);
+
+// Semaphore Functions
+sem_t* init_semaphore(const char *name, int value);
+void post_semaphore(sem_t *sem);
+void wait_semaphore(sem_t *sem);
+void clear_semaphore(const char *name, sem_t *sem);
+int get_semaphore_value(sem_t *sem);
+
+// Thread Functions
+void create_threads(pthread_t *threads, int n, void *(*start_routine)(void *), void **args);
+void join_threads(pthread_t *threads, int n);
+void end_thread(); // optional has it might be better to use join
+
 
 // ------------ Functions -----------------
 
