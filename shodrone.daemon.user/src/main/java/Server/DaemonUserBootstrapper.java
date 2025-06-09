@@ -36,14 +36,17 @@ public class DaemonUserBootstrapper {
 
         // Father
         LOGGER.info("Starting Database Processor (parent)");
+        System.out.println("Starting Database Processor (parent)");
         new DatabaseProcessor(requestQueue, parser).start();
 
         // Son
+        System.out.println("Starting Customer App Server (child) on port " + SERVER_PORT);
         LOGGER.info("Starting Customer App Server (child) on port {}", SERVER_PORT);
         final var server = new CustomerAppServer(requestQueue);
         server.start(Integer.parseInt(SERVER_PORT), false);
 
         try {
+            System.out.println("Shodrone customer user Server started successfully.");
             Thread.currentThread().join();
         } catch (InterruptedException e) {
             LOGGER.error("Main thread interrupted", e);

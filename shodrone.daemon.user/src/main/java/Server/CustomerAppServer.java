@@ -52,9 +52,12 @@ public class CustomerAppServer {
 
                     // Send to processor
                     RequestMessage message = new RequestMessage(inputLine);
+                    System.out.println("Sending message to DB port: " + inputLine);
                     requestQueue.put(message); // Send to DB port
+                    LOGGER.debug("Sent message to DB port:----\n{}\n----", inputLine);
+                    System.out.println("Sent message to DB port:----\n" + inputLine + "\n----");
                     String response = message.responseQueue.take(); // Wait for DB to respond
-
+                    System.out.println("Received response from DB port: " + response);
                     out.println(response);
                     LOGGER.debug("Sent message:----\n{}\n----", response);
 
@@ -88,6 +91,7 @@ public class CustomerAppServer {
      */
     @SuppressWarnings("java:S2189")
     private void listen(final int port) {
+        System.out.println("Listening for connections on port " + port);
         try (var serverSocket = new ServerSocket(port)) {
             while (true) {
                 final var clientSocket = serverSocket.accept();

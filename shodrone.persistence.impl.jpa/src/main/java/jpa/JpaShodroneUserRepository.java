@@ -41,20 +41,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
      */
     @Override
     public ShodroneUser findByUsername(Username username) {
-        // Test query: does phoneNumber 910000002 exist?
-        PhoneNumber testPhoneNumber = new PhoneNumber("+351","910000002");
-        final TypedQuery<ShodroneUser> phoneQuery = entityManager().createQuery(
-                "SELECT u FROM ShodroneUser u WHERE u.phoneNumber = :phone", ShodroneUser.class);
-        phoneQuery.setParameter("phone", testPhoneNumber);
-
-        ShodroneUser usersWithPhone = phoneQuery.getSingleResult();
-        if (usersWithPhone == null ) {
-            System.out.println("No user found with phone number 910000002");
-        } else {
-            System.out.println("Found user(s) with phone number 910000002: " + usersWithPhone.user().username());
-        }
-
-        // Original query
+        System.out.println("Finding ShodroneUser by username: " + username);
         final TypedQuery<ShodroneUser> shodroneUserQuery = entityManager().createQuery(
                 "SELECT u FROM ShodroneUser u WHERE u.systemUser.username = :username", ShodroneUser.class);
         shodroneUserQuery.setParameter("username", username.toString());

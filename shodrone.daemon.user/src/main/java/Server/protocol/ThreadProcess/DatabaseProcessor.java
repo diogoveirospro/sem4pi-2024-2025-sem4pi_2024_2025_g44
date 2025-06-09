@@ -18,9 +18,13 @@ public class DatabaseProcessor extends Thread {
     public void run() {
         while (true) {
             try {
+                System.out.println("Waiting for request...");
                 RequestMessage request = requestQueue.take(); // waits for request
+                System.out.println("Processing request: " + request.rawInput);
                 UserAppRequest parsed = parser.parse(request.rawInput);
+                System.out.println("Parsed request: " + parsed);
                 String response = parsed.execute();
+                System.out.println("Response generated: " + response);
                 request.responseQueue.put(response); // return result
             } catch (Exception e) {
                 e.printStackTrace();
