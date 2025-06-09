@@ -48,7 +48,7 @@ public class MainMenu extends AbstractFancyUI {
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
     private static final int ANALYSE_PROPOSAL = 2;
-    private static final int ACCEPT_REJECT_PROPOSAL = 3;
+    private static final int SEND_FEEDBACK_PROPOSAL = 3;
     private static final int SCHEDULED_SHOWS = 4;
     private static final int SHOW_INFO = 5;
 
@@ -101,7 +101,7 @@ public class MainMenu extends AbstractFancyUI {
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
             mainMenu.addItem(ANALYSE_PROPOSAL, "Analyse Proposal", new AnalyseProposalAction());
-            mainMenu.addItem(ACCEPT_REJECT_PROPOSAL, "Accept/Reject Proposal", new SendFeedbackProposalAction());
+            mainMenu.addItem(SEND_FEEDBACK_PROPOSAL, "Send Feedback Proposal", new SendFeedbackProposalAction());
             mainMenu.addItem(SCHEDULED_SHOWS, "Scheduled Shows", new ScheduledShowsAction());
             mainMenu.addItem(SHOW_INFO, "Show Info", new ShowInfoAction());
         }

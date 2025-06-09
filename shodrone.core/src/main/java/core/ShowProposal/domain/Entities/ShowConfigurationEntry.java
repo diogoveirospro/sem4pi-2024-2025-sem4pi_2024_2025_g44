@@ -1,4 +1,4 @@
-package core.ShowProposal.domain.ValueObjects;
+package core.ShowProposal.domain.Entities;
 
 import core.Drone.domain.Entities.Drone;
 import core.ModelOfDrone.domain.Entities.Model;

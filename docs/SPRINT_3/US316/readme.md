@@ -125,10 +125,11 @@ The functionality developed in **US316** was successfully integrated into the Sh
 
 ### Demonstration Instructions
 
-1. Log in as a CRM Collaborator.
-2. Navigate to the **Send Proposal** menu.
-3. Select a valid proposal (must have video and document).
-4. Observe the delivery code generated and shown.
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md).
+2. Log in as a CRM Collaborator.
+3. Navigate to the **Send Proposal** menu.
+4. Select a valid proposal (must have video and document).
+5. Observe the delivery code generated and shown.
 
 ### Notes
 

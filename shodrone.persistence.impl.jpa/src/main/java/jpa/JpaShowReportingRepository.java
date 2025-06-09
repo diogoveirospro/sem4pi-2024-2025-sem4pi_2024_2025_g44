@@ -7,7 +7,7 @@ import core.Drone.domain.Entities.Drone;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.Persistence.Application;
 import core.ShowProposal.domain.Entities.ShowProposal;
-import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
+import core.ShowProposal.domain.Entities.ShowConfigurationEntry;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaTransactionalContext;

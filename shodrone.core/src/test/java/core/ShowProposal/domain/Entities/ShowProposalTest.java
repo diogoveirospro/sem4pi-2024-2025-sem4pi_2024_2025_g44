@@ -404,4 +404,44 @@ public class ShowProposalTest {
         proposal.addConfiguration(config);
         assertFalse(proposal.isReadyToGenerateShowDSL());
     }
+
+    @Test
+    void testSameAsTrueWhenSameObject() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        assertTrue(proposal.sameAs(proposal));
+    }
+
+    @Test
+    void testSetShowProposalStatus() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        proposal.setShowProposalStatus(ShowProposalStatus.READY_TO_SEND);
+        assertEquals(ShowProposalStatus.READY_TO_SEND, proposal.status());
+    }
+
+    @Test
+    void testAddCustomerFeedback() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        CustomerFeedback feedback = new CustomerFeedback(CustomerFeedbackStatus.ACCEPTED, "Great proposal, looking forward to the show!");
+        proposal.addCustomerFeedback(feedback);
+        assertEquals(feedback, proposal.customerFeedback());
+    }
+
+    @Test
+    void testAddCustomerFeedbackThrowsIfNull() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        assertThrows(IllegalArgumentException.class, () -> proposal.addCustomerFeedback(null));
+    }
+
+    @Test
+    void testIsReadyToConfigureDocumentTrue() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        builder.addFigure(figure);
+        ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(droneEntry);
+        ShowConfiguration config = builder.build();
+        proposal.addConfiguration(config);
+        proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+        assertTrue(proposal.isReadyToConfigureDocument());
+    }
 }

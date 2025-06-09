@@ -48,7 +48,7 @@
     <!-- Show Proposal Aggregate -->
     <class>core.ShowProposal.domain.Entities.ShowProposal</class>
     <class>core.ShowProposal.domain.Entities.ShowConfiguration</class>
-    <class>core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry</class>
+    <class>core.ShowProposal.domain.Entities.ShowConfigurationEntry</class>
 
     <!-- Proposal Delivery Info Aggregate -->
     <class>core.ProposalDeliveryInfo.domain.Entities.ProposalDeliveryInfo</class>

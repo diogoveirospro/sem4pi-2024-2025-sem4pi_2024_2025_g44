@@ -183,19 +183,20 @@ This functionality was successfully integrated into the **Shodrone** system.
 
 ### Demonstration Instructions
 
-1. User logs in as a **CRM Manager**
-2. Navigates to **Show Proposals → Configure Proposal Document**
-3. Selects a proposal from the list of eligible proposals
-4. Selects one of the predefined templates:
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md).
+2. User logs in as a **CRM Manager**
+3. Navigates to **Show Proposals → Configure Proposal Document**
+4. Selects a proposal from the list of eligible proposals
+5. Selects one of the predefined templates:
 
    * Portuguese
    * English (Regular)
    * English (VIP)
-5. If successful:
+6. If successful:
 
    * A document is generated and saved in the proposal
    * A success message is shown
-6. If unsuccessful:
+7. If unsuccessful:
 
    * An error is shown and no changes are persisted
 

@@ -13,7 +13,7 @@ Design: 🧪 Testing
 
 Implementation: 🧪 Testing
 
-Testing: 📝 To Do
+Testing: ⚪ Not Applicable
  
 
 ## 2. Requirements
@@ -116,10 +116,70 @@ This design ensures a clear separation of concerns:
 - The **repositories** provide persistent access to both customer-related information (`DeliveryReportingRepository`, 
 `CustomerRepository`) and proposal lifecycle (`ShowProposalRepository`).
 
-### 4.2. Acceptance Tests
-
 ## 5. Implementation
+
+The implementation of **US371** focused on enabling customers to submit feedback by accepting or rejecting a delivered 
+show proposal, optionally providing a comment.
+
+A new request/response pair was created: `SendFeedbackProposalRequest` and `SendFeedbackProposalResponse`, responsible 
+for encapsulating the customer's decision and the response from the server.
+
+The interaction starts in the `SendFeedbackProposalUI`, where the customer selects a proposal and submits a decision 
+along with optional feedback. The `SendFeedbackProposalController` coordinates this action and delegates to the 
+`CustomerAppProtocolProxy`.
+
+The proxy builds the request and sends it through a TCP socket using the `ClientSocket`. On the server side, the 
+request is parsed by the `CustomerAppMessageParser`, which delegates its handling to the `UserAppServerController`.
+
+The method `handleProposalFeedback(...)` in the server controller is responsible for processing the request. It accesses
+the `ShowProposalRepository`, locates the relevant proposal using its number, and applies the decision (either 
+`accept(...)` or `reject(...)`) with the feedback provided.
+
+The proposal is then persisted, and a `SendFeedbackProposalResponse` is returned to the client. The client-side 
+`MarshallerUnmarshaller` handles response parsing and communicates the result back to the controller and UI.
+
+The implementation respects the DDD principles, ensuring the domain model (`ShowProposal`) remains in control of its 
+own state and transitions.
+
+Relevant commit messages:
+
+* [US371 - Accept/Reject Proposal – Feedback flow](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/placeholder-commit-hash)
+
+---
 
 ## 6. Integration/Demonstration
 
+The functionality developed in **US371** was integrated into the customer-side application via the `SendFeedbackProposalUI`.
+
+When the customer opens the feedback screen, the application queries for all proposals delivered to their account and 
+presents them in a selectable list. Upon selecting one, the system prompts for a decision (accept/reject) and optional 
+feedback. Once submitted, the proposal's status is updated and persisted accordingly.
+
+This process closes the proposal loop, providing essential feedback to the CRM team and preparing the proposal for 
+archival or revision depending on the customer's response.
+
+### Demonstration Instructions
+
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md)).
+2. **Log in as a Customer**.
+3. Navigate the **Send Feedback Proposal** option.
+4. Select one of the available proposals.
+5. Provide a decision (Accept or Reject) and optional feedback.
+6. Submit the form.
+7. A confirmation message will appear, indicating the operation was successful.
+
+---
+
 ## 7. Observations
+
+* The request/response logic is based on a TCP socket communication layer.
+* The feedback is processed in the server's domain model via `accept(feedback)` or `reject(feedback)` methods on 
+`ShowProposal`.
+* The list of proposals is obtained via `DeliveryReportingRepository`, ensuring read-only access to pre-filtered data.
+* The response parsing is handled in a centralized manner using the `MarshallerUnmarshaller`.
+* The integration follows the CQRS principle: querying through a reporting repository, and writing via the aggregate 
+repository.
+* This implementation contributes directly to the closing of the proposal lifecycle, supporting future reporting and 
+archival logic.

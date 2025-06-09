@@ -8,7 +8,7 @@ import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.application.ConfigShowPropController;
 import core.ShowProposal.domain.Entities.ShowConfigurationBuilder;
 import core.ShowProposal.domain.Entities.ShowProposal;
-import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
+import core.ShowProposal.domain.Entities.ShowConfigurationEntry;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;

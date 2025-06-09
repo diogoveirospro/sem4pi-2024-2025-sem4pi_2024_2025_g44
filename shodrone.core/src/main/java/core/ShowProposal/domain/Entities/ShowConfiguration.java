@@ -2,7 +2,6 @@ package core.ShowProposal.domain.Entities;
 
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
 import core.ShowProposal.domain.ValueObjects.ShowDSLDescription;
 import eapli.framework.domain.model.DomainEntity;
 import jakarta.persistence.*;

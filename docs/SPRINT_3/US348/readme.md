@@ -127,7 +127,7 @@ the show for downstream processing such as simulation and code generation.
 
 To demonstrate the functionality, follow these steps:
 
-1. **Launch the application** (via the main class or script, as defined in the [readme.md](readme.md)).
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md).
 2. **Log in as a Drone Tech**.
 3. Navigate to the **Show Proposals** section.
 4. Select the **Generate Show DSL** option.

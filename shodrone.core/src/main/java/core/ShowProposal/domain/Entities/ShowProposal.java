@@ -344,6 +344,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         return request.customer();
     }
 
+    /**
+     * Set the status of the ShowProposal.
+     * @param status the ShowProposalStatus to be set
+     */
     public void setShowProposalStatus(ShowProposalStatus status) {
         this.status = status;
     }

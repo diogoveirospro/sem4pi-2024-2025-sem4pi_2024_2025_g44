@@ -1,7 +1,7 @@
 package core.ShowProposal.domain.Entities;
 
 import core.Figure.domain.Entities.Figure;
-import core.ShowProposal.domain.ValueObjects.ShowConfigurationEntry;
+
 import java.util.*;
 
 public class ShowConfigurationBuilder {

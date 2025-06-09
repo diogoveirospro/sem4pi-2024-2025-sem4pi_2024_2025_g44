@@ -1,4 +1,4 @@
 package core.ShowProposal.domain.ValueObjects;
 
-public class ShowProposalTemplateTest {
+public class CustomerFeedbackTest {
 }
