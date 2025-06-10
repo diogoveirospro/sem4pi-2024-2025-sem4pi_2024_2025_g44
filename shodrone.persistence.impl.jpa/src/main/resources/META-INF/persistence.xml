@@ -59,6 +59,10 @@
     <!-- User Aggregate -->
     <class>core.User.domain.Entities.ShodroneUser</class>
 
+    <!-- Service for Duration -->
+    <class>core.ShowProposal.application.Service.DurationConverter</class>
+    <class>core.ShowRequest.application.Service.DurationConverter</class>
+
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://10.9.21.98/~/DB/shodrone.app"/>
