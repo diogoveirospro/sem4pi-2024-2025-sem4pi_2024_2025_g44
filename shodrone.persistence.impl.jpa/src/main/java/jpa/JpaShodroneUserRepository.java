@@ -23,7 +23,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
      * @param autoTx the transactional context
      */
     public JpaShodroneUserRepository(final TransactionalContext autoTx) {
-        super(autoTx, "SYSTEMUSER_USERNAME ");
+        super(autoTx, "SYSTEMUSER_USERNAME");
     }
 
     /**
@@ -32,7 +32,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
      * @param persistenceUnitName the name of the persistence unit
      */
     public JpaShodroneUserRepository(final String persistenceUnitName) {
-        super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "SYSTEMUSER_USERNAME ");
+        super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "SYSTEMUSER_USERNAME");
     }
 
     /**
