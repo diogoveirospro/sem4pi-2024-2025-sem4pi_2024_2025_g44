@@ -23,7 +23,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
      * @param autoTx the transactional context
      */
     public JpaShodroneUserRepository(final TransactionalContext autoTx) {
-        super(autoTx, "username");
+        super(autoTx, "SYSTEMUSER_USERNAME ");
     }
 
     /**
@@ -32,7 +32,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
      * @param persistenceUnitName the name of the persistence unit
      */
     public JpaShodroneUserRepository(final String persistenceUnitName) {
-        super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "username");
+        super(persistenceUnitName, Application.settings().extendedPersistenceProperties(), "SYSTEMUSER_USERNAME ");
     }
 
     /**
@@ -44,19 +44,10 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
     @Override
     public ShodroneUser findByUsername(Username username) {
         System.out.println("Finding ShodroneUser by username: " + username);
-        UserRepository userRepository = PersistenceContext.repositories().users();
-        SystemUser sysUser = userRepository.ofIdentity(username).orElseThrow();
-        System.out.println("Found SystemUser: " + sysUser.identity().toString());
-        // Temporarily using findAll to get all ShodroneUsers
-        // This should be replaced with a more efficient query in later versions
-        for ( ShodroneUser user : findAll()) {
-            if (user.user().equals(sysUser)) {
-                System.out.println("Found ShodroneUser: " + user.identity().toString());
-                return user;
-            }
-        }
-        System.out.println("No ShodroneUser found for username: " + username);
-        return null;
+        final TypedQuery<ShodroneUser> query = entityManager().createQuery(
+                "SELECT u FROM ShodroneUser u WHERE u.systemUser.username = :username", ShodroneUser.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
     }
 
 
