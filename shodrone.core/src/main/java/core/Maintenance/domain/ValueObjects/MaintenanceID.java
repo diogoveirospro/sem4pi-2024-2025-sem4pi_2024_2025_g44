@@ -14,6 +14,7 @@ public class MaintenanceID implements Serializable, Comparable<MaintenanceID> {
     protected MaintenanceID() {}
 
     public MaintenanceID(String id) {
+        if (id == null) throw new IllegalArgumentException("ID cannot be null");
         this.id = id;
     }
 

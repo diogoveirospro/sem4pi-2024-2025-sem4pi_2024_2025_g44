@@ -20,13 +20,10 @@ package "Drone " <<aggregate>> {
     class DroneLanguageValidate <<Service>>{
     }
 
-    'Drone -> x
     Drone --> "1" DroneStatus: status
     Drone --> "1" SerialNumber: serialNumber
     Drone --> "0..*" RemovalReason: removalReason
     Drone --> "1" DroneLanguage: language
-
-    'DroneLanguageValidate -> x
     DroneLanguageValidate ..> "1" DroneLanguage: validates
 }
 
@@ -48,17 +45,13 @@ package "ModelOfDrone " <<aggregate>> {
     enum SafetyStatus <<Value Object>>{
     }
 
-    'Model -> x
     Model --> "1" Configuration: configuration
     Configuration --> "1..*" WindSpeed: windSpeed
     Configuration --> "1..*" PositionTolerance: positionTolerance
     Model --> "1" ModelName: modelName
     Configuration --> SafetyStatus: safetyStatus
 
-
-    'Drone -> x
     Drone --> "1" Model: uses
-
 }
 
 package "Maintenance " <<aggregate>> {
@@ -66,13 +59,10 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    enum MaintenanceType <<Value Object>>{
+    class MaintenanceType <<Entity>>{
     }
 
-    'Maintenance -> x
     Maintenance --> "1" MaintenanceType: type
-
-    'Drone -> x
     Drone --> "1..*" Maintenance: undergoes
 }
 
@@ -87,11 +77,9 @@ package Shared {
     class Name <<Value Object>>{
     }
 
-    'Maintenance -> x
     Maintenance ----> "1" Date: date
     Maintenance ----> "1" Description: description
 
-    'Model -> x
     Model ----> "1" Name: modelName
 }
 
