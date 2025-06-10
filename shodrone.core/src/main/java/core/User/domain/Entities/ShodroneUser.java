@@ -31,7 +31,9 @@ public class ShodroneUser implements AggregateRoot<Username> {
      * cascade = CascadeType.NONE as the systemUser is part of another aggregate
      */
     @OneToOne(optional = false)
+    @JoinColumn(name = "SYSTEMUSER_USERNAME", referencedColumnName = "USERNAME")
     private SystemUser systemUser;
+
 
     public ShodroneUser(final SystemUser user, final PhoneNumber phoneNumber) {
         Preconditions.noneNull(phoneNumber, user);
