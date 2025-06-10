@@ -1,6 +1,7 @@
 package jpa;
 
 import core.Persistence.Application;
+import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Email;
 import core.Shared.domain.ValueObjects.PhoneNumber;
 import core.User.domain.Entities.ShodroneUser;
@@ -8,6 +9,7 @@ import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 import eapli.framework.infrastructure.authz.domain.model.Username;
+import eapli.framework.infrastructure.authz.domain.repositories.UserRepository;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import jakarta.persistence.TypedQuery;
 
@@ -42,12 +44,14 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
     @Override
     public ShodroneUser findByUsername(Username username) {
         System.out.println("Finding ShodroneUser by username: " + username);
-        final TypedQuery<ShodroneUser> shodroneUserQuery = entityManager().createQuery(
-                "SELECT u FROM ShodroneUser u WHERE u.systemUser.username = :username", ShodroneUser.class);
-        shodroneUserQuery.setParameter("username", username);
-
-        return shodroneUserQuery.getSingleResult();
+        UserRepository userRepository = PersistenceContext.repositories().users();
+        SystemUser sysUser = userRepository.ofIdentity(username).orElseThrow();
+        final TypedQuery<ShodroneUser> query = entityManager().createQuery(
+                "SELECT u FROM ShodroneUser u WHERE u.systemUser = :systemUser", ShodroneUser.class);
+        query.setParameter("systemUser", sysUser);
+        return query.getSingleResult();
     }
+
 
 
     @Override
