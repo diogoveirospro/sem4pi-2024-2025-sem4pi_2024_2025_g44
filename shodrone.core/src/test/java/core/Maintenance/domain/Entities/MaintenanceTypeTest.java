@@ -34,4 +34,21 @@ class MaintenanceTypeTest {
         MaintenanceType t2 = new MaintenanceType("Firmware");
         assertEquals(t1.hashCode(), t2.hashCode());
     }
+
+    @Test
+    void shouldRenameSuccessfully() {
+        MaintenanceType type = new MaintenanceType("Inicial");
+        type.rename("Firmware Update");
+
+        assertEquals("Firmware Update", type.name());
+    }
+
+    @Test
+    void shouldThrowWhenRenameToNullOrBlank() {
+        MaintenanceType type = new MaintenanceType("Inicial");
+
+        assertThrows(IllegalArgumentException.class, () -> type.rename(null));
+        assertThrows(IllegalArgumentException.class, () -> type.rename(""));
+        assertThrows(IllegalArgumentException.class, () -> type.rename("   "));
+    }
 }
