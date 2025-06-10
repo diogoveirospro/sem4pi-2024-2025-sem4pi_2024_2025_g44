@@ -3,11 +3,14 @@ package core.Drone.domain.Entities;
 import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
+import core.Drone.domain.ValueObjects.UsageTime;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.*;
+
+import java.time.LocalTime;
 
 @Entity
 public class Drone implements AggregateRoot<Designation> {
@@ -21,20 +24,30 @@ public class Drone implements AggregateRoot<Designation> {
     @Enumerated(EnumType.STRING)
     private DroneStatus droneStatus;
 
+    @Embedded
+    private UsageTime usageTime;
+
     @ManyToOne
     @JoinColumn(name = "Model", nullable = false)
     private Model model;
 
     @Embedded
     private RemovalReason removalReason;
-    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus){
+
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus) {
         this.serialnumber = serialnumber;
         this.droneStatus = DroneStatus.ACTIVE;
         this.model = model;
         this.removalReason = removalReason;
-
+        this.usageTime = new UsageTime(LocalTime.of(0, 0));
     }
-
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus, UsageTime usageTime) {
+        this.serialnumber = serialnumber;
+        this.droneStatus = DroneStatus.ACTIVE;
+        this.model = model;
+        this.removalReason = removalReason;
+        this.usageTime = new UsageTime(LocalTime.of(0, 0));
+    }
     protected Drone () {}
     public SerialNumber getSerialNumber() {
         return serialnumber;
@@ -67,6 +80,10 @@ public class Drone implements AggregateRoot<Designation> {
 
     public void setRemovalReason(RemovalReason removalReason) {
         this.removalReason = removalReason;
+    }
+
+    public void addUsageTime(LocalTime usageTime) {
+        this.usageTime.addTime(usageTime);
     }
 
     @Override
