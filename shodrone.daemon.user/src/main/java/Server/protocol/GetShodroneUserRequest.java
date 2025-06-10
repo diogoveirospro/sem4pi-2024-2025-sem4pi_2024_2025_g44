@@ -22,6 +22,7 @@ public class GetShodroneUserRequest extends UserAppRequest {
             System.out.println("User found: " + user);
             return buildResponse(user);
         } catch (Exception e) {
+            e.printStackTrace();
             return buildServerError("An error occurred while processing the request");
         }
     }

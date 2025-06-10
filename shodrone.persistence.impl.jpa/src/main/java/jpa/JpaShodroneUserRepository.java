@@ -44,7 +44,7 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
         System.out.println("Finding ShodroneUser by username: " + username);
         final TypedQuery<ShodroneUser> shodroneUserQuery = entityManager().createQuery(
                 "SELECT u FROM ShodroneUser u WHERE u.systemUser.username = :username", ShodroneUser.class);
-        shodroneUserQuery.setParameter("username", username.toString());
+        shodroneUserQuery.setParameter("username", username);
 
         return shodroneUserQuery.getSingleResult();
     }
