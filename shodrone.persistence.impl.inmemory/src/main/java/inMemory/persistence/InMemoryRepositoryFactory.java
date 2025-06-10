@@ -43,6 +43,7 @@ import eapli.framework.infrastructure.pubsub.impl.simplepersistent.repositories.
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryTransactionalContext;
 import inMemory.*;
 import shodrone.bootstrappers.ShodroneBootstrapper;
+import core.Maintenance.repositories.MaintenanceRepository;
 
 /**
  * @author nuno on 20/03/16.
@@ -208,6 +209,11 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 
 	@Override
 	public EventRecordRepository eventRecord() {
+		throw new IllegalStateException("Not implemented yet.");
+	}
+
+	@Override
+	public MaintenanceRepository maintenance() {
 		throw new IllegalStateException("Not implemented yet.");
 	}
 

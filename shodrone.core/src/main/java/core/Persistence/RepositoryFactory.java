@@ -30,6 +30,7 @@ import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
+import core.Maintenance.repositories.MaintenanceRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Drone.repositories.DroneRepository;
 
@@ -126,4 +127,6 @@ public interface RepositoryFactory {
     ShowReportingRepository shows();
 
     DeliveryReportingRepository deliveriesReporting();
+
+    MaintenanceRepository maintenance();
 }
