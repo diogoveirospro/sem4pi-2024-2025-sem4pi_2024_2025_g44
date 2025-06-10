@@ -6,6 +6,7 @@ import core.Customer.domain.Entities.Customer;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowProposal.application.Service.DurationConverter;
 import core.ShowProposal.application.Service.GenerateProposalNumber;
 import core.ShowProposal.application.Service.TemplateLoaderService;
 import core.ShowProposal.domain.ValueObjects.*;
@@ -124,6 +125,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * The duration of the Show
      */
     @Column(name = "duration_of_show")
+    @Convert(converter = DurationConverter.class)
     private Duration durationOfShow;
 
     /**

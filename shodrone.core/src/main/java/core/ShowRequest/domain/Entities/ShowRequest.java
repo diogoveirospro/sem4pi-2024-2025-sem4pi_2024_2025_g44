@@ -3,6 +3,7 @@ package core.ShowRequest.domain.Entities;
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
 import core.Customer.domain.Entities.Customer;
 import core.Shared.domain.ValueObjects.QuantityOfDrones;
+import core.ShowRequest.application.Service.DurationConverter;
 import core.ShowRequest.application.Service.GenerateShowRequestID;
 import core.ShowRequest.domain.ValueObjects.Location;
 import core.ShowRequest.domain.ValueObjects.ShowDescription;
@@ -77,7 +78,9 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
      * The duration of the show, encapsulated in a value object.
      */
     @Column(name = "duration_of_show")
+    @Convert(converter = DurationConverter.class)
     private Duration durationOfShow;
+
 
     /**
      * The location where the show will take place, encapsulated in a value object.

@@ -17,7 +17,6 @@ import java.util.concurrent.BlockingQueue;
 public class DaemonUserBootstrapper {
     private static final Logger LOGGER = LogManager.getLogger(DaemonUserBootstrapper.class);
     private static final String SERVER_PORT = Application.settings().serverPort();
-    private static final String DATABASE_PORT = Application.settings().databasePort();
     private static final String QUEUE_CAPACITY = Application.settings().queueCapacity();
 
     public static void main(final String[] args) {
