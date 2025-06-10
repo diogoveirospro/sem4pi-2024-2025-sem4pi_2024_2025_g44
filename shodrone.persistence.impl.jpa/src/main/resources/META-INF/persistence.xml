@@ -49,6 +49,7 @@
     <class>core.ShowProposal.domain.Entities.ShowProposal</class>
     <class>core.ShowProposal.domain.Entities.ShowConfiguration</class>
     <class>core.ShowProposal.domain.Entities.ShowConfigurationEntry</class>
+    <class>core.ShowProposal.domain.Entities.ShowConfigurationFigure</class>
 
     <!-- Proposal Delivery Info Aggregate -->
     <class>core.ProposalDeliveryInfo.domain.Entities.ProposalDeliveryInfo</class>

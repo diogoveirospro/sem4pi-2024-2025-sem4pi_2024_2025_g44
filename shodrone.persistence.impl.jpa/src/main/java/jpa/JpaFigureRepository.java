@@ -1,16 +1,15 @@
 package jpa;
 
-import core.Category.domain.Entities.Category;
+import core.Customer.domain.Entities.Customer;
 import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.FigureID;
-import core.Figure.domain.ValueObjects.Keyword;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.Application;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
+import jakarta.persistence.TypedQuery;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -52,6 +51,20 @@ public class JpaFigureRepository extends JpaAutoTxRepository<Figure, Long, Figur
         }
 
         return publicFigures;
+    }
+
+    /**
+     * Returns a list of all figures in the catalogue that are exclusive to a specific customer.
+     * @param customer the customer for whom to find exclusive figures
+     * @return a list of exclusive figures for the given customer
+     */
+    @Override
+    public List<Figure> findExclusiveFiguresToCostumer(Customer customer) {
+        final TypedQuery<Figure> query = entityManager().createQuery(
+                "SELECT f FROM Figure f WHERE f.exclusivity.customer = :customer", Figure.class
+        );
+        query.setParameter("customer", customer);
+        return query.getResultList();
     }
 
     /**

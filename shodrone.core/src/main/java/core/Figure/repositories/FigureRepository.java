@@ -1,6 +1,7 @@
 package core.Figure.repositories;
 
 import core.Category.domain.Entities.Category;
+import core.Customer.domain.Entities.Customer;
 import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.FigureID;
 import core.Figure.domain.ValueObjects.Keyword;
@@ -15,6 +16,13 @@ public interface FigureRepository extends DomainRepository<FigureID, Figure> {
      * @return a list of public figures
      */
     List<Figure> getPublicCatalogue();
+
+    /**
+     * Returns a list of all figures in the catalogue that are exclusive to a specific customer.
+     * @param customer the customer for whom to find exclusive figures
+     * @return a list of exclusive figures for the given customer
+     */
+    List<Figure> findExclusiveFiguresToCostumer(Customer customer);
 
     /**
      * Returns a list of all figures in the catalogue with the given category and/or keyword.

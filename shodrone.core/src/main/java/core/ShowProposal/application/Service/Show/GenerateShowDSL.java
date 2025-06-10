@@ -8,6 +8,7 @@ import core.ShowProposal.domain.Entities.ShowConfiguration;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.ShowDSLDescription;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,7 +51,7 @@ public class GenerateShowDSL {
             throw new IllegalArgumentException("Proposal or its configuration cannot be null");
         }
         ShowConfiguration configuration = proposal.configuration();
-        Set<Figure> figures = configuration.figures();
+        List<Figure> figures = configuration.figures();
 
         String showDSLContent = createShowDSLContent(proposal.identity().toString(), figures);
 
@@ -68,7 +69,7 @@ public class GenerateShowDSL {
      * @param figures the set of figures to include in the DSL
      * @return the generated Show DSL content as a String
      */
-    private String createShowDSLContent(String proposalNumber, Set<Figure> figures) {
+    private String createShowDSLContent(String proposalNumber, List<Figure> figures) {
         StringBuilder showDSLContent = new StringBuilder();
 
         // Start of the Show DSL content

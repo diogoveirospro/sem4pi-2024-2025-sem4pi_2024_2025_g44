@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -522,7 +523,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
 
         // List of Figures
         StringBuilder figuresSection = new StringBuilder();
-        Set<Figure> figures = configuration.figures();
+        List<Figure> figures = configuration.figures();
 
         int position = 1;
 

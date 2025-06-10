@@ -20,13 +20,8 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @JoinColumn(name = "show_configuration_id")
     private List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "show_configuration_figures",
-            joinColumns = @JoinColumn(name = "configuration_id"),
-            inverseJoinColumns = @JoinColumn(name = "figure_id")
-    )
-    private Set<Figure> figures = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShowConfigurationFigure> configurationFigures = new ArrayList<>();
 
     @Embedded
     @Column(name = "show_dsl_description")
@@ -37,21 +32,18 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     }
 
     public ShowConfiguration(ShowConfigurationBuilder builder) {
-        if (builder.showConfiguration().isEmpty()) {
-            throw new IllegalArgumentException("Drone configuration cannot be empty");
-        }
         this.showConfiguration = new ArrayList<>(builder.showConfiguration());
-        this.figures = new LinkedHashSet<>(builder.figures());
-    }
-
-    public ShowConfiguration(List<ShowConfigurationEntry> showConfiguration, Set<Figure> figures) {
-        if (showConfiguration.isEmpty()) {
-            throw new IllegalArgumentException("Drone configuration cannot be empty");
+        for (int i = 0; i < builder.figures().size(); i++) {
+            this.configurationFigures.add(new ShowConfigurationFigure(this, builder.figures().get(i), i));
         }
-        this.showConfiguration = showConfiguration;
-        this.figures = figures;
     }
 
+    public ShowConfiguration(List<ShowConfigurationEntry> showConfiguration, List<Figure> figures) {
+        this.showConfiguration = showConfiguration;
+        for (int i = 0; i < figures.size(); i++) {
+            this.configurationFigures.add(new ShowConfigurationFigure(this, figures.get(i), i));
+        }
+    }
 
     public List<ShowConfigurationEntry> showConfiguration() {
         return showConfiguration;
@@ -63,31 +55,24 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
             if (entry.drone() == null || entry.model() == null) {
                 throw new IllegalStateException("Drone or its model cannot be null in ShowConfigurationEntry");
             }
-           droneModels.add(entry.model());
+            droneModels.add(entry.model());
         }
         return droneModels;
     }
 
-    /**
-     * Returns the set of figures associated with this ShowConfiguration.
-     * @return a Set of Figure objects
-     */
-    public Set<Figure> figures() {
+    public List<Figure> figures() {
+        configurationFigures.sort(Comparator.comparingInt(ShowConfigurationFigure::getOrder));
+        List<Figure> figures = new ArrayList<>();
+        for (ShowConfigurationFigure configFigure : configurationFigures) {
+            figures.add(configFigure.getFigure());
+        }
         return figures;
     }
 
-    /**
-     * Returns the ShowDSLDescription associated with this ShowConfiguration.
-     * @return the ShowDSLDescription object
-     */
     public ShowDSLDescription showDSLDescription() {
         return showDSLDescription;
     }
 
-    /**
-     * Adds a ShowDSLDescription to the ShowConfiguration.
-     * @param showDSLDescription the ShowDSLDescription to add
-     */
     public void addShowDSLDescription(ShowDSLDescription showDSLDescription) {
         if (showDSLDescription == null) {
             throw new IllegalArgumentException("Show DSL Description cannot be null");
@@ -106,5 +91,16 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @Override
     public Long identity() {
         return this.id;
+    }
+
+    public void addFigure(Figure figure, int i) {
+        if (figure == null) {
+            throw new IllegalArgumentException("Figure cannot be null");
+        }
+        if (i < 0 || i > configurationFigures.size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds for adding figure");
+        }
+        ShowConfigurationFigure configFigure = new ShowConfigurationFigure(this, figure, i);
+        configurationFigures.add(i, configFigure);
     }
 }

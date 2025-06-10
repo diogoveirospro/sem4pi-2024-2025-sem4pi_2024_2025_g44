@@ -8,7 +8,6 @@ import core.ModelOfDrone.domain.Entities.Model;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class GetShowsRequest extends UserAppRequest {
     private final String vatNumber;
@@ -78,7 +77,7 @@ public class GetShowsRequest extends UserAppRequest {
         return sb.toString().trim();
     }
 
-    private String convertFiguresConfiguration(Set<Figure> figuresConfiguration) {
+    private String convertFiguresConfiguration(List<Figure> figuresConfiguration) {
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Figure figure : figuresConfiguration) {
