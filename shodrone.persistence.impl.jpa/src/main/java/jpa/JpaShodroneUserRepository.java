@@ -46,10 +46,17 @@ public class JpaShodroneUserRepository extends JpaAutoTxRepository<ShodroneUser,
         System.out.println("Finding ShodroneUser by username: " + username);
         UserRepository userRepository = PersistenceContext.repositories().users();
         SystemUser sysUser = userRepository.ofIdentity(username).orElseThrow();
-        final TypedQuery<ShodroneUser> query = entityManager().createQuery(
-                "SELECT u FROM ShodroneUser u WHERE u.systemUser = :systemUser", ShodroneUser.class);
-        query.setParameter("systemUser", sysUser);
-        return query.getSingleResult();
+        System.out.println("Found SystemUser: " + sysUser.identity().toString());
+        // Temporarily using findAll to get all ShodroneUsers
+        // This should be replaced with a more efficient query in later versions
+        for ( ShodroneUser user : findAll()) {
+            if (user.user().equals(sysUser)) {
+                System.out.println("Found ShodroneUser: " + user.identity().toString());
+                return user;
+            }
+        }
+        System.out.println("No ShodroneUser found for username: " + username);
+        return null;
     }
 
 
