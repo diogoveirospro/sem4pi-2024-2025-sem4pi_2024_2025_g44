@@ -27,7 +27,6 @@ public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
     @Column(name = "description", nullable = false)
     private Description description;
 
-    @Embedded
     @Column(name = "maintenance_date", nullable = false)
     private LocalDate date;
 

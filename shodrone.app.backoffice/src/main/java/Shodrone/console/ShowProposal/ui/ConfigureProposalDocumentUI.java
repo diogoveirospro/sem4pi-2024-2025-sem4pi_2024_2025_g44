@@ -1,6 +1,7 @@
 package Shodrone.console.ShowProposal.ui;
 
-import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
+import Shodrone.console.ShowProposal.printer.AnotherShowProposalPrinter;
+import Shodrone.console.ShowProposal.printer.TemplatePrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.CRMManager.domain.Entities.CRMManager;
 import core.CRMManager.repositories.CRMManagerRepository;
@@ -76,8 +77,10 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
         templatesList.add("English (Regular Customer)");
         templatesList.add("English (VIP Customer)");
 
+        TemplatePrinter templatePrinter = new TemplatePrinter();
+
         ListWidget<String> templates = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Template:\n" +
-                UtilsUI.RESET, templatesList);
+                UtilsUI.RESET, templatesList, templatePrinter);
         templates.show();
 
         int option;
@@ -91,7 +94,7 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 String selected = templatesList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Template: " + selected.toString()  + "\n"
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Template: " + selected  + "\n"
                         + UtilsUI.RESET);
                 return selected;
             }
@@ -101,7 +104,7 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
 
     @Override
     public String headline() {
-        return "Configure Show Proposal Document";
+        return "Configure Template for Show Proposal";
     }
 
     public ShowProposal showProposalAndSelect() {
@@ -113,7 +116,7 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
         List<ShowProposal> proposalList = new ArrayList<>();
         proposals.forEach(proposalList::add);
 
-        ShowProposalPrinter proposalPrinter = new ShowProposalPrinter();
+        AnotherShowProposalPrinter proposalPrinter = new AnotherShowProposalPrinter();
 
         ListWidget<ShowProposal> proposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Show Proposal:\n" +
                 UtilsUI.RESET, proposalList, proposalPrinter);
@@ -130,8 +133,8 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 ShowProposal selected = proposalList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " + selected.toString()  + "\n"
-                        + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " +
+                        selected.identity().proposalNumber() + "\n" + UtilsUI.RESET);
                 return selected;
             }
 

@@ -1,5 +1,6 @@
 package Shodrone.console.ProposalDeliveryInfo.ui;
 
+import Shodrone.console.ShowProposal.printer.AnotherShowProposalPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.CRMCollaborator.domain.Entities.CRMCollaborator;
@@ -65,8 +66,8 @@ public class SendProposalUI extends AbstractFancyUI {
                 if (success){
                     System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nProposal Successfully Sent to the Customer!\n"
                             + UtilsUI.RESET);
-                    System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "Please Provide the Code '" + code + "' " +
-                            "to the customer for downloading." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "-> Please Provide the Code '" + code + "' " +
+                            "to the Customer '" + selectedProposal.request().customer().name().toString() + "' for Downloading." + UtilsUI.RESET);
                     UtilsUI.goBackAndWait();
                     return true;
                 } else {
@@ -115,7 +116,7 @@ public class SendProposalUI extends AbstractFancyUI {
         List<ShowProposal> proposalList = new ArrayList<>();
         proposals.forEach(proposalList::add);
 
-        ShowProposalPrinter proposalPrinter = new ShowProposalPrinter();
+        AnotherShowProposalPrinter proposalPrinter = new AnotherShowProposalPrinter();
 
         ListWidget<ShowProposal> proposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Show Proposal:\n" +
                 UtilsUI.RESET, proposalList, proposalPrinter);
@@ -132,8 +133,8 @@ public class SendProposalUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 ShowProposal selected = proposalList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " + selected.toString()  + "\n"
-                        + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " +
+                        selected.identity().proposalNumber()  + "\n" + UtilsUI.RESET);
                 return selected;
             }
 

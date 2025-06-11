@@ -446,7 +446,8 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
         return request.customer() != null && proposalNumber != null && createdAt != null && video != null &&
                 insurance != null && request.location() != null && dateOfShow != null && timeOfShow != null
                 && durationOfShow != null && configuration.figures() != null && !configuration.figures().isEmpty() &&
-                configuration.droneModels() != null && !configuration.droneModels().isEmpty();
+                configuration.droneModels() != null && !configuration.droneModels().isEmpty() &&
+                status.equals(ShowProposalStatus.TESTING);
     }
 
     /**

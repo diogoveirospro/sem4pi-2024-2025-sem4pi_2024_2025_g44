@@ -98,9 +98,12 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                         "AND sp.durationOfShow IS NOT NULL " +
                         "AND sp.configuration IS NOT NULL " +
                         "AND sp.configuration.configurationFigures IS NOT EMPTY " +
-                        "AND sp.configuration.showConfiguration IS NOT EMPTY",
+                        "AND sp.configuration.configurationDrones IS NOT EMPTY " +
+                        "AND sp.status = :status",
                 ShowProposal.class
         );
+        query.setParameter("status", ShowProposalStatus.TESTING);
+
         return query.getResultList();
     }
 
@@ -112,7 +115,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
     @Override
     public Iterable<ShowProposal> findAllCheckedProposals() {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
-                "SELECT sp FROM ShowProposal sp WHERE sp.feedbackStatus IN (:status1, :status2)", ShowProposal.class);
+                "SELECT sp FROM ShowProposal sp WHERE sp.customerFeedback.feedbackStatus IN (:status1, :status2)", ShowProposal.class);
         query.setParameter("status1", CustomerFeedbackStatus.ACCEPTED);
         query.setParameter("status2", CustomerFeedbackStatus.REJECTED);
         return query.getResultList();
@@ -147,7 +150,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
-                "UPDATE ShowProposal sp SET sp.status = :status, sp.feedbackStatus = :feedbackStatus " +
+                "UPDATE ShowProposal sp SET sp.status = :status, sp.customerFeedback.feedbackStatus = :feedbackStatus " +
                         "WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
         query.setParameter("status", decision);
         query.setParameter("feedbackStatus", feedback);

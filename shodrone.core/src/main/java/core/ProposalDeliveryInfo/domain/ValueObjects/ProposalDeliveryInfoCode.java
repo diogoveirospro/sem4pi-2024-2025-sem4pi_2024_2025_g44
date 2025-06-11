@@ -71,4 +71,9 @@ public class ProposalDeliveryInfoCode implements Comparable<ProposalDeliveryInfo
     public int compareTo(ProposalDeliveryInfoCode o) {
         return code.compareTo(o.code());
     }
+
+    @Override
+    public String toString() {
+        return code;
+    }
 }

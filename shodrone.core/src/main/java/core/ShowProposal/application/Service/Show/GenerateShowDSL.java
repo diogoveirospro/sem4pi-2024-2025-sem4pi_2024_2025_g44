@@ -53,7 +53,7 @@ public class GenerateShowDSL {
         ShowConfiguration configuration = proposal.configuration();
         List<Figure> figures = configuration.figures();
 
-        String showDSLContent = createShowDSLContent(proposal.identity().toString(), figures);
+        String showDSLContent = createShowDSLContent(proposal.identity().proposalNumber(), figures);
 
         ValidationResult validationResult = plugin.validate(showDSLContent);
 
