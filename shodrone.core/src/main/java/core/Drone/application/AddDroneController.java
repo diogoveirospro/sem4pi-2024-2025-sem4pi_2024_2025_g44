@@ -33,7 +33,7 @@ public class AddDroneController {
         mapRemovalReason.put(new Date(), startingMsg);
         RemovalReason removalReason = new RemovalReason(mapRemovalReason);
 
-        Drone drone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+        Drone drone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE, null);
         droneRepository.save(drone);
         return true;
     }

@@ -1,6 +1,7 @@
 package core.Drone.domain.Entities;
 
 import core.Drone.domain.ValueObjects.DroneStatus;
+import core.Drone.domain.ValueObjects.ProgramingLanguage;
 import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.Entities.Model;
@@ -26,12 +27,16 @@ public class Drone implements AggregateRoot<Designation> {
     private Model model;
 
     @Embedded
+    private ProgramingLanguage programingLanguage;
+
+    @Embedded
     private RemovalReason removalReason;
-    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus){
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus, ProgramingLanguage programingLanguage){
         this.serialnumber = serialnumber;
         this.droneStatus = DroneStatus.ACTIVE;
         this.model = model;
         this.removalReason = removalReason;
+        this.programingLanguage = programingLanguage;
 
     }
 
@@ -50,6 +55,9 @@ public class Drone implements AggregateRoot<Designation> {
 
     public RemovalReason removalReason() {
         return removalReason;
+    }
+    public ProgramingLanguage programingLanguage() {
+        return programingLanguage;
     }
 
     // === Setters ===

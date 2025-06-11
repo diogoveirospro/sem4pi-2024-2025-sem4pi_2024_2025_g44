@@ -1,0 +1,80 @@
+@startuml
+actor "Drone Tech" as User
+participant "AddFigureToCatalogueUI" as UI
+participant "DSLValidate" as Validator
+participant "ANTLRDSLValidatorPlugin" as Plugin
+participant "FigureLexer" as Lexer
+participant "FigureParser" as Parser
+participant "AddFigureToCatalogueController" as Controller
+participant "PersistenceContext" as Persistence
+participant "RepositoryFactory" as Factory
+participant "FigureRepository" as Repo
+
+activate User
+
+User -> UI : enter DSL and figure data
+activate UI
+
+UI -> Validator : validate(dslCode)
+activate Validator
+
+Validator -> Plugin : validateDSL(code)
+activate Plugin
+
+Plugin -> Lexer : new FigureLexer(input)
+activate Lexer
+
+Lexer --> Plugin : token stream
+deactivate Lexer
+
+Plugin -> Parser : new FigureParser(tokens)
+activate Parser
+
+Parser -> Parser : parser.start()
+activate Parser
+deactivate Parser
+
+Parser --> Plugin : parse result (success/errors)
+deactivate Parser
+
+Plugin --> Validator : DSLValidationResult
+deactivate Plugin
+
+Validator --> UI : DSLValidationResult
+deactivate Validator
+
+alt DSL is valid
+    UI -> Controller : addPublicFigureToCatalogue(...) or addExclusiveFigureToCatalogue(...)
+    activate Controller
+
+    Controller -> Persistence : PersistenceContext()
+    activate Persistence
+
+    Persistence -> Factory : repositories()
+    deactivate Persistence
+
+    activate Factory
+    Factory -> Repo : figures()
+    deactivate Factory
+
+    activate Repo
+    Repo -> Repo : save(figure)
+    activate Repo
+    deactivate Repo
+
+    Repo --> Controller : confirmation
+    deactivate Repo
+
+    Controller --> UI : true
+
+    UI --> User : show success message
+else DSL is invalid
+    Controller --> UI : false
+    deactivate Controller
+
+    UI --> User : show validation errors
+    deactivate UI
+end
+
+deactivate User
+@enduml
