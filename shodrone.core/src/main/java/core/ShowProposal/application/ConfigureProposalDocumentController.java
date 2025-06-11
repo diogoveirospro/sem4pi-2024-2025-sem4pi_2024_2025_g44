@@ -1,7 +1,6 @@
 package core.ShowProposal.application;
 
 import core.CRMManager.domain.Entities.CRMManager;
-import core.CRMManager.repositories.CRMManagerRepository;
 import core.Persistence.PersistenceContext;
 import core.ShowProposal.application.Service.ProposalDocumentGenerator;
 import core.ShowProposal.application.Service.plugin.DocumentGenerationPluginFactory;
@@ -14,8 +13,7 @@ import eapli.framework.application.UseCaseController;
 @UseCaseController
 public class ConfigureProposalDocumentController {
 
-    private ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
-    private CRMManagerRepository crmManagerRepository = PersistenceContext.repositories().crmManagers();
+    private final ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
 
     public boolean configureDocument(ShowProposal proposal, String selectedTemplate, CRMManager crmManager) {
         if (proposal == null) {
@@ -28,7 +26,7 @@ public class ConfigureProposalDocumentController {
         String documentContent = proposal.configureDocument(selectedTemplate, crmManager);
 
         try {
-            ShowProposalDocument showProposalDocument = generateDocument(documentContent);
+            ShowProposalDocument showProposalDocument = generateDocument(documentContent, proposal);
             proposal.addDocument(showProposalDocument);
             showProposalRepository.save(proposal);
             return true;
@@ -37,10 +35,10 @@ public class ConfigureProposalDocumentController {
         }
     }
 
-    private ShowProposalDocument generateDocument(String documentContent) {
+    private ShowProposalDocument generateDocument(String documentContent, ShowProposal proposal) {
         DocumentGeneratorPlugin plugin = DocumentGenerationPluginFactory.getInstance();
         ProposalDocumentGenerator documentValidate = new ProposalDocumentGenerator(plugin);
-        return documentValidate.generateDocument(documentContent);
+        return documentValidate.generateDocument(documentContent, proposal);
     }
 
     public Iterable<ShowProposal> configurableProposalList() {

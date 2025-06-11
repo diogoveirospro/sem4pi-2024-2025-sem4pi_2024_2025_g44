@@ -44,6 +44,10 @@ public class ShowProposalDocument implements ValueObject, Serializable {
             throw new IllegalArgumentException("Document content cannot be null or empty");
         }
         this.documentContent = documentContent;
+        if (filePath == null || filePath.isEmpty()) {
+            throw new IllegalArgumentException("File path cannot be null or empty");
+        }
+        this.filePath = filePath;
     }
 
     /**
