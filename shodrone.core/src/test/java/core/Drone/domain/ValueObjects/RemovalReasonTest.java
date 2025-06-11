@@ -2,6 +2,7 @@ package core.Drone.domain.ValueObjects;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,8 +11,8 @@ class RemovalReasonTest {
 
     @Test
     void ensureRemovalReasonIsCreatedSuccessfully() {
-        Map<Date, String> reasons = new HashMap<>();
-        reasons.put(new Date(), "Damaged during flight");
+        Map<LocalDate, String> reasons = new HashMap<>();
+        reasons.put(LocalDate.now(), "Damaged during flight");
         RemovalReason removalReason = new RemovalReason(reasons);
 
         assertNotNull(removalReason);
@@ -33,11 +34,11 @@ class RemovalReasonTest {
     @Test
     void ensureEqualsWorksCorrectly() {
         Date now = new Date();
-        Map<Date, String> reasons1 = new HashMap<>();
-        Map<Date, String> reasons2 = new HashMap<>();
+        Map<LocalDate, String> reasons1 = new HashMap<>();
+        Map<LocalDate, String> reasons2 = new HashMap<>();
 
-        reasons1.put(now, "Outdated");
-        reasons2.put(now, "Outdated");
+        reasons1.put(LocalDate.now(), "Outdated");
+        reasons2.put(LocalDate.now(), "Outdated");
 
         RemovalReason r1 = new RemovalReason(reasons1);
         RemovalReason r2 = new RemovalReason(reasons2);
@@ -49,9 +50,9 @@ class RemovalReasonTest {
 
     @Test
     void ensureHashCodeIsConsistentWithEquals() {
-        Date now = new Date();
-        Map<Date, String> reasons1 = new HashMap<>();
-        Map<Date, String> reasons2 = new HashMap<>();
+        LocalDate now = LocalDate.now();
+        Map<LocalDate, String> reasons1 = new HashMap<>();
+        Map<LocalDate, String> reasons2 = new HashMap<>();
         reasons1.put(now, "Malfunction");
         reasons2.put(now, "Malfunction");
 
@@ -63,8 +64,8 @@ class RemovalReasonTest {
 
     @Test
     void ensureToStringReturnsCorrectFormat() {
-        Map<Date, String> reasons = new HashMap<>();
-        Date now = new Date();
+        Map<LocalDate, String> reasons = new HashMap<>();
+        LocalDate now = LocalDate.now();
         reasons.put(now, "Damaged");
 
         RemovalReason r = new RemovalReason(reasons);

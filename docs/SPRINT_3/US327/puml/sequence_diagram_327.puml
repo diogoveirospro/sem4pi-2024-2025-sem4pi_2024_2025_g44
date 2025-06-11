@@ -15,9 +15,9 @@ participant ":DroneRepository" as DRONE_REPO
 
 activate DT
 
-DT -> UI : request to register drone usage time (droneId, usageTime)
+DT -> UI : request to list active drones
 activate UI
-    UI -> CTRL : collect usage time data (HH:MM)
+    UI -> CTRL : getActiveDrones()
     activate CTRL
 
     CTRL --> PERS : getRepositoryFactory()
@@ -34,6 +34,21 @@ activate UI
     activate REPOS
     REPOS --> CTRL : droneRepository
     deactivate REPOS
+
+    CTRL -> DRONE_REPO : findActiveDrones()
+    activate DRONE_REPO
+    DRONE_REPO --> CTRL : activeDronesList
+    deactivate DRONE_REPO
+
+    CTRL --> UI : display active drones list
+    deactivate CTRL
+UI --> DT : show active drones list
+deactivate UI
+
+DT -> UI : selects drone and input usage time
+activate UI
+    UI -> CTRL : collect usage time (droneId, usageTime)
+    activate CTRL
 
     CTRL -> DRONE_REPO : findBySerialNumber(droneId)
     activate DRONE_REPO

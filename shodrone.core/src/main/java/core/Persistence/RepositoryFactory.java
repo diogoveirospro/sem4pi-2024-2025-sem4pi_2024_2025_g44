@@ -30,6 +30,8 @@ import core.Category.repositories.CategoryRepository;
 import core.Customer.repositories.CustomerRepository;
 import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
+import core.Maintenance.repositories.MaintenanceRepository;
+import core.Maintenance.repositories.MaintenanceTypeRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Drone.repositories.DroneRepository;
 
@@ -120,6 +122,14 @@ public interface RepositoryFactory {
     ProposalDeliveryInfoRepository deliveries(TransactionalContext autoTx);
 
     ProposalDeliveryInfoRepository deliveries();
+
+    MaintenanceRepository maintenance(TransactionalContext autoTx);
+
+    MaintenanceRepository maintenance();
+
+    MaintenanceTypeRepository maintenanceTypes(TransactionalContext autoTx);
+
+    MaintenanceTypeRepository maintenanceTypes();
 
     // Reporting repositories
 

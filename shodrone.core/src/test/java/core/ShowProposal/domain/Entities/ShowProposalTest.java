@@ -77,8 +77,8 @@ public class ShowProposalTest {
 
     private Drone setUpDrone() {
         SerialNumber serialNumber = new SerialNumber(1234);
-        Map<Date, String> reasons = new HashMap<>();
-        Date now = new Date();
+        Map<LocalDate, String> reasons = new HashMap<>();
+        LocalDate now = LocalDate.now();
         String wewe = "Test";
         reasons.put(now, wewe);
         RemovalReason removalReason = new RemovalReason(reasons);

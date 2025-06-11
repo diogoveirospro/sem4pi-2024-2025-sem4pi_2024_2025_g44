@@ -11,6 +11,7 @@ import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.PersistenceContext;
 import eapli.framework.application.UseCaseController;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,9 +29,9 @@ public class AddDroneController {
             return false;
         }
 
-        Map<Date, String> mapRemovalReason = new HashMap<>();
+        Map<LocalDate, String> mapRemovalReason = new HashMap<>();
         String startingMsg = "Drone Added";
-        mapRemovalReason.put(new Date(), startingMsg);
+        mapRemovalReason.put(LocalDate.now(), startingMsg);
         RemovalReason removalReason = new RemovalReason(mapRemovalReason);
 
         Drone drone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
