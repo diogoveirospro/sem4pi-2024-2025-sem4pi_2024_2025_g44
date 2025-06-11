@@ -91,10 +91,10 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
             }
 
             if (option < 0 || option > templatesList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 String selected = templatesList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Template: " + selected  + "\n"
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nSelected Template: " + selected  + "\n"
                         + UtilsUI.RESET);
                 return selected;
             }
@@ -130,10 +130,10 @@ public class ConfigureProposalDocumentUI extends AbstractFancyUI {
             }
 
             if (option < 0 || option > proposalList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 ShowProposal selected = proposalList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " +
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nSelected Show Proposal: " +
                         selected.identity().proposalNumber() + "\n" + UtilsUI.RESET);
                 return selected;
             }

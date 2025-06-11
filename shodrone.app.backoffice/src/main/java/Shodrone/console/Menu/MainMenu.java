@@ -19,6 +19,7 @@ import Shodrone.console.ShowProposal.ui.*;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
+import Shodrone.console.Simulator.ui.SimulateShowUI;
 import Shodrone.console.authz.ui.DisableEnableUserUI;
 import Shodrone.console.authz.ui.ListUsersUI;
 import Shodrone.console.authz.ui.RegisterUserUI;
@@ -31,7 +32,6 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ExitWithMessageAction;
 import eapli.framework.presentation.console.menu.MenuItemRenderer;
 import core.Persistence.Application;
-import shodrone.authz.ui.LoginUI;
 import shodrone.infrastructure.authz.AuthenticationCredentialHandler;
 import shodrone.infrastructure.authz.CredentialHandler;
 import shodrone.presentation.AbstractFancyUI;
@@ -105,6 +105,15 @@ public class MainMenu extends AbstractFancyUI {
             "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
             "\n";
 
+    private static final String SIMULATOR_MENU_TITLE = "  _____    _____     __    __     __    __   _____         ____     ________     ____     ______\n" +
+            " / ____\\  (_   _)    \\ \\  / /     ) )  ( (  (_   _)       (    )   (___  ___)   / __ \\   (   __ \\\n" +
+            "( (___      | |      () \\/ ()    ( (    ) )   | |         / /\\ \\       ) )     / /  \\ \\   ) (__) )\n" +
+            " \\___ \\     | |      / _  _ \\     ) )  ( (    | |        ( (__) )     ( (     ( ()  () ) (    __/\n" +
+            "     ) )    | |     / / \\/ \\ \\   ( (    ) )   | |   __    )    (       ) )    ( ()  () )  ) \\ \\  _\n" +
+            " ___/ /    _| |__  /_/      \\_\\   ) \\__/ (  __| |___) )  /  /\\  \\     ( (      \\ \\__/ /  ( ( \\ \\_))\n" +
+            "/____/    /_____( (/          \\)  \\______/  \\________/  /__(  )__\\    /__\\      \\____/    )_) \\__/\n" +
+            "\n";
+
     // USERS
     private static final int REGISTER_USER_OPTION = 1;
     private static final int LIST_USERS_OPTION = 2;
@@ -134,6 +143,7 @@ public class MainMenu extends AbstractFancyUI {
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
     private static final int DRONE_TECH_SHOW_PROPOSALS_MENU = 3;
+    private static final int SIMULATOR_MENU = 4;
 
     // POWER USER MENUS
     private static final int POWER_USER_USERS_MENU = 2;
@@ -143,6 +153,7 @@ public class MainMenu extends AbstractFancyUI {
     private static final int POWER_USER_SHOW_PROPOSAL_MENU = 6;
     private static final int POWER_USER_FIGURE_CATEGORY_MENU = 7;
     private static final int POWER_USER_DRONE_MENU = 8;
+    private static final int POWER_USER_SIMULATOR_MENU = 9;
 
     // CUSTOMER MENU
     private static final int REGISTER_CUSTOMER_OPTION = 1;
@@ -208,6 +219,10 @@ public class MainMenu extends AbstractFancyUI {
 
     // PROPOSAL DRONE TECH MENU
     private static final int DRONE_TECH_GENERATE_SHOW_DSL_OPTION = 1;
+
+    // SIMULATOR MENU
+    private static final int SIMULATE_SHOW_OPTION = 1;
+    private static final int CHANGE_CONFIG_FILE_OPTION = 2;
 
 
     private static final String SEPARATOR_LABEL = "----------------------------";
@@ -299,6 +314,9 @@ public class MainMenu extends AbstractFancyUI {
 
             final SubMenu showProposalsMenu = buildShowProposalsDroneTechMenu();
             mainMenu.addSubMenu(DRONE_TECH_SHOW_PROPOSALS_MENU, showProposalsMenu);
+
+            final SubMenu simulatorMenu = buildSimulatorManu();
+            mainMenu.addSubMenu(SIMULATOR_MENU, simulatorMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)) {
@@ -322,6 +340,9 @@ public class MainMenu extends AbstractFancyUI {
 
             final SubMenu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(POWER_USER_DRONE_MENU, dronesMenu);
+
+            final SubMenu simulatorMenu = buildSimulatorManu();
+            mainMenu.addSubMenu(POWER_USER_SIMULATOR_MENU, simulatorMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
@@ -491,6 +512,14 @@ public class MainMenu extends AbstractFancyUI {
 
         menu.addItem(DRONE_TECH_GENERATE_SHOW_DSL_OPTION, "Generate Show DSL", new GenerateShowDSLUI()::show);
         menu.addItem(DRONE_TECH_REGISTER_USAGE_TIME_OPTION, "Register Usage Time for Drone", new RegisterUsageTimeUI()::show);
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+        return menu;
+    }
+
+    private SubMenu buildSimulatorManu() {
+        final SubMenu menu = new SubMenu("Simulator", SIMULATOR_MENU_TITLE);
+
+        menu.addItem(SIMULATE_SHOW_OPTION, "Simulate a Show", new SimulateShowUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
