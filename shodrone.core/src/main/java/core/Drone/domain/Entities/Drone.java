@@ -1,9 +1,6 @@
 package core.Drone.domain.Entities;
 
-import core.Drone.domain.ValueObjects.DroneStatus;
-import core.Drone.domain.ValueObjects.RemovalReason;
-import core.Drone.domain.ValueObjects.SerialNumber;
-import core.Drone.domain.ValueObjects.UsageTime;
+import core.Drone.domain.ValueObjects.*;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.domain.model.AggregateRoot;
@@ -34,20 +31,18 @@ public class Drone implements AggregateRoot<Designation> {
     @Embedded
     private RemovalReason removalReason;
 
-    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus) {
+    @Embedded
+    private ProgramingLanguage programingLanguage;
+
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus, ProgramingLanguage programingLanguage) {
         this.serialnumber = serialnumber;
         this.droneStatus = DroneStatus.ACTIVE;
         this.model = model;
         this.removalReason = removalReason;
         this.usageTime = new UsageTime(LocalTime.of(0, 0));
+        this.programingLanguage = programingLanguage;
     }
-    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus, UsageTime usageTime) {
-        this.serialnumber = serialnumber;
-        this.droneStatus = DroneStatus.ACTIVE;
-        this.model = model;
-        this.removalReason = removalReason;
-        this.usageTime = new UsageTime(LocalTime.of(0, 0));
-    }
+
     protected Drone () {}
     public SerialNumber getSerialNumber() {
         return serialnumber;
@@ -84,6 +79,9 @@ public class Drone implements AggregateRoot<Designation> {
 
     public void addUsageTime(LocalTime usageTime) {
         this.usageTime.addTime(usageTime);
+    }
+    public ProgramingLanguage programingLanguage() {
+        return programingLanguage;
     }
 
     @Override
