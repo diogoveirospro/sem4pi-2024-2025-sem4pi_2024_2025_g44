@@ -2,6 +2,7 @@ package core.ShowProposal.domain.ValueObjects;
 
 import eapli.framework.domain.model.ValueObject;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Lob;
 
 import java.io.Serializable;
 
@@ -16,13 +17,14 @@ public class ShowProposalDocument implements ValueObject, Serializable {
     /**
      * The content of the document, typically in a string format.
      */
-    String documentContent;
+    private String documentContent;
 
     /**
-     * The file path where the document is stored.
-     * This can be used to retrieve the document from a file system or cloud storage.
+     * The file associated with the document, stored as a byte array.
+     * This allows for the storage of binary data such as images or other file types.
      */
-    String filePath;
+    @Lob
+    private byte[] file;
 
     /**
      * Default constructor for ORM purposes.
@@ -36,18 +38,26 @@ public class ShowProposalDocument implements ValueObject, Serializable {
      * Constructs a ShowProposalDocument with the specified content and file path.
      *
      * @param documentContent The content of the document.
-     * @param filePath        The file path where the document is stored.
+     * @param file        The file where the document is stored.
      * @throws IllegalArgumentException if documentContent is null or empty.
      */
-    public ShowProposalDocument(String documentContent, String filePath) {
+    public ShowProposalDocument(String documentContent, byte[] file) {
         if (documentContent == null || documentContent.isEmpty()) {
             throw new IllegalArgumentException("Document content cannot be null or empty");
         }
         this.documentContent = documentContent;
-        if (filePath == null || filePath.isEmpty()) {
-            throw new IllegalArgumentException("File path cannot be null or empty");
+        if (file == null || file.length == 0) {
+            throw new IllegalArgumentException("File cannot be null or empty");
         }
-        this.filePath = filePath;
+        this.file = file;
+    }
+
+    /**
+     * Returns the file associated with the document.
+     * @return The file as a byte array.
+     */
+    public byte[] file() {
+        return file;
     }
 
     /**

@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
 
     @EmbeddedId
-    @Column(name = "maitenance_id", nullable = false)
+    @Column(name = "maintenance_id", nullable = false)
     private MaintenanceID id;
 
     @ManyToOne(optional = false)
@@ -24,9 +24,11 @@ public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
     private MaintenanceType type;
 
     @Embedded
+    @Column(name = "description", nullable = false)
     private Description description;
 
     @Embedded
+    @Column(name = "maintenance_date", nullable = false)
     private LocalDate date;
 
     @Override

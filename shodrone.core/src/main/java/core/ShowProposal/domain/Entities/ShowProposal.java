@@ -73,7 +73,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "documentContent", column = @Column(name = "documentContent", columnDefinition = "TEXT")),
-            @AttributeOverride(name = "filePath", column = @Column(name = "filePath"))
+            @AttributeOverride(name = "file", column = @Column(name = "file", columnDefinition = "BLOB"))
     })
     private ShowProposalDocument document;
 

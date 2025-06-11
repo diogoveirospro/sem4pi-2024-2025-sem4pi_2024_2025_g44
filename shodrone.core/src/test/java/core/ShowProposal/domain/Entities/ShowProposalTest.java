@@ -209,7 +209,8 @@ public class ShowProposalTest {
     void ensureDocumentCanBeAddedToProposal() {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
                 collaborator, generateProposalNumber);
-        ShowProposalDocument document = new ShowProposalDocument("Test Document Content", "test/path/to/document");
+        ShowProposalDocument document = new ShowProposalDocument("Test Document Content",
+                "Test Document Content".getBytes(java.nio.charset.StandardCharsets.UTF_8));
         proposal.addDocument(document);
         assertNotNull(proposal.document());
         assertEquals("Test Document Content", proposal.document().toString());

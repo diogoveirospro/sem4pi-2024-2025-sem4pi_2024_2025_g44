@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 public class ProposalDocumentGenerator {
 
     private final DocumentGeneratorPlugin plugin;
-    private final ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
 
     public ProposalDocumentGenerator(DocumentGeneratorPlugin plugin) {
         this.plugin = plugin;
@@ -26,26 +25,9 @@ public class ProposalDocumentGenerator {
             throw new IllegalArgumentException("Document generation failed: " + result.errors());
         }
 
-        // Define the file path
-        Path proposalsDirectory = Paths.get("shodrone.core/src/main/resources/proposals");
-        String proposalName = proposal.identity().proposalNumber();
-        Path filePath = proposalsDirectory.resolve(proposalName + ".txt");
-
-        try {
-            // Ensure the directory exists
-            Files.createDirectories(proposalsDirectory);
-
-            // Write the content to the file
-            Files.writeString(filePath, documentContent);
-
-            // Save the proposal with the new document
-            showProposalRepository.save(proposal);
-
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Error writing document to file: " + e.getMessage(), e);
-        }
+        byte[] fileBytes = documentContent.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         // Return the ShowProposalDocument with the file path
-        return new ShowProposalDocument(documentContent, filePath.toString());
+        return new ShowProposalDocument(documentContent, fileBytes);
     }
 }
