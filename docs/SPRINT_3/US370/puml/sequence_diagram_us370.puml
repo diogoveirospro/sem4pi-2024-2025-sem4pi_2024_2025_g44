@@ -26,7 +26,7 @@ activate User
 User -> UI : request to accept/reject pending proposals
 activate UI
 
-UI -> Controller : listProposals()
+UI -> Controller : findProposalByDeliveryCode
 activate Controller
 
 Controller -> Proxy : getShodroneUser(authenticatedUser)
@@ -180,10 +180,10 @@ deactivate ProposalDTO
 MU --> Proxy : parseResponseMessageLineShow(response)
 deactivate MU
 
-Proxy --> Controller : proposals
+Proxy --> Controller : proposalDTO
 deactivate Proxy
 
-Controller --> UI : proposals
+Controller --> UI : proposalDTO
 deactivate Controller
 
 

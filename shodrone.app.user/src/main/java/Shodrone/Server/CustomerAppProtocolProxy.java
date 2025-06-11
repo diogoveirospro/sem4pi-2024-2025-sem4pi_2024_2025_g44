@@ -168,21 +168,6 @@ public class CustomerAppProtocolProxy {
 		return mu.parseResponseMessageFeedback(response);
 	}
 
-	public ProposalDeliveryInfoCode getProposalDeliveryInfoCode(String proposalNumber) {
-		try {
-			final var socket = new ClientSocket();
-			socket.connect();
-			final String request = new GetProposalDeliveryCodeRequest(proposalNumber).toRequest();
-			final List<String> response = socket.sendAndReceive(request);
-			socket.stop();
-			final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
-			return mu.parseResponseMessageProposalDeliveryInfoCode(response);
-		} catch (IOException | FailedRequestException e) {
-			LOGGER.error("Error retrieving proposal delivery info code: {}", e.getMessage());
-			return null;
-		}
-	}
-
 	public ShowProposalDTO getProposalByCode(String code) {
 		try {
 			final var socket = new ClientSocket();

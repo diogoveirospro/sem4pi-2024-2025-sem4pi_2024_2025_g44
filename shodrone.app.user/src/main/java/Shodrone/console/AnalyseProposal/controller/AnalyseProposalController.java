@@ -55,12 +55,34 @@ public class AnalyseProposalController {
         return shodroneUser;
     }
 
-    public ShowProposalDTO findProposalByDeliveryCode(String code) throws FailedRequestException {
+    public ShowProposalDTO findProposalByDeliveryCode(String code) throws FailedRequestException, IOException {
+        SystemUser currentUser = authz.session().get().authenticatedUser();
+
+        ShodroneUserDTO shodroneUser = getShodroneUser(currentUser);
+        CustomerDTO customer = server.getCustomerOfRepresentative(shodroneUser.email);
+
         ShowProposalDTO showProposalDTO = server.getProposalByCode(code);
+        validateFile(customer, showProposalDTO);
+        if (!validateFile(customer, showProposalDTO)) {
+            throw new FailedRequestException("No show proposal found for the code: " + code + " or for the customer: " + customer.VatNumber);
+        }
+        return showProposalDTO;
+    }
+
+    public boolean validateFile(CustomerDTO customerdto, ShowProposalDTO showProposalDTO) throws FailedRequestException, IOException {
         if (showProposalDTO == null) {
             throw new FailedRequestException("No show proposal found for the code");
         }
-        return showProposalDTO;
+        Iterable<ShowProposalDTO> customerShowPropDTOS = server.getProposalsDelivered(customerdto.VatNumber);
+        if (customerShowPropDTOS == null) {
+            throw new FailedRequestException("No shows found for the customer");
+        }
+        for (ShowProposalDTO proposal : customerShowPropDTOS) {
+            if (proposal.proposalNumber.equals(showProposalDTO.proposalNumber)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String createFile(byte [] file){
