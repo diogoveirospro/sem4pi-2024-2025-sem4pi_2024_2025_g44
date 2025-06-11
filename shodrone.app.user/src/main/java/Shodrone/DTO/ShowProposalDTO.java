@@ -31,6 +31,8 @@ public class ShowProposalDTO {
      */
     public String showLocation;
 
+    public byte[] file;
+
     /**
      * ShowProposalDTO constructor.
      * @param proposalNumber Unique identifier for the show proposal.
@@ -46,5 +48,9 @@ public class ShowProposalDTO {
         this.timeOfProposal = timeOfProposal;
         this.showDuration = showDuration;
         this.showLocation = showLocation;
+        this.file = null;
+    }
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 }

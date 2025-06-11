@@ -7,6 +7,8 @@ import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.ShowReporting;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Persistence.PersistenceContext;
+import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
+import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.User.domain.Entities.ShodroneUser;
@@ -45,6 +47,7 @@ public class UserAppServerController {
      * ShowProposalRepository to access show proposal data.
      */
     private final ShowProposalRepository showProposalRepository = PersistenceContext.repositories().proposals();
+
 
     /**
      * Retrieves a ShodroneUser by their username.
@@ -94,5 +97,8 @@ public class UserAppServerController {
      */
     public boolean handleProposalFeedback(String proposalNumber, String decision, String feedback) {
         return showProposalRepository.updateProposalStatusAndFeedback(proposalNumber, decision, feedback);
+    }
+    public DeliveryReporting findProposalByDeliveryCode(String deliveryCode) {
+        return deliveryReportingRepository.findProposalByDeliveryCode(deliveryCode);
     }
 }

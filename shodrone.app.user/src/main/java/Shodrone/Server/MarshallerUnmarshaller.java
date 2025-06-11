@@ -3,6 +3,7 @@ package Shodrone.Server;
 import Shodrone.DTO.*;
 import Shodrone.exceptions.FailedRequestException;
 import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
+import core.ShowProposal.domain.Entities.ShowProposal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -264,5 +265,22 @@ public class MarshallerUnmarshaller {
         return new ProposalDeliveryInfoCode(filePath);
     }
 
+    public ShowProposalDTO parseResponseMessageProposalByCode(List<String> response) throws FailedRequestException {
+            response.remove(0);
+            List<String> tokens = splitRespectingQuotes(response.get(1));
 
+            if (tokens.size() < 4) {
+                throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
+            }
+
+            String proposalNumber = tokens.get(0);
+            String showDate = tokens.get(1);
+            String showTime = tokens.get(2);
+            String showDuration = tokens.get(3);
+            String showLocation = tokens.get(4);
+
+
+
+        return new ShowProposalDTO(proposalNumber, showDate, showTime, showDuration, showLocation);
+    }
 }

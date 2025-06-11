@@ -21,7 +21,7 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
         super(persistenceUnitName,Application.settings().extendedPersistenceProperties());
     }
 
-    private static List<DeliveryReporting> makeDeliveryReporting(Iterable<ProposalDeliveryInfo> deliveries) {
+    private static List<DeliveryReporting> makeDeliveryReportings(Iterable<ProposalDeliveryInfo> deliveries) {
         List<DeliveryReporting> deliveriesReporting = new ArrayList<>();
 
         for (ProposalDeliveryInfo deliveryInfo : deliveries) {
@@ -38,6 +38,16 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
 
         return deliveriesReporting;
     }
+    private static DeliveryReporting makeDeliveryReporting(ProposalDeliveryInfo deliveries) {
+            ShowProposal proposal = deliveries.proposal();
+            DeliveryReporting deliveryReporting = new DeliveryReporting(
+                    proposal.identity(),
+                    proposal.dateOfShow(),
+                    proposal.timeOfShow(),
+                    proposal.durationOfShow(),
+                    proposal.request().location());
+        return deliveryReporting;
+    }
 
     @Override
     public List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber) {
@@ -47,6 +57,17 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
         );
         query.setParameter("vatNumber", vatNumber);
         List<ProposalDeliveryInfo> results = query.getResultList();
-        return makeDeliveryReporting(results);
+        return makeDeliveryReportings(results);
+    }
+
+    @Override
+    public DeliveryReporting findProposalByDeliveryCode(String code) {
+        final TypedQuery<ProposalDeliveryInfo> query = entityManager().createQuery(
+                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.code = :code",
+                ProposalDeliveryInfo.class
+        );
+        query.setParameter("code", code);
+        ProposalDeliveryInfo result = query.getSingleResult();
+        return makeDeliveryReporting(result);
     }
 }

@@ -7,6 +7,8 @@ import Shodrone.console.SendFeedbackProposal.printer.ProposalPrinter;
 import Shodrone.exceptions.FailedRequestException;
 import Shodrone.exceptions.UserCancelledException;
 import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
+import core.ShowProposal.domain.Entities.ShowProposal;
+import eapli.framework.io.util.Console;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
@@ -35,16 +37,17 @@ public class AnalyseProposalUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         try {
-            ShowProposalDTO selectedProposal = showProposalAndSelect();
+            String code = Console.readLine("Enter the delivery code:");
+            ShowProposalDTO proposalDTO = controller.findProposalByDeliveryCode(code);
 
-            ProposalDeliveryInfoCode deliveryInfo = controller.getProposalDeliveryInfoCode(selectedProposal);
+            String filePath = controller.createFile(proposalDTO.file);
 
-            if (deliveryInfo != null) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFeedback successfully retrieved!\n" + UtilsUI.RESET);
+            if (filePath != null) {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path:"+ filePath + "\n" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
             } else {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailure to retrieve feedback information!\n" + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailure to create the file\n" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return false;
             }
@@ -61,45 +64,6 @@ public class AnalyseProposalUI extends AbstractFancyUI {
 
         UtilsUI.goBackAndWait();
         return false;
-    }
-    /**
-     * Method to display the list of show proposals and allow the user to select one.
-     * @return ShowProposalDTO representing the selected proposal.
-     * @throws FailedRequestException if the request to list proposals fails.
-     * @throws IOException if there is an error reading from the console.
-     */
-    public ShowProposalDTO showProposalAndSelect() throws FailedRequestException, IOException {
-        Iterable<ShowProposalDTO> proposals = controller.listProposals();
-        if (proposals == null || !proposals.iterator().hasNext()) {
-            throw new IllegalArgumentException("No Show Proposals available.");
-        }
-
-        List<ShowProposalDTO> proposalList = new ArrayList<>();
-        proposals.forEach(proposalList::add);
-
-        ProposalPrinter proposalPrinter = new ProposalPrinter();
-
-        ListWidget<ShowProposalDTO> proposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Show Proposal:\n" +
-                UtilsUI.RESET, proposalList, proposalPrinter);
-        proposalListWidget.show();
-
-        int option;
-        do {
-            option = UtilsUI.selectsIndex(proposalList);
-            if (option == -2) {
-                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
-            }
-
-            if (option < 0 || option > proposalList.size()) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
-            } else {
-                ShowProposalDTO selected = proposalList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " + selected.toString()  + "\n"
-                        + UtilsUI.RESET);
-                return selected;
-            }
-
-        } while (true);
     }
 
     @Override
