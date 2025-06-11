@@ -98,7 +98,7 @@ public class UserAppServerController {
     public boolean handleProposalFeedback(String proposalNumber, String decision, String feedback) {
         return showProposalRepository.updateProposalStatusAndFeedback(proposalNumber, decision, feedback);
     }
-    public DeliveryReporting findProposalByDeliveryCode(String deliveryCode, String vatNumber) {
+    public DeliveryReporting findProposalByDeliveryCode(String deliveryCode) {
         return deliveryReportingRepository.findProposalByDeliveryCode(deliveryCode);
     }
 }
