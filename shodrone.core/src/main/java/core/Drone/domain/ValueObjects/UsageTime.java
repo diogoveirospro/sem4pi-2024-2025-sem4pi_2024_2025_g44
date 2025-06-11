@@ -1,0 +1,67 @@
+package core.Drone.domain.ValueObjects;
+
+import eapli.framework.domain.model.ValueObject;
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+@Embeddable
+public class UsageTime implements Serializable {
+
+    private LocalTime usageTime;
+
+    public UsageTime() {
+
+    }
+
+    public UsageTime(final LocalTime usageTime) {
+        if (usageTime == null) {
+            throw new IllegalArgumentException("Usage time must not be null");
+        }
+        this.usageTime = usageTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UsageTime)) return false;
+        UsageTime that = (UsageTime) o;
+        return usageTime.equals(that.usageTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return usageTime.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return usageTime.format(formatter);
+    }
+
+    public void addTime(LocalTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("Time to add must not be null");
+        }
+
+        if (time.getSecond() != 0 || time.getNano() != 0) {
+            throw new IllegalArgumentException("Invalid time format. Only hours and minutes are allowed.");
+        }
+
+        if (time.getHour() < 0 || time.getMinute() < 0 || time.getHour() > 23 || time.getMinute() > 59) {
+            throw new IllegalArgumentException("Invalid time value. Hours must be between 0 and 23, and minutes between 0 and 59.");
+        }
+        if (this.usageTime == null) {
+            this.usageTime = time;
+        }
+        else {
+        this.usageTime = this.usageTime.plusHours(time.getHour())
+                .plusMinutes(time.getMinute());
+        }
+
+
+    }
+}

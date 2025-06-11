@@ -1,5 +1,6 @@
 package inMemory;
 
+import core.Customer.domain.Entities.Customer;
 import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.FigureID;
 import core.Figure.repositories.FigureRepository;
@@ -37,6 +38,24 @@ public class InMemoryFigureRepository extends InMemoryDomainRepository<Figure, F
         }
 
         return publicFigures;
+    }
+
+    @Override
+    public List<Figure> findExclusiveFiguresToCostumer(Customer customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer cannot be null");
+        }
+
+        List<Figure> exclusiveFigures = new ArrayList<>();
+        Iterable<Figure> allFigures = findAll();
+
+        for (Figure figure : allFigures) {
+            if (figure.isExclusive() && figure.exclusivity().customer().equals(customer)) {
+                exclusiveFigures.add(figure);
+            }
+        }
+
+        return exclusiveFigures;
     }
 
     /**

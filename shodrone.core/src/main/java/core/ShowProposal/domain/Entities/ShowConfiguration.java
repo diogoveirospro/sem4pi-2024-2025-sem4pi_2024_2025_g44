@@ -16,17 +16,16 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "show_configuration_id")
-    private List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
+    @Version
+    private Long version;
 
-    @ManyToMany
-    @JoinTable(
-            name = "show_configuration_figures",
-            joinColumns = @JoinColumn(name = "configuration_id"),
-            inverseJoinColumns = @JoinColumn(name = "figure_id")
-    )
-    private Set<Figure> figures = new LinkedHashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "drones")
+    private List<ShowConfigurationEntry> configurationDrones = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "figures")
+    private List<ShowConfigurationFigure> configurationFigures = new ArrayList<>();
 
     @Embedded
     @Column(name = "show_dsl_description")
@@ -37,57 +36,47 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     }
 
     public ShowConfiguration(ShowConfigurationBuilder builder) {
-        if (builder.showConfiguration().isEmpty()) {
-            throw new IllegalArgumentException("Drone configuration cannot be empty");
+        this.configurationDrones = new ArrayList<>(builder.showConfiguration());
+        for (int i = 0; i < builder.figures().size(); i++) {
+            this.configurationFigures.add(new ShowConfigurationFigure(this, builder.figures().get(i), i));
         }
-        this.showConfiguration = new ArrayList<>(builder.showConfiguration());
-        this.figures = new LinkedHashSet<>(builder.figures());
     }
 
-    public ShowConfiguration(List<ShowConfigurationEntry> showConfiguration, Set<Figure> figures) {
-        if (showConfiguration.isEmpty()) {
-            throw new IllegalArgumentException("Drone configuration cannot be empty");
+    public ShowConfiguration(List<ShowConfigurationEntry> configurationDrones, List<Figure> figures) {
+        this.configurationDrones = configurationDrones;
+        for (int i = 0; i < figures.size(); i++) {
+            this.configurationFigures.add(new ShowConfigurationFigure(this, figures.get(i), i));
         }
-        this.showConfiguration = showConfiguration;
-        this.figures = figures;
     }
-
 
     public List<ShowConfigurationEntry> showConfiguration() {
-        return showConfiguration;
+        return configurationDrones;
     }
 
     public Set<Model> droneModels() {
         Set<Model> droneModels = new HashSet<>();
-        for (ShowConfigurationEntry entry : showConfiguration) {
+        for (ShowConfigurationEntry entry : configurationDrones) {
             if (entry.drone() == null || entry.model() == null) {
                 throw new IllegalStateException("Drone or its model cannot be null in ShowConfigurationEntry");
             }
-           droneModels.add(entry.model());
+            droneModels.add(entry.model());
         }
         return droneModels;
     }
 
-    /**
-     * Returns the set of figures associated with this ShowConfiguration.
-     * @return a Set of Figure objects
-     */
-    public Set<Figure> figures() {
+    public List<Figure> figures() {
+        configurationFigures.sort(Comparator.comparingInt(ShowConfigurationFigure::getOrder));
+        List<Figure> figures = new ArrayList<>();
+        for (ShowConfigurationFigure configFigure : configurationFigures) {
+            figures.add(configFigure.getFigure());
+        }
         return figures;
     }
 
-    /**
-     * Returns the ShowDSLDescription associated with this ShowConfiguration.
-     * @return the ShowDSLDescription object
-     */
     public ShowDSLDescription showDSLDescription() {
         return showDSLDescription;
     }
 
-    /**
-     * Adds a ShowDSLDescription to the ShowConfiguration.
-     * @param showDSLDescription the ShowDSLDescription to add
-     */
     public void addShowDSLDescription(ShowDSLDescription showDSLDescription) {
         if (showDSLDescription == null) {
             throw new IllegalArgumentException("Show DSL Description cannot be null");
@@ -100,11 +89,29 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         if (this == other) return true;
         if (!(other instanceof ShowConfiguration)) return false;
         ShowConfiguration that = (ShowConfiguration) other;
-        return Objects.equals(showConfiguration, that.showConfiguration);
+        return Objects.equals(configurationDrones, that.configurationDrones);
     }
 
     @Override
     public Long identity() {
         return this.id;
+    }
+
+    public void addFigure(Figure figure, int i) {
+        if (figure == null) {
+            throw new IllegalArgumentException("Figure cannot be null");
+        }
+        if (i < 0 || i > configurationFigures.size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds for adding figure");
+        }
+        ShowConfigurationFigure configFigure = new ShowConfigurationFigure(this, figure, i);
+        configurationFigures.add(i, configFigure);
+    }
+
+    public void addDrone(ShowConfigurationEntry entry) {
+        if (entry == null || entry.drone() == null || entry.model() == null) {
+            throw new IllegalArgumentException("Drone and its model cannot be null in ShowConfigurationEntry");
+        }
+        configurationDrones.add(entry);
     }
 }

@@ -6,14 +6,14 @@ import java.util.*;
 
 public class ShowConfigurationBuilder {
     private final List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
-    private final Set<Figure> figures = new LinkedHashSet<>();
+    private final List<Figure> figures = new ArrayList<>();
 
     public List<ShowConfigurationEntry> showConfiguration() {
         return Collections.unmodifiableList(this.showConfiguration);
     }
 
-    public Set<Figure> figures() {
-        return Collections.unmodifiableSet(this.figures);
+    public List<Figure> figures() {
+        return Collections.unmodifiableList(this.figures);
     }
 
     public ShowConfigurationBuilder addDrones(ShowConfigurationEntry showConfigurationEntry) {
@@ -22,16 +22,29 @@ public class ShowConfigurationBuilder {
     }
 
     public ShowConfigurationBuilder addFigure(Figure figure) {
+        if (!figures.isEmpty() && figures.get(figures.size() - 1).equals(figure)) {
+            throw new IllegalArgumentException("Cannot add the same figure consecutively.");
+        }
         this.figures.add(figure);
         return this;
     }
 
     public ShowConfigurationBuilder addFigures(Collection<Figure> figures) {
-        this.figures.addAll(figures);
+        for (Figure figure : figures) {
+            addFigure(figure);
+        }
         return this;
     }
 
     public ShowConfiguration build() {
-        return new ShowConfiguration(showConfiguration, figures);
+        ShowConfiguration configuration = new ShowConfiguration();
+        for (int i = 0; i < figures.size(); i++) {
+            configuration.addFigure(figures.get(i), i);
+        }
+
+        for (ShowConfigurationEntry entry : showConfiguration) {
+            configuration.addDrone(entry);
+        }
+        return configuration;
     }
 }

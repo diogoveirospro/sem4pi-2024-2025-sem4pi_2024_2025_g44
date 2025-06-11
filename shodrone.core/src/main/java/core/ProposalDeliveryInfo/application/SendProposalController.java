@@ -55,6 +55,7 @@ public class SendProposalController {
 
         // Update the proposal status to WAITING_FOR_RESPONSE
         proposal.setShowProposalStatus(ShowProposalStatus.WAITING_FOR_RESPONSE);
+        proposal.addSender(collaborator);
         proposalsRepo.save(proposal);
 
         return saveDelivery.identity();

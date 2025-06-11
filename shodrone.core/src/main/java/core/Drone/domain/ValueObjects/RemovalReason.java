@@ -3,7 +3,7 @@ package core.Drone.domain.ValueObjects;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -12,12 +12,12 @@ import java.util.Objects;
 public class RemovalReason implements Serializable {
 
     @ElementCollection
-    private Map<Date, String> reasons = new LinkedHashMap<>();
+    private Map<LocalDate, String> reasons = new LinkedHashMap<>();
 
     protected RemovalReason(String put) {
     }
 
-    public RemovalReason(Map<Date, String> reasons) {
+    public RemovalReason(Map<LocalDate, String> reasons) {
         this.reasons = reasons;
     }
 
@@ -25,7 +25,7 @@ public class RemovalReason implements Serializable {
 
     }
 
-    public Map<Date, String> value() {
+    public Map<LocalDate, String> value() {
         return reasons;
     }
 
@@ -48,7 +48,7 @@ public class RemovalReason implements Serializable {
     }
 
     public void addReason(String reason) {
-        Date now = new Date();
+        LocalDate now = LocalDate.now();
         reasons.put(now ,reason);
     }
 }

@@ -12,6 +12,7 @@ import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,8 @@ class DroneTest {
     @BeforeEach
     void setUp() {
         serialNumber = new SerialNumber(1234);
-        Map<Date, String> reasons = new HashMap<>();
-        Date now = new Date();
+        Map<LocalDate, String> reasons = new HashMap<>();
+        LocalDate now = LocalDate.now();
         String wewe = "Teste";
         reasons.put(now, wewe);
         removalReason = new RemovalReason(reasons);
@@ -93,8 +94,8 @@ class DroneTest {
 
     @Test
     void testSetRemovalReason() {
-        Map<Date, String> newReasons = new HashMap<>();
-        newReasons.put(new Date(), "Updated reason");
+        Map<LocalDate, String> newReasons = new HashMap<>();
+        newReasons.put(LocalDate.now(), "Updated reason");
         RemovalReason newReason = new RemovalReason(newReasons);
         drone.setRemovalReason(newReason);
         assertEquals(newReason, drone.removalReason());

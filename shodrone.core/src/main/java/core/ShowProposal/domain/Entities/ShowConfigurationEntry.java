@@ -14,6 +14,9 @@ public class ShowConfigurationEntry implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @ManyToOne(optional = false)
     private Model model;
 

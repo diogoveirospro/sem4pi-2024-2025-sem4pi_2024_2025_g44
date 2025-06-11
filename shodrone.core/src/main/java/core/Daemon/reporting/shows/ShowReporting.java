@@ -25,7 +25,7 @@ public class ShowReporting {
     public ShowRequestID requestNumber;
     public Map<Model, List<Drone>> droneConfiguration;
     public Video video;
-    public Set<Figure> figuresConfiguration;
+    public List<Figure> figuresConfiguration;
     public ShowDescription showDescription;
     public Location showLocation;
     public LocalDate showDate;
@@ -36,7 +36,7 @@ public class ShowReporting {
 
     public ShowReporting(final ShowProposalNumber proposalNumber, final ShowRequestID requestNumber,
                          final Map<Model, List<Drone>> droneConfiguration, final Video video,
-                         final Set<Figure> figuresConfiguration, final ShowDescription showDescription,
+                         final List<Figure> figuresConfiguration, final ShowDescription showDescription,
                          final Location showLocation, final LocalDate showDate, final LocalTime showTime,
                          final QuantityOfDrones quantityOfDrones, final Insurance insurance,
                          final Duration showDuration) {

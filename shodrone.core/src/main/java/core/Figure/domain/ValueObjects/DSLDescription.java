@@ -7,8 +7,12 @@ import eapli.framework.domain.model.ValueObject;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents the description of a Domain-Specific Language (DSL).
@@ -125,5 +129,24 @@ public class DSLDescription implements ValueObject, Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(DSLCodeLines, DSLVersion);
+    }
+
+    //Retrieves the drone types of the figure
+    public Set<String> requiredDroneTypes() {
+        Set<String> droneTypes = new HashSet<>();
+        if (DSLCodeLines == null || DSLCodeLines.isBlank()) {
+            return droneTypes;
+        }
+
+        // Define a regex pattern to match drone types (e.g., "droneType: <type>")
+        Pattern pattern = Pattern.compile("DroneType\\s*(\\w+)");
+        Matcher matcher = pattern.matcher(DSLCodeLines);
+
+        // Extract all matches and add them to the set
+        while (matcher.find()) {
+            droneTypes.add(matcher.group(1));
+        }
+
+        return droneTypes;
     }
 }

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,7 +71,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * The document of the ShowProposal
      */
     @Embedded
-    @Column(name = "document")
+    @AttributeOverrides({
+            @AttributeOverride(name = "documentContent", column = @Column(name = "documentContent", columnDefinition = "TEXT")),
+            @AttributeOverride(name = "filePath", column = @Column(name = "filePath"))
+    })
     private ShowProposalDocument document;
 
     /**
@@ -253,6 +257,17 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      */
     public CRMCollaborator sender() {
         return sender;
+    }
+
+    /**
+     * Add a sender to the ShowProposal.
+     * @param sender the CRMCollaborator to be added as the sender
+     */
+    public void addSender(CRMCollaborator sender) {
+        if (sender == null) {
+            throw new IllegalArgumentException("Sender cannot be null.");
+        }
+        this.sender = sender;
     }
 
     /**
@@ -522,7 +537,7 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
 
         // List of Figures
         StringBuilder figuresSection = new StringBuilder();
-        Set<Figure> figures = configuration.figures();
+        List<Figure> figures = configuration.figures();
 
         int position = 1;
 

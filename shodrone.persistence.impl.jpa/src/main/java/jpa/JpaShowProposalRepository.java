@@ -9,6 +9,7 @@ import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -19,6 +20,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Constructor for JpaShowProposalRepository with a TransactionalContext.
+     *
      * @param autoTx the TransactionalContext for managing transactions
      */
     public JpaShowProposalRepository(final TransactionalContext autoTx) {
@@ -27,6 +29,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Constructor for JpaShowProposalRepository with a persistence unit name.
+     *
      * @param persistenceUnitName the name of the persistence unit
      */
     public JpaShowProposalRepository(final String persistenceUnitName) {
@@ -35,6 +38,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Find all ShowProposals that are in the TESTING status.
+     *
      * @return an iterable collection of ShowProposals in the TESTING status
      */
     @Override
@@ -47,6 +51,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Find all ShowProposals that are in the TESTING status for a specific ShowRequest.
+     *
      * @param request the ShowRequest for which to find testing proposals
      * @return an iterable collection of ShowProposals in the TESTING status for the given ShowRequest
      */
@@ -61,6 +66,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Knows if a ShowProposal exists by its proposal number.
+     *
      * @param proposalNumber the ShowProposalNumber to check for existence
      * @return true if a ShowProposal with the given proposal number exists, false otherwise
      */
@@ -74,6 +80,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Finds all ShowProposals that are ready to be configured.
+     *
      * @return an iterable collection of ShowProposals that are ready to configure documents
      */
     @Override
@@ -89,8 +96,9 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                         "AND sp.dateOfShow IS NOT NULL " +
                         "AND sp.timeOfShow IS NOT NULL " +
                         "AND sp.durationOfShow IS NOT NULL " +
-                        "AND sp.configuration.figures IS NOT NULL AND sp.configuration.figures IS NOT EMPTY " +
-                        "AND sp.configuration.showConfiguration IS NOT NULL AND sp.configuration.showConfiguration IS NOT EMPTY",
+                        "AND sp.configuration IS NOT NULL " +
+                        "AND sp.configuration.configurationFigures IS NOT EMPTY " +
+                        "AND sp.configuration.showConfiguration IS NOT EMPTY",
                 ShowProposal.class
         );
         return query.getResultList();
@@ -98,6 +106,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Finds all ShowProposals that have been checked (either accepted or rejected).
+     *
      * @return an iterable collection of ShowProposals that have been checked
      */
     @Override
@@ -111,6 +120,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Finds all ShowProposals that are ready to be sent.
+     *
      * @return an iterable collection of ShowProposals that are ready to send
      */
     @Override
@@ -123,18 +133,19 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     /**
      * Finds all ShowProposals that have all the necessary information to generate a Show DSL.
+     *
      * @return an iterable collection of ShowProposals that are ready to generate Show DSL
      */
     @Override
     public Iterable<ShowProposal> findProposalsReadyGenerateShowDSL() {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
                 "SELECT sp FROM ShowProposal sp WHERE sp.configuration IS NOT NULL " +
-                        "AND sp.configuration.figures IS NOT EMPTY",
+                        "AND sp.configuration.configurationFigures IS NOT EMPTY",
                 ShowProposal.class);
         return query.getResultList();
     }
 
-    public boolean updateProposalStatusAndFeedback(String proposalNumber,String decision, String feedback) {
+    public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
                 "UPDATE ShowProposal sp SET sp.status = :status, sp.feedbackStatus = :feedbackStatus " +
                         "WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);

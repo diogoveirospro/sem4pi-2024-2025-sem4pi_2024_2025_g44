@@ -6,6 +6,7 @@ import Shodrone.console.Category.actions.EditCategoryUI;
 import Shodrone.console.Category.printer.ListExistingCategoriesUI;
 import Shodrone.console.Customer.ui.*;
 import Shodrone.console.Drone.ui.AddDroneUI;
+import Shodrone.console.Drone.ui.RegisterUsageTimeUI;
 import Shodrone.console.Model.ui.CreateModelUI;
 import Shodrone.console.Drone.ui.ListDroneUI;
 import Shodrone.console.Drone.ui.RemoveDroneUI;
@@ -192,6 +193,7 @@ public class MainMenu extends AbstractFancyUI {
     private static final int ADD_DRONE_OPTION = 2;
     private static final int REMOVE_DRONE_OPTION = 3;
     private static final int LIST_DRONES_OPTION = 4;
+    private static final int DRONE_TECH_REGISTER_USAGE_TIME_OPTION = 5;
 
     // PROPOSAL COLLABORATOR MENU
     private static final int COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION = 1;
@@ -206,6 +208,7 @@ public class MainMenu extends AbstractFancyUI {
 
     // PROPOSAL DRONE TECH MENU
     private static final int DRONE_TECH_GENERATE_SHOW_DSL_OPTION = 1;
+
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -437,7 +440,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(ADD_DRONE_OPTION, "Add a Drone to the Inventory", new AddDroneUI()::show);
         menu.addItem(REMOVE_DRONE_OPTION, "Remove a Drone from Inventory", new RemoveDroneUI()::show);
         menu.addItem(LIST_DRONES_OPTION, "List a Model of Drone", new ListDroneUI()::show);
-
+        menu.addItem(DRONE_TECH_REGISTER_USAGE_TIME_OPTION, "Register Usage Time for Drone", new RegisterUsageTimeUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;
@@ -487,7 +490,7 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
 
         menu.addItem(DRONE_TECH_GENERATE_SHOW_DSL_OPTION, "Generate Show DSL", new GenerateShowDSLUI()::show);
-
+        menu.addItem(DRONE_TECH_REGISTER_USAGE_TIME_OPTION, "Register Usage Time for Drone", new RegisterUsageTimeUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
