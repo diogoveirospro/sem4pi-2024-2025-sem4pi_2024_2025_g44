@@ -5,10 +5,10 @@ import core.Daemon.reporting.proposals.DeliveryReporting;
 
 import java.util.List;
 
-public class GetProposalsRequest extends UserAppRequest{
+public class GetProposalDeliveryInfoCodeRequest extends UserAppRequest{
     private final String vatNumber;
 
-    public GetProposalsRequest(final UserAppServerController controller, final String inputRequest, String vatNumber) {
+    public GetProposalDeliveryInfoCodeRequest(final UserAppServerController controller, final String inputRequest, String vatNumber) {
         super(controller, inputRequest);
         this.vatNumber = vatNumber;
     }

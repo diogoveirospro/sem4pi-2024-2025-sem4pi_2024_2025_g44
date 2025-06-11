@@ -15,6 +15,7 @@ public class DeliveryReporting {
     public LocalTime timeOfShow;
     public Duration showDuration;
     public Location showLocation;
+    public byte[] file;
 
     public DeliveryReporting(final ShowProposalNumber proposalNumber, final LocalDate dateOfProposal,
                              final LocalTime timeOfProposal, final Duration showDuration,
@@ -24,5 +25,10 @@ public class DeliveryReporting {
         this.timeOfShow = timeOfProposal;
         this.showDuration = showDuration;
         this.showLocation = showLocation;
+        this.file = null;
+    }
+
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 }

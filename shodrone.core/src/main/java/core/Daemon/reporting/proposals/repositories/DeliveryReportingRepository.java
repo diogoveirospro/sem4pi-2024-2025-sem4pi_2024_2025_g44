@@ -10,4 +10,5 @@ import java.util.List;
 public interface DeliveryReportingRepository {
 
     List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber);
+    DeliveryReporting findProposalByDeliveryCode(String code);
 }

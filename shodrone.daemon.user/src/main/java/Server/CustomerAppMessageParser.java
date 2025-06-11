@@ -82,8 +82,15 @@ public class CustomerAppMessageParser {
                 request = parseGetProposals(inputLine, tokens);
             }
 
+            if ("GET_PROPOSAL_DELIVERY_CODE".equals(command)) {
+                request = parseGetProposalDelivCode(inputLine, tokens);
+            }
+
             if ("SEND_FEEDBACK_PROPOSAL".equals(command)) {
                 request = parseSendFeedbackProposal(inputLine, tokens);
+            }
+            if ("GET_PROPOSAL_BY_CODE".equals(command)) {
+                request = parseGetProposalByCode(inputLine, tokens);
             }
 
         } catch (final Exception e) {
@@ -150,6 +157,21 @@ public class CustomerAppMessageParser {
         }
     }
 
+    private UserAppRequest parseGetProposalDelivCode(String inputLine, String[] tokens) {
+        if (tokens.length != 2) {
+            return new BadRequest(inputLine, "Wrong number of parameters");
+        } else {
+            return new GetProposalDeliveryInfoCodeRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
+        }
+    }
+
+    private UserAppRequest parseGetProposalByCode(String inputLine, String[] tokens) {
+        if (tokens.length != 2) {
+            return new BadRequest(inputLine, "Wrong number of parameters");
+        } else {
+            return new GetPropByCodeRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
+        }
+    }
     /**
      * Parses the input line to create a GetSendProposalFeedbackRequest.
      * @param inputLine line containing the command and parameters

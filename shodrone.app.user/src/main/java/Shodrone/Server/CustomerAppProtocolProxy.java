@@ -183,4 +183,18 @@ public class CustomerAppProtocolProxy {
 		}
 	}
 
+	public ShowProposalDTO getProposalByCode(String code) {
+		try {
+			final var socket = new ClientSocket();
+			socket.connect();
+			final String request = new GetProposalByCodeRequest(code).toRequest();
+			final List<String> response = socket.sendAndReceive(request);
+			socket.stop();
+			final MarshallerUnmarshaller mu = new MarshallerUnmarshaller();
+			return mu.parseResponseMessageProposalByCode(response);
+		} catch (IOException | FailedRequestException e) {
+			LOGGER.error("Error retrieving proposal delivery info code: {}", e.getMessage());
+			return null;
+		}
+	}
 }
