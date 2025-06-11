@@ -62,7 +62,7 @@ bool is_cell_empty(SpaceCell ***space, int x, int y, int z) {
 }
 
 // Move a drone in the 3D space (updates both space and drone_positions)
-void move_drone(SpaceCell ***space, DronePosition *drone_positions, int drone_idx, Position new_pos, int sizeX, int sizeY, int sizeZ) {
+void move_drone(SpaceCell ***space, SharedDroneState *drone_positions, int drone_idx, Position new_pos, int sizeX, int sizeY, int sizeZ) {
     Position old_pos = drone_positions[drone_idx].pos;
     // Remove from old position if valid
     if (old_pos.x >= 0 && old_pos.x < sizeX && old_pos.y >= 0 && old_pos.y < sizeY && old_pos.z >= 0 && old_pos.z < sizeZ) {
@@ -191,6 +191,16 @@ int create_shared_memory(const char *name, size_t size) {
     return fd;
 }
 
+// Opens an existing shared memory file and returns its file descriptor
+int open_shared_memory(const char *name) {
+    int fd = shm_open(name, O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("shm_open");
+        exit(EXIT_FAILURE);
+    }
+    return fd;
+}
+
 // Maps the shared memory to the process's address space and returns a pointer to it
 SharedMemory* attach_shared_memory(int fd, size_t size) {
     void *addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -285,8 +295,19 @@ sem_t* init_semaphore(const char *name, int value) {
     return sem;
 }
 
+sem_t* open_semaphore(const char *name) {
+    sem_t *sem = sem_open(name, 0);
+    if (sem == SEM_FAILED) {
+        perror("Error while opening semaphore");
+        exit(EXIT_FAILURE);
+    }
+    return sem;
+}
+
 void clear_semaphore(const char *name, sem_t *sem) {
-    sem_close(sem);
+    if (sem != NULL) {
+        sem_close(sem);
+    }
     sem_unlink(name);
 }
 

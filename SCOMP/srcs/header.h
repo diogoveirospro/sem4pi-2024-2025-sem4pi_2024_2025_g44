@@ -183,11 +183,9 @@ typedef struct {
     int num_drones;
     SharedDroneState *drones; // They are pointers but the values will be defined by the parent
     CollisionLog *collision_log;
+    DroneHistory **history; // Pointer to an array of DroneHistory, each index corresponds to a drone
     int collision_count;
-    sem_t *semaphores;
     int *finished;
-    int Can_Write; // Probably not needed because of semaphores
-    int Can_Read; // Probably not needed because of semaphores
 } SharedMemory;
 
 
@@ -210,6 +208,7 @@ typedef struct {
 
 // Shared Memory Functions
 int create_shared_memory(const char *name, size_t size);
+int open_shared_memory(const char *name);
 SharedMemory* attach_shared_memory(int fd, size_t size);
 void detach_shared_memory(void* shmaddr, size_t size);
 void clear_shared_memory(const char *name);
@@ -230,6 +229,7 @@ void clear_cond(pthread_cond_t* cond);
 
 // Semaphore Functions
 sem_t* init_semaphore(const char *name, int value);
+sem_t* open_semaphore(const char *name);
 void post_semaphore(sem_t *sem);
 void wait_semaphore(sem_t *sem);
 void clear_semaphore(const char *name, sem_t *sem);
@@ -261,7 +261,7 @@ void* safe_malloc(size_t size);
 void set_drone_in_space(SpaceCell ***space, int x, int y, int z, int drone_id);
 void remove_drone_from_space(SpaceCell ***space, int x, int y, int z);
 bool is_cell_empty(SpaceCell ***space, int x, int y, int z);
-void move_drone(SpaceCell ***space, DronePosition *drone_positions, int drone_idx, Position new_pos, int sizeX, int sizeY, int sizeZ);
+void move_drone(SpaceCell ***space, SharedDroneState *drone_positions, int drone_idx, Position new_pos, int sizeX, int sizeY, int sizeZ);
 int get_drone_at(SpaceCell ***space, int x, int y, int z);
 SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ);
 void free_space(SpaceCell ***space, int sizeX, int sizeY);

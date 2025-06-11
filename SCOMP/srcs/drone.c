@@ -1,20 +1,29 @@
 #include "header.h"
 
 DroneData s;
+SharedMemory *shm = NULL;
+sem_t *my_sem = NULL;
+char sem_name[64];
+size_t shm_size = 0;
+int shm_fd = 0;
 
-// sends SIGUSR2 to itself to terminate
+// Ends the program, closes shared memory and semaphore, and frees allocated memory
+// Receives the SIGUSR2
 void end()
 {
-  raise(SIGUSR2);
+    if (my_sem) sem_close(my_sem);
+    if (shm) detach_shared_memory(shm, shm_size);
+    free(s.filename);
+    exit(0);
 }
 
 // sends SIGUSR2 to parent to kill everything
 void handler_sigusr2(int sig)
 {
-	(void) sig;
-
-	kill(getppid(), SIGUSR2);
+  (void)sig;
+  end();
 }
+
 
 // parent sends SIGUSR1 to notify collision
 void handler_sigusr1(int sig)
@@ -43,21 +52,21 @@ void set_up_signals()
 
 // waits for green flag from parent to keep going
 void sync_drones() {
-  int n;
-
-  do {
-    n = read(0, (char[1]){0}, sizeof(char));
-  } while (n == -1 && errno == EINTR);
+  wait_semaphore(my_sem);
 }
 
-// sends special message to alert the end of script
-void send_terminate_message(Message m)
+// Updates the position in the shared memory
+void update_position_in_shm(Position pos)
 {
-  m.pos.x = -1;
-  m.pos.y = -1;
-  m.pos.z = -1;
+  shm->drones[s.id - 1].pos = pos;
+  shm->drones[s.id - 1].active = 1;
+}
 
-  write(1, &m, sizeof(Message));
+// Marks the drone as finished in shared memory
+void mark_finished_in_shm()
+{
+  shm->finished[s.id - 1] = 1;
+  shm->drones[s.id - 1].active = 0;
 }
 
 FILE *open_file(char *filename)
@@ -116,11 +125,7 @@ void run_script(char *filename, int drone_id)
   // new vector
   Vector v;
 
-  Message m;
-
   int valid_flag = 1;
-
-  m.id = drone_id;
 
   // initially x,y,z save the initial position
   if (fscanf(f, "%d,%d,%d", &c.x, &c.y, &c.z) == 3) {
@@ -130,49 +135,45 @@ void run_script(char *filename, int drone_id)
     // only continue if position valid
     if (valid_flag) {
 
+      // update shared memory with initial position
+      update_position_in_shm(c);
+
       // save starting position in message
-      copy_coordinates(&c, &m.pos);
-
-      // send message to parent
-      write(1, &m, sizeof(Message));
-
-      // save current position to start the loop
       copy_coordinates(&c, &l);
 
       // sync
+      fprintf(stderr, "Drone %d: à espera do semáforo...\n", s.id);
       sync_drones();
+      fprintf(stderr, "Drone %d: passou o semáforo!\n", s.id);
     }
   }
 
-  // now x,y,z save the vectors 
-  // m.pos.x,y,z save the new position
+  // now x,y,z save the vectors
+  // c x,y,z are the current position
   while (fscanf(f, "%d,%d,%d", &v.x, &v.y, &v.z) == 3 && valid_flag) {
 
     // add vectors to positions to get new position
-    sum_coordinates(&v, &l);
+    sum_coordinates(&v, &c);
 
-    valid_flag = valid_position(l);
+    valid_flag = valid_position(c);
 
     // if position not valid, break
     if (!valid_flag)
       break;
 
-    // save new position to message
-    copy_coordinates(&l, &m.pos);
+    // update shared memory with new position
+    update_position_in_shm(c);
 
-    // send new position to parent
-    write(1, &m, sizeof(Message));
+    // save new position into the last position
+    copy_coordinates(&c, &l);
 
-    // save new position for next iteration
-    copy_coordinates(&m.pos, &l);
-    
     // sync
     sync_drones();
   }
 
   fclose(f);
-  
-  send_terminate_message(m);
+
+  mark_finished_in_shm();
 }
 
 char *build_filename(int id, char *inp_dir)
@@ -193,11 +194,23 @@ char *build_filename(int id, char *inp_dir)
 
 void start_working()
 {
-  char *filename;
+  fprintf(stderr, "Building filename for drone %d\n", s.id);
+  char *filename = build_filename(s.id, s.inp_dir);
 
-  filename = build_filename(s.id, s.inp_dir);
-
+  fprintf(stderr, "Running script for drone %d\n", s.id);
   run_script(filename, s.id);
+}
+
+// Starts shared memory and semaphore
+void set_up_shared_memory_and_semaphore()
+{
+  shm_fd = open_shared_memory( "/shm_drones");
+
+  shm_size = sizeof(SharedMemory) + sizeof(SharedDroneState) * s.max_x; // Adjust as needed
+  shm = attach_shared_memory(shm_fd, shm_size);
+
+  snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", s.id);
+  my_sem = open_semaphore(sem_name);
 }
 
 void terminate()
@@ -214,7 +227,7 @@ void terminate()
 
 int main(int argc, char **argv)
 {
-	if (argc != 6)
+  if (argc != 6)
     end();
 
   s.inp_dir = argv[1];
@@ -223,9 +236,12 @@ int main(int argc, char **argv)
   s.max_y = atoi(argv[4]);
   s.max_z = atoi(argv[5]);
 
+  fprintf(stderr, "Setting up signals"  );
   set_up_signals();
-
+  fprintf(stderr, "Done setting up signals\n");
+  set_up_shared_memory_and_semaphore();
+  fprintf(stderr, "Drone %d: Starting work\n", s.id);
   start_working();
-
-  terminate();
+  fprintf(stderr, "Drone %d: Finished work\n", s.id);
+  end();
 }
