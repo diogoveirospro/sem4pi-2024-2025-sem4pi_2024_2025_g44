@@ -9,6 +9,7 @@ import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import eapli.framework.infrastructure.repositories.impl.inmemory.InMemoryDomainRepository;
 import inMemory.persistence.InMemoryInitializer;
+import jakarta.persistence.EntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -155,9 +156,9 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         ShowProposal proposalToUpdate = proposal.get();
 
         // Update the status and feedback
-        if (decision.equalsIgnoreCase("ACCEPTED")){
+        if (decision.equalsIgnoreCase("ACCEPTED")) {
             proposalToUpdate.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.ACCEPTED, feedback));
-        } else  if (decision.equalsIgnoreCase("REJECTED")){
+        } else if (decision.equalsIgnoreCase("REJECTED")) {
             proposalToUpdate.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.REJECTED, feedback));
         }
 

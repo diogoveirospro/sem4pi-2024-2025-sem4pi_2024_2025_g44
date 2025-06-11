@@ -41,6 +41,10 @@ public class ShowConfigurationBuilder {
         for (int i = 0; i < figures.size(); i++) {
             configuration.addFigure(figures.get(i), i);
         }
+
+        for (ShowConfigurationEntry entry : showConfiguration) {
+            configuration.addDrone(entry);
+        }
         return configuration;
     }
 }

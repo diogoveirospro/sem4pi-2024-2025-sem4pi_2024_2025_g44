@@ -16,11 +16,15 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "show_configuration_id")
-    private List<ShowConfigurationEntry> showConfiguration = new ArrayList<>();
+    @Version
+    private Long version;
 
-    @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "drones")
+    private List<ShowConfigurationEntry> configurationDrones = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "figures")
     private List<ShowConfigurationFigure> configurationFigures = new ArrayList<>();
 
     @Embedded
@@ -32,26 +36,26 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     }
 
     public ShowConfiguration(ShowConfigurationBuilder builder) {
-        this.showConfiguration = new ArrayList<>(builder.showConfiguration());
+        this.configurationDrones = new ArrayList<>(builder.showConfiguration());
         for (int i = 0; i < builder.figures().size(); i++) {
             this.configurationFigures.add(new ShowConfigurationFigure(this, builder.figures().get(i), i));
         }
     }
 
-    public ShowConfiguration(List<ShowConfigurationEntry> showConfiguration, List<Figure> figures) {
-        this.showConfiguration = showConfiguration;
+    public ShowConfiguration(List<ShowConfigurationEntry> configurationDrones, List<Figure> figures) {
+        this.configurationDrones = configurationDrones;
         for (int i = 0; i < figures.size(); i++) {
             this.configurationFigures.add(new ShowConfigurationFigure(this, figures.get(i), i));
         }
     }
 
     public List<ShowConfigurationEntry> showConfiguration() {
-        return showConfiguration;
+        return configurationDrones;
     }
 
     public Set<Model> droneModels() {
         Set<Model> droneModels = new HashSet<>();
-        for (ShowConfigurationEntry entry : showConfiguration) {
+        for (ShowConfigurationEntry entry : configurationDrones) {
             if (entry.drone() == null || entry.model() == null) {
                 throw new IllegalStateException("Drone or its model cannot be null in ShowConfigurationEntry");
             }
@@ -85,7 +89,7 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         if (this == other) return true;
         if (!(other instanceof ShowConfiguration)) return false;
         ShowConfiguration that = (ShowConfiguration) other;
-        return Objects.equals(showConfiguration, that.showConfiguration);
+        return Objects.equals(configurationDrones, that.configurationDrones);
     }
 
     @Override
@@ -102,5 +106,12 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         }
         ShowConfigurationFigure configFigure = new ShowConfigurationFigure(this, figure, i);
         configurationFigures.add(i, configFigure);
+    }
+
+    public void addDrone(ShowConfigurationEntry entry) {
+        if (entry == null || entry.drone() == null || entry.model() == null) {
+            throw new IllegalArgumentException("Drone and its model cannot be null in ShowConfigurationEntry");
+        }
+        configurationDrones.add(entry);
     }
 }

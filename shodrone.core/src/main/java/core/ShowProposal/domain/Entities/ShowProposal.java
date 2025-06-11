@@ -71,7 +71,10 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      * The document of the ShowProposal
      */
     @Embedded
-    @Column(name = "document")
+    @AttributeOverrides({
+            @AttributeOverride(name = "documentContent", column = @Column(name = "documentContent", columnDefinition = "TEXT")),
+            @AttributeOverride(name = "filePath", column = @Column(name = "filePath"))
+    })
     private ShowProposalDocument document;
 
     /**
@@ -254,6 +257,17 @@ public class ShowProposal implements Serializable, AggregateRoot<ShowProposalNum
      */
     public CRMCollaborator sender() {
         return sender;
+    }
+
+    /**
+     * Add a sender to the ShowProposal.
+     * @param sender the CRMCollaborator to be added as the sender
+     */
+    public void addSender(CRMCollaborator sender) {
+        if (sender == null) {
+            throw new IllegalArgumentException("Sender cannot be null.");
+        }
+        this.sender = sender;
     }
 
     /**

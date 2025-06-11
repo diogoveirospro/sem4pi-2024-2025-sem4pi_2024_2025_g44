@@ -28,7 +28,7 @@ public class ProposalDocumentGenerator {
 
         // Define the file path
         Path proposalsDirectory = Paths.get("shodrone.core/src/main/resources/proposals");
-        String proposalName = proposal.identity().toString();
+        String proposalName = proposal.identity().proposalNumber();
         Path filePath = proposalsDirectory.resolve(proposalName + ".txt");
 
         try {

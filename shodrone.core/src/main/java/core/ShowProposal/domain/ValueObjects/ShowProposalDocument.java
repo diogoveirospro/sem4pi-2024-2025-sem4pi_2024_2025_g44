@@ -51,17 +51,6 @@ public class ShowProposalDocument implements ValueObject, Serializable {
     }
 
     /**
-     * Adds a file path to the document.
-     *
-     */
-    public void addFilePath(String filePath) {
-        if (filePath == null || filePath.isEmpty()) {
-            throw new IllegalArgumentException("File path cannot be null or empty");
-        }
-        this.filePath = filePath;
-    }
-
-    /**
      * Return toString representation of the document.
      *
      * @return String representation of the document content.
