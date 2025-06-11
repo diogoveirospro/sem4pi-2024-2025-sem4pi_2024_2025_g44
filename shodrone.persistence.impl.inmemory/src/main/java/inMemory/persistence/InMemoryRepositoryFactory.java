@@ -28,6 +28,7 @@ import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
+import core.Maintenance.repositories.MaintenanceTypeRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
 import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
@@ -213,8 +214,23 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 	}
 
 	@Override
+	public MaintenanceRepository maintenance(TransactionalContext autoTx) {
+		throw new IllegalStateException("Not implemented yet.");
+	}
+
+	@Override
 	public MaintenanceRepository maintenance() {
 		throw new IllegalStateException("Not implemented yet.");
+	}
+
+	@Override
+	public MaintenanceTypeRepository maintenanceTypes(TransactionalContext autoTx) {
+		return new InMemoryMaintenanceTypeRepository();
+	}
+
+	@Override
+	public MaintenanceTypeRepository maintenanceTypes() {
+		return maintenanceTypes(null);
 	}
 
 }

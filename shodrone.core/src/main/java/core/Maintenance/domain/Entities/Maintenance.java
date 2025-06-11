@@ -2,17 +2,19 @@ package core.Maintenance.domain.Entities;
 
 import core.Drone.domain.Entities.Drone;
 import core.Maintenance.domain.ValueObjects.MaintenanceID;
-import core.Shared.domain.ValueObjects.Date;
 import core.Shared.domain.ValueObjects.Description;
 import eapli.framework.domain.model.AggregateRoot;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+import java.time.LocalDate;
 
 
 @Entity
-public class Maintenance implements AggregateRoot<MaintenanceID> {
+public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
 
     @EmbeddedId
+    @Column(name = "maitenance_id", nullable = false)
     private MaintenanceID id;
 
     @ManyToOne(optional = false)
@@ -25,7 +27,7 @@ public class Maintenance implements AggregateRoot<MaintenanceID> {
     private Description description;
 
     @Embedded
-    private Date date;
+    private LocalDate date;
 
     @Override
     public MaintenanceID identity() {
@@ -43,7 +45,7 @@ public class Maintenance implements AggregateRoot<MaintenanceID> {
 
     }
 
-    public Maintenance(MaintenanceID id, Drone drone, MaintenanceType type, Description description, Date date) {
+    public Maintenance(MaintenanceID id, Drone drone, MaintenanceType type, Description description, LocalDate date) {
         if (drone == null || type == null || description == null || date == null)
             throw new IllegalArgumentException("All fields must be non-null.");
 
@@ -58,5 +60,5 @@ public class Maintenance implements AggregateRoot<MaintenanceID> {
     public Drone drone() { return drone; }
     public MaintenanceType type() { return type; }
     public Description description() { return description; }
-    public Date date() { return date; }
+    public LocalDate date() { return date; }
 }

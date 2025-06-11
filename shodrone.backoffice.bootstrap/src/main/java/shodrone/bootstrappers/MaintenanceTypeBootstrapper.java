@@ -3,6 +3,7 @@ package shodrone.bootstrappers;
 import core.Maintenance.domain.Entities.MaintenanceType;
 import core.Maintenance.repositories.MaintenanceTypeRepository;
 import core.Persistence.PersistenceContext;
+import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.actions.Action;
 
 /**
@@ -22,8 +23,9 @@ public class MaintenanceTypeBootstrapper implements Action {
     }
 
     private void addIfNotExists(String name) {
-        if (repo.findByName(name).isEmpty()) {
-            repo.save(new MaintenanceType(name));
+        Name maintenanceTypeName = new Name(name);
+        if (repo.findByName(maintenanceTypeName).isEmpty()) {
+            repo.save(new MaintenanceType(maintenanceTypeName));
         }
     }
 }

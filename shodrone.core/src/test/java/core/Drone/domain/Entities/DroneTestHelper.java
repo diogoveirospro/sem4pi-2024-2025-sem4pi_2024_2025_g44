@@ -4,8 +4,8 @@ import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.Shared.domain.ValueObjects.Date;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -14,8 +14,8 @@ public class DroneTestHelper {
         SerialNumber sn = new SerialNumber(1);
         Model model = core.ModelOfDrone.domain.Entities.ModelTestHelper.createDummyModel();
 
-        Map<java.util.Date, String> reasons = new LinkedHashMap<>();
-        reasons.put(new java.util.Date(), "Motivo de teste");
+        Map<LocalDate, String> reasons = new LinkedHashMap<>();
+        reasons.put(LocalDate.now(), "Motivo de teste");
         RemovalReason reason = new RemovalReason(reasons);
 
         DroneStatus status = DroneStatus.ACTIVE;

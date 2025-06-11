@@ -3,8 +3,8 @@ package core.Maintenance.domain.Entities;
 import core.Drone.domain.Entities.Drone;
 import core.Drone.domain.Entities.DroneTestHelper;
 import core.Maintenance.domain.ValueObjects.MaintenanceID;
-import core.Shared.domain.ValueObjects.Date;
 import core.Shared.domain.ValueObjects.Description;
+import core.Shared.domain.ValueObjects.Name;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class MaintenanceTest {
 
     private final Drone dummyDrone = DroneTestHelper.createDummyDrone();
-    private final MaintenanceType type = new MaintenanceType("Verification");
+    private final MaintenanceType type = new MaintenanceType(new Name("Verification"));
     private final Description description = Description.valueOf("Verification after flight");
-    private final Date date = new Date(LocalDate.now());
+    private final LocalDate date = LocalDate.now();
 
     @Test
     void shouldCreateValidMaintenance() {

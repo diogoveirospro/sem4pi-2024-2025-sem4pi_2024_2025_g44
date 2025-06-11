@@ -123,13 +123,17 @@ public interface RepositoryFactory {
 
     ProposalDeliveryInfoRepository deliveries();
 
+    MaintenanceRepository maintenance(TransactionalContext autoTx);
+
+    MaintenanceRepository maintenance();
+
+    MaintenanceTypeRepository maintenanceTypes(TransactionalContext autoTx);
+
+    MaintenanceTypeRepository maintenanceTypes();
+
     // Reporting repositories
 
     ShowReportingRepository shows();
 
     DeliveryReportingRepository deliveriesReporting();
-
-    MaintenanceRepository maintenance();
-
-    MaintenanceTypeRepository maintenanceTypes();
 }

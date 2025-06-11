@@ -1,24 +1,27 @@
 package core.Maintenance.domain.Entities;
 
+import core.Shared.domain.ValueObjects.Name;
 import eapli.framework.domain.model.AggregateRoot;
+import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class MaintenanceType implements AggregateRoot<Long> {
+public class MaintenanceType implements Serializable, AggregateRoot<Designation> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Column(name = "type_name", unique = true, nullable = false)
+    private Name name;
 
     protected MaintenanceType() {}
 
-    public MaintenanceType(String name) {
-        if (name == null || name.isBlank())
+    public MaintenanceType(Name name) {
+        if (name == null || name.toString().isBlank())
             throw new IllegalArgumentException("Maintenance type name cannot be null or blank.");
         this.name = name;
     }
@@ -28,16 +31,16 @@ public class MaintenanceType implements AggregateRoot<Long> {
     }
 
     @Override
-    public Long identity() {
-        return id;
-    }
-
-    public String name() {
+    public Name identity() {
         return name;
     }
 
-    public void rename(String newName) {
-        if (newName == null || newName.isBlank())
+    public Name name() {
+        return name;
+    }
+
+    public void rename(Name newName) {
+        if (newName == null || newName.toString().isBlank())
             throw new IllegalArgumentException("New name cannot be null or blank.");
         this.name = newName;
     }
@@ -59,7 +62,7 @@ public class MaintenanceType implements AggregateRoot<Long> {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.name.toString();
     }
 
     @Override

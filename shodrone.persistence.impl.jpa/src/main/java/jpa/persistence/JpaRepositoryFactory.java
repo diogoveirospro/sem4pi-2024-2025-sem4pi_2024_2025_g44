@@ -220,8 +220,18 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 	}
 
 	@Override
+	public MaintenanceRepository maintenance(TransactionalContext autoTx) {
+		return new JpaMaintenanceRepository(autoTx);
+	}
+
+	@Override
 	public MaintenanceRepository maintenance() {
 		return new JpaMaintenanceRepository(Application.settings().persistenceUnitName());
+	}
+
+	@Override
+	public MaintenanceTypeRepository maintenanceTypes(TransactionalContext autoTx) {
+		return new JpaMaintenanceTypeRepository(autoTx);
 	}
 
 	@Override
