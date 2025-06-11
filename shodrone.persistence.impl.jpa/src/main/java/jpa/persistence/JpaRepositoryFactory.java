@@ -32,6 +32,7 @@ import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Drone.repositories.DroneRepository;
 import core.Figure.repositories.FigureRepository;
 import core.Maintenance.repositories.MaintenanceRepository;
+import core.Maintenance.repositories.MaintenanceTypeRepository;
 import core.ModelOfDrone.repositories.ModelRepository;
 import core.Persistence.RepositoryFactory;
 import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
@@ -223,4 +224,8 @@ public class JpaRepositoryFactory implements RepositoryFactory {
 		return new JpaMaintenanceRepository(Application.settings().persistenceUnitName());
 	}
 
+	@Override
+	public MaintenanceTypeRepository maintenanceTypes() {
+		return new JpaMaintenanceTypeRepository(Application.settings().persistenceUnitName());
+	}
 }

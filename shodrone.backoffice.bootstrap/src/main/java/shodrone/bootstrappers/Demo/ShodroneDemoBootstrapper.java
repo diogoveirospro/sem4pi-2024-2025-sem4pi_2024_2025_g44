@@ -31,6 +31,7 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.strings.util.Strings;
 import eapli.framework.validations.Invariants;
 import shodrone.bootstrappers.Demo.Backoffice.*;
+import shodrone.bootstrappers.MaintenanceTypeBootstrapper;
 import shodrone.presentation.UtilsUI;
 
 /**
@@ -58,7 +59,7 @@ public class ShodroneDemoBootstrapper implements Action {
                 new FigureBootstrapper(), new ModelBootstrapper(), new DroneBootstrapper(), new ShowRequestBootstrapper()};
 
         authenticateForBootstrapping();
-
+        new MaintenanceTypeBootstrapper().execute();
         // execute all bootstrapping
         boolean ret = true;
         for (final Action boot : actions) {
