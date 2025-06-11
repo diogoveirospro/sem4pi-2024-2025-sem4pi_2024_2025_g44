@@ -1,9 +1,6 @@
 package Shodrone.Server;
 
-import Shodrone.DTO.CustomerDTO;
-import Shodrone.DTO.ShodroneUserDTO;
-import Shodrone.DTO.ShowDTO;
-import Shodrone.DTO.ShowProposalDTO;
+import Shodrone.DTO.*;
 import Shodrone.exceptions.FailedRequestException;
 import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
 
@@ -255,18 +252,17 @@ public class MarshallerUnmarshaller {
         return false;
     }
 
-    public ProposalDeliveryInfoCode parseResponseMessageProposalDeliveryInfoCode(List<String> response)
-            throws FailedRequestException {
+    public ProposalDeliveryInfoCode parseResponseMessageProposalDeliveryInfoCode(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
 
         if (response.size() < 2) {
-            throw new IllegalArgumentException("Response does not contain enough data");
+            throw new IllegalArgumentException("Invalid response format. Expected at least 2 lines.");
         }
 
-        String line = response.get(1); // Assume a resposta vem na segunda linha
-        String code = line.replace("\"", "").trim(); // Limpeza de aspas e espaços
+        String filePath = response.get(1); // a segunda linha é o path do ficheiro
 
-        return new ProposalDeliveryInfoCode(code);
+        return new ProposalDeliveryInfoCode(filePath);
     }
+
 
 }

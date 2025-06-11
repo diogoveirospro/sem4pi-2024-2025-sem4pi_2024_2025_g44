@@ -9,10 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import Shodrone.DTO.CustomerDTO;
-import Shodrone.DTO.ShodroneUserDTO;
-import Shodrone.DTO.ShowDTO;
-import Shodrone.DTO.ShowProposalDTO;
+import Shodrone.DTO.*;
 import Shodrone.exceptions.FailedRequestException;
 import Shodrone.requests.*;
 import core.Persistence.Application;

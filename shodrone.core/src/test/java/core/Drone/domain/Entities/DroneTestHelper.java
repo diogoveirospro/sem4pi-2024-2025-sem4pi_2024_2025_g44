@@ -18,8 +18,6 @@ public class DroneTestHelper {
         reasons.put(LocalDate.now(), "Motivo de teste");
         RemovalReason reason = new RemovalReason(reasons);
 
-        DroneStatus status = DroneStatus.ACTIVE;
-
-        return new Drone(sn, model, reason, status);
+        return new Drone(sn, model, reason);
     }
 }

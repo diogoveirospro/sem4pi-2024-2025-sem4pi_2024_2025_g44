@@ -9,7 +9,7 @@ public class GetProposalDeliveryCodeRequest {
     }
 
     public String toRequest() {
-        return "GET_SHOWS " + proposalNumber;
+        return "GET_PROPOSAL_DELIVERY_CODE" + proposalNumber;
     }
 
     public String proposalNumber() {

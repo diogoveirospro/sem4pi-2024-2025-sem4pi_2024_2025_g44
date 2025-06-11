@@ -3,6 +3,7 @@ package core.Drone.domain.Entities;
 import core.Drone.domain.ValueObjects.DroneStatus;
 import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
+import core.Drone.domain.ValueObjects.UsageTime;
 import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ModelOfDrone.domain.ValueObjects.ModelName;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,8 @@ class DroneTest {
         reasons.put(now, wewe);
         removalReason = new RemovalReason(reasons);
         model = buildSampleModel();
-        drone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+        UsageTime usageTime = new UsageTime(LocalTime.of(0, 0));
+        drone = new Drone(serialNumber, model, removalReason);
     }
 
     @Test
@@ -49,8 +52,8 @@ class DroneTest {
         Drone otherDrone = new Drone(
                 new SerialNumber(9999),
                 buildSampleModel(),
-                new RemovalReason(new HashMap<>()),
-                DroneStatus.ACTIVE
+                new RemovalReason(new HashMap<>())
+
         );
 
         assertFalse(drone.sameAs(otherDrone));
@@ -69,7 +72,7 @@ class DroneTest {
 
     @Test
     void testIdentityEquality() {
-        Drone sameSerialDrone = new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+        Drone sameSerialDrone = new Drone(serialNumber, model, removalReason);
         assertEquals(drone.identity(), sameSerialDrone.identity());
     }
 

@@ -41,7 +41,7 @@ class ShowConfigurationEntryTest {
         String wewe = "Test";
         reasons.put(now, wewe);
         RemovalReason removalReason = new RemovalReason(reasons);
-        return new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+        return new Drone(serialNumber, model, removalReason);
     }
 
     private Model setUpModel() {
@@ -64,7 +64,7 @@ class ShowConfigurationEntryTest {
         String wewe = "Test2";
         reasons.put(now, wewe);
         RemovalReason removalReason = new RemovalReason(reasons);
-        return new Drone(serialNumber, model, removalReason, DroneStatus.ACTIVE);
+        return new Drone(serialNumber, model, removalReason);
     }
 
     private Model setUpModel2() {

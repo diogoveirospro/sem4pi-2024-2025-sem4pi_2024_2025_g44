@@ -34,13 +34,13 @@ public class Drone implements AggregateRoot<Designation> {
     @Embedded
     private ProgramingLanguage programingLanguage;
 
-    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason, DroneStatus droneStatus, ProgramingLanguage programingLanguage) {
+    public Drone (SerialNumber serialnumber, Model model, RemovalReason removalReason) {
         this.serialnumber = serialnumber;
         this.droneStatus = DroneStatus.ACTIVE;
         this.model = model;
         this.removalReason = removalReason;
         this.usageTime = new UsageTime(LocalTime.of(0, 0));
-        this.programingLanguage = programingLanguage;
+        this.programingLanguage = null;
     }
 
     protected Drone () {}
