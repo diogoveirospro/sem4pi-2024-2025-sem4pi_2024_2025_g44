@@ -59,11 +59,13 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    class MaintenanceType <<Entity>>{
-    }
-
-    Maintenance --> "1" MaintenanceType: type
     Drone --> "1..*" Maintenance: undergoes
+}
+
+package "MaintenanceType " <<aggregate>> {
+
+    class MaintenanceType <<Entity>> <<root>>{
+    }
 }
 
 package Shared {
@@ -79,8 +81,10 @@ package Shared {
 
     Maintenance ----> "1" Date: date
     Maintenance ----> "1" Description: description
+    Maintenance ----> "1" MaintenanceType: type
 
     Model ----> "1" Name: modelName
+    MaintenanceType ----> "1" Name: name
 }
 
 @enduml
