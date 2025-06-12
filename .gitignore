@@ -36,8 +36,13 @@ hs_err_pid*
 replay_pid*
 /.idea/
 
-# Figure Plugin
+# Plugins
 shodrone.plugin.figure/gen
 shodrone.plugin.drone/gen
 shodrone.plugin.show/gen
 shodrone.plugin.proposal/gen
+
+# SCOMP Files
+SCOMP/srcs/ReportFolder
+SCOMP/srcs/drone
+SCOMP/srcs/parent
