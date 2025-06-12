@@ -1,5 +1,6 @@
 package Shodrone.console.Simulator.ui;
 
+import Shodrone.console.Simulator.controller.SimulatorController;
 import Shodrone.exceptions.UserCancelledException;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
@@ -22,7 +23,7 @@ public class SimulateShowUI extends AbstractFancyUI {
     private static final String DEFAULT_INPUT_DIRECTORY = "DroneTests";
     private static final String DEFAULT_ABSOLUTE_INPUT_DIRECTORY = PATH + "/" + DEFAULT_INPUT_DIRECTORY;
     private static final String CONFIG_FILE_NAME = PATH + "/config.txt";
-    private static final String OUTPUT_DIRECTORY = "./ReportFolder";
+    private final SimulatorController controller = new SimulatorController();
 
     @Override
     protected boolean doShow() {
@@ -39,10 +40,10 @@ public class SimulateShowUI extends AbstractFancyUI {
             int time_step = enterValidTimeStep();
 
             try {
-                editarConfigFile(CONFIG_FILE_NAME, input_directory, max_collisions, num_drones,
+                controller.editConfigFile(CONFIG_FILE_NAME, input_directory, max_collisions, num_drones,
                         drone_radius, x_max, y_max, z_max, time_step);
                 System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nConfiguration file successfully updated!" + UtilsUI.RESET);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError writing to config file: " + e.getMessage() + UtilsUI.RESET);
                 return false;
             }
@@ -298,24 +299,5 @@ public class SimulateShowUI extends AbstractFancyUI {
                 continue;
             }
         } while (true);
-    }
-
-    public static void editarConfigFile(String configPath, String inputDir, int maxCollisions,
-                                        int numDrones, int droneRadius, int xMax, int yMax, int zMax, int timeStep)
-            throws IOException {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("INPUT_DIR=").append(inputDir).append("\n");
-        sb.append("OUTPUT_DIR=").append(OUTPUT_DIRECTORY).append("\n");
-        sb.append("MAX_COLLISIONS=").append(maxCollisions).append("\n");
-        sb.append("NUM_DRONES=").append(numDrones).append("\n");
-        sb.append("DRONE_RADIUS=").append(droneRadius).append("\n");
-        sb.append("X_MAX=").append(xMax).append("\n");
-        sb.append("Y_MAX=").append(yMax).append("\n");
-        sb.append("Z_MAX=").append(zMax).append("\n");
-        sb.append("TIME_STEP=").append(timeStep).append("\n");
-
-        Files.write(Paths.get(configPath), sb.toString().getBytes(StandardCharsets.UTF_8),
-                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
     }
 }

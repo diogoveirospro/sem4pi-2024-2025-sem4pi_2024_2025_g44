@@ -52,6 +52,7 @@ public class AppSettings {
     private static final String SERVER_PORT = "shodrone.server.port";
     private static final String DATABASE_PORT = "shodrone.database.port";
     private static final String SERVER_IP = "shodrone.server.ip";
+    private static final String REPORT_PATH = "simulation.report.path";
     private static final String TEMPLATE_PATH_PORTUGUESE = "templates.proposal.portuguese";
     private static final String TEMPLATE_PATH_ENGLISH = "templates.proposal.englishRegular";
     private static final String TEMPLATE_PATH_ENGLISH_VIP = "templates.proposal.englishVIP";
@@ -129,6 +130,10 @@ public class AppSettings {
 
     public String getTemplatePathEnglishVIP() {
         return applicationProperties.getProperty(TEMPLATE_PATH_ENGLISH_VIP);
+    }
+
+    public String getReportPath() {
+        return applicationProperties.getProperty(REPORT_PATH);
     }
 
     public String getProperty(final String prop) {

@@ -23,6 +23,7 @@
         <module>shodrone.plugins</module>
         <module>shodrone.daemon.user</module>
         <module>shodrone.app.testing</module>
+        <module>shodrone.daemon.simulator</module>
     </modules>
 	<version>0.1.0</version>
 
