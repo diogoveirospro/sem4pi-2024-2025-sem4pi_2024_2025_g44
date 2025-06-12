@@ -1,15 +1,12 @@
 package Server;
 
-import Server.protocol.EditConfigRequest;
+import Server.protocol.*;
 import core.Daemon.customerApp.Controller.UserAppServerController;
 import core.Daemon.simulation.Controller.SimulatorServerController;
 import eapli.framework.csv.util.CsvLineMarshaler;
 import eapli.framework.infrastructure.authz.application.Authenticator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import Server.protocol.BadRequest;
-import Server.protocol.UnknownRequest;
-import Server.protocol.UserAppRequest;
 
 /**
  * Parses messages from the customer app and builds the corresponding request objects.
@@ -71,12 +68,29 @@ public class SimulatorMessageParser {
                 request = parseEditConfig(inputLine, tokens);
             }
 
+            if ("GENERATE_SIMULATION_REPORT".equals( command)) {
+                request = parseGenerateSimulationReport(inputLine, tokens);
+            }
+
         } catch (final Exception e) {
             LOGGER.info("Unable to parse request: {}", inputLine);
             request = new BadRequest(inputLine, "Unable to parse request");
         }
 
         return request;
+    }
+
+    private UserAppRequest parseGenerateSimulationReport(String inputLine, String[] tokens) {
+        if (tokens.length != 2) {
+            return new BadRequest(inputLine, "Wrong number of parameters");
+        } else {
+            try {
+                String path = CsvLineMarshaler.unquote(tokens[1]);
+                return new GenerateSimulationReportRequest(getController(), inputLine, path);
+            } catch (Exception e) {
+                return new BadRequest(inputLine, "Invalid parameter format");
+            }
+        }
     }
 
     private UserAppRequest parseEditConfig(String inputLine, String[] tokens) {

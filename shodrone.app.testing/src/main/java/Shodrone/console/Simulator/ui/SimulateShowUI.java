@@ -1,6 +1,7 @@
 package Shodrone.console.Simulator.ui;
 
 import Shodrone.console.Simulator.controller.SimulatorController;
+import Shodrone.exceptions.FailedRequestException;
 import Shodrone.exceptions.UserCancelledException;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
@@ -59,13 +60,13 @@ public class SimulateShowUI extends AbstractFancyUI {
             System.out.println(UtilsUI.BOLD + "TIME_STEP = " + UtilsUI.RESET + time_step);
 
             System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n-> You will be redirected to the simulator in 3 seconds..." + UtilsUI.RESET);
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
 
-            UtilsUI.openCodeInC(PATH);
+            try {
+                controller.simulateAndGenerateReport(PATH);
+            } catch (Exception e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError during simulation: " + e.getMessage() + UtilsUI.RESET);
+                return false;
+            }
 
             boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to return to the main menu? (y/n): " + UtilsUI.RESET);
 

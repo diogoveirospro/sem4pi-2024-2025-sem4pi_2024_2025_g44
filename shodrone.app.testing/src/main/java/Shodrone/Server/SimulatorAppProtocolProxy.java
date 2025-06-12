@@ -82,5 +82,16 @@ public class SimulatorAppProtocolProxy {
         marshallerUnmarshaller.verifyIfConfigWasEdited(response);
     }
 
+    public void generateSimulationReport(String path) throws IOException, FailedRequestException {
+        final var socket = new SimulatorSocket();
+        socket.connect();
+        final String request = new GenerateSimutationReportRequest(path).toRequest();
+        List <String> response = socket.sendAndReceive(request);
+        socket.stop();
+        final MarshallerUnmarshaller marshallerUnmarshaller = new MarshallerUnmarshaller();
+        marshallerUnmarshaller.generateReportIfResponseIsCorrect(response);
+    }
+
+
 
 }

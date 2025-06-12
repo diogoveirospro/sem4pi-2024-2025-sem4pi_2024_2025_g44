@@ -1,7 +1,11 @@
 package Shodrone.console.Simulator.controller;
 
 import Shodrone.Server.SimulatorAppProtocolProxy;
+import Shodrone.exceptions.FailedRequestException;
 import eapli.framework.application.UseCaseController;
+import shodrone.presentation.UtilsUI;
+
+import java.io.IOException;
 
 @UseCaseController
 public class SimulatorController {
@@ -12,4 +16,13 @@ public class SimulatorController {
     }
 
 
+    public void simulateAndGenerateReport(String path) throws FailedRequestException, IOException {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        server.generateSimulationReport(path);
+    }
 }
