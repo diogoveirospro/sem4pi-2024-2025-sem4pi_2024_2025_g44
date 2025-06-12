@@ -212,7 +212,7 @@ public class MarshallerUnmarshaller {
         for (String line : response) {
             List<String> tokens = splitRespectingQuotes(line);
 
-            if (tokens.size() < 4) {
+            if (tokens.size() < 5) {
                 throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
             }
 
