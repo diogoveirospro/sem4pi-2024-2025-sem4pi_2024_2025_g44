@@ -1,8 +1,10 @@
 package Shodrone.console.Menu;
 
 import Shodrone.console.Simulator.Actions.TestingAction;
+import Shodrone.console.Simulator.ui.SimulateShowUI;
 import core.Persistence.Application;
 import core.User.domain.ShodroneRoles;
+import eapli.framework.actions.Actions;
 import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -44,8 +46,9 @@ public class MainMenu extends AbstractFancyUI {
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int TESTING = 2;
+    private static final int TESTING_MENU = 2;
 
+    private static final int SIMULATOR = 1;
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -94,7 +97,8 @@ public class MainMenu extends AbstractFancyUI {
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.DRONETECH, ShodroneRoles.POWER_USER)) {
-            mainMenu.addItem(TESTING, "Testing Show", new TestingAction());
+            final SubMenu simulatorMenu = buildSimulatorManu();
+            mainMenu.addSubMenu( TESTING_MENU, simulatorMenu);
         }
 
         if (!Application.settings().isMenuLayoutHorizontal()) {
@@ -107,4 +111,11 @@ public class MainMenu extends AbstractFancyUI {
     }
 
 
+    private SubMenu buildSimulatorManu() {
+        final SubMenu menu = new SubMenu("Simulator", SHOW_MENU_TITLE);
+
+        menu.addItem( SIMULATOR, "Simulate a Show", new TestingAction());
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+        return menu;
+    }
 }

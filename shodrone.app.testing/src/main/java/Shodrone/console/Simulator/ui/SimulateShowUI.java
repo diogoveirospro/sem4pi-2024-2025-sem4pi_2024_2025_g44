@@ -26,43 +26,54 @@ public class SimulateShowUI extends AbstractFancyUI {
 
     @Override
     protected boolean doShow() {
+        boolean keepRunning = true;
 
-        String input_directory = chooseInputDirectory();
-        int max_collisions = enterValidMaxCollisions();
-        int num_drones = enterValidNumDrones();
-        int drone_radius = enterValidDroneRadius();
-        int x_max = enterValidXMax();
-        int y_max = enterValidYMax();
-        int z_max = enterValidZMax();
-        int time_step = enterValidTimeStep();
+        while (keepRunning) {
+            String input_directory = chooseInputDirectory();
+            int max_collisions = enterValidMaxCollisions();
+            int num_drones = enterValidNumDrones();
+            int drone_radius = enterValidDroneRadius();
+            int x_max = enterValidXMax();
+            int y_max = enterValidYMax();
+            int z_max = enterValidZMax();
+            int time_step = enterValidTimeStep();
 
-        try{
-            editarConfigFile(CONFIG_FILE_NAME, input_directory, max_collisions, num_drones,
-                    drone_radius, x_max, y_max, z_max, time_step);
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nConfiguration file successfully updated!" + UtilsUI.RESET);
-        } catch (IOException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError writing to config file: " + e.getMessage() + UtilsUI.RESET);
-            return false;
+            try {
+                editarConfigFile(CONFIG_FILE_NAME, input_directory, max_collisions, num_drones,
+                        drone_radius, x_max, y_max, z_max, time_step);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nConfiguration file successfully updated!" + UtilsUI.RESET);
+            } catch (IOException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError writing to config file: " + e.getMessage() + UtilsUI.RESET);
+                return false;
+            }
+
+            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nThese were the selected configurations:" + UtilsUI.RESET);
+            System.out.println(UtilsUI.BOLD + "INPUT_DIR = " + UtilsUI.RESET + input_directory);
+            System.out.println(UtilsUI.BOLD + "MAX_COLLISIONS = " + UtilsUI.RESET + max_collisions);
+            System.out.println(UtilsUI.BOLD + "NUM_DRONES = " + UtilsUI.RESET + num_drones);
+            System.out.println(UtilsUI.BOLD + "DRONE_RADIUS = " + UtilsUI.RESET + drone_radius);
+            System.out.println(UtilsUI.BOLD + "X_MAX = " + UtilsUI.RESET + x_max);
+            System.out.println(UtilsUI.BOLD + "Y_MAX = " + UtilsUI.RESET + y_max);
+            System.out.println(UtilsUI.BOLD + "Z_MAX = " + UtilsUI.RESET + z_max);
+            System.out.println(UtilsUI.BOLD + "TIME_STEP = " + UtilsUI.RESET + time_step);
+
+            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n-> You will be redirected to the simulator in 3 seconds..." + UtilsUI.RESET);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            UtilsUI.openCodeInC(PATH);
+
+            boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to return to the main menu? (y/n): " + UtilsUI.RESET);
+
+            if (confirm) {
+                keepRunning = false;
+                System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+            }
         }
 
-        System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nThese were the selected configurations:" + UtilsUI.RESET);
-        System.out.println(UtilsUI.BOLD + "INPUT_DIR = " + UtilsUI.RESET + input_directory);
-        System.out.println(UtilsUI.BOLD + "MAX_COLLISIONS = " + UtilsUI.RESET + max_collisions);
-        System.out.println(UtilsUI.BOLD + "NUM_DRONES = " + UtilsUI.RESET + num_drones);
-        System.out.println(UtilsUI.BOLD + "DRONE_RADIUS = " + UtilsUI.RESET + drone_radius);
-        System.out.println(UtilsUI.BOLD + "X_MAX = " + UtilsUI.RESET + x_max);
-        System.out.println(UtilsUI.BOLD + "Y_MAX = " + UtilsUI.RESET + y_max);
-        System.out.println(UtilsUI.BOLD + "Z_MAX = " + UtilsUI.RESET + z_max);
-        System.out.println(UtilsUI.BOLD + "TIME_STEP = " + UtilsUI.RESET + time_step);
-
-        System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n-> You will be redirected to the simulator in 3 seconds..." + UtilsUI.RESET);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        UtilsUI.openCodeInC(PATH);
         return true;
     }
 
