@@ -112,7 +112,7 @@ int valid_position(Position p)
   return 1;
 }
 
-void run_script(char *filename, int drone_id)
+void run_script(char *filename)
 {
   FILE *f = open_file(filename);
 
@@ -198,7 +198,7 @@ void start_working()
   char *filename = build_filename(s.id, s.inp_dir);
 
   fprintf(stderr, "Running script for drone %d\n", s.id);
-  run_script(filename, s.id);
+  run_script(filename);
 }
 
 // Starts shared memory and semaphore

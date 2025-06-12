@@ -30,6 +30,7 @@ int **collision_state = NULL; // 0: no collision, 1: collision
 SharedMemory *shared_mem = NULL;
 size_t shm_size = 0;
 int shm_fd = 0;
+sem_t **semaphores = NULL;
 
 void end()
 {
@@ -267,29 +268,18 @@ int manage_drones(int iter)
   int msg_received_cnt = 0;
   int msg_expected_cnt = s.active_drones;
 
-  int i = 0;
-  while (msg_received_cnt < msg_expected_cnt && i < c.num_drones) {
-    fprintf( stderr, "Parent: Loop for drone %d\n", i + 1);
-    if (s.finished[i]) {
-      i++;
+  for (int i = 0; i < c.num_drones && msg_received_cnt < msg_expected_cnt; i++) {
+    if (s.finished[i])
       continue;
-    }
 
-    fprintf( stderr, "Parent: Waiting for drone %d\n", i + 1);
-    char sem_name[64];
-    snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-    sem_t *sem = open_semaphore(sem_name);
-    fprintf( stderr, "Parent: Starting drone %d\n", i + 1);
-    wait_semaphore(sem);
-    sem_close(sem);
-    fprintf( stderr, "Parent: Stopped drone %d\n", i + 1);
+    fprintf(stderr, "Parent: Waiting for drone %d\n", i + 1);
+    wait_semaphore(semaphores[i]);
+    fprintf(stderr, "Parent: Received from drone %d\n", i + 1);
 
     SharedDroneState *drone = &shared_mem->drones[i];
-
     update_position(i, iter, drone);
 
     msg_received_cnt++;
-    i++;
   }
 
   if (s.active_drones == 0)
@@ -312,14 +302,9 @@ int process_position(int iter)
 // send green flag to specific child
 void send_green_flag(int i)
 {
-  char sem_name[64];
-  snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-  sem_t *sem = open_semaphore(sem_name);
-  post_semaphore(sem); // signal the drone to continue
-  sem_close(sem);
+  post_semaphore(semaphores[i]);
 }
 
-// sends green flag to all drones
 void sync_drones()
 {
   for (int i = 0; i < c.num_drones; i++) {
@@ -475,9 +460,7 @@ void terminate()
     for (int i = 0; i < c.num_drones; i++) {
         char sem_name[64];
         snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-        sem_t *sem = open_semaphore(sem_name);
-        if (sem) {
-            sem_close(sem);
+        if (semaphores[i]) {
             clear_semaphore(sem_name, NULL); // Unlink
         }
     }
@@ -542,12 +525,17 @@ void allocate_structs()
     shm->collision_log[i].timestamp = -1.0f;
   }
 
+  semaphores = malloc(sizeof(sem_t *) * c.num_drones);
+  if (!semaphores) {
+    fprintf(stderr, "Error while allocating semaphores\n");
+    end();
+  }
+
   // Semaphores for each drone
   for (int i = 0; i < c.num_drones; i++) {
     char sem_name[64];
     snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-    sem_t *sem = init_semaphore(sem_name, 0);
-    sem_close(sem);
+    semaphores[i] = init_semaphore(sem_name, 0);
   }
 
   // Global pointer para shared memory
@@ -611,11 +599,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < c.num_drones; i++) {
     char sem_name[64];
     snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-    sem_t *sem = sem_open(sem_name, 0);
-    if (sem != SEM_FAILED) {
-      sem_close(sem);
-    }
-    sem_unlink(sem_name);
+    clear_semaphore(sem_name, NULL); // Unlink semaphore
   }
 
   //debug_config_file();
