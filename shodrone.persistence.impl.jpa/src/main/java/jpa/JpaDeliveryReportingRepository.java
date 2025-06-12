@@ -1,5 +1,6 @@
 package jpa;
 
+import core.Customer.domain.ValueObjects.VatNumber;
 import core.Daemon.reporting.proposals.DeliveryReporting;
 import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Persistence.Application;
@@ -55,7 +56,7 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
                 "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vat = :vatNumber",
                 ProposalDeliveryInfo.class
         );
-        query.setParameter("vatNumber", vatNumber);
+        query.setParameter("vatNumber", new VatNumber(vatNumber));
         List<ProposalDeliveryInfo> results = query.getResultList();
         return makeDeliveryReportings(results);
     }

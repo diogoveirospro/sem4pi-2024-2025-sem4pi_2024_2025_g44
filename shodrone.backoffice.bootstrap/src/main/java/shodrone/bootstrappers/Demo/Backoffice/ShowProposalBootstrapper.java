@@ -119,7 +119,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
         );
 
         // With Figures
-        Set<Figure> figuresSet1 = new HashSet<>();
+        List<Figure> figuresSet1 = new ArrayList<>();
         figuresSet1.add(figures.get(2));
         figuresSet1.add(figures.get(3));
         figuresSet1.add(figures.get(4));
@@ -134,7 +134,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
                 figuresSet1
         );
 
-        Set<Figure> figuresSet2 = new HashSet<>();
+        List<Figure> figuresSet2 = new ArrayList<>();
         figuresSet2.add(figures.get(5));
         figuresSet2.add(figures.get(6));
         figuresSet2.add(figures.get(7));
@@ -150,7 +150,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
                 figuresSet2
         );
 
-        Set<Figure> figuresSet3 = new HashSet<>();
+        List<Figure> figuresSet3 = new ArrayList<>();
         figuresSet3.add(figures.get(9));
         figuresSet3.add(figures.get(10));
         figuresSet3.add(figures.get(11));
@@ -417,7 +417,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
 
     private void registerWithFigures(ShowRequest showRequest, LocalDate date, LocalTime time,
                                    Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance,
-                                    CRMCollaborator collaborator, Set<Figure> figures) {
+                                    CRMCollaborator collaborator, List<Figure> figures) {
 
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
                 collaborator);
@@ -432,7 +432,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
 
     private void registerWithDronesAndFigures(ShowRequest showRequest, LocalDate date, LocalTime time,
                                      Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance,
-                                              CRMCollaborator collaborator, Map<Model, Set<Drone>> drones, Set<Figure> figures) {
+                                              CRMCollaborator collaborator, Map<Model, Set<Drone>> drones, List<Figure> figures) {
 
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
                 collaborator);
@@ -465,7 +465,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     private void registerWithAll(ShowRequest showRequest, LocalDate date, LocalTime time,
                                  Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance,
                                  CRMCollaborator collaborator, Map<Model, Set<Drone>> drones,
-                                 Set<Figure> figures, Video video) {
+                                 List<Figure> figures, Video video) {
 
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
                 collaborator);
@@ -483,7 +483,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     private void registerWithDocument(ShowRequest showRequest, LocalDate date, LocalTime time,
                                       Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance,
                                       CRMCollaborator collaborator, Map<Model, Set<Drone>> drones,
-                                      Set<Figure> figures, Video video, String template, CRMManager crmManager) {
+                                      List<Figure> figures, Video video, String template, CRMManager crmManager) {
 
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
                 collaborator);
@@ -504,7 +504,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     private void registerAccepted(ShowRequest showRequest, LocalDate date, LocalTime time,
                                   Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance,
                                   CRMCollaborator collaborator, Map<Model, Set<Drone>> drones,
-                                  Set<Figure> figures, Video video, String template, CRMManager crmManager) {
+                                  List<Figure> figures, Video video, String template, CRMManager crmManager) {
 
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
                 collaborator);
@@ -543,12 +543,12 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
         return showProposal;
     }
 
-    private ShowProposal addFigures(ShowProposal showProposal, Set<Figure> figures, ShowConfigurationBuilder builder) {
-
-        builder.addFigures(figures);
+    private ShowProposal addFigures(ShowProposal showProposal, List<Figure> figures, ShowConfigurationBuilder builder) {
 
         ShowConfiguration showConfiguration = builder.build();
         showProposal.addConfiguration(showConfiguration);
+
+        showProposal.configuration().addFigures(figures);
 
         return showProposal;
     }
