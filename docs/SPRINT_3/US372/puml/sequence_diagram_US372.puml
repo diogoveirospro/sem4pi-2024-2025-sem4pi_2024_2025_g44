@@ -1,7 +1,7 @@
 @startuml
 actor "Customer" as User
-participant "ShowDatesUi" as UI
-participant "ShowDatesController" as Controller
+participant "ScheduledShowsUi" as UI
+participant "ScheduledShowsController" as Controller
 participant "CustomerAppProtocolProxy" as Proxy
 participant "GetShodroneUserRequest" as RequestUser
 participant "ClientSocket" as Socket
@@ -23,7 +23,7 @@ activate User
 User -> UI : request to show info of a show
 activate UI
 
-UI -> Controller : listShows()
+UI -> Controller : listShowS()
 activate Controller
 
 Controller -> Proxy : getShodroneUser(authenticatedUser)
