@@ -45,7 +45,7 @@ public class GetPropByCodeRequest extends UserAppRequest {
     private String buildResponse(DeliveryReporting proposal) { StringBuilder sb = new StringBuilder();
         sb.append("\"PROPOSAL_NUMBER\", \"DATE_OF_PROPOSAL\", \"TIME_OF_PROPOSAL\", ")
                 .append("\"SHOW_DURATION\", \"SHOW_LOCATION\", \"File Bytes\"\n");
-        sb.append("\"").append("\"").append(proposal.proposalNumber.proposalNumber()).append("\", ")
+        sb.append("\"").append(proposal.proposalNumber.proposalNumber()).append("\", ")
                 .append("\"").append(proposal.dateOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.timeOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.showDuration.toString()).append("\", ")

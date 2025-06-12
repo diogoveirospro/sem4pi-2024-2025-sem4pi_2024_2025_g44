@@ -267,7 +267,9 @@ public class MarshallerUnmarshaller {
 
     public ShowProposalDTO parseResponseMessageProposalByCode(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
-
+        if (response == null || response.size() < 2) {
+            throw new IllegalArgumentException("Invalid response format: missing data line.");
+        }
         response.remove(0);
 
 
