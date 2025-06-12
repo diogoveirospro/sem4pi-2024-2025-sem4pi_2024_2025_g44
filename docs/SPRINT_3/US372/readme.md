@@ -1,86 +1,98 @@
-# US 101
-
-*This is an example template*
+# US 372
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This user story is part of Sprint 3 and introduces the functionality that allows a **Customer** list all of his
+scheduled shows.
 
 ### 1.1 List of issues
 
-Analysis:
+Analysis: Doing
 
-Design:
+Design: Doing
 
-Implement:
+Implement: To do
 
-Test:
-
+Test: ⚪ Not Applicable
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
-
-*Example*
-
-**US G101** As {Ator} I Want...
+**As** a Customer,
+<br>
+**I want** to get the list of scheduled shows,
+<br>
+**So that** I can keep track of my current shows.
 
 **Acceptance Criteria:**
 
-- US101.1 The system should...Blá Blá Blá ...
-
-- US101.2. Blá Blá Blá ...
+- US372.1: The Customer must be able to see the list of scheduled shows.
+- US372.2: Sockets should be used to retrieve the show dates.
 
 **Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+This requirement depends on [US371](../../SPRINT_3/US371/readme.md), as a proposal must be accepted before we can get
+the show date, until accepted the show won't be scheduled.
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+It is important that the customer can visualise the dates of scheduled shows.
+
+This is possible because in terms of domain as the proposal as a relation of many-to-one with the request and the
+request as a many-to-one relation with customer.
+
+Other elements not relevant to this functionality are omitted for simplicity.
+
+![Relation show proposal](../../global_artifacts/analysis/images/domain_model_show_proposal.svg "Domain Model")
+
+![Relation show request](../../global_artifacts/analysis/images/domain_model_show_request.svg "Domain Model")
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+In this section, we describe the design approach adopted for implementing **US372 - List Scheduled Shows**. The
+sequence diagram defines the main components involved in showing the list of scheduled shows to a user, showing a clear
+separation of concerns between the UI, application logic, domain model, and persistence layer. And a clear separation
+of user app and server app.
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
-
-### 4.3. Applied Patterns
-
-### 4.4. Acceptance Tests
-
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
-
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
-
-
-```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
-}
-````
+![A Sequence Diagram](images/sequence_diagram_US372.svg "A Sequence Diagram")
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+The implementation of US372 is based on the design and analysis presented in the previous sections. The code is
+organized into packages that reflect the domain model, application logic, and user interface.
+We included the necessary classes and methods to support the demonstration of the information of a show. And didn't
+diverge from the design.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+To integrate the new functionality with the existing system, we followed these steps:
+
+1. **Persistence Layer**: To connect the new functionality with the database, we used the existing repository pattern.
+   The `ShowReportingRepository` was created to include both show proposal and request information.
+2. **Controller Layer**: The controller was updated to include methods for handling requests related to the showing of a
+   show. This includes methods for retrieving show information, validating the input, and sending it to the client.
+3. **UI Layer**: The user interface was updated to include forms and views for viewing the shows. This includes input
+   validation and error handling.
+4. **Socket Communication**: We implemented socket communication to allow the user application to request show
+   information from the server application. The server listens for incoming requests and responds with the relevant show
+   details.
+5. **Reporting Repository**: A custom repository was created to handle the retrieval of show proposal and request
+   information, allowing for efficient querying and data retrieval.
 
 ## 6. Integration/Demonstration
 
-*In this section the team should describe the efforts realized in order to integrate this functionality with the other parts/components of the system*
+To demonstrate the functionality, follow these steps:
 
-*It is also important to explain any scripts or instructions required to execute an demonstrate this functionality*
+1. **Launch the application via the user application**.
+2. **Log in as a Representative of a Customer**.
+3. Navigate to the **Show dates** section.
+4. The app will show all the shows with the dates.
 
 ## 7. Observations
 
 *This section should be used to include any content that does not fit any of the previous sections.*
 
-*The team should present here, for instance, a critical prespective on the developed work including the analysis of alternative solutioons or related works*
+*The team should present here, for instance, a critical prespective on the developed work including the analysis of
+alternative solutioons or related works*
 
-*The team should include in this section statements/references regarding third party works that were used in the development this work.*
+*The team should include in this section statements/references regarding third party works that were used in the
+development this work.*

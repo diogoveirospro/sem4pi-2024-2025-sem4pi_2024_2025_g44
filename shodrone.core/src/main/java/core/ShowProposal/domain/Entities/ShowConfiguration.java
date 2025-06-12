@@ -23,11 +23,10 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     @JoinTable(name = "drones")
     private List<ShowConfigurationEntry> configurationDrones = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(
+    @ElementCollection
+    @CollectionTable(
             name = "show_configuration_figures",
-            joinColumns = @JoinColumn(name = "configuration_id"), // Column in the join table referencing ShowConfiguration
-            inverseJoinColumns = @JoinColumn(name = "figure_id") // Column in the join table referencing Figure
+            joinColumns = @JoinColumn(name = "configuration_id") // Column in the join table referencing ShowConfiguration
     )
     private List<ShowConfigurationFigure> figures = new ArrayList<>();
 

@@ -1,23 +1,17 @@
 package core.ShowProposal.domain.Entities;
 
 import core.Figure.domain.Entities.Figure;
-import jakarta.persistence.*;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToOne;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
+@Embeddable
 public class ShowConfigurationFigure implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne(optional = false)
     private Figure figure;
-
-    @Version
-    private Long version;
 
     protected ShowConfigurationFigure() {
         // For JPA

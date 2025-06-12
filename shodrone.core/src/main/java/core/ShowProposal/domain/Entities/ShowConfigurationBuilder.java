@@ -21,21 +21,6 @@ public class ShowConfigurationBuilder {
         return this;
     }
 
-    public ShowConfigurationBuilder addFigure(Figure figure) {
-        if (!figures.isEmpty() && figures.get(figures.size() - 1).equals(figure)) {
-            throw new IllegalArgumentException("Cannot add the same figure consecutively.");
-        }
-        this.figures.add(figure);
-        return this;
-    }
-
-    public ShowConfigurationBuilder addFigures(Collection<Figure> figures) {
-        for (Figure figure : figures) {
-            addFigure(figure);
-        }
-        return this;
-    }
-
     public ShowConfiguration build() {
         ShowConfiguration configuration = new ShowConfiguration();
 

@@ -1,5 +1,6 @@
 package jpa;
 
+import core.Customer.domain.ValueObjects.VatNumber;
 import core.Daemon.reporting.proposals.DeliveryReporting;
 import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Persistence.Application;
@@ -52,10 +53,10 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
     @Override
     public List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber) {
         final TypedQuery<ProposalDeliveryInfo> query = entityManager().createQuery(
-                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vatNumber = :vatNumber",
+                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vat = :vatNumber",
                 ProposalDeliveryInfo.class
         );
-        query.setParameter("vatNumber", vatNumber);
+        query.setParameter("vatNumber", new VatNumber(vatNumber));
         List<ProposalDeliveryInfo> results = query.getResultList();
         return makeDeliveryReportings(results);
     }
