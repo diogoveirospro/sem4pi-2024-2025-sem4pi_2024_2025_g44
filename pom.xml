@@ -22,6 +22,7 @@
         <module>shodrone.plugin.show</module>
         <module>shodrone.plugins</module>
         <module>shodrone.daemon.user</module>
+        <module>shodrone.app.testing</module>
     </modules>
 	<version>0.1.0</version>
 
