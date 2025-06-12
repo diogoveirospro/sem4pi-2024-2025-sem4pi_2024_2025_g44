@@ -230,6 +230,9 @@ package "ShowProposal " <<aggregate>>{
     class ShowConfiguration <<Entity>>{
     }
 
+    class ShowConfigurationFigure <<Value Object>>{
+    }
+
     class Video <<Value Object>>{
     }
 
@@ -263,7 +266,8 @@ package "ShowProposal " <<aggregate>>{
 
     'ShowConfiguration -> x
     ShowConfiguration --> "1..*" Model: models
-    ShowConfiguration --> "1..*" Figure: figures
+    ShowConfiguration --> "1..*" ShowConfigurationFigure: figures
+    ShowConfigurationFigure --> "1..1" Figure: figure
     ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
 
 }
