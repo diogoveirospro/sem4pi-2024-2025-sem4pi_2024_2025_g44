@@ -314,9 +314,6 @@ public class MainMenu extends AbstractFancyUI {
 
             final SubMenu showProposalsMenu = buildShowProposalsDroneTechMenu();
             mainMenu.addSubMenu(DRONE_TECH_SHOW_PROPOSALS_MENU, showProposalsMenu);
-
-            final SubMenu simulatorMenu = buildSimulatorManu();
-            mainMenu.addSubMenu(SIMULATOR_MENU, simulatorMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER)) {
@@ -340,9 +337,6 @@ public class MainMenu extends AbstractFancyUI {
 
             final SubMenu dronesMenu = buildDronesMenu();
             mainMenu.addSubMenu(POWER_USER_DRONE_MENU, dronesMenu);
-
-            final SubMenu simulatorMenu = buildSimulatorManu();
-            mainMenu.addSubMenu(POWER_USER_SIMULATOR_MENU, simulatorMenu);
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
@@ -512,14 +506,6 @@ public class MainMenu extends AbstractFancyUI {
 
         menu.addItem(DRONE_TECH_GENERATE_SHOW_DSL_OPTION, "Generate Show DSL", new GenerateShowDSLUI()::show);
         menu.addItem(DRONE_TECH_REGISTER_USAGE_TIME_OPTION, "Register Usage Time for Drone", new RegisterUsageTimeUI()::show);
-        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
-        return menu;
-    }
-
-    private SubMenu buildSimulatorManu() {
-        final SubMenu menu = new SubMenu("Simulator", SIMULATOR_MENU_TITLE);
-
-        menu.addItem(SIMULATE_SHOW_OPTION, "Simulate a Show", new SimulateShowUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
