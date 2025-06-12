@@ -3,8 +3,13 @@ package core.Daemon.simulation.Controller;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class SimulatorServerController {
 
@@ -57,5 +62,34 @@ public class SimulatorServerController {
         }
 
 
+    }
+    /**
+     * Generates a simulation report by reading the most recent file in the specified directory.
+     *
+     * @param path The directory path where the simulation report files are stored.
+     * @return A list of strings containing the report, with the first element being the file path.
+     */
+    public List<String> generateSimulationReport(String path) {
+        List<String> report = new ArrayList<>();
+        try {
+            // Obtain the most recent file in the specified directory
+            Path dirPath = Paths.get(path);
+            try (Stream<Path> files = Files.list(dirPath)) {
+                Path mostRecentFile = files
+                        .filter(Files::isRegularFile)
+                        .max(Comparator.comparingLong(f -> f.toFile().lastModified()))
+                        .orElseThrow(() -> new IOException("No files found in the directory"));
+
+                // Adds the path of the most recent file to the report
+                report.add(mostRecentFile.toString());
+
+                // Reads the content of the most recent file and adds it to the report
+                List<String> fileContent = Files.readAllLines(mostRecentFile, StandardCharsets.UTF_8);
+                report.addAll(fileContent);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading simulation report: " + e.getMessage());
+        }
+        return report;
     }
 }

@@ -1,7 +1,12 @@
 package Shodrone.Server;
 
 import Shodrone.exceptions.FailedRequestException;
+import core.Persistence.Application;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +17,8 @@ import java.util.List;
  * show, proposal, and feedback responses.
  */
 public class MarshallerUnmarshaller {
+
+    private static final String REPORT_FOLDER = Application.settings().getReportPath();
 
     /**
      * Checks the response for error messages and throws an exception if an error is found.
@@ -47,5 +54,30 @@ public class MarshallerUnmarshaller {
         }
 
         System.out.println(tokens[1].trim().replace("\"", ""));
+    }
+
+    private void verifyResponseFormat(List<String> response) throws FailedRequestException {
+        if (response == null || response.isEmpty()) {
+            throw new FailedRequestException("Response is null or empty");
+        }
+
+        String firstLine = response.get(0);
+        if (!firstLine.startsWith("/")) {
+            throw new FailedRequestException("Invalid format: First line must be a file path");
+        }
+    }
+
+    public void generateReportIfResponseIsCorrect(List<String> response) throws FailedRequestException {
+        // Verify if the response is well-formed
+        verifyResponseFormat(response);
+
+        // Generate the report
+        String reportPath = REPORT_FOLDER + "/simulation_report.txt";
+        try {
+            Files.write(Paths.get(reportPath), response, StandardCharsets.UTF_8);
+            System.out.println("Report generated successfully at: " + reportPath);
+        } catch (IOException e) {
+            throw new FailedRequestException("Failed to generate report: " + e.getMessage());
+        }
     }
 }
