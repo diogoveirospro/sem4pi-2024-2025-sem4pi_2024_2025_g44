@@ -1,9 +1,11 @@
 package Shodrone.console.ShowProposal.ui;
 
+import Shodrone.console.ShowProposal.printer.AnotherShowProposalPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.ShowProposal.application.GenerateShowDSLController;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.ShowDSLDescription;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -11,6 +13,12 @@ import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +40,7 @@ public class GenerateShowDSLUI extends AbstractFancyUI {
 
                 if (success){
                     System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow DSL Successfully Generated!\n" + UtilsUI.RESET);
+                    openShowDSLDescriptionFile(selectedProposal);
                     UtilsUI.goBackAndWait();
                     return true;
                 } else {
@@ -71,7 +80,7 @@ public class GenerateShowDSLUI extends AbstractFancyUI {
         List<ShowProposal> proposalList = new ArrayList<>();
         proposals.forEach(proposalList::add);
 
-        ShowProposalPrinter proposalPrinter = new ShowProposalPrinter();
+        AnotherShowProposalPrinter proposalPrinter = new AnotherShowProposalPrinter();
 
         ListWidget<ShowProposal> proposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Show Proposal:\n" +
                 UtilsUI.RESET, proposalList, proposalPrinter);
@@ -94,5 +103,34 @@ public class GenerateShowDSLUI extends AbstractFancyUI {
             }
 
         } while (true);
+    }
+
+    private void openShowDSLDescriptionFile(ShowProposal showProposal) {
+        if (showProposal == null || showProposal.configuration().showDSLDescription() == null) {
+            throw new IllegalArgumentException("ShowProposal or its DSL description is null.");
+        }
+
+        ShowDSLDescription showDSLDescription = showProposal.configuration().showDSLDescription();
+        String dslContent = showDSLDescription.content();
+        String fileName = "showDSL_" + showProposal.identity().proposalNumber() + ".txt";
+
+        Path outputDir = Paths.get("ShowDSLFiles");
+        Path filePath = outputDir.resolve(fileName);
+
+        try {
+            if (!Files.exists(outputDir)) {
+                Files.createDirectories(outputDir);
+            }
+            Files.write(filePath, dslContent.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            if (UtilsUI.confirm(UtilsUI.BOLD + "Do you want to open the generated Show DSL file in Notepad? (Y/N)" + UtilsUI.RESET)) {
+                UtilsUI.openInNotepad(filePath.toFile());
+            } else {
+                System.out.println(UtilsUI.YELLOW + "Show DSL file generated at: " + filePath.toAbsolutePath() + UtilsUI.RESET);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing Show DSL file: " + e.getMessage(), e);
+        }
     }
 }

@@ -52,7 +52,7 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
     @Override
     public List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber) {
         final TypedQuery<ProposalDeliveryInfo> query = entityManager().createQuery(
-                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vatNumber = :vatNumber",
+                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vat = :vatNumber",
                 ProposalDeliveryInfo.class
         );
         query.setParameter("vatNumber", vatNumber);

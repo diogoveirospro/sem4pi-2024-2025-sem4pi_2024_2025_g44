@@ -57,7 +57,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     @Override
     public boolean execute() {
 
-        cleanProposalsFiles();
+        cleanShowDSLFiles();
 
         List<ShowRequest> showRequests = (List<ShowRequest>) showRequestRepository.findAllCreatedShowRequests();
         List<CRMCollaborator> crmCollaborators = (List<CRMCollaborator>) crmCollaboratorRepository.findAll();
@@ -565,14 +565,14 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
         return showProposal;
     }
 
-    private void cleanProposalsFiles() {
-        File pasta = new File("shodrone.core/src/main/resources/proposals");
+    private void cleanShowDSLFiles() {
+        File pasta = new File("ShowDSLFiles");
         if (pasta.exists() && pasta.isDirectory()) {
             for (File file : pasta.listFiles()) {
                 file.delete();
             }
         }
 
-        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully cleaned proposals files" + UtilsUI.RESET);
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully cleaned Show DSL files" + UtilsUI.RESET);
     }
 }

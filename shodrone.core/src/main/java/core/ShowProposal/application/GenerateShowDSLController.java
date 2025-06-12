@@ -57,5 +57,4 @@ public class GenerateShowDSLController {
         return repository.findProposalsReadyGenerateShowDSL();
     }
 
-
 }
