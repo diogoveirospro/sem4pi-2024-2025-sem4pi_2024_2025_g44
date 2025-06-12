@@ -38,7 +38,7 @@ public class GetProposalsRequest extends UserAppRequest{
                 .append("\"SHOW_DURATION\", \"SHOW_LOCATION\"\n");
 
         for (DeliveryReporting delivery : proposals) {
-            sb.append("\"").append("\"").append(delivery.proposalNumber.proposalNumber()).append("\", ")
+            sb.append("\"").append(delivery.proposalNumber.proposalNumber()).append("\", ")
                     .append("\"").append(delivery.dateOfShow.toString()).append("\", ")
                     .append("\"").append(delivery.timeOfShow.toString()).append("\", ")
                     .append("\"").append(delivery.showDuration.toString()).append("\", ")
