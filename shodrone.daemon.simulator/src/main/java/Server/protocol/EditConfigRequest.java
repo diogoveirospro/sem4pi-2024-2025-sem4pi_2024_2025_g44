@@ -35,9 +35,19 @@ public class EditConfigRequest extends UserAppRequest {
         try {
             boolean success = controller.editConfig(configFileName, inputDirectory, maxCollisions, numDrones,
                     droneRadius, xMax, yMax, zMax, timeStep);
-            return success ? "true" : "false";
+            return buildResponse(success);
         } catch (Exception e) {
             return buildServerError("An error occurred while processing the request");
         }
+    }
+
+    private String buildResponse(final boolean success) {
+        StringBuilder response = new StringBuilder();
+        if (success) {
+            response.append("CONFIG_EDITED, \"Configuration file edited successfully\"\n");
+        } else {
+            response.append("CONFIG_EDIT_FAILED, \"Failed to edit configuration file\"\n");
+        }
+        return response.toString();
     }
 }

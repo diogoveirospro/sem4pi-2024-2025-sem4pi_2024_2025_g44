@@ -28,34 +28,6 @@ public class MarshallerUnmarshaller {
         }
     }
 
-    /**
-     * Splits a line into tokens, respecting quoted strings.
-     * @param line the line to split
-     * @return a list of tokens
-     */
-    private List<String> splitRespectingQuotes(String line) {
-        List<String> tokens = new ArrayList<>();
-        StringBuilder currentToken = new StringBuilder();
-        boolean insideQuotes = false;
-
-        for (char c : line.toCharArray()) {
-            if (c == '\"') {
-                insideQuotes = !insideQuotes;
-            } else if (c == ',' && !insideQuotes) {
-                tokens.add(currentToken.toString().trim());
-                currentToken.setLength(0);
-            } else {
-                currentToken.append(c);
-            }
-        }
-
-        if (currentToken.length() > 0) {
-            tokens.add(currentToken.toString().trim());
-        }
-
-        return tokens;
-    }
-
     public void verifyIfConfigWasEdited(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
 
@@ -63,15 +35,17 @@ public class MarshallerUnmarshaller {
             throw new FailedRequestException("Empty response from server");
         }
 
-        String result = response.get(0).trim();
-        if (!result.equalsIgnoreCase("true") && !result.equalsIgnoreCase("false")) {
-            throw new FailedRequestException("Unexpected response format: " + result);
+        String[] tokens = response.get(0).split(",");
+        String messageType = tokens[0].trim();
+
+        if (!messageType.equals("CONFIG_EDITED") && !messageType.equals("CONFIG_EDIT_FAILED")) {
+            throw new FailedRequestException("Unexpected response format: " + response.get(0));
         }
 
-        if (result.equalsIgnoreCase("false")) {
-            throw new FailedRequestException("Configuration edit failed");
+        if (messageType.equals("CONFIG_EDIT_FAILED")) {
+            throw new FailedRequestException(tokens[1].trim().replace("\"", ""));
         }
 
-        System.out.println( "Configuration was successfully edited.");
+        System.out.println(tokens[1].trim().replace("\"", ""));
     }
 }
