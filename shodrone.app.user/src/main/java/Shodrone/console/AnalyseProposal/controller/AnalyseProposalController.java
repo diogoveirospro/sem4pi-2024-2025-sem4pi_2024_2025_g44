@@ -87,7 +87,7 @@ public class AnalyseProposalController {
 
     public String createFile(byte [] file){
         try {
-            Path filePath = Paths.get("caminho/para/ficheiro.txt");
+            Path filePath = Paths.get("shodrone.app.user/rc/main/resources/files/proposal.csv");
             Files.write(filePath, file);
             return filePath.toString();
         } catch (IOException e) {

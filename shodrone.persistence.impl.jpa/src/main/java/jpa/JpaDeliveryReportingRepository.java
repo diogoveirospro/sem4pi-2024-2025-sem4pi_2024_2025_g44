@@ -5,6 +5,7 @@ import core.Daemon.reporting.proposals.DeliveryReporting;
 import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Persistence.Application;
 import core.ProposalDeliveryInfo.domain.Entities.ProposalDeliveryInfo;
+import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaTransactionalContext;
 import jakarta.persistence.TypedQuery;
@@ -67,7 +68,7 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
                 "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.code = :code",
                 ProposalDeliveryInfo.class
         );
-        query.setParameter("code", code);
+        query.setParameter("code", new ProposalDeliveryInfoCode(code));
         ProposalDeliveryInfo result = query.getSingleResult();
         return makeDeliveryReporting(result);
     }
