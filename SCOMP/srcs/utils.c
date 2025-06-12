@@ -36,16 +36,6 @@ void free_space(SpaceCell ***space, int sizeX, int sizeY) {
     free(space);
 }
 
-// Allocates a matrix to map drones to positions
-DronePosition* alloc_drone_positions(int num_drones) {
-    DronePosition *matrix = (DronePosition *)safe_malloc(num_drones * sizeof(DronePosition));
-    for (int i = 0; i < num_drones; i++) {
-        matrix[i].drone_id = i;
-        matrix[i].pos.x = matrix[i].pos.y = matrix[i].pos.z = -1; // Not placed yet
-    }
-    return matrix;
-}
-
 // Set a drone at a position in the 3D space
 void set_drone_in_space(SpaceCell ***space, int x, int y, int z, int drone_id) {
     space[x][y][z].drone_id = drone_id;
@@ -170,10 +160,6 @@ void free_history(DroneHistory **h, int n)
   free(h);
 }
 
-#include "header.h"
-#include <sys/ipc.h>
-#include <sys/shm.h>
-
 // ---------------- Shared Memory Functions ----------------
 
 // Creates a shared memory file and returns its file descriptor
@@ -202,7 +188,7 @@ int open_shared_memory(const char *name) {
 }
 
 // Maps the shared memory to the process's address space and returns a pointer to it
-SharedMemory* attach_shared_memory(int fd, size_t size) {
+SharedMemoryDroneParent* attach_shared_memory(int fd, size_t size) {
     void *addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED) {
         perror("mmap");
@@ -233,12 +219,12 @@ void resize_shared_memory(int fd, size_t new_size) {
 }
 
 // Updates a specific index in the shared memory with a new value
-void change_drone_state(SharedMemory *shm, int idx, SharedDroneState value) {
+void change_drone_state(SharedMemoryDroneParent *shm, int idx, SharedDroneState value) {
     shm->drones[idx] = value;
 }
 
 // Updates the collision log in the shared memory
-void update_collision_log(SharedMemory *shm, CollisionLog *log, int count) {
+void update_collision_log(SharedMemoryDroneParent *shm, CollisionLog *log, int count) {
     shm->collision_log = log; // might be necessary to change
     shm->collision_count = count;
 }

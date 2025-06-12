@@ -1,7 +1,7 @@
 #include "header.h"
 
 DroneData s;
-SharedMemory *shm = NULL;
+SharedMemoryDroneParent *shm = NULL;
 sem_t *my_sem = NULL;
 char sem_name[64];
 size_t shm_size = 0;
@@ -206,7 +206,7 @@ void set_up_shared_memory_and_semaphore()
 {
   shm_fd = open_shared_memory( "/shm_drones");
 
-  shm_size = sizeof(SharedMemory) + sizeof(SharedDroneState) * s.max_x; // Adjust as needed
+  shm_size = sizeof(SharedMemoryDroneParent) + sizeof(SharedDroneState) * s.max_x; // Adjust as needed
   shm = attach_shared_memory(shm_fd, shm_size);
 
   snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", s.id);

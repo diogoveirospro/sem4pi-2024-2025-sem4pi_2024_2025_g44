@@ -25,9 +25,10 @@ ConfigData c;
 ParentData s;
 
 SpaceCell ***space;
-CollisionLog collision_log[MAX_COLLISIONS_LOG];
 int **collision_state = NULL; // 0: no collision, 1: collision
-SharedMemory *shared_mem = NULL;
+SharedMemoryDrone *shm_drones = NULL;
+SharedMemoryParent *shm_parent = NULL; // Global pointer to shared memory
+
 size_t shm_size = 0;
 int shm_fd = 0;
 sem_t **semaphores = NULL;
@@ -188,7 +189,7 @@ int check_collisions(int iter)
     {
         for (int j = i + 1; j < c.num_drones; j++)
         {
-            distance = calculate_distance(shared_mem->drones[i].pos, shared_mem->drones[j].pos);
+            distance = calculate_distance(shm_drones->drones[i].pos, shm_drones->drones[j].pos);
 
             if (distance <= collision_distance)
             {
@@ -240,20 +241,20 @@ int check_collisions(int iter)
 // verify if drone terminated
 // returns 1 if terminated
 // returns 0 if not terminated
-int verify_drone_termination(int drone_idx, SharedMemory *shm)
+int verify_drone_termination(int drone_idx)
 {
-  return shm->finished[drone_idx] ? 1 : 0;
+  return shm_drones->drones[drone_idx].active ? 0 : 1;
 }
 
 // updates position in all needed places
 void update_position(int i, int iter, SharedDroneState *drone)
 {
-  if (verify_drone_termination(i, shared_mem)) {
+  if (verify_drone_termination(i)) {
     s.finished[i] = 1;
     s.active_drones--;
   } else {
-    add_position_timestamp(s.h_list[i], drone->pos, iter * c.timestep);
-    move_drone(space, shared_mem->drones, i, drone->pos, c.max_X, c.max_Y, c.max_Z);
+    add_position_timestamp(&shm_parent->history[i][0], drone->pos, iter * c.timestep);
+    move_drone(space, shm_drones->drones, i, drone->pos, c.max_X, c.max_Y, c.max_Z);
   }
 }
 
@@ -269,14 +270,16 @@ int manage_drones(int iter)
   int msg_expected_cnt = s.active_drones;
 
   for (int i = 0; i < c.num_drones && msg_received_cnt < msg_expected_cnt; i++) {
-    if (s.finished[i])
+    if (s.finished[i]) {
+      msg_received_cnt++;
       continue;
+    }
 
     fprintf(stderr, "Parent: Waiting for drone %d\n", i + 1);
     wait_semaphore(semaphores[i]);
     fprintf(stderr, "Parent: Received from drone %d\n", i + 1);
 
-    SharedDroneState *drone = &shared_mem->drones[i];
+    SharedDroneState *drone = &shm_drones->drones[i];
     update_position(i, iter, drone);
 
     msg_received_cnt++;
@@ -480,66 +483,57 @@ void allocate_structs()
   // Space and positions
   space = alloc_space(c.max_X, c.max_Y, c.max_Z);
 
-  // Drone History (local)
-  s.h_list = alloc_history(c.num_drones, HISTORY_INIT_CAPACITY);
-
   // State of each drone
   s.finished = (int *) calloc(c.num_drones, sizeof(int));
   s.active_drones = c.num_drones;
   s.collisions = 0;
 
-  // Shared Memory
-  shm_size = sizeof(SharedMemory)
-      + c.num_drones * sizeof(SharedDroneState)
-      + MAX_COLLISIONS_LOG * sizeof(CollisionLog)
-      + c.num_drones * sizeof(int)
-      + c.num_drones * sizeof(DroneHistory*); // Space
+  // Shared Memory for drones
+  int fd_drones = create_shared_memory("/shm_drones", sizeof(SharedMemoryDrone));
+  shm_drones = mmap(NULL, sizeof(SharedMemoryDrone), PROT_READ | PROT_WRITE, MAP_SHARED, fd_drones, 0);
 
-  shm_fd = create_shared_memory("/shm_drones", shm_size);
-  SharedMemory *shm = attach_shared_memory(shm_fd, shm_size);
+  // Shared Memory for parent
+  int fd_parent = create_shared_memory("/shm_parent", sizeof(SharedMemoryParent));
+  shm_parent = mmap(NULL, sizeof(SharedMemoryParent), PROT_READ | PROT_WRITE, MAP_SHARED, fd_parent, 0);
 
-  // Offsets
-  char *base = (char *)shm + sizeof(SharedMemory);
-  shm->drones = (SharedDroneState *)base;
-  shm->collision_log = (CollisionLog *)(base + c.num_drones * sizeof(SharedDroneState));
-  shm->finished = (int *)(base + c.num_drones * sizeof(SharedDroneState) + MAX_COLLISIONS_LOG * sizeof(CollisionLog));
-  shm->history = (DroneHistory **)(base + c.num_drones * sizeof(SharedDroneState) + MAX_COLLISIONS_LOG * sizeof(CollisionLog) + c.num_drones * sizeof(int));
-  shm->num_drones = c.num_drones;
-  shm->collision_count = 0;
-
-  // Initializes the memory
-  for (int i = 0; i < c.num_drones; i++) {
-    shm->drones[i].drone_id = i + 1;
-    shm->drones[i].pos = (Position){-1, -1, -1}; // Invalid position
-    shm->drones[i].active = 0;
-    shm->drones[i].collision_count = 0;
-    shm->finished[i] = 0;
-    shm->history[i] = s.h_list[i];
+  // Initialize SharedMemoryDrone
+  for (int i = 0; i < MAX_DRONES; i++) {
+    shm_drones->drones[i].drone_id = i + 1;
+    shm_drones->drones[i].pos = (Position){-1, -1, -1};
+    shm_drones->drones[i].active = 0;
+    shm_drones->drones[i].collision_count = 0;
   }
+
+  // Initialize SharedMemoryParent
+  for (int i = 0; i < MAX_DRONES; i++)
+    for (int j = 0; j < HISTORY_INIT_CAPACITY; j++) {
+      shm_parent->history[i][j].positions = NULL;
+      shm_parent->history[i][j].timestamps = NULL;
+      shm_parent->history[i][j].count = 0;
+      shm_parent->history[i][j].capacity = 0;
+      shm_parent->history[i][j].drone_id = i + 1;
+      shm_parent->history[i][j].collision_count = 0;
+    }
 
   for (int i = 0; i < MAX_COLLISIONS_LOG; i++) {
-    shm->collision_log[i].drone1 = -1;
-    shm->collision_log[i].drone2 = -1;
-    shm->collision_log[i].pos1 = (Position){-1, -1, -1};
-    shm->collision_log[i].pos2 = (Position){-1, -1, -1};
-    shm->collision_log[i].timestamp = -1.0f;
+    shm_parent->collision_log[i].drone1 = -1;
+    shm_parent->collision_log[i].drone2 = -1;
+    shm_parent->collision_log[i].pos1 = (Position){-1, -1, -1};
+    shm_parent->collision_log[i].pos2 = (Position){-1, -1, -1};
+    shm_parent->collision_log[i].timestamp = -1.0f;
   }
 
+  // Allocate semaphores for each drone
   semaphores = malloc(sizeof(sem_t *) * c.num_drones);
   if (!semaphores) {
     fprintf(stderr, "Error while allocating semaphores\n");
     end();
   }
-
-  // Semaphores for each drone
   for (int i = 0; i < c.num_drones; i++) {
     char sem_name[64];
     snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
     semaphores[i] = init_semaphore(sem_name, 0);
   }
-
-  // Global pointer para shared memory
-  shared_mem = shm;
 }
 
 void debug_config_file()
@@ -594,6 +588,7 @@ int main(int argc, char **argv) {
 
   // Clear shared memory from previous runs
   clear_shared_memory("/shm_drones");
+  clear_shared_memory("/shm_parent");
 
   // Clean up semaphores from previous runs
   for (int i = 0; i < c.num_drones; i++) {
