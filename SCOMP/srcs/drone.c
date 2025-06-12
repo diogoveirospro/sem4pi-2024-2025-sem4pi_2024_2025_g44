@@ -52,6 +52,7 @@ void set_up_signals()
 
 // waits for green flag from parent to keep going
 void sync_drones() {
+  post_semaphore(my_sem);
   wait_semaphore(my_sem);
 }
 
@@ -65,6 +66,7 @@ void update_position_in_shm(Position pos)
 // Marks the drone as finished in shared memory
 void mark_finished_in_shm()
 {
+  post_semaphore(my_sem);
   shm->drones[s.id - 1].active = 0;
 }
 
@@ -141,12 +143,13 @@ void run_script(char *filename)
       copy_coordinates(&c, &l);
 
       // sync
-      fprintf(stderr, "Drone %d: à espera do semáforo...\n", s.id);
+      fprintf(stderr, "Drone %d: New position (%d, %d, %d)\n", s.id, c.x, c.y, c.z);
       sync_drones();
-      fprintf(stderr, "Drone %d: passou o semáforo!\n", s.id);
+      fprintf(stderr, "Drone %d: Synced with parent\n", s.id);
     }
   }
 
+  fprintf(stderr, "Drone %d: Starting position (%d, %d, %d)\n", s.id, c.x, c.y, c.z);
   // now x,y,z save the vectors
   // c x,y,z are the current position
   while (fscanf(f, "%d,%d,%d", &v.x, &v.y, &v.z) == 3 && valid_flag) {
@@ -167,11 +170,15 @@ void run_script(char *filename)
     copy_coordinates(&c, &l);
 
     // sync
+    fprintf(stderr, "Drone %d: New position (%d, %d, %d)\n", s.id, c.x, c.y, c.z);
     sync_drones();
+    fprintf(stderr, "Drone %d: Synced with parent\n", s.id);
   }
 
   fclose(f);
 
+
+  fprintf(stderr, "Drone %d: Exiting\n", s.id);
   mark_finished_in_shm();
 }
 

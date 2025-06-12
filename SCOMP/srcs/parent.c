@@ -199,10 +199,10 @@ int check_collisions(int iter)
                     kill(s.pids[i], SIGUSR1);
                     kill(s.pids[j], SIGUSR1);
 
-                    shm_parent->history[i]->collision_count++;
-                    shm_parent->history[j]->collision_count++;
-                    shm_drones->drones[i].collision_count++;
-                    shm_drones->drones[j].collision_count++;
+                  shm_parent->history[i].collision_count++;
+                  shm_parent->history[j].collision_count++;
+                  shm_drones->drones[i].collision_count++;
+                  shm_drones->drones[j].collision_count++;
 
                     new_collisions++;
 
@@ -245,7 +245,7 @@ void update_position(int i, int iter, SharedDroneState *drone)
     s.finished[i] = 1;
     s.active_drones--;
   } else {
-    add_position_timestamp(&shm_parent->history[i][0], drone->pos, iter * c.timestep);
+    add_position_timestamp(&shm_parent->history[i], drone->pos, iter * c.timestep);
     move_drone(space, shm_drones->drones, i, drone->pos, c.max_X, c.max_Y, c.max_Z);
   }
 }
@@ -381,7 +381,7 @@ void do_report()
 
   for (int i = 0; i < c.num_drones; i++)
   {
-    h = &shm_parent->history[i][0];
+    h = &shm_parent->history[i];
     fprintf(f, "Drone %d: %d steps, %d collisions\n",
             h->drone_id, h->count, h->collision_count);
   }
@@ -391,7 +391,7 @@ void do_report()
 
   for (int i = 0; i < c.num_drones; i++)
   {
-    h = &shm_parent->history[i][0];
+    h = &shm_parent->history[i];
     fprintf(f, "Drone %d:\n", h->drone_id);
 
     for (int j = 0; j < h->count; j++)
@@ -504,15 +504,15 @@ void allocate_structs()
   }
 
   // Initialize SharedMemoryParent
-  for (int i = 0; i < MAX_DRONES; i++)
-    for (int j = 0; j < HISTORY_INIT_CAPACITY; j++) {
-      shm_parent->history[i][j].positions = NULL;
-      shm_parent->history[i][j].timestamps = NULL;
-      shm_parent->history[i][j].count = 0;
-      shm_parent->history[i][j].capacity = 0;
-      shm_parent->history[i][j].drone_id = i + 1;
-      shm_parent->history[i][j].collision_count = 0;
-    }
+
+  for (int i = 0; i < c.num_drones; i++) {
+    shm_parent->history[i].positions = malloc(HISTORY_INIT_CAPACITY * sizeof(Position));
+    shm_parent->history[i].timestamps = malloc(HISTORY_INIT_CAPACITY * sizeof(float));
+    shm_parent->history[i].capacity = HISTORY_INIT_CAPACITY;
+    shm_parent->history[i].count = 0;
+    shm_parent->history[i].drone_id = i + 1;
+    shm_parent->history[i].collision_count = 0;
+  }
 
   for (int i = 0; i < MAX_COLLISIONS_LOG; i++) {
     shm_parent->collision_log[i].drone1 = -1;
