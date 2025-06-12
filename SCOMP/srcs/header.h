@@ -188,12 +188,12 @@ typedef struct {
 // Shared Memory Functions
 int create_shared_memory(const char *name, size_t size);
 int open_shared_memory(const char *name);
-SharedMemoryDroneParent* attach_shared_memory(int fd, size_t size);
+void* attach_shared_memory(int fd, size_t size);
 void detach_shared_memory(void* shmaddr, size_t size);
 void clear_shared_memory(const char *name);
 void resize_shared_memory(int fd, size_t new_size);
-void change_drone_state(SharedMemoryDroneParent *shm, int idx, SharedDroneState value);
-void update_collision_log(SharedMemoryDroneParent *shm, CollisionLog *log, int count);
+void change_drone_state(void *shm, int idx, SharedDroneState value);
+void update_collision_log(void *shm, CollisionLog *log, int count);
 void close_shared_memory(int fd);
 
 // Mutex and Condition Variable Functions

@@ -219,14 +219,15 @@ void resize_shared_memory(int fd, size_t new_size) {
 }
 
 // Updates a specific index in the shared memory with a new value
-void change_drone_state(SharedMemoryDroneParent *shm, int idx, SharedDroneState value) {
+void change_drone_state(SharedMemoryDrone *shm, int idx, SharedDroneState value) {
     shm->drones[idx] = value;
 }
 
 // Updates the collision log in the shared memory
-void update_collision_log(SharedMemoryDroneParent *shm, CollisionLog *log, int count) {
-    shm->collision_log = log; // might be necessary to change
-    shm->collision_count = count;
+void update_collision_log(SharedMemoryParent *shm, CollisionLog *log, int count) {
+    for (int i = 0; i < count; i++) {
+        shm->collision_log[i] = log[i];
+    }
 }
 
 // Close file descriptor for shared memory

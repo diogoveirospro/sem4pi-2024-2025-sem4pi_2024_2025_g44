@@ -199,29 +199,21 @@ int check_collisions(int iter)
                     kill(s.pids[i], SIGUSR1);
                     kill(s.pids[j], SIGUSR1);
 
-                    s.h_list[i]->collision_count++;
-                    s.h_list[j]->collision_count++;
-                    shared_mem->drones[i].collision_count++;
-                    shared_mem->drones[j].collision_count++;
+                    shm_parent->history[i]->collision_count++;
+                    shm_parent->history[j]->collision_count++;
+                    shm_drones->drones[i].collision_count++;
+                    shm_drones->drones[j].collision_count++;
 
                     new_collisions++;
 
-                    // Log local
-                    collision_log[s.collisions].drone1 = i + 1;
-                    collision_log[s.collisions].drone2 = j + 1;
-                    collision_log[s.collisions].pos1 = shared_mem->drones[i].pos;
-                    collision_log[s.collisions].pos2 = shared_mem->drones[j].pos;
-                    collision_log[s.collisions].timestamp = current_timestamp;
-
                     // Log shared
-                    shared_mem->collision_log[shared_mem->collision_count].drone1 = i + 1;
-                    shared_mem->collision_log[shared_mem->collision_count].drone2 = j + 1;
-                    shared_mem->collision_log[shared_mem->collision_count].pos1 = shared_mem->drones[i].pos;
-                    shared_mem->collision_log[shared_mem->collision_count].pos2 = shared_mem->drones[j].pos;
-                    shared_mem->collision_log[shared_mem->collision_count].timestamp = current_timestamp;
+                    shm_parent->collision_log[s.collisions].drone1 = i + 1;
+                    shm_parent->collision_log[s.collisions].drone2 = j + 1;
+                    shm_parent->collision_log[s.collisions].pos1 = shm_drones->drones[i].pos;
+                    shm_parent->collision_log[s.collisions].pos2 = shm_drones->drones[j].pos;
+                    shm_parent->collision_log[s.collisions].timestamp = current_timestamp;
 
                     s.collisions++;
-                    shared_mem->collision_count++;
 
                     collision_state[i][j] = 1;
                     collision_state[j][i] = 1;
@@ -389,7 +381,7 @@ void do_report()
 
   for (int i = 0; i < c.num_drones; i++)
   {
-    h = s.h_list[i];
+    h = &shm_parent->history[i][0];
     fprintf(f, "Drone %d: %d steps, %d collisions\n",
             h->drone_id, h->count, h->collision_count);
   }
@@ -399,7 +391,7 @@ void do_report()
 
   for (int i = 0; i < c.num_drones; i++)
   {
-    h = s.h_list[i];
+    h = &shm_parent->history[i][0];
     fprintf(f, "Drone %d:\n", h->drone_id);
 
     for (int j = 0; j < h->count; j++)
@@ -422,7 +414,7 @@ void do_report()
   {
     for (int i = 0; i < s.collisions; i++)
     {
-      CollisionLog *cl = &collision_log[i];
+      CollisionLog *cl =  &shm_parent->collision_log[i];
 
       fprintf(f, "[t = %.2f] Drones %d (%d, %d, %d) and %d (%d, %d, %d) collided\n",
               cl->timestamp, cl->drone1, cl->pos1.x, cl->pos1.y, cl->pos1.z, cl->drone2,
@@ -440,36 +432,43 @@ void do_report()
 
 void terminate()
 {
-    // Free allocated memory
-    int_free_matrix(collision_state, c.num_drones);
-    free_space(space, c.max_X, c.max_Y);
-    free_history(s.h_list, c.num_drones);
-    int_free_matrix(s.down, c.num_drones);
-    free(s.pids);
-    free(s.finished);
+  // Free allocated memory
+  int_free_matrix(collision_state, c.num_drones);
+  free_space(space, c.max_X, c.max_Y);
 
-    // Free shared memory
-    if (shared_mem) {
-        detach_shared_memory(shared_mem, shm_size);
-        shared_mem = NULL;
-    }
-    if (shm_fd > 0) {
-        close_shared_memory(shm_fd);
-        shm_fd = 0;
-    }
-    clear_shared_memory("/shm_drone"); // Unlink
+  free(s.pids);
+  free(s.finished);
 
-    // Clear semaphores
+  // Free shared memory for drones
+  if (shm_drones) {
+    detach_shared_memory(shm_drones, sizeof(SharedMemoryDrone));
+    shm_drones = NULL;
+  }
+  // Free shared memory for parent
+  if (shm_parent) {
+    detach_shared_memory(shm_parent, sizeof(SharedMemoryParent));
+    shm_parent = NULL;
+  }
+
+  // Unlink shared memory
+  clear_shared_memory("/shm_drones");
+  clear_shared_memory("/shm_parent");
+
+  // Clear semaphores
+  if (semaphores) {
     for (int i = 0; i < c.num_drones; i++) {
-        char sem_name[64];
-        snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-        if (semaphores[i]) {
-            clear_semaphore(sem_name, NULL); // Unlink
-        }
+      char sem_name[64];
+      snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
+      if (semaphores[i]) {
+        clear_semaphore(sem_name, NULL); // Unlink
+      }
     }
+    free(semaphores);
+    semaphores = NULL;
+  }
 
-    fprintf(stderr, GREEN "\nDone!\n" RESET);
-    exit(0);
+  fprintf(stderr, GREEN "\nDone!\n" RESET);
+  exit(0);
 }
 
 void allocate_structs()
