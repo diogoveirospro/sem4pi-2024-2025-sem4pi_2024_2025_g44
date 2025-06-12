@@ -216,6 +216,8 @@ package "ShowProposal " <<aggregate>>{
     class ShowProposalDocument <<Value Object>>{
     }
 
+    class Show
+
     class ShowProposalNumber <<Value Object>>{
     }
 

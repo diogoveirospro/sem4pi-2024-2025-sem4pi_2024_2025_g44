@@ -1,0 +1,50 @@
+@startuml
+actor "Drone Tech" as User
+participant "ValidateDroneProgramUI" as UI
+participant "DroneValidate" as Validator
+participant "ANTLRDroneValidationPlugin" as Plugin
+participant "DroneLexer" as Lexer
+participant "DroneParser" as Parser
+
+activate User
+
+User -> UI : chose drone to validate
+activate UI
+
+UI -> Validator : validateTemplate(droneCode)
+activate Validator
+
+Validator -> Plugin : validateTemplate(code)
+activate Plugin
+
+Plugin -> Lexer : new DroneLexer(input)
+activate Lexer
+
+Lexer --> Plugin : token stream
+deactivate Lexer
+
+Plugin -> Parser : new DroneParser(tokens)
+activate Parser
+
+Parser -> Parser : parser.start()
+activate Parser
+deactivate Parser
+
+Parser --> Plugin : parse result (success/errors)
+deactivate Parser
+
+Plugin --> Validator : DroneValidationResult
+deactivate Plugin
+
+Validator --> UI : DroneValidationResult
+deactivate Validator
+
+alt Drone program is valid
+    UI --> User : show success message
+else Drone program is invalid
+    UI --> User : show validation errors
+end
+
+deactivate UI
+deactivate User
+@enduml

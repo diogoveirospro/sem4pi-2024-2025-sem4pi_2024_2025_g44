@@ -5,7 +5,6 @@ import core.Figure.domain.Entities.Figure;
 import core.Figure.repositories.FigureRepository;
 import core.Persistence.PersistenceContext;
 import core.ShowProposal.domain.Entities.ShowConfiguration;
-import core.ShowProposal.domain.Entities.ShowConfigurationBuilder;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import eapli.framework.application.UseCaseController;
@@ -31,19 +30,24 @@ public class AddFiguresToProposalController {
         return figures;
     }
 
-    public boolean addFiguresToProposalConfiguration(ShowProposal proposal, List<Figure> figures) {
+    public boolean addFiguresToProposal(ShowProposal proposal, List<Figure> figures) {
         if (proposal == null || figures == null || figures.isEmpty()) {
             return false;
         }
 
-        ShowConfigurationBuilder configBuilder = new ShowConfigurationBuilder();
         try {
-            configBuilder.addFigures(figures);
-            ShowConfiguration configuration = configBuilder.build();
-            proposal.addConfiguration(configuration);
+            ShowConfiguration configuration = proposal.configuration();
+            if (configuration == null) {
+                throw new IllegalStateException("Proposal does not have an existing configuration.");
+            }
+
+            // Add figures to the existing configuration
+            configuration.addFigures(figures);
+
+            // Save the updated proposal
             showProposalRepository.save(proposal);
             return true;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             System.err.println("Error adding figures to proposal: " + e.getMessage());
             return false;
         }

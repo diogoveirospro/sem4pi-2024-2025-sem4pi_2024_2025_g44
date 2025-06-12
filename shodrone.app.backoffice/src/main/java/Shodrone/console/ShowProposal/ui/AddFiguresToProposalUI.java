@@ -4,10 +4,10 @@ import Shodrone.console.Figure.printer.FiguresPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Customer.domain.Entities.Customer;
-import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
 import core.ShowProposal.application.AddFiguresToProposalController;
+import core.ShowProposal.domain.Entities.ShowConfiguration;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -67,15 +67,14 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
                     return false;
                 }
 
-                List<Figure> figures = proposal.configuration().figures();
-                figures.addAll(selectedFigures);
-                boolean success = controller.addFiguresToProposalConfiguration(proposal, figures);
+                // Pass figures to the controller
+                boolean success = controller.addFiguresToProposal(proposal, selectedFigures);
                 if (success) {
-                    System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigures added to the proposal successfully!" + UtilsUI.RESET);
+                    System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFigures and drones added to the proposal successfully!" + UtilsUI.RESET);
                     UtilsUI.goBackAndWait();
                     return true;
                 } else {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to add figures to the proposal." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFailed to add figures and drones to the proposal." + UtilsUI.RESET);
                     UtilsUI.goBackAndWait();
                     return false;
                 }
@@ -151,48 +150,48 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
     }
 
     private void associateDroneTypesWithModels(Figure figure, ShowProposal proposal) {
-        // Extract drone types from the figure
-        Set<String> droneTypes = figure.DSLDescription().requiredDroneTypes();
-
-        if (droneTypes.isEmpty()) {
-            System.out.println(UtilsUI.YELLOW + "No drone types to associate for this figure." + UtilsUI.RESET);
-            return;
-        }
-
-        // Retrieve available drone models from the proposal
-        List<Model> availableModels = new ArrayList<>(proposal.configuration().droneModels());
-
-
-        if (availableModels.isEmpty()) {
-            System.out.println(UtilsUI.RED + "No available drone models in the proposal to associate." + UtilsUI.RESET);
-            return;
-        }
-
-        // Prompt user to associate each drone type with a drone model
-        for (String droneType : droneTypes) {
-            System.out.println(UtilsUI.CYAN + "\nSelect a drone model for the drone type: " + droneType + UtilsUI.RESET);
-
-            // Display the numbered list of available models
-            for (int i = 0; i < availableModels.size(); i++) {
-                Model model = availableModels.get(i);
-                System.out.println(UtilsUI.CYAN + (i + 1) + ". Model Name: " + model.identity().value() + UtilsUI.RESET);
+        try {
+            ShowConfiguration configuration = proposal.configuration();
+            if (configuration == null || configuration.droneModels() == null || configuration.droneModels().isEmpty()) {
+                throw new UserCancelledException("No drones available in the configuration.");
             }
 
-            int option;
-            do {
-                option = UtilsUI.selectsIndex(availableModels);
+            Set<String> droneTypes = figure.DSLDescription().requiredDroneTypes();
 
-                if (option == -2) {
-                    throw new UserCancelledException(UtilsUI.YELLOW + "Action cancelled by user." + UtilsUI.RESET);
+            if (droneTypes.isEmpty()) {
+                System.out.println(UtilsUI.YELLOW + "No drone types to associate for this figure." + UtilsUI.RESET);
+                return;
+            }
+
+            List<Model> availableModels = new ArrayList<>(configuration.droneModels());
+
+            for (String droneType : droneTypes) {
+                System.out.println(UtilsUI.CYAN + "\nSelect a drone model for the drone type: " + droneType + UtilsUI.RESET);
+
+                for (int i = 0; i < availableModels.size(); i++) {
+                    Model model = availableModels.get(i);
+                    System.out.println(UtilsUI.CYAN + (i + 1) + ". Model Name: " + model.identity().value() + UtilsUI.RESET);
                 }
-                if (option == -1) {
-                    System.out.println(UtilsUI.RED + "Invalid option. Please try again." + UtilsUI.RESET);
-                } else {
-                    Model selectedModel = availableModels.get(option);
-                    System.out.println(UtilsUI.GREEN + "Associated " + droneType + " with " + selectedModel.identity().value() + UtilsUI.RESET);
-                    break;
-                }
-            } while (true);
+
+                int option;
+                do {
+                    option = UtilsUI.selectsIndex(availableModels);
+
+                    if (option == -2) {
+                        throw new UserCancelledException(UtilsUI.YELLOW + "Action cancelled by user." + UtilsUI.RESET);
+                    }
+                    if (option == -1) {
+                        System.out.println(UtilsUI.RED + "Invalid option. Please try again." + UtilsUI.RESET);
+                    } else {
+                        Model selectedModel = availableModels.get(option);
+                        System.out.println(UtilsUI.GREEN + "Associated " + droneType + " with " + selectedModel.identity().value() + UtilsUI.RESET);
+                        break;
+                    }
+                } while (true);
+            }
+        } catch (NullPointerException e) {
+            System.out.println(UtilsUI.RED + "Warning: An error occurred while accessing the show configuration. Returning to the main menu." + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
         }
     }
 

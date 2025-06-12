@@ -24,8 +24,12 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     private List<ShowConfigurationEntry> configurationDrones = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "figures")
-    private List<ShowConfigurationFigure> configurationFigures = new ArrayList<>();
+    @JoinTable(
+            name = "show_configuration_figures",
+            joinColumns = @JoinColumn(name = "configuration_id"), // Column in the join table referencing ShowConfiguration
+            inverseJoinColumns = @JoinColumn(name = "figure_id") // Column in the join table referencing Figure
+    )
+    private List<ShowConfigurationFigure> figures = new ArrayList<>();
 
     @Embedded
     @Column(name = "show_dsl_description")
@@ -37,16 +41,11 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
 
     public ShowConfiguration(ShowConfigurationBuilder builder) {
         this.configurationDrones = new ArrayList<>(builder.showConfiguration());
-        for (int i = 0; i < builder.figures().size(); i++) {
-            this.configurationFigures.add(new ShowConfigurationFigure(this, builder.figures().get(i), i));
-        }
     }
 
-    public ShowConfiguration(List<ShowConfigurationEntry> configurationDrones, List<Figure> figures) {
+    public ShowConfiguration(List<ShowConfigurationEntry> configurationDrones, List<ShowConfigurationFigure> figures) {
         this.configurationDrones = configurationDrones;
-        for (int i = 0; i < figures.size(); i++) {
-            this.configurationFigures.add(new ShowConfigurationFigure(this, figures.get(i), i));
-        }
+        this.figures = figures;
     }
 
     public List<ShowConfigurationEntry> showConfiguration() {
@@ -65,12 +64,14 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
     }
 
     public List<Figure> figures() {
-        configurationFigures.sort(Comparator.comparingInt(ShowConfigurationFigure::getOrder));
-        List<Figure> figures = new ArrayList<>();
-        for (ShowConfigurationFigure configFigure : configurationFigures) {
-            figures.add(configFigure.getFigure());
+        List<Figure> figureList = new ArrayList<>();
+        for (ShowConfigurationFigure figure : figures) {
+            if (figure == null || figure.figure() == null) {
+                throw new IllegalStateException("Figure cannot be null in ShowConfigurationFigure");
+            }
+            figureList.add(figure.figure());
         }
-        return figures;
+        return Collections.unmodifiableList(figureList);
     }
 
     public ShowDSLDescription showDSLDescription() {
@@ -97,15 +98,32 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         return this.id;
     }
 
-    public void addFigure(Figure figure, int i) {
+    public void addFigures(List<Figure> figures) {
+        if (figures == null || figures.isEmpty()) {
+            throw new IllegalArgumentException("Figures collection cannot be null or empty.");
+        }
+        for (Figure figure : figures) {
+            addFigure(figure);
+        }
+    }
+
+    private void addFigure(Figure figure) {
         if (figure == null) {
-            throw new IllegalArgumentException("Figure cannot be null");
+            throw new IllegalArgumentException("Figure cannot be null.");
         }
-        if (i < 0 || i > configurationFigures.size()) {
-            throw new IndexOutOfBoundsException("Index out of bounds for adding figure");
+        if (!figures.isEmpty() && figures.get(figures.size() - 1).figure().equals(figure)) {
+            throw new IllegalArgumentException("Cannot add the same figure consecutively.");
         }
-        ShowConfigurationFigure configFigure = new ShowConfigurationFigure(this, figure, i);
-        configurationFigures.add(i, configFigure);
+        figures.add(new ShowConfigurationFigure(figure));
+    }
+
+    public void removeFigure(ShowConfigurationFigure figure) {
+        if (figure == null) {
+            throw new IllegalArgumentException("Figure cannot be null.");
+        }
+        if (!this.figures.remove(figure)) {
+            throw new IllegalStateException("Figure not found in the configuration.");
+        }
     }
 
     public void addDrone(ShowConfigurationEntry entry) {

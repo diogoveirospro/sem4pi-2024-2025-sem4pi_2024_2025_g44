@@ -466,7 +466,7 @@ public class MainMenu extends AbstractFancyUI {
 
         menu.addItem(CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
         menu.addItem(ADD_DRONES_TO_SHOW_PROPOSAL_OPTION, "Add Drones to a Show Proposal", new ConfigShowPropUI()::show);
-        //menu.addItem(ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION, "Add Figures to a Show Proposal", new AddFiguresToProposalUI()::show);
+        menu.addItem(ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION, "Add Figures to a Show Proposal", new AddFiguresToProposalUI()::show);
         menu.addItem(ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         menu.addItem(CONFIGURE_TEMPLATE_OF_SHOW_PROPOSAL_OPTION, "Configure Template of Show Proposal", new ConfigureProposalDocumentUI()::show);
         menu.addItem(SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION, "Send Show Proposal to Customer", new SendProposalUI()::show);
@@ -481,7 +481,7 @@ public class MainMenu extends AbstractFancyUI {
         final SubMenu menu = new SubMenu("Show Proposals", SHOW_PROPOSALS_MENU_TITLE);
         menu.addItem(COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION, "Create a Show Proposal", new CreateShowProposalUI()::show);
         menu.addItem(COLLABORATOR_ADD_DRONES_TO_SHOW_PROPOSAL_OPTION, "Add Drones to a Show Proposal", new ConfigShowPropUI()::show);
-        //menu.addItem(COLLABORATOR_ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION, "Add Figures to a Show Proposal", new AddFiguresToProposalUI()::show);
+        menu.addItem(COLLABORATOR_ADD_FIGURES_TO_SHOW_PROPOSAL_OPTION, "Add Figures to a Show Proposal", new AddFiguresToProposalUI()::show);
         menu.addItem(COLLABORATOR_ADD_VIDEO_TO_SHOW_PROPOSAL_OPTION, "Add Video to Show Proposal", new AddVideoToProposalUI()::show);
         menu.addItem(COLLABORATOR_SEND_SHOW_PROPOSAL_TO_CUSTOMER_OPTION, "Send Show Proposal to Customer", new SendProposalUI()::show);
         menu.addItem(COLLABORATOR_MARK_SHOW_PROPOSAL_AS_ACCEPTED_OPTION, "Accept a Show Proposal", new AccShowPropUI()::show);

@@ -9,7 +9,6 @@ import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.ShowDSLDescription;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Service to generate Show DSL content from a ShowProposal.
