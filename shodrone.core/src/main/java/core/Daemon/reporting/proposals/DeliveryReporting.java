@@ -1,5 +1,6 @@
 package core.Daemon.reporting.proposals;
 
+import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
 import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowRequest.domain.ValueObjects.Location;
 import eapli.framework.representations.dto.DTO;
@@ -15,20 +16,24 @@ public class DeliveryReporting {
     public LocalTime timeOfShow;
     public Duration showDuration;
     public Location showLocation;
-    public byte[] file;
-
+    public ShowProposalDocument document;
     public DeliveryReporting(final ShowProposalNumber proposalNumber, final LocalDate dateOfProposal,
                              final LocalTime timeOfProposal, final Duration showDuration,
-                             final Location showLocation) {
+                             final Location showLocation ) {
         this.proposalNumber = proposalNumber;
         this.dateOfShow = dateOfProposal;
         this.timeOfShow = timeOfProposal;
         this.showDuration = showDuration;
         this.showLocation = showLocation;
-        this.file = null;
     }
-
-    public void setFile(byte[] file) {
-        this.file = file;
+    public DeliveryReporting(final ShowProposalNumber proposalNumber, final LocalDate dateOfProposal,
+                             final LocalTime timeOfProposal, final Duration showDuration,
+                             final Location showLocation, final ShowProposalDocument document) {
+        this.proposalNumber = proposalNumber;
+        this.dateOfShow = dateOfProposal;
+        this.timeOfShow = timeOfProposal;
+        this.showDuration = showDuration;
+        this.showLocation = showLocation;
+        this.document = document;
     }
 }

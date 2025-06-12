@@ -31,7 +31,7 @@ public class ShowProposalDTO {
      */
     public String showLocation;
 
-    public byte[] file;
+    public String filePath;
 
     /**
      * ShowProposalDTO constructor.
@@ -48,14 +48,22 @@ public class ShowProposalDTO {
         this.timeOfProposal = timeOfProposal;
         this.showDuration = showDuration;
         this.showLocation = showLocation;
-        this.file = null;
+    }
+
+    public ShowProposalDTO(String proposalNumber, String dateOfProposal, String timeOfProposal,
+                           String showDuration, String showLocation, String filePath) {
+        this.proposalNumber = proposalNumber;
+        this.dateOfProposal = dateOfProposal;
+        this.timeOfProposal = timeOfProposal;
+        this.showDuration = showDuration;
+        this.showLocation = showLocation;
+        this.filePath = filePath;
     }
 
     public String proposalNumber() {
         return proposalNumber;
     }
-
-    public void addFile(byte[] file) {
-        this.file = file;
+    public String filePath() {
+        return filePath;
     }
 }

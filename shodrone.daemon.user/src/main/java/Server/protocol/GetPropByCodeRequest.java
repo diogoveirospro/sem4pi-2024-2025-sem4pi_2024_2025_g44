@@ -7,6 +7,10 @@ import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +42,7 @@ public class GetPropByCodeRequest extends UserAppRequest {
         }
     }
 
-    private String buildResponse(DeliveryReporting proposal) {
-        StringBuilder sb = new StringBuilder();
-
+    private String buildResponse(DeliveryReporting proposal) { StringBuilder sb = new StringBuilder();
         sb.append("\"PROPOSAL_NUMBER\", \"DATE_OF_PROPOSAL\", \"TIME_OF_PROPOSAL\", ")
                 .append("\"SHOW_DURATION\", \"SHOW_LOCATION\", \"File Bytes\"\n");
         sb.append("\"").append("\"").append(proposal.proposalNumber.proposalNumber()).append("\", ")
@@ -48,9 +50,20 @@ public class GetPropByCodeRequest extends UserAppRequest {
                 .append("\"").append(proposal.timeOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.showDuration.toString()).append("\", ")
                 .append("\"").append(proposal.showLocation.toString()).append("\", ")
-                .append("\"").append(Arrays.toString(proposal.file)).append("\"\n");
+                .append("\"").append(createFile(proposal.document.file())).append("\"\n");
 
 
         return sb.toString();
+    }
+
+    public String createFile(byte [] file){
+        try {
+            Path filePath = Paths.get("shodrone.app.user/rc/main/resources/files/proposal.csv");
+            Files.write(filePath, file);
+            return filePath.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

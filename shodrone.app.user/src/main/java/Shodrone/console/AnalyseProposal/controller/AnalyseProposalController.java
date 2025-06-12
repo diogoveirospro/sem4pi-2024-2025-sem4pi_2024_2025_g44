@@ -62,7 +62,6 @@ public class AnalyseProposalController {
         CustomerDTO customer = server.getCustomerOfRepresentative(shodroneUser.email);
 
         ShowProposalDTO showProposalDTO = server.getProposalByCode(code);
-        validateFile(customer, showProposalDTO);
         if (!validateFile(customer, showProposalDTO)) {
             throw new FailedRequestException("No show proposal found for the code: " + code + " or for the customer: " + customer.VatNumber);
         }
@@ -83,16 +82,5 @@ public class AnalyseProposalController {
             }
         }
         return false;
-    }
-
-    public String createFile(byte [] file){
-        try {
-            Path filePath = Paths.get("shodrone.app.user/rc/main/resources/files/proposal.csv");
-            Files.write(filePath, file);
-            return filePath.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

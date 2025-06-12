@@ -47,7 +47,8 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
                     proposal.dateOfShow(),
                     proposal.timeOfShow(),
                     proposal.durationOfShow(),
-                    proposal.request().location());
+                    proposal.request().location(),
+                    proposal.document());
         return deliveryReporting;
     }
 

@@ -273,8 +273,8 @@ public class MarshallerUnmarshaller {
 
             List<String> tokens = splitRespectingQuotes(response.get(0));
 
-            if (tokens.size() < 5) {
-                throw new IllegalArgumentException("Invalid response format. Expected 5 fields.");
+            if (!(tokens.size()==6)) {
+                throw new IllegalArgumentException("Invalid response format. Expected 6 fields.");
             }
 
             String proposalNumber = tokens.get(0);
@@ -282,9 +282,8 @@ public class MarshallerUnmarshaller {
             String showTime = tokens.get(2);
             String showDuration = tokens.get(3);
             String showLocation = tokens.get(4);
+            String filePath = tokens.get(5);
 
-
-
-        return new ShowProposalDTO(proposalNumber, showDate, showTime, showDuration, showLocation);
+        return new ShowProposalDTO(proposalNumber, showDate, showTime, showDuration, showLocation, filePath);
     }
 }

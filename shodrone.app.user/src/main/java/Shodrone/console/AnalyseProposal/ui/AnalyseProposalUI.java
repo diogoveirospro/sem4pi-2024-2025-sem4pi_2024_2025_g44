@@ -40,10 +40,9 @@ public class AnalyseProposalUI extends AbstractFancyUI {
             String code = Console.readLine("Enter the delivery code:");
             ShowProposalDTO proposalDTO = controller.findProposalByDeliveryCode(code);
 
-            String filePath = controller.createFile(proposalDTO.file);
 
-            if (filePath != null) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path:"+ filePath + "\n" + UtilsUI.RESET);
+            if (proposalDTO.filePath != null || !proposalDTO.filePath.isEmpty()) {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path:"+ proposalDTO.filePath + "\n" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
             } else {
@@ -68,6 +67,6 @@ public class AnalyseProposalUI extends AbstractFancyUI {
 
     @Override
     public String headline() {
-        return "Send Feedback Proposal";
+        return "Analyse Proposal";
     }
 }
