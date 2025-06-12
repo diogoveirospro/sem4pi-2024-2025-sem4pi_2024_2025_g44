@@ -33,6 +33,7 @@
 #define MAX_COLLISIONS_LOG 1000
 #define FILENAME_SIZE 500
 #define HISTORY_INIT_CAPACITY 100
+#define MAX_DRONES 100
 
 #define RESET "\033[0m"
 #define BOLD "\033[1m"
@@ -60,14 +61,6 @@ typedef struct position {
   int z;
 
 } Position;
-
-typedef struct message {
-  
-  Position pos;
-
-  int id;
-
-} Message;
 
 
 typedef struct drone_history {
@@ -104,15 +97,6 @@ typedef struct space_cell {
 } SpaceCell;
 
 
-// Matrix to map drone index to its Position
-typedef struct drone_position {
-
-    Position pos;
-    int drone_id;
-
-} DronePosition;
-
-
 typedef struct config_file_data {
 
   //config file info
@@ -131,10 +115,6 @@ typedef struct config_file_data {
 
 typedef struct parent_data {
 
-  //pipes
-  int up[2];
-  int **down;
-
   //childs pids
   int *pids;
 
@@ -149,9 +129,6 @@ typedef struct parent_data {
 
   //childs created flag
   int childs_created;
-
-  //history list
-  DroneHistory **h_list;
 
 } ParentData;
 
@@ -180,13 +157,15 @@ typedef struct {
 } SharedDroneState;
 
 typedef struct {
-    int num_drones;
-    SharedDroneState *drones; // They are pointers but the values will be defined by the parent
-    CollisionLog *collision_log;
-    DroneHistory **history; // Pointer to an array of DroneHistory, each index corresponds to a drone
-    int collision_count;
-    int *finished;
-} SharedMemory;
+    SharedDroneState drones[MAX_DRONES]; // They are pointers but the values will be defined by the parent
+} SharedMemoryDrone;
+
+
+typedef struct {
+    DroneHistory history[MAX_DRONES][HISTORY_INIT_CAPACITY];
+    CollisionLog collision_log[MAX_COLLISIONS_LOG]; // Log of collisions
+} SharedMemoryParent;
+
 
 
 typedef struct {
@@ -209,12 +188,12 @@ typedef struct {
 // Shared Memory Functions
 int create_shared_memory(const char *name, size_t size);
 int open_shared_memory(const char *name);
-SharedMemory* attach_shared_memory(int fd, size_t size);
+void* attach_shared_memory(int fd, size_t size);
 void detach_shared_memory(void* shmaddr, size_t size);
 void clear_shared_memory(const char *name);
 void resize_shared_memory(int fd, size_t new_size);
-void change_drone_state(SharedMemory *shm, int idx, SharedDroneState value);
-void update_collision_log(SharedMemory *shm, CollisionLog *log, int count);
+void change_drone_state(void *shm, int idx, SharedDroneState value);
+void update_collision_log(void *shm, CollisionLog *log, int count);
 void close_shared_memory(int fd);
 
 // Mutex and Condition Variable Functions
@@ -265,7 +244,6 @@ void move_drone(SpaceCell ***space, SharedDroneState *drone_positions, int drone
 int get_drone_at(SpaceCell ***space, int x, int y, int z);
 SpaceCell*** alloc_space(int sizeX, int sizeY, int sizeZ);
 void free_space(SpaceCell ***space, int sizeX, int sizeY);
-DronePosition* alloc_drone_positions(int num_drones);
 double calculate_distance(Position p1, Position p2);
 
 #endif

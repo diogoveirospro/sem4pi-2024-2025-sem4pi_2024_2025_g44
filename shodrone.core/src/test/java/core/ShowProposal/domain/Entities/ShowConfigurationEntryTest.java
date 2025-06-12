@@ -131,4 +131,10 @@ class ShowConfigurationEntryTest {
         assertNotEquals(entry, null);
         assertNotEquals(entry, "string");
     }
+
+    @Test
+    void testDroneIventory() {
+        ShowConfigurationEntry entry = new ShowConfigurationEntry(model, drone);
+        assertEquals(entry.drone().droneStatus(), DroneStatus.ACTIVE);
+    }
 }

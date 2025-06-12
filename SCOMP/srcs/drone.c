@@ -1,7 +1,7 @@
 #include "header.h"
 
 DroneData s;
-SharedMemory *shm = NULL;
+SharedMemoryDrone *shm = NULL;
 sem_t *my_sem = NULL;
 char sem_name[64];
 size_t shm_size = 0;
@@ -65,7 +65,6 @@ void update_position_in_shm(Position pos)
 // Marks the drone as finished in shared memory
 void mark_finished_in_shm()
 {
-  shm->finished[s.id - 1] = 1;
   shm->drones[s.id - 1].active = 0;
 }
 
@@ -202,11 +201,12 @@ void start_working()
 }
 
 // Starts shared memory and semaphore
+// Inicializa a memória partilhada e o semáforo do drone
 void set_up_shared_memory_and_semaphore()
 {
-  shm_fd = open_shared_memory( "/shm_drones");
+  shm_fd = open_shared_memory("/shm_drones");
 
-  shm_size = sizeof(SharedMemory) + sizeof(SharedDroneState) * s.max_x; // Adjust as needed
+  shm_size = sizeof(SharedMemoryDrone);
   shm = attach_shared_memory(shm_fd, shm_size);
 
   snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", s.id);

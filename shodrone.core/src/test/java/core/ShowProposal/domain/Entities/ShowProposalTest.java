@@ -56,6 +56,7 @@ public class ShowProposalTest {
     private Figure figure;
     private Drone drone;
     private Model model;
+    private ShowConfiguration showConfiguration;
 
 
     @BeforeEach
@@ -73,6 +74,15 @@ public class ShowProposalTest {
         figure = setUpPublicFigure();
         model = setUpModel();
         drone = setUpDrone();
+        showConfiguration = setUpConfiguration();
+    }
+
+    private ShowConfiguration setUpConfiguration() {
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        ShowConfigurationEntry entry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(entry);
+
+        return builder.build();
     }
 
     private Drone setUpDrone() {
@@ -244,13 +254,15 @@ public class ShowProposalTest {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
                 collaborator, generateProposalNumber);
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
         assertTrue(proposal.isReadyToConfigureDocument());
     }
@@ -267,13 +279,15 @@ public class ShowProposalTest {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
                 collaborator, generateProposalNumber);
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
         String document = proposal.configureDocument("Portuguese", manager);
         assertNotNull(document);
@@ -286,13 +300,15 @@ public class ShowProposalTest {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
                 collaborator, generateProposalNumber);
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
         String document = proposal.configureDocument("English (Regular Customer)", manager);
         assertNotNull(document);
@@ -305,13 +321,15 @@ public class ShowProposalTest {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance,
                 collaborator, generateProposalNumber);
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
         String document = proposal.configureDocument("English (VIP Customer)", manager);
         assertNotNull(document);
@@ -325,13 +343,15 @@ public class ShowProposalTest {
                 collaborator, generateProposalNumber);
 
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
 
         String invalidTemplate = "french"; // "french" is not a valid template
@@ -347,13 +367,14 @@ public class ShowProposalTest {
         ShowDSLDescription description = new ShowDSLDescription("Valid DSL Description");
 
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
 
         proposal.addShowDSLDescription(description);
 
@@ -377,13 +398,15 @@ public class ShowProposalTest {
     void testIsReadyToGenerateShowDSLTrue() {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
 
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
 
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         assertTrue(proposal.isReadyToGenerateShowDSL());
     }
 
@@ -437,12 +460,23 @@ public class ShowProposalTest {
     void testIsReadyToConfigureDocumentTrue() {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration, quantDrones, insurance, collaborator, generateProposalNumber);
         ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
-        builder.addFigure(figure);
         ShowConfigurationEntry droneEntry = new ShowConfigurationEntry(model, drone);
         builder.addDrones(droneEntry);
         ShowConfiguration config = builder.build();
         proposal.addConfiguration(config);
+
+        proposal.configuration().addFigures(List.of(figure));
+
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
         assertTrue(proposal.isReadyToConfigureDocument());
+    }
+
+    @Test
+    void ensureTotalDronesInConfigurationMatchesProposalQuantity() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
+                quantDrones, insurance, collaborator, generateProposalNumber);
+
+        assertNotEquals(quantDrones, showConfiguration.showConfiguration().size(),
+                "The total number of drones in the configuration should match the proposal's quantity of drones");
     }
 }

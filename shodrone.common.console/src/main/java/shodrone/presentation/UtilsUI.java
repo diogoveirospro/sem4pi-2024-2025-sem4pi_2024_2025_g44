@@ -500,6 +500,35 @@ public class UtilsUI {
         }
     }
 
+    public static void openInNotepad(File file) {
+        try {
+            // Check if the file exists
+            if (!file.exists()) {
+                System.err.println("File does not exist: " + file.getAbsolutePath());
+                return;
+            }
+
+            String os = System.getProperty("os.name").toLowerCase();
+            String filePath = file.getAbsolutePath();
+
+            if (os.contains("win")) {
+                // Windows: open with Notepad (Bloco de Notas)
+                new ProcessBuilder("notepad.exe", filePath).start();
+            } else if (os.contains("mac")) {
+                // MacOS: open with the default text editor
+                new ProcessBuilder("open", filePath).start();
+            } else if (os.contains("nix") || os.contains("nux")) {
+                // Linux: open with the default text editor
+                new ProcessBuilder("xdg-open", filePath).start();
+            } else {
+                System.err.println("Unsupported OS: " + os);
+            }
+        } catch (IOException e) {
+            System.err.println("Error opening file in Notepad: " + file.getAbsolutePath());
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Validates a date string in the format "dd-MM-yyyy".
      * @param date The date string to validate.
