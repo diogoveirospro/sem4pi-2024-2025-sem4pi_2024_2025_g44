@@ -266,11 +266,15 @@ public class MarshallerUnmarshaller {
     }
 
     public ShowProposalDTO parseResponseMessageProposalByCode(List<String> response) throws FailedRequestException {
-            response.remove(0);
-            List<String> tokens = splitRespectingQuotes(response.get(1));
+        checkForErrorMessage(response);
 
-            if (tokens.size() < 4) {
-                throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
+        response.remove(0);
+
+
+            List<String> tokens = splitRespectingQuotes(response.get(0));
+
+            if (tokens.size() < 5) {
+                throw new IllegalArgumentException("Invalid response format. Expected 5 fields.");
             }
 
             String proposalNumber = tokens.get(0);
