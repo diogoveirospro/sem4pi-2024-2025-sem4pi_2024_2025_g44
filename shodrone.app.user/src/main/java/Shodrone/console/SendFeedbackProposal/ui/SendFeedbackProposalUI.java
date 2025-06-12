@@ -2,6 +2,7 @@ package Shodrone.console.SendFeedbackProposal.ui;
 
 import Shodrone.DTO.ShowProposalDTO;
 import Shodrone.console.SendFeedbackProposal.controller.SendFeedbackProposalController;
+import Shodrone.console.SendFeedbackProposal.printer.DecisionPrinter;
 import Shodrone.console.SendFeedbackProposal.printer.ProposalPrinter;
 import Shodrone.exceptions.FailedRequestException;
 import Shodrone.exceptions.UserCancelledException;
@@ -72,29 +73,29 @@ public class SendFeedbackProposalUI extends AbstractFancyUI {
      */
     private String chooseDecision() {
 
-        List<String> templatesList = new ArrayList<>();
-        templatesList.add("Accept Proposal");
-        templatesList.add("Reject Proposal");
+        List<String> decisionList = new ArrayList<>();
+        decisionList.add("Accept Proposal");
+        decisionList.add("Reject Proposal");
 
         ListWidget<String> templates = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nWhat is Your Decision?:\n" +
-                UtilsUI.RESET, templatesList);
+                UtilsUI.RESET, decisionList, new DecisionPrinter());
         templates.show();
 
         int option;
         do {
-            option = UtilsUI.selectsIndex(templatesList);
+            option = UtilsUI.selectsIndex(decisionList);
             if (option == -2) {
                 throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
             }
 
-            if (option < 0 || option > templatesList.size()) {
+            if (option < 0 || option > decisionList.size()) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 String selected;
 
-                if (option == 1){
+                if (option == 0){
                     selected = "ACCEPTED";
-                } else if (option == 2){
+                } else if (option == 1){
                     selected = "REJECTED";
                 } else {
                    throw new IllegalArgumentException("Invalid option selected.");
@@ -140,7 +141,7 @@ public class SendFeedbackProposalUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 ShowProposalDTO selected = proposalList.get(option);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " + selected.toString()  + "\n"
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected Show Proposal: " + selected.proposalNumber()  + "\n"
                         + UtilsUI.RESET);
                 return selected;
             }

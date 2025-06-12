@@ -50,7 +50,12 @@ public class ShowProposalDTO {
         this.showLocation = showLocation;
         this.file = null;
     }
-    public void setFile(byte[] file) {
+
+    public String proposalNumber() {
+        return proposalNumber;
+    }
+
+    public void addFile(byte[] file) {
         this.file = file;
     }
 }

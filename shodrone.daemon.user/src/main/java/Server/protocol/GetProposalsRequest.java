@@ -41,7 +41,7 @@ public class GetProposalsRequest extends UserAppRequest{
             sb.append("\"").append(delivery.proposalNumber.proposalNumber()).append("\", ")
                     .append("\"").append(delivery.dateOfShow.toString()).append("\", ")
                     .append("\"").append(delivery.timeOfShow.toString()).append("\", ")
-                    .append("\"").append(delivery.showDuration.toString()).append("\", ")
+                    .append("\"").append(delivery.showDuration.toMinutes()).append(" minutes").append("\", ")
                     .append("\"").append(delivery.showLocation.toString()).append("\"\n");
         }
 
