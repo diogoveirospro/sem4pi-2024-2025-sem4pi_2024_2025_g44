@@ -213,7 +213,7 @@ public class MarshallerUnmarshaller {
             List<String> tokens = splitRespectingQuotes(line);
 
             if (tokens.size() < 5) {
-                throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
+                throw new IllegalArgumentException("Invalid response format. Expected 5 fields.");
             }
 
             String proposalNumber = tokens.get(0);
@@ -243,7 +243,7 @@ public class MarshallerUnmarshaller {
             List<String> tokens = splitRespectingQuotes(line);
 
             if (tokens.size() < 3) {
-                throw new IllegalArgumentException("Invalid response format. Expected 4 fields.");
+                throw new IllegalArgumentException("Invalid response format. Expected 3 fields.");
             }
             String decision = tokens.get(1);
 
