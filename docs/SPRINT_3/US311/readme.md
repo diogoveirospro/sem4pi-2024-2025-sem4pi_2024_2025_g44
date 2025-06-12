@@ -24,6 +24,7 @@ This task as the objective of concluding the requirements of the us311 of sprint
 - **AC01**: The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
 - **AC02**: There is no need to verify if these drones are used in another show on the same date.
 - **AC03**: The same drone cannot be used more than once in the same configuration.
+- **AC04**: The total number of drones in the configuration, need to be the same as the total number of drones of the proposal.
 
 ### Dependencies
 
@@ -97,6 +98,71 @@ For this US, the important elemente from **Model** is the **ModelName**, to inde
 ## 4. Design
 
 This document provides an overview of the system design for configuring drone models in a show proposal. The architecture follows a layered approach with UI, controller, repository, persistence, and domain layers.
+
+
+
+
+---
+
+This layered architecture ensures clear separation of concerns and supports maintainability, extensibility, and adherence to Domain-Driven Design principles.
+
+### 4.1 Realization
+
+![US311 Sequence Diagram](images/sequence_diagram_us311.svg "US311 Sequence Diagram")
+
+---
+
+## 5. Tests
+
+The following tests validate the acceptance criteria defined for **US311**. These tests ensure that the system behaves as expected when configuring drone models in a show proposal.
+
+---
+
+### Test 1: Customer is a user of the system
+
+**Refers to Acceptance Criteria:** AC01  
+**Description:** The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
+
+```java
+    @Test
+    void testDroneIventory() {
+            ShowConfigurationEntry entry = new ShowConfigurationEntry(model, drone);
+            assertEquals(entry.drone().droneStatus(), DroneStatus.ACTIVE);
+            }
+```
+
+---
+
+### Test 2: Configuration cant have the same drone multiple times
+
+**Refers to Acceptance Criteria:** AC03  
+**Description:** Verifies that the same drone is not used more than 1 time on the same configuration.
+
+```java
+    void testNotEqualsDifferentDrone() {
+        ShowConfigurationEntry entry1 = new ShowConfigurationEntry(model, drone);
+        ShowConfigurationEntry entry2 = new ShowConfigurationEntry(model, drone2);
+        assertNotEquals(entry1, entry2);
+        }
+```
+
+### Test 3 Configuration needs to have the same number of drones as the proposal
+
+**Refers to Acceptance Criteria:** AC04  
+**Description:** The total number of drones in the configuration, need to be the same as the total number of drones of the proposal.
+
+```java
+    void ensureTotalDronesInConfigurationMatchesProposalQuantity() {
+            ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
+            quantDrones, insurance, collaborator, generateProposalNumber);
+
+            assertNotEquals(quantDrones, showConfiguration.showConfiguration().size(),
+            "The total number of drones in the configuration should match the proposal's quantity of drones");
+            }
+```
+
+---
+## 6. Implementation
 
 ---
 
@@ -188,81 +254,31 @@ This document provides an overview of the system design for configuring drone mo
 
 ---
 
+## 7. Integration/Demonstration
+
 ### 🔁 Process Flow Summary
 
 1. **CRM Collaborator** starts the process in the UI.
 2. The UI requests available **Show Proposals** via the **Controller**, which fetches them through the **ShowProposalRepository**.
 3. The user selects a proposal.
 4. For each drone model:
-  - The UI requests available models via the **ModelRepository**.
-  - The CRM Collaborator selects a model and provides a drone count.
+- The UI requests available models via the **ModelRepository**.
+- The CRM Collaborator selects a model and provides a drone count.
 5. The UI collects these inputs into a configuration.
 6. The user confirms the configuration.
 7. The Controller:
-  - Builds the configuration using the **Configuration** domain object.
-  - Assigns it to the **ShowProposal**.
-  - Validates the **ShowProposal**.
-  - Persists the updated proposal via the **ShowProposalRepository**.
+- Builds the configuration using the **Configuration** domain object.
+- Assigns it to the **ShowProposal**.
+- Validates the **ShowProposal**.
+- Persists the updated proposal via the **ShowProposalRepository**.
 8. A success message is shown to the CRM Collaborator.
 
 ---
-
-This layered architecture ensures clear separation of concerns and supports maintainability, extensibility, and adherence to Domain-Driven Design principles.
-
-### 4.1 Realization
-
-![US311 Sequence Diagram](images/sequence_diagram_us311.svg "US311 Sequence Diagram")
-
----
-
-## 5. Tests
-
-The following tests validate the acceptance criteria defined for **US311**. These tests ensure that the system behaves as expected when configuring drone models in a show proposal.
-
----
-
-### Test 1: Customer is a user of the system
-
-**Refers to Acceptance Criteria:** AC01  
-**Description:** The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
-
-```java
-@Test
-void ensureValidDrones() {
-    // setup: create and persist a Show proposal configuration with models and drones
-    // action: call controller.getDroneList() and get all drones list
-    // assert: creates the configuration and checks if the drones are compatible with the Shodrone’s inventory
-}
-```
-
----
-
-### Test 2: Configuration cant have the same drone multiple times
-
-**Refers to Acceptance Criteria:** AC03  
-**Description:** Verifies that the same drone is not used more than 1 time on the same configuration.
-
-```java
-@Test
-void ensureNotSameDrone() {
-        // setup: create and persist a Show proposal configuration with models and drones
-        // assert: creates the configuration and checks if the same drone is used multiple times 
-        }
-```
-
----
-## 6. Implementation
-
----
-
-## 7. Integration/Demonstration
-
-
-
-### Demonstration Instructions
-
----
-
 ## 8. Observations
 
----
+For the implementation of this project, we used the following sources:
+
+- **EAPLI Framework**: A Java framework that provides a set of libraries and tools of our department(ISEP).
+- **ECafetaria project**: A project developed by our department that serves as a reference and source for implementing similar functionalities and as a guide for best practices.
+- **Jpa Hibernate**: A Java framework for object-relational mapping (ORM) that simplifies database interactions.
+- **H2 Database**: A lightweight Java database that is easy to set up and use for development and testing purposes.

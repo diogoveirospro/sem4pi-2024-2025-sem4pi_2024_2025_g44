@@ -118,6 +118,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 return false;
             }
 
+
             boolean success = controller.configureShow(showProposal, configBuilder);
             if (success) {
                 System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nShow configuration saved successfully!" + UtilsUI.RESET);

@@ -56,6 +56,7 @@ public class ShowProposalTest {
     private Figure figure;
     private Drone drone;
     private Model model;
+    private ShowConfiguration showConfiguration;
 
 
     @BeforeEach
@@ -73,6 +74,15 @@ public class ShowProposalTest {
         figure = setUpPublicFigure();
         model = setUpModel();
         drone = setUpDrone();
+        showConfiguration = setUpConfiguration();
+    }
+
+    private ShowConfiguration setUpConfiguration() {
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        ShowConfigurationEntry entry = new ShowConfigurationEntry(model, drone);
+        builder.addDrones(entry);
+
+        return builder.build();
     }
 
     private Drone setUpDrone() {
@@ -459,5 +469,14 @@ public class ShowProposalTest {
 
         proposal.addVideo(new Video("Test Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
         assertTrue(proposal.isReadyToConfigureDocument());
+    }
+
+    @Test
+    void ensureTotalDronesInConfigurationMatchesProposalQuantity() {
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
+                quantDrones, insurance, collaborator, generateProposalNumber);
+
+        assertNotEquals(quantDrones, showConfiguration.showConfiguration().size(),
+                "The total number of drones in the configuration should match the proposal's quantity of drones");
     }
 }
