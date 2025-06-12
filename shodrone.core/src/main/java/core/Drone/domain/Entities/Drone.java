@@ -84,6 +84,10 @@ public class Drone implements AggregateRoot<Designation> {
         return programingLanguage;
     }
 
+    public UsageTime usageTime() {
+        return usageTime;
+    }
+
     @Override
     public boolean sameAs(Object other) {
         return false;

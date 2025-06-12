@@ -5,8 +5,8 @@ skinparam shadowing false
 autonumber
 
 actor "Drone Tech" as DT
-participant ":MaintenanceHistoryUI" as UI
-participant ":MaintenanceHistoryController" as CTRL
+participant ":ListDroneMaintenanceHistoryUI" as UI
+participant ":ListDroneMaintenanceHistoryController" as CTRL
 participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS
 participant ":repositoryFactory\n::RepositoryFactory" as REPOS_SINGLETON
@@ -15,7 +15,7 @@ participant "maintenanceRepository\n:MaintenanceRepository" as MAINT_REPO
 
 activate DT
 
-' Primeiro, usuário solicita lista de drones para escolher
+' Solicita lista de drones
 DT -> UI : request list of drones
 activate UI
   UI -> CTRL : getDroneList()
@@ -47,7 +47,7 @@ activate UI
 UI --> DT : display drone list
 deactivate UI
 
-' Usuário escolhe o drone e insere o intervalo de datas
+' Seleção de drone e datas
 DT -> UI : select drone and input date range (startDate, endDate)
 activate UI
   UI -> CTRL : getMaintenanceHistory(selectedDroneId, startDate, endDate)

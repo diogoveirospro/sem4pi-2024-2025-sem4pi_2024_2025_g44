@@ -57,7 +57,7 @@ public class ShodroneDemoBootstrapper implements Action {
         final Action[] actions = { new BackofficeUsersBootstrapper(),
                 new CustomerBootstrapper(), new CustomerRepresentativeBootstrapper(), new CategoryBootstrapper(),
                 new FigureBootstrapper(), new ModelBootstrapper(), new DroneBootstrapper(), new ShowRequestBootstrapper(),
-                new MaintenanceTypeBootstrapper(), new ShowProposalBootstrapper()};
+                new MaintenanceTypeBootstrapper(), new ShowProposalBootstrapper(), new MaintenanceBootstrapper()};
 
         authenticateForBootstrapping();
         // execute all bootstrapping
