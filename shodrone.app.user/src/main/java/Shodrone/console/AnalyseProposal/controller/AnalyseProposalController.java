@@ -12,6 +12,7 @@ import core.ProposalDeliveryInfo.domain.Entities.ProposalDeliveryInfo;
 import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
 import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 
 /**
  * Controller for sending feedback on proposals.
@@ -82,5 +84,23 @@ public class AnalyseProposalController {
             }
         }
         return false;
+    }
+
+    public byte[] decodeFile(String file) {
+        return Base64.getDecoder().decode(file);
+    }
+
+    public String createFile(byte[] fileBytes) {
+        try {
+            if (fileBytes == null || fileBytes.length == 0) {
+                throw new IOException("Document file is empty or null");
+            }
+            Path filePath = Paths.get("files/proposal.txt");
+            Files.write(filePath, fileBytes);
+            return filePath.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
