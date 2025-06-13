@@ -62,7 +62,7 @@ public class GetPropByCodeRequest extends UserAppRequest {
             if (document == null || document.file() == null || document.file().length == 0) {
                 throw new IOException("Document file is empty or null");
             }
-            Path filePath = Paths.get("shodrone.app.user/src/main/java/Shodrone/ShowProposalFiles/proposal.csv");
+            Path filePath = Paths.get("C:/Users/FariaG/Documents/sem4pi-2024-2025-sem4pi_2024_2025_g44/files/proposal.txt");
             Files.write(filePath, document.file());
             return filePath.toString();
         } catch (IOException e) {
