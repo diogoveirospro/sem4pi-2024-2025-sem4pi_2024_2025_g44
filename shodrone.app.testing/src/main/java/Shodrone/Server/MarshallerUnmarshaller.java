@@ -63,12 +63,22 @@ public class MarshallerUnmarshaller {
     }
 
     public void generateReportIfResponseIsCorrect(List<String> response) throws FailedRequestException {
-        // Verify if the response is well-formed
         verifyResponseFormat(response);
-        // Generate the report
+
+        List<String> adjustedResponse = new ArrayList<>(response.subList(2, response.size()));
+
+        for (int i = 0; i < adjustedResponse.size(); i++) {
+            String line = adjustedResponse.get(i);
+            if ("[EMPTY_LINE]".equals(line.trim())) {
+                adjustedResponse.set(i, " ");
+            }
+        }
+
         String reportPath = REPORT_FOLDER + "/simulation_report.txt";
         try {
-            Files.write(Paths.get(reportPath), response, StandardCharsets.UTF_8);
+            Files.deleteIfExists(Paths.get(reportPath));
+
+            Files.write(Paths.get(reportPath), adjustedResponse, StandardCharsets.UTF_8);
             System.out.println("Report generated successfully at: " + reportPath);
         } catch (IOException e) {
             throw new FailedRequestException("Failed to generate report: " + e.getMessage());
