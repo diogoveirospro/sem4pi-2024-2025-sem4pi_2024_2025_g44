@@ -2,26 +2,37 @@
 actor "CustomerRepresentative" as User
 participant "AnalyseProposalUI" as UI
 participant "AnalyseProposalController" as Controller
+
 participant "CustomerAppProtocolProxy" as Proxy
+
 participant "GetShodroneUserRequest" as RequestUser
-participant "ClientSocket" as Socket
-participant "CustomerAppServer" as Server
-participant "CustomerAppMessageParser" as Parser
-participant "DatabaseProcessor" as DBPROC
-participant "GetPropByCodeRequest" as RequestDAEMON
-participant "UserAppServerController" as ServerController
-participant "ShodroneUserRepository" as ShodroneUserRepo
-participant "MarshallerUnmarshaller" as MU
-participant "ShodroneUserDTO" as UserDTO
-participant "GetCustomerOfRepresentativeRequest" as GetCustomerRequest
-participant "CustomerDTO" as CustomerDTO
-participant "CustomerRepository" as CustomerRepo
+participant "GetCustomerOfRepresentativeRequest" as REQUEST_CUST_REPRESENTATIVE
 participant "GetProposalByCodeRequest" as GetProposalsRequest
+
+participant "ClientSocket" as Socket
+
+participant "CustomerAppServer" as Server
+
+participant "CustomerAppMessageParser" as Parser
+
+participant "DatabaseProcessor" as DBPROC
+
+participant "GetShodroneUserRequest" as GetShodroneUserRequestDAEMON
+participant "GetCustomerRequest" as GetCustomerRequest
+participant "GetPropByCodeRequest" as RequestDAEMON
+
+participant "UserAppServerController" as ServerController
+
+participant "ShodroneUserRepository" as ShodroneUserRepo
+participant "CustomerRepository" as CustomerRepo
 participant "DeliveryReportingRepository" as DeliveryRepo
+
+participant "MarshallerUnmarshaller" as MU
+
+participant "ShodroneUserDTO" as UserDTO
+participant "CustomerDTO" as CustomerDTO
 participant "ProposalDTO" as ProposalDTO
-participant "SendFeedbackProposalRequest" as Request
-participant "ShowProposalRepository" as ProposalRepo
-participant "SendFeedbackProposalResponse" as Response
+
 
 
 activate User
@@ -33,16 +44,19 @@ User -> UI : provides delivery code
 
 UI -> Controller : findProposalByDeliveryCode(code)
 activate Controller
-
-Controller -> Proxy : getShodroneUser(authenticatedUser)
+Controller -> Controller : findProposalByDeliveryCode(code)
+activate Controller
+Controller -> Proxy : getShodroneUser(currentUser)
 activate Proxy
 
-Proxy -> RequestUser : toRequest(authenticatedUser)
+Proxy -> RequestUser : toRequest(currentUser.username)
 activate RequestUser
+RequestUser --> Proxy : request
 deactivate RequestUser
 
-Proxy -> Socket : sendAndReceive(request)
+Proxy -> Socket : connect()
 activate Socket
+Proxy -> Socket : sendAndReceive(request)
 
 Socket -> Server : send(request)
 activate Server
@@ -50,15 +64,31 @@ activate Server
 Server -> Parser : parse(request)
 activate Parser
 
-Parser -> ServerController : getShodroneUserByUsername(username)
+Parser -> GetShodroneUserRequestDAEMON : parseGetShodroneUser(request)
+activate GetShodroneUserRequestDAEMON
+GetShodroneUserRequestDAEMON --> Parser : new GetShodroneUserRequest(request)
+deactivate GetShodroneUserRequestDAEMON
+Parser -> DBPROC : run()
+activate DBPROC
+DBPROC -> GetShodroneUserRequestDAEMON : execute()
+activate GetShodroneUserRequestDAEMON
+GetShodroneUserRequestDAEMON -> ServerController : getShodroneUserByUsername(username)
 activate ServerController
-
 ServerController -> ShodroneUserRepo : findByUsername(username)
 activate ShodroneUserRepo
+ShodroneUserRepo --> ServerController : shodroneUser
 deactivate ShodroneUserRepo
 
-ServerController --> Parser : response
+ServerController --> GetShodroneUserRequestDAEMON : shodroneUser
 deactivate ServerController
+GetShodroneUserRequestDAEMON -> GetShodroneUserRequestDAEMON : buildResponse(shodroneUser)
+activate GetShodroneUserRequestDAEMON
+GetShodroneUserRequestDAEMON --> GetShodroneUserRequestDAEMON : response
+deactivate GetShodroneUserRequestDAEMON
+GetShodroneUserRequestDAEMON --> DBPROC : response
+deactivate GetShodroneUserRequestDAEMON
+DBPROC --> Parser : response
+deactivate DBPROC
 
 Parser --> Server : response
 deactivate Parser
@@ -72,44 +102,62 @@ deactivate Socket
 Proxy -> MU : parseResponseMessageShodroneUser(response)
 activate MU
 
-MU -> UserDTO : ShodroneUserDTO()
+MU -> UserDTO : new ShodroneUserDTO(response)
 activate UserDTO
+UserDTO --> MU
 deactivate UserDTO
 
-MU --> Proxy : parseResponseMessageLineShodroneUser(response)
+MU --> Proxy : shodroneUserDTO
 deactivate MU
 
-Proxy --> Controller : shodroneUser
+Proxy --> Controller : shodroneUserDTO
 deactivate Proxy
 
-
-
-Controller -> Proxy : getCustomerOfRepresentative(shodroneUser)
+Controller -> Proxy : getCustomerOfRepresentative(shodroneUserDTO.email)
 activate Proxy
 
-Proxy -> GetCustomerRequest : toRequest(authenticatedUser)
-activate GetCustomerRequest
-deactivate GetCustomerRequest
+Proxy -> REQUEST_CUST_REPRESENTATIVE : toRequest(shodroneUserDTO.email)
+activate REQUEST_CUST_REPRESENTATIVE
+REQUEST_CUST_REPRESENTATIVE --> Proxy : request
+deactivate REQUEST_CUST_REPRESENTATIVE
 
-Proxy -> Socket : sendAndReceive(request)
+Proxy -> Socket : connect()
 activate Socket
+Proxy -> Socket : sendAndReceive(request)
+
 
 Socket -> Server : send(request)
 activate Server
 
 Server -> Parser : parse(request)
 activate Parser
+Parser -> GetCustomerRequest : parseGetCustomer(request)
+activate GetCustomerRequest
+GetCustomerRequest --> Parser : new GetCustomerRequest(request)
+deactivate GetCustomerRequest
 
-Server -> Parser : execute(request)
-
-Parser -> ServerController : getCustomerByRepresentativeEmail(repEmail)
+Parser -> DBPROC : run()
+activate DBPROC
+DBPROC -> GetCustomerRequest : execute()
+activate GetCustomerRequest
+GetCustomerRequest -> ServerController : getCustomerByRepresentativeEmail(repEmail)
 activate ServerController
-
 ServerController -> CustomerRepo : findCustomerByRepresentativeEmail(repEmail)
 activate CustomerRepo
+CustomerRepo --> ServerController : customer
 deactivate CustomerRepo
 
-ServerController --> Parser : response
+ServerController --> GetCustomerRequest : customer
+deactivate ServerController
+GetCustomerRequest -> GetCustomerRequest : buildResponse(customer)
+activate GetCustomerRequest
+GetCustomerRequest --> GetCustomerRequest : response
+deactivate GetCustomerRequest
+GetCustomerRequest --> DBPROC : response
+deactivate GetCustomerRequest
+DBPROC --> Parser : response
+deactivate DBPROC
+
 deactivate ServerController
 
 Parser --> Server : response
@@ -124,28 +172,29 @@ deactivate Socket
 Proxy -> MU : parseResponseMessageCustomer(response)
 activate MU
 
-MU -> CustomerDTO : CustomerDTO()
+MU -> CustomerDTO : new CustomerDTO(response)
 activate CustomerDTO
+CustomerDTO --> MU
 deactivate CustomerDTO
 
-MU --> Proxy : parseResponseMessageLineCustomer(response)
+MU --> Proxy : customerDTO
 deactivate MU
 
-
-
-Proxy --> Controller : customer
+Proxy --> Controller : customerDTO
 deactivate Proxy
+
 
 Controller -> Proxy : getProposalByCode(code)
 activate Proxy
 
-Proxy -> GetProposalsRequest : toRequest(customer)
+Proxy -> GetProposalsRequest : toRequest(code)
 activate GetProposalsRequest
 GetProposalsRequest --> Proxy : request
 deactivate GetProposalsRequest
 
-Proxy -> Socket : sendAndReceive(request)
+Proxy -> Socket : connect()
 activate Socket
+Proxy -> Socket : sendAndReceive(request)
 
 Socket -> Server : send(request)
 activate Server
@@ -193,7 +242,7 @@ deactivate Socket
 Proxy -> MU : parseResponseMessageProposal(response)
 activate MU
 
-MU -> ProposalDTO : new ShowProposalDTO()
+MU -> ProposalDTO : new ShowProposalDTO(response)
 activate ProposalDTO
 ProposalDTO --> MU
 deactivate ProposalDTO
@@ -203,11 +252,16 @@ deactivate MU
 
 Proxy --> Controller : showProposalDTO
 deactivate Proxy
-
-Controller --> UI : showProposalDTO
+Controller --> Controller : showProposalDTO
+deactivate Controller
+Controller -> Controller : validateFile(customerdto, showProposalDTO)
+activate Controller
+Controller -> Controller : true
+deactivate Controller
+Controller -> UI : showProposalDTO
 deactivate Controller
 
-UI -> Controller :decodeFile(proposalDTO.file)
+UI -> Controller :decodeFile(showProposalDTO.file)
 activate Controller
 Controller --> UI : fyleBytes
 deactivate Controller
