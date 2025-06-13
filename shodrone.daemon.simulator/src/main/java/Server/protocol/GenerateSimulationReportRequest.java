@@ -35,7 +35,11 @@ public class GenerateSimulationReportRequest extends UserAppRequest {
         response.append("SIMULATION_REPORT_RESPONSE\n");
 
         for (String line : content) {
-            response.append(line).append("\n");
+            if (line == null || line.trim().isEmpty()) {
+                response.append("[EMPTY_LINE]\n"); // Changes to handle empty lines
+            } else {
+                response.append(line).append("\n");
+            }
         }
 
         return response.toString();

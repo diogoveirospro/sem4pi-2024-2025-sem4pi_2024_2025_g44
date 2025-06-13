@@ -56,8 +56,7 @@ public class SimulatorServer {
                     System.out.println("Sent message to DB port:----\n" + inputLine + "\n----");
                     String response = message.responseQueue.take(); // Wait for DB to respond
                     System.out.println("Received response from DB port: " + response);
-                    out.print(response);
-                    out.flush();
+                    out.println(response);
                     LOGGER.debug("Sent message:----\n{}\n----", response);
 
                     // Note: No more request.isGoodbye() here since we don't parse in this thread
