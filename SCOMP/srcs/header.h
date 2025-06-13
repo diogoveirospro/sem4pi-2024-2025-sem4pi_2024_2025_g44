@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <pthread.h>
+#include <pthread.h>
 
 
 // ------------ Defines -----------------
