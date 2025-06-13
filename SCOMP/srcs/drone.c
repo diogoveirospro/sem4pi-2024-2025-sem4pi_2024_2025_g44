@@ -118,8 +118,10 @@ int valid_position(Position p)
 {
   if (p.x < 0 || p.y < 0 || p.z < 0)
     return 0;
-  if (p.x >= s.max_x || p.y >= s.max_y || p.z >= s.max_z)
+  if (p.x >= s.max_x || p.y >= s.max_y || p.z >= s.max_z) {
     return 0;
+  }
+    
   return 1;
 }
 
@@ -153,13 +155,10 @@ void run_script(char *filename)
       copy_coordinates(&c, &l);
 
       // sync
-      fprintf(stderr, "Drone %d: New position (%d, %d, %d)\n", s.id, c.x, c.y, c.z);
       sync_drones();
-      fprintf(stderr, "Drone %d: Synced with parent\n", s.id);
     }
   }
 
-  fprintf(stderr, "Drone %d: Starting position (%d, %d, %d)\n", s.id, c.x, c.y, c.z);
   // now x,y,z save the vectors
   // c x,y,z are the current position
   while (fscanf(f, "%d,%d,%d", &v.x, &v.y, &v.z) == 3 && valid_flag) {
@@ -180,9 +179,7 @@ void run_script(char *filename)
     copy_coordinates(&c, &l);
 
     // sync
-    fprintf(stderr, "Drone %d: New position (%d, %d, %d)\n", s.id, c.x, c.y, c.z);
     sync_drones();
-    fprintf(stderr, "Drone %d: Synced with parent\n", s.id);
   }
 
   fclose(f);

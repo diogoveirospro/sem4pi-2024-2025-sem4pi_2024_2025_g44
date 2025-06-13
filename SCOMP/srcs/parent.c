@@ -200,10 +200,10 @@ int check_collisions(int iter)
                     kill(s.pids[i], SIGUSR1);
                     kill(s.pids[j], SIGUSR1);
 
-                  shm_parent->history[i].collision_count++;
-                  shm_parent->history[j].collision_count++;
-                  shm_drones->drones[i].collision_count++;
-                  shm_drones->drones[j].collision_count++;
+                    shm_parent->history[i].collision_count++;
+                    shm_parent->history[j].collision_count++;
+                    shm_drones->drones[i].collision_count++;
+                    shm_drones->drones[j].collision_count++;
 
                     new_collisions++;
 
@@ -231,18 +231,10 @@ int check_collisions(int iter)
     return new_collisions;
 }
 
-// verify if drone terminated
-// returns 1 if terminated
-// returns 0 if not terminated
-int verify_drone_termination(int drone_idx)
-{
-  return shm_drones->drones[drone_idx].active ? 0 : 1;
-}
-
 // updates position in all needed places
 void update_position(int i, int iter, SharedDroneState *drone)
 {
-  if (verify_drone_termination(i)) {
+  if (shm_drones->drones[i].active == 0) {
     s.finished[i] = 1;
     s.active_drones--;
   } else {
@@ -260,20 +252,13 @@ void update_position(int i, int iter, SharedDroneState *drone)
 int manage_drones(int iter)
 {
   int msg_received_cnt = 0;
-  int msg_expected_cnt = s.active_drones;
 
-  for (int i = 0; i < c.num_drones && msg_received_cnt < msg_expected_cnt; i++) {
-    if (s.finished[i]) {
-      msg_received_cnt++;
+  for (int i = 0; i < c.num_drones; i++) {
+    if (s.finished[i])
       continue;
-    }
+
     wait_semaphore(semaphores_drones[i]);  // sem_drone_%d
 
-    fprintf(stderr, "Position of drone %d: (%d, %d, %d)\n",
-            i + 1,
-            shm_drones->drones[i].pos.x,
-            shm_drones->drones[i].pos.y,
-            shm_drones->drones[i].pos.z);
     SharedDroneState *drone = &shm_drones->drones[i];
     update_position(i, iter, drone);
 
