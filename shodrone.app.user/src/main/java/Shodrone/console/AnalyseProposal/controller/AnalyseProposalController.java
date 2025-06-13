@@ -18,6 +18,7 @@ import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -90,12 +91,12 @@ public class AnalyseProposalController {
         return Base64.getDecoder().decode(file);
     }
 
-    public String createFile(byte[] fileBytes) {
+    public String createFile(byte[] fileBytes, ShowProposalDTO showProposalDTO) {
         try {
             if (fileBytes == null || fileBytes.length == 0) {
                 throw new IOException("Document file is empty or null");
             }
-            Path filePath = Paths.get("files/proposal.txt");
+            Path filePath = Paths.get("files/proposal_"+ showProposalDTO.proposalNumber+".txt");
             Files.write(filePath, fileBytes);
             return filePath.toString();
         } catch (IOException e) {

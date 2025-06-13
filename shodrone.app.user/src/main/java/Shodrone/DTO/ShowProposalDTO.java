@@ -31,7 +31,7 @@ public class ShowProposalDTO {
      */
     public String showLocation;
 
-    public String filePath;
+    public String file;
 
     /**
      * ShowProposalDTO constructor.
@@ -57,13 +57,13 @@ public class ShowProposalDTO {
         this.timeOfProposal = timeOfProposal;
         this.showDuration = showDuration;
         this.showLocation = showLocation;
-        this.filePath = filePath;
+        this.file = filePath;
     }
 
     public String proposalNumber() {
         return proposalNumber;
     }
-    public String filePath() {
-        return filePath;
+    public String file() {
+        return file;
     }
 }
