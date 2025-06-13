@@ -12,6 +12,9 @@ import eapli.framework.io.util.Console;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
+import java.awt.Desktop;
+import java.io.File;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,11 +43,20 @@ public class AnalyseProposalUI extends AbstractFancyUI {
         try {
             String code = Console.readLine("Enter the delivery code:");
             ShowProposalDTO proposalDTO = controller.findProposalByDeliveryCode(code);
-            byte[] fileBytes = controller.decodeFile(proposalDTO.filePath);
-            String filePath = controller.createFile(fileBytes);
+            byte[] fileBytes = controller.decodeFile(proposalDTO.file);
+            String filePath = controller.createFile(fileBytes, proposalDTO);
 
-            if (filePath != null || filePath.isEmpty()) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path:"+ filePath + "\n" + UtilsUI.RESET);
+            if (filePath != null && !filePath.isEmpty()) {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path: " + filePath + "\n" + UtilsUI.RESET);
+
+                // Tenta abrir automaticamente o ficheiro
+                File file = new File(filePath);
+                if (file.exists()) {
+                    UtilsUI.openInNotepad(file);
+                } else {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFile does not exist: " + filePath + UtilsUI.RESET);
+                }
+
                 UtilsUI.goBackAndWait();
                 return true;
             } else {
@@ -66,6 +78,7 @@ public class AnalyseProposalUI extends AbstractFancyUI {
         UtilsUI.goBackAndWait();
         return false;
     }
+
 
     @Override
     public String headline() {
