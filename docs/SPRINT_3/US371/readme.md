@@ -7,11 +7,11 @@ show proposal and optionally provide feedback on it.
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implementation: 🧪 Testing
+Implementation: ✅ Done
 
 Testing: ⚪ Not Applicable
  

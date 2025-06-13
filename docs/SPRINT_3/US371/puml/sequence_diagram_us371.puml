@@ -19,6 +19,7 @@ participant "DeliveryReportingRepository" as DeliveryRepo
 participant "ProposalDTO" as ProposalDTO
 participant "SendFeedbackProposalRequest" as Request
 participant "ShowProposalRepository" as ProposalRepo
+participant "ShowProposal" as ShowProposal
 participant "SendFeedbackProposalResponse" as Response
 
 activate User
@@ -222,7 +223,17 @@ Server -> Parser : execute(request)
 Parser -> ServerController : handleProposalFeedback(proposalNumber, decision, feedback)
 activate ServerController
 
-ServerController -> ProposalRepo : updateProposalStatusAndFeedback(proposalNumber, decision, feedback)
+ServerController -> ProposalRepo : findByProposalNumber(proposalNumber)
+activate ProposalRepo
+
+ProposalRepo --> ServerController : showProposal
+deactivate ProposalRepo
+
+ServerController -> ShowProposal : addCustomerFeedback(decision, feedback)
+activate ShowProposal
+deactivate ShowProposal
+
+ServerController -> ProposalRepo : save(showProposal)
 activate ProposalRepo
 deactivate ProposalRepo
 

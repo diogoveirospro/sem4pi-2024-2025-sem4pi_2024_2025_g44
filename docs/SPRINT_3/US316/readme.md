@@ -17,13 +17,13 @@ to access the proposal through the client-side application.
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing  
+Analysis: ✅ Done  
 
-Design: 🧪 Testing  
+Design: ✅ Done  
 
-Implementation: 📝 To Do  
+Implementation: ✅ Done  
 
-Testing: 📝 To Do
+Testing: ✅ Done
 
 ## 2. Requirements
 

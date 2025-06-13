@@ -237,20 +237,22 @@ public class MarshallerUnmarshaller {
     public boolean parseResponseMessageFeedback(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
 
-        response.remove(0);
-
-        for (String line : response) {
-            List<String> tokens = splitRespectingQuotes(line);
-
-            if (tokens.size() < 3) {
-                throw new IllegalArgumentException("Invalid response format. Expected 3 fields.");
-            }
-            String decision = tokens.get(1);
-
-            return decision.equalsIgnoreCase("ACCEPTED") || decision.equalsIgnoreCase("REJECTED");
+        if (response.isEmpty()) {
+            throw new FailedRequestException("Empty response from server");
         }
 
-        return false;
+        String[] tokens = response.get(0).split(",");
+        String messageType = tokens[0].trim();
+
+        if (!messageType.equals("FEEDBACK_EDITED") && !messageType.equals("FEEDBACK_EDITED_FAILED")) {
+            throw new FailedRequestException("Unexpected response format: " + response.get(0));
+        }
+
+        if (messageType.equals("FEEDBACK_EDITED_FAILED")) {
+            throw new FailedRequestException(tokens[1].trim().replace("\"", ""));
+        }
+
+        return true;
     }
 
     public ProposalDeliveryInfoCode parseResponseMessageProposalDeliveryInfoCode(List<String> response) throws FailedRequestException {

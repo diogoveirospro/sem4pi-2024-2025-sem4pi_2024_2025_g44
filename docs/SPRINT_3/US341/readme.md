@@ -14,13 +14,13 @@ Figure is being registered.
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing  
+Analysis: ✅ Done 
 
-Design: 🧪 Testing  
+Design: ✅ Done  
 
-Implementation: 🧪 Testing  
+Implementation: ✅ Done  
 
-Testing: ⚪ Not Applicable (UI-driven)
+Testing: ⚪ Not Applicable
 
 ## 2. Requirements
 
