@@ -6,6 +6,7 @@ import core.Daemon.reporting.shows.ShowReporting;
 import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
+import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,16 +51,19 @@ public class GetPropByCodeRequest extends UserAppRequest {
                 .append("\"").append(proposal.timeOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.showDuration.toString()).append("\", ")
                 .append("\"").append(proposal.showLocation.toString()).append("\", ")
-                .append("\"").append(createFile(proposal.document.file())).append("\"\n");
+                .append("\"").append(createFile(proposal.document)).append("\"\n");
 
 
         return sb.toString();
     }
 
-    public String createFile(byte [] file){
+    public String createFile(ShowProposalDocument document){
         try {
+            if (document == null || document.file() == null || document.file().length == 0) {
+                throw new IOException("Document file is empty or null");
+            }
             Path filePath = Paths.get("shodrone.app.user/src/main/java/Shodrone/ShowProposalFiles/proposal.csv");
-            Files.write(filePath, file);
+            Files.write(filePath, document.file());
             return filePath.toString();
         } catch (IOException e) {
             e.printStackTrace();
