@@ -40,7 +40,7 @@ public class SendFeedbackProposalRequest {
      * @return a string representation of the request
      */
     public String toRequest() {
-        return "SEND_FEEDBACK_PROPOSAL " + proposalNumber + " " + decision + " \"" + feedback + "\"";
+        return "SEND_FEEDBACK_PROPOSAL " + proposalNumber + " " + decision + " " + feedback.replace(" ", "_");
     }
     /**
      * Gets the proposal number associated with this request.

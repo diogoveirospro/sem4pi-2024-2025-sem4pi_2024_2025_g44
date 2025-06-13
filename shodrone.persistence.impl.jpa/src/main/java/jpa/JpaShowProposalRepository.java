@@ -2,6 +2,7 @@ package jpa;
 
 import core.Persistence.Application;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedback;
 import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
 import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
@@ -150,11 +151,13 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
 
     public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
-                "UPDATE ShowProposal sp SET sp.status = :status, sp.customerFeedback.feedbackStatus = :feedbackStatus " +
+                "UPDATE ShowProposal sp SET sp.customerFeedback = :customerFeedback " +
                         "WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
-        query.setParameter("status", decision);
-        query.setParameter("feedbackStatus", feedback);
-        query.setParameter("proposalNumber", proposalNumber);
+
+        String formattedFeedback = feedback.replace("_", " "); // Replace underscores with spaces for feedback text
+
+        query.setParameter("customerFeedback", new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision), formattedFeedback));
+        query.setParameter("proposalNumber", new ShowProposalNumber(proposalNumber));
 
         int updatedCount = query.executeUpdate();
         return updatedCount > 0;
