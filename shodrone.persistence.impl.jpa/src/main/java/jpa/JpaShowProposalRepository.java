@@ -98,7 +98,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                         "AND sp.timeOfShow IS NOT NULL " +
                         "AND sp.durationOfShow IS NOT NULL " +
                         "AND sp.configuration IS NOT NULL " +
-                        "AND sp.configuration.configurationFigures IS NOT EMPTY " +
+                        "AND sp.configuration.figures IS NOT EMPTY " +
                         "AND sp.configuration.configurationDrones IS NOT EMPTY " +
                         "AND sp.status = :status",
                 ShowProposal.class
@@ -144,22 +144,21 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
     public Iterable<ShowProposal> findProposalsReadyGenerateShowDSL() {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
                 "SELECT sp FROM ShowProposal sp WHERE sp.configuration IS NOT NULL " +
-                        "AND sp.configuration.configurationFigures IS NOT EMPTY",
+                        "AND sp.configuration.figures IS NOT EMPTY",
                 ShowProposal.class);
         return query.getResultList();
     }
 
     public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
-        final TypedQuery<ShowProposal> query = entityManager().createQuery(
-                "UPDATE ShowProposal sp SET sp.customerFeedback = :customerFeedback " +
-                        "WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
+        int updatedCount = entityManager().createQuery(
+                        "UPDATE ShowProposal sp SET sp.customerFeedback.feedbackStatus = :feedbackStatus, " +
+                                "sp.customerFeedback.feedbackText = :feedbackText " +
+                                "WHERE sp.proposalNumber = :proposalNumber")
+                .setParameter("feedbackStatus", CustomerFeedbackStatus.valueOf(decision))
+                .setParameter("feedbackText", feedback.replace("_", " "))
+                .setParameter("proposalNumber", new ShowProposalNumber(proposalNumber))
+                .executeUpdate();
 
-        String formattedFeedback = feedback.replace("_", " "); // Replace underscores with spaces for feedback text
-
-        query.setParameter("customerFeedback", new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision), formattedFeedback));
-        query.setParameter("proposalNumber", new ShowProposalNumber(proposalNumber));
-
-        int updatedCount = query.executeUpdate();
         return updatedCount > 0;
     }
 
