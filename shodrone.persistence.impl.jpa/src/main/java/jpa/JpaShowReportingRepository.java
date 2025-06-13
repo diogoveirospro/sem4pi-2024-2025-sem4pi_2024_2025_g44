@@ -10,6 +10,7 @@ import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.Entities.ShowConfigurationEntry;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowRequest.domain.Entities.ShowRequest;
+import core.ShowRequest.domain.ValueObjects.ShowRequestStatus;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaTransactionalContext;
 import jakarta.persistence.TypedQuery;
 
@@ -100,8 +101,9 @@ public class JpaShowReportingRepository extends JpaTransactionalContext implemen
     private List<ShowRequest> acceptedShowRequests(String vatNumber) {
         // IF there is a bug here, it is because of the entityManager()
         final TypedQuery<ShowRequest> requestQuery = entityManager().createQuery(
-                "SELECT sr FROM ShowRequest sr WHERE sr.customer.vat = :vatNumber", ShowRequest.class);
+                "SELECT sr FROM ShowRequest sr WHERE sr.customer.vat = :vatNumber AND sr.status = :status", ShowRequest.class);
         requestQuery.setParameter("vatNumber", new VatNumber(vatNumber));
+        requestQuery.setParameter("status", ShowRequestStatus.ACCEPTED);
         return requestQuery.getResultList();
     }
 }
