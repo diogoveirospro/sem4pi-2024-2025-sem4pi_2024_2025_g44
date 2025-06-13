@@ -1,7 +1,6 @@
 package core.Daemon.reporting.proposals.repositories;
 
 import core.Daemon.reporting.proposals.DeliveryReporting;
-import core.ShowProposal.domain.Entities.ShowProposal;
 import eapli.framework.domain.repositories.ReportingRepository;
 
 import java.util.List;
@@ -9,6 +8,6 @@ import java.util.List;
 @ReportingRepository
 public interface DeliveryReportingRepository {
 
-    List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber);
+    List<DeliveryReporting> findAllProposalsWithoutFeedbackByCustomer(String vatNumber);
     DeliveryReporting findProposalByDeliveryCode(String code);
 }

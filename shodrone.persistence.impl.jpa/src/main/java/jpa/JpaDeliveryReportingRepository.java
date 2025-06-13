@@ -53,9 +53,10 @@ public class JpaDeliveryReportingRepository extends JpaTransactionalContext impl
     }
 
     @Override
-    public List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber) {
+    public List<DeliveryReporting> findAllProposalsWithoutFeedbackByCustomer(String vatNumber) {
         final TypedQuery<ProposalDeliveryInfo> query = entityManager().createQuery(
-                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vat = :vatNumber",
+                "SELECT pdi FROM ProposalDeliveryInfo pdi WHERE pdi.customer.vat = :vatNumber AND " +
+                        "pdi.proposal.customerFeedback IS NULL",
                 ProposalDeliveryInfo.class
         );
         query.setParameter("vatNumber", new VatNumber(vatNumber));

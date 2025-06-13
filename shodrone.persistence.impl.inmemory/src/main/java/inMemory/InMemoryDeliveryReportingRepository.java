@@ -15,7 +15,7 @@ public class InMemoryDeliveryReportingRepository implements DeliveryReportingRep
     }
 
     @Override
-    public List<DeliveryReporting> findAllProposalsByCustomer(String vatNumber) {
+    public List<DeliveryReporting> findAllProposalsWithoutFeedbackByCustomer(String vatNumber) {
         throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
     }
 
