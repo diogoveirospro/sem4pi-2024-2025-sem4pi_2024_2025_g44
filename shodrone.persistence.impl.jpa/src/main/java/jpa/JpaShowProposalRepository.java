@@ -158,7 +158,6 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                 .setParameter("feedbackText", feedback.replace("_", " "))
                 .setParameter("proposalNumber", new ShowProposalNumber(proposalNumber))
                 .executeUpdate();
-
         return updatedCount > 0;
     }
 

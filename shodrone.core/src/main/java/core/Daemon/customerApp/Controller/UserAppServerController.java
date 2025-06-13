@@ -10,12 +10,16 @@ import core.Persistence.PersistenceContext;
 import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
 import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedback;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
+import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.infrastructure.authz.domain.model.Username;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for the User App Server.
@@ -96,7 +100,22 @@ public class UserAppServerController {
      * @return true if the proposal status and feedback were successfully updated, false otherwise
      */
     public boolean handleProposalFeedback(String proposalNumber, String decision, String feedback) {
-        return showProposalRepository.updateProposalStatusAndFeedback(proposalNumber, decision, feedback);
+
+        if (proposalNumber == null || proposalNumber.isEmpty()) {
+            throw new IllegalArgumentException("Proposal number cannot be null or empty");
+        }
+
+        Optional<ShowProposal> showProposalOptional = showProposalRepository.ofIdentity(new ShowProposalNumber(proposalNumber));
+
+        if (showProposalOptional.isEmpty()) {
+            throw new IllegalArgumentException("Proposal with number " + proposalNumber + " does not exist");
+        }
+
+        ShowProposal showProposal = showProposalOptional.get();
+        showProposal.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision), feedback));
+        showProposalRepository.save(showProposal);
+
+        return true;
     }
     public DeliveryReporting findProposalByDeliveryCode(String deliveryCode) {
         return deliveryReportingRepository.findProposalByDeliveryCode(deliveryCode);
