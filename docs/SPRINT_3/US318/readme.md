@@ -11,13 +11,13 @@ before it is accepted. This processing is performed using a plugin, which must a
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implementation: 🧪 Testing
+Implementation: ✅ Done
 
-Testing: 🧪 Testing
+Testing: ✅ Done
 
 ## 2. Requirements
 

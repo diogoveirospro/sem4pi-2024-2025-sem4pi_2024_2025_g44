@@ -7,9 +7,10 @@ import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.ShowReporting;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Persistence.PersistenceContext;
-import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
-import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedback;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
+import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.User.domain.Entities.ShodroneUser;
 import core.User.repositories.ShodroneUserRepository;
@@ -87,7 +88,7 @@ public class UserAppServerController {
      * @return a list of DeliveryReporting objects representing the delivery proposals for the customer
      */
     public List<DeliveryReporting> getDeliveryProposalsOfCustomer(String vatNumber) {
-        return deliveryReportingRepository.findAllProposalsByCustomer(vatNumber);
+        return deliveryReportingRepository.findAllProposalsWithoutFeedbackByCustomer(vatNumber);
     }
 
     /**
@@ -96,7 +97,18 @@ public class UserAppServerController {
      * @return true if the proposal status and feedback were successfully updated, false otherwise
      */
     public boolean handleProposalFeedback(String proposalNumber, String decision, String feedback) {
-        return showProposalRepository.updateProposalStatusAndFeedback(proposalNumber, decision, feedback);
+
+        if (proposalNumber == null || proposalNumber.isEmpty()) {
+            throw new IllegalArgumentException("Proposal number cannot be null or empty");
+        }
+
+        ShowProposal showProposal = showProposalRepository.findByProposalNumber(new ShowProposalNumber(proposalNumber));
+
+        showProposal.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision),
+                feedback.replace("_", " ")));
+        showProposalRepository.save(showProposal);
+
+        return true;
     }
     public DeliveryReporting findProposalByDeliveryCode(String deliveryCode) {
         return deliveryReportingRepository.findProposalByDeliveryCode(deliveryCode);

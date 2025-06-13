@@ -12,15 +12,18 @@ import core.ProposalDeliveryInfo.domain.Entities.ProposalDeliveryInfo;
 import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
 import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
 import eapli.framework.application.UseCaseController;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.infrastructure.authz.domain.model.SystemUser;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 
 /**
  * Controller for sending feedback on proposals.
@@ -62,7 +65,6 @@ public class AnalyseProposalController {
         CustomerDTO customer = server.getCustomerOfRepresentative(shodroneUser.email);
 
         ShowProposalDTO showProposalDTO = server.getProposalByCode(code);
-        validateFile(customer, showProposalDTO);
         if (!validateFile(customer, showProposalDTO)) {
             throw new FailedRequestException("No show proposal found for the code: " + code + " or for the customer: " + customer.VatNumber);
         }
@@ -85,10 +87,17 @@ public class AnalyseProposalController {
         return false;
     }
 
-    public String createFile(byte [] file){
+    public byte[] decodeFile(String file) {
+        return Base64.getDecoder().decode(file);
+    }
+
+    public String createFile(byte[] fileBytes, ShowProposalDTO showProposalDTO) {
         try {
-            Path filePath = Paths.get("caminho/para/ficheiro.txt");
-            Files.write(filePath, file);
+            if (fileBytes == null || fileBytes.length == 0) {
+                throw new IOException("Document file is empty or null");
+            }
+            Path filePath = Paths.get("files/proposal_"+ showProposalDTO.proposalNumber+".txt");
+            Files.write(filePath, fileBytes);
             return filePath.toString();
         } catch (IOException e) {
             e.printStackTrace();

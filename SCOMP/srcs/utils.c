@@ -188,7 +188,7 @@ int open_shared_memory(const char *name) {
 }
 
 // Maps the shared memory to the process's address space and returns a pointer to it
-SharedMemoryDroneParent* attach_shared_memory(int fd, size_t size) {
+SharedMemoryDrone* attach_shared_memory(int fd, size_t size) {
     void *addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED) {
         perror("mmap");

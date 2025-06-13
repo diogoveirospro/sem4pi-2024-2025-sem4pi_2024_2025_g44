@@ -2,7 +2,8 @@
 
 DroneData s;
 SharedMemoryDrone *shm = NULL;
-sem_t *my_sem = NULL;
+sem_t *sem_d2p = NULL;  // drone-to-parent
+sem_t *sem_p2d = NULL;  // parent-to-drone
 char sem_name[64];
 size_t shm_size = 0;
 int shm_fd = 0;
@@ -11,7 +12,8 @@ int shm_fd = 0;
 // Receives the SIGUSR2
 void end()
 {
-    if (my_sem) sem_close(my_sem);
+    if (sem_d2p) sem_close(sem_d2p);
+    if (sem_p2d) sem_close(sem_p2d);
     if (shm) detach_shared_memory(shm, shm_size);
     free(s.filename);
     exit(0);
@@ -51,9 +53,12 @@ void set_up_signals()
 }
 
 // waits for green flag from parent to keep going
-void sync_drones() {
-  wait_semaphore(my_sem);
+void sync_drones()
+{
+  post_semaphore(sem_d2p);  // Notify parent
+  wait_semaphore(sem_p2d);  // Wait for green light
 }
+
 
 // Updates the position in the shared memory
 void update_position_in_shm(Position pos)
@@ -66,7 +71,14 @@ void update_position_in_shm(Position pos)
 void mark_finished_in_shm()
 {
   shm->drones[s.id - 1].active = 0;
+
+  // Notify parent that drone is finished
+  post_semaphore(sem_d2p);
+
+  // Still wait for parent's green flag so sync stays consistent
+  wait_semaphore(sem_p2d);
 }
+
 
 FILE *open_file(char *filename)
 {
@@ -106,8 +118,10 @@ int valid_position(Position p)
 {
   if (p.x < 0 || p.y < 0 || p.z < 0)
     return 0;
-  if (p.x >= s.max_x || p.y >= s.max_y || p.z >= s.max_z)
+  if (p.x >= s.max_x || p.y >= s.max_y || p.z >= s.max_z) {
     return 0;
+  }
+    
   return 1;
 }
 
@@ -141,9 +155,7 @@ void run_script(char *filename)
       copy_coordinates(&c, &l);
 
       // sync
-      fprintf(stderr, "Drone %d: à espera do semáforo...\n", s.id);
       sync_drones();
-      fprintf(stderr, "Drone %d: passou o semáforo!\n", s.id);
     }
   }
 
@@ -172,6 +184,7 @@ void run_script(char *filename)
 
   fclose(f);
 
+
   mark_finished_in_shm();
 }
 
@@ -193,15 +206,12 @@ char *build_filename(int id, char *inp_dir)
 
 void start_working()
 {
-  fprintf(stderr, "Building filename for drone %d\n", s.id);
   char *filename = build_filename(s.id, s.inp_dir);
 
-  fprintf(stderr, "Running script for drone %d\n", s.id);
   run_script(filename);
 }
 
 // Starts shared memory and semaphore
-// Inicializa a memória partilhada e o semáforo do drone
 void set_up_shared_memory_and_semaphore()
 {
   shm_fd = open_shared_memory("/shm_drones");
@@ -209,9 +219,14 @@ void set_up_shared_memory_and_semaphore()
   shm_size = sizeof(SharedMemoryDrone);
   shm = attach_shared_memory(shm_fd, shm_size);
 
-  snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", s.id);
-  my_sem = open_semaphore(sem_name);
+  char name[64];
+  snprintf(name, sizeof(name), "/sem_drone_%d", s.id);
+  sem_d2p = open_semaphore(name);  // Drone to parent
+
+  snprintf(name, sizeof(name), "/sem_parent_%d", s.id);
+  sem_p2d = open_semaphore(name);  // Parent to drone
 }
+
 
 void terminate()
 {
@@ -236,12 +251,8 @@ int main(int argc, char **argv)
   s.max_y = atoi(argv[4]);
   s.max_z = atoi(argv[5]);
 
-  fprintf(stderr, "Setting up signals"  );
   set_up_signals();
-  fprintf(stderr, "Done setting up signals\n");
   set_up_shared_memory_and_semaphore();
-  fprintf(stderr, "Drone %d: Starting work\n", s.id);
   start_working();
-  fprintf(stderr, "Drone %d: Finished work\n", s.id);
   end();
 }

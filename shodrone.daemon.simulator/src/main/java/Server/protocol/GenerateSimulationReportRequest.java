@@ -18,7 +18,7 @@ public class GenerateSimulationReportRequest extends UserAppRequest {
     @Override
     public String execute() {
         try {
-            UtilsUI.openCodeInC(path);
+            UtilsUI.runScript(path);
             List<String> content = controller.generateSimulationReport(path);
             return buildResponse(content);
         } catch (Exception e) {
@@ -31,16 +31,15 @@ public class GenerateSimulationReportRequest extends UserAppRequest {
             throw new IllegalArgumentException("Content is null or empty");
         }
 
-        String firstLine = content.get(0);
-        if (!firstLine.startsWith("/")) {
-            throw new IllegalArgumentException("Invalid format: First line must be a file path");
-        }
-
         StringBuilder response = new StringBuilder();
         response.append("SIMULATION_REPORT_RESPONSE\n");
 
         for (String line : content) {
-            response.append(line).append("\n");
+            if (line == null || line.trim().isEmpty()) {
+                response.append("[EMPTY_LINE]\n"); // Changes to handle empty lines
+            } else {
+                response.append(line).append("\n");
+            }
         }
 
         return response.toString();

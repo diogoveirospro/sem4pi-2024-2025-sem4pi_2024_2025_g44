@@ -70,10 +70,11 @@ public class SimulatorServerController {
      * @return A list of strings containing the report, with the first element being the file path.
      */
     public List<String> generateSimulationReport(String path) {
+        String reportFolderPath = path + "/ReportFolder"; // Remove o ponto do OUTPUT_DIRECTORY
         List<String> report = new ArrayList<>();
         try {
-            // Obtain the most recent file in the specified directory
-            Path dirPath = Paths.get(path);
+            // Obtain the most recent file in the report folder
+            Path dirPath = Paths.get(reportFolderPath);
             try (Stream<Path> files = Files.list(dirPath)) {
                 Path mostRecentFile = files
                         .filter(Files::isRegularFile)

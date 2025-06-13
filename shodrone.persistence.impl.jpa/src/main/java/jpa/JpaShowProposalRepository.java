@@ -2,6 +2,7 @@ package jpa;
 
 import core.Persistence.Application;
 import core.ShowProposal.domain.Entities.ShowProposal;
+import core.ShowProposal.domain.ValueObjects.CustomerFeedback;
 import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
 import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
@@ -11,6 +12,8 @@ import eapli.framework.domain.repositories.TransactionalContext;
 import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+
+import java.util.Optional;
 
 /**
  * JPA implementation of the ShowProposalRepository interface.
@@ -97,7 +100,7 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
                         "AND sp.timeOfShow IS NOT NULL " +
                         "AND sp.durationOfShow IS NOT NULL " +
                         "AND sp.configuration IS NOT NULL " +
-                        "AND sp.configuration.configurationFigures IS NOT EMPTY " +
+                        "AND sp.configuration.figures IS NOT EMPTY " +
                         "AND sp.configuration.configurationDrones IS NOT EMPTY " +
                         "AND sp.status = :status",
                 ShowProposal.class
@@ -143,21 +146,23 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
     public Iterable<ShowProposal> findProposalsReadyGenerateShowDSL() {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
                 "SELECT sp FROM ShowProposal sp WHERE sp.configuration IS NOT NULL " +
-                        "AND sp.configuration.configurationFigures IS NOT EMPTY",
+                        "AND sp.configuration.figures IS NOT EMPTY",
                 ShowProposal.class);
         return query.getResultList();
     }
 
-    public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
+    /**
+     * Finds a ShowProposal by its proposal number.
+     *
+     * @param proposalNumber the ShowProposalNumber to search for
+     * @return an Optional containing the ShowProposal if found, or empty if not found
+     */
+    @Override
+    public ShowProposal findByProposalNumber(ShowProposalNumber proposalNumber) {
         final TypedQuery<ShowProposal> query = entityManager().createQuery(
-                "UPDATE ShowProposal sp SET sp.status = :status, sp.customerFeedback.feedbackStatus = :feedbackStatus " +
-                        "WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
-        query.setParameter("status", decision);
-        query.setParameter("feedbackStatus", feedback);
+                "SELECT sp FROM ShowProposal sp WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
         query.setParameter("proposalNumber", proposalNumber);
-
-        int updatedCount = query.executeUpdate();
-        return updatedCount > 0;
+        return query.getResultStream().findFirst().orElse(null);
     }
 
 }

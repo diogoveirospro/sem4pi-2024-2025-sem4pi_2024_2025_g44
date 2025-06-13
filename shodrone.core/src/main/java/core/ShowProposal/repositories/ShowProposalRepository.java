@@ -5,6 +5,8 @@ import core.ShowProposal.domain.ValueObjects.ShowProposalNumber;
 import core.ShowRequest.domain.Entities.ShowRequest;
 import eapli.framework.domain.repositories.DomainRepository;
 
+import java.util.Optional;
+
 public interface ShowProposalRepository extends DomainRepository<ShowProposalNumber, ShowProposal> {
 
     /**
@@ -52,12 +54,10 @@ public interface ShowProposalRepository extends DomainRepository<ShowProposalNum
     Iterable<ShowProposal> findProposalsReadyGenerateShowDSL();
 
     /**
-     * Updates the status and feedback of a proposal identified by its proposal number.
-     * @param proposalNumber the ShowProposalNumber of the proposal to update
-     * @param decision the new status to set for the proposal
-     * @param feedback the feedback to set for the proposal
-     * @return true if the update was successful, false otherwise
+     * Finds a ShowProposal by its proposal number.
+     * @param proposalNumber the ShowProposalNumber to search for
+     * @return an Optional containing the ShowProposal if found, or empty if not found
      */
-    boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback);
+    ShowProposal findByProposalNumber(ShowProposalNumber proposalNumber);
 }
 

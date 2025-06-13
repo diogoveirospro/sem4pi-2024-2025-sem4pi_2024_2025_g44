@@ -12,13 +12,13 @@ into a structured textual representation using a predefined grammar.
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: ✅ Done
 
-Design: 🧪 Testing
+Design: ✅ Done
 
-Implementation: 🧪 Testing
+Implementation: ✅ Done
 
-Testing: 🧪 Testing
+Testing: ✅ Done
 
 ## 2. Requirements
 

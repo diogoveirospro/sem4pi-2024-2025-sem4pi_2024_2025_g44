@@ -6,11 +6,13 @@ import core.Daemon.reporting.shows.ShowReporting;
 import core.Drone.domain.Entities.Drone;
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
+import core.ShowProposal.domain.ValueObjects.ShowProposalDocument;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class GetPropByCodeRequest extends UserAppRequest {
     private final String code;
@@ -38,19 +40,28 @@ public class GetPropByCodeRequest extends UserAppRequest {
         }
     }
 
-    private String buildResponse(DeliveryReporting proposal) {
-        StringBuilder sb = new StringBuilder();
-
+    private String buildResponse(DeliveryReporting proposal) { StringBuilder sb = new StringBuilder();
         sb.append("\"PROPOSAL_NUMBER\", \"DATE_OF_PROPOSAL\", \"TIME_OF_PROPOSAL\", ")
                 .append("\"SHOW_DURATION\", \"SHOW_LOCATION\", \"File Bytes\"\n");
-        sb.append("\"").append("\"").append(proposal.proposalNumber.proposalNumber()).append("\", ")
+        sb.append("\"").append(proposal.proposalNumber.proposalNumber()).append("\", ")
                 .append("\"").append(proposal.dateOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.timeOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.showDuration.toString()).append("\", ")
                 .append("\"").append(proposal.showLocation.toString()).append("\", ")
-                .append("\"").append(Arrays.toString(proposal.file)).append("\"\n");
-
+                .append("\"").append(fileToString(proposal.document.file())).append("\"\n");
 
         return sb.toString();
     }
+    private String fileToString(byte[] file) {
+        try {
+            if (file == null || file.length == 0) {
+                throw new IOException("Document file is empty or null");
+            }
+            return Base64.getEncoder().encodeToString(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

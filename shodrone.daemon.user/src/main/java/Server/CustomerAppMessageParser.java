@@ -82,10 +82,6 @@ public class CustomerAppMessageParser {
                 request = parseGetProposals(inputLine, tokens);
             }
 
-            if ("GET_PROPOSAL_DELIVERY_CODE".equals(command)) {
-                request = parseGetProposalDelivCode(inputLine, tokens);
-            }
-
             if ("SEND_FEEDBACK_PROPOSAL".equals(command)) {
                 request = parseSendFeedbackProposal(inputLine, tokens);
             }
@@ -154,14 +150,6 @@ public class CustomerAppMessageParser {
             return new BadRequest(inputLine, "Wrong number of parameters");
         } else {
             return new GetProposalsRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
-        }
-    }
-
-    private UserAppRequest parseGetProposalDelivCode(String inputLine, String[] tokens) {
-        if (tokens.length != 2) {
-            return new BadRequest(inputLine, "Wrong number of parameters");
-        } else {
-            return new GetProposalDeliveryInfoCodeRequest(getController(), inputLine, CsvLineMarshaler.unquote(tokens[1]));
         }
     }
 

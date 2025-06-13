@@ -162,7 +162,7 @@ typedef struct {
 
 
 typedef struct {
-    DroneHistory history[MAX_DRONES][HISTORY_INIT_CAPACITY];
+    DroneHistory history[HISTORY_INIT_CAPACITY];
     CollisionLog collision_log[MAX_COLLISIONS_LOG]; // Log of collisions
 } SharedMemoryParent;
 
@@ -188,12 +188,12 @@ typedef struct {
 // Shared Memory Functions
 int create_shared_memory(const char *name, size_t size);
 int open_shared_memory(const char *name);
-void* attach_shared_memory(int fd, size_t size);
+SharedMemoryDrone* attach_shared_memory(int fd, size_t size);
 void detach_shared_memory(void* shmaddr, size_t size);
 void clear_shared_memory(const char *name);
 void resize_shared_memory(int fd, size_t new_size);
-void change_drone_state(void *shm, int idx, SharedDroneState value);
-void update_collision_log(void *shm, CollisionLog *log, int count);
+void change_drone_state(SharedMemoryDrone *shm, int idx, SharedDroneState value);
+void update_collision_log(SharedMemoryParent *shm, CollisionLog *log, int count);
 void close_shared_memory(int fd);
 
 // Mutex and Condition Variable Functions
