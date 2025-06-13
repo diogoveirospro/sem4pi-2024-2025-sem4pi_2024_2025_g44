@@ -32,11 +32,6 @@ public class GenerateSimulationReportRequest extends UserAppRequest {
             throw new IllegalArgumentException("Content is null or empty");
         }
 
-        String firstLine = content.get(0);
-        if (!firstLine.startsWith("/")) {
-            throw new IllegalArgumentException("Invalid format: First line must be a file path");
-        }
-
         StringBuilder response = new StringBuilder();
         response.append("SIMULATION_REPORT_RESPONSE\n");
 

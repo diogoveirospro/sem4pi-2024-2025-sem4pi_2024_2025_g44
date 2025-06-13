@@ -60,11 +60,6 @@ public class MarshallerUnmarshaller {
         if (response == null || response.isEmpty()) {
             throw new FailedRequestException("Response is null or empty");
         }
-
-        String firstLine = response.get(0);
-        if (!firstLine.startsWith("/")) {
-            throw new FailedRequestException("Invalid format: First line must be a file path");
-        }
     }
 
     public void generateReportIfResponseIsCorrect(List<String> response) throws FailedRequestException {
