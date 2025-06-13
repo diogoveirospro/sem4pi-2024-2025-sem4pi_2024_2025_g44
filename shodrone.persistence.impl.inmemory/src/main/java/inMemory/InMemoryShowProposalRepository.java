@@ -138,32 +138,13 @@ public class InMemoryShowProposalRepository extends InMemoryDomainRepository<Sho
         return readyToGenerateDSLProposals;
     }
 
-    /**
-     * Updates the status and feedback of a proposal identified by its proposal number.
-     * @param proposalNumber the ShowProposalNumber of the proposal to update
-     * @param decision the new status to set for the proposal
-     * @param feedback the feedback to set for the proposal
-     * @return true if the update was successful, false otherwise
-     */
     @Override
-    public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
-        ShowProposalNumber number = new ShowProposalNumber(proposalNumber);
-        Optional<ShowProposal> proposal = findById(number);
-        if (proposal.isEmpty()) {
-            return false; // Proposal not found
+    public ShowProposal findByProposalNumber(ShowProposalNumber proposalNumber) {
+        Optional<ShowProposal> proposal = findById(proposalNumber);
+        if (proposal.isPresent()) {
+            return proposal.get();
+        } else {
+            throw new IllegalArgumentException("Show Proposal with number " + proposalNumber + " not found.");
         }
-
-        ShowProposal proposalToUpdate = proposal.get();
-
-        // Update the status and feedback
-        if (decision.equalsIgnoreCase("ACCEPTED")) {
-            proposalToUpdate.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.ACCEPTED, feedback));
-        } else if (decision.equalsIgnoreCase("REJECTED")) {
-            proposalToUpdate.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.REJECTED, feedback));
-        }
-
-        // Save the updated proposal back to the repository
-        save(proposalToUpdate);
-        return true; // Update successful
     }
 }

@@ -13,6 +13,8 @@ import eapli.framework.infrastructure.repositories.impl.jpa.JpaAutoTxRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import java.util.Optional;
+
 /**
  * JPA implementation of the ShowProposalRepository interface.
  * This class provides methods to interact with the ShowProposal entities in the database.
@@ -149,16 +151,18 @@ public class JpaShowProposalRepository extends JpaAutoTxRepository<ShowProposal,
         return query.getResultList();
     }
 
-    public boolean updateProposalStatusAndFeedback(String proposalNumber, String decision, String feedback) {
-        int updatedCount = entityManager().createQuery(
-                        "UPDATE ShowProposal sp SET sp.customerFeedback.feedbackStatus = :feedbackStatus, " +
-                                "sp.customerFeedback.feedbackText = :feedbackText " +
-                                "WHERE sp.proposalNumber = :proposalNumber")
-                .setParameter("feedbackStatus", CustomerFeedbackStatus.valueOf(decision))
-                .setParameter("feedbackText", feedback.replace("_", " "))
-                .setParameter("proposalNumber", new ShowProposalNumber(proposalNumber))
-                .executeUpdate();
-        return updatedCount > 0;
+    /**
+     * Finds a ShowProposal by its proposal number.
+     *
+     * @param proposalNumber the ShowProposalNumber to search for
+     * @return an Optional containing the ShowProposal if found, or empty if not found
+     */
+    @Override
+    public ShowProposal findByProposalNumber(ShowProposalNumber proposalNumber) {
+        final TypedQuery<ShowProposal> query = entityManager().createQuery(
+                "SELECT sp FROM ShowProposal sp WHERE sp.proposalNumber = :proposalNumber", ShowProposal.class);
+        query.setParameter("proposalNumber", proposalNumber);
+        return query.getResultStream().findFirst().orElse(null);
     }
 
 }

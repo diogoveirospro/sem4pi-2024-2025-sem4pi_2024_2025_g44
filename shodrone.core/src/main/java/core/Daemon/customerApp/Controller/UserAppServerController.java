@@ -105,13 +105,8 @@ public class UserAppServerController {
             throw new IllegalArgumentException("Proposal number cannot be null or empty");
         }
 
-        Optional<ShowProposal> showProposalOptional = showProposalRepository.ofIdentity(new ShowProposalNumber(proposalNumber));
+        ShowProposal showProposal = showProposalRepository.findByProposalNumber(new ShowProposalNumber(proposalNumber));
 
-        if (showProposalOptional.isEmpty()) {
-            throw new IllegalArgumentException("Proposal with number " + proposalNumber + " does not exist");
-        }
-
-        ShowProposal showProposal = showProposalOptional.get();
         showProposal.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision), feedback));
         showProposalRepository.save(showProposal);
 
