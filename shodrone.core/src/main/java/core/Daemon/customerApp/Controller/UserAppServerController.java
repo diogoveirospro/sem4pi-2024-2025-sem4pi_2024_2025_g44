@@ -7,8 +7,6 @@ import core.Daemon.reporting.proposals.repositories.DeliveryReportingRepository;
 import core.Daemon.reporting.shows.ShowReporting;
 import core.Daemon.reporting.shows.repositories.ShowReportingRepository;
 import core.Persistence.PersistenceContext;
-import core.ProposalDeliveryInfo.domain.ValueObjects.ProposalDeliveryInfoCode;
-import core.ProposalDeliveryInfo.repositories.ProposalDeliveryInfoRepository;
 import core.ShowProposal.domain.Entities.ShowProposal;
 import core.ShowProposal.domain.ValueObjects.CustomerFeedback;
 import core.ShowProposal.domain.ValueObjects.CustomerFeedbackStatus;
@@ -19,7 +17,6 @@ import core.User.repositories.ShodroneUserRepository;
 import eapli.framework.infrastructure.authz.domain.model.Username;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for the User App Server.
@@ -91,7 +88,7 @@ public class UserAppServerController {
      * @return a list of DeliveryReporting objects representing the delivery proposals for the customer
      */
     public List<DeliveryReporting> getDeliveryProposalsOfCustomer(String vatNumber) {
-        return deliveryReportingRepository.findAllProposalsByCustomer(vatNumber);
+        return deliveryReportingRepository.findAllProposalsWithoutFeedbackByCustomer(vatNumber);
     }
 
     /**
