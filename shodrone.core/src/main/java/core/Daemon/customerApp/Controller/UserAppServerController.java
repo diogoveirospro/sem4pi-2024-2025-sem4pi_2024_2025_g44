@@ -104,7 +104,8 @@ public class UserAppServerController {
 
         ShowProposal showProposal = showProposalRepository.findByProposalNumber(new ShowProposalNumber(proposalNumber));
 
-        showProposal.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision), feedback));
+        showProposal.addCustomerFeedback(new CustomerFeedback(CustomerFeedbackStatus.valueOf(decision),
+                feedback.replace("_", " ")));
         showProposalRepository.save(showProposal);
 
         return true;

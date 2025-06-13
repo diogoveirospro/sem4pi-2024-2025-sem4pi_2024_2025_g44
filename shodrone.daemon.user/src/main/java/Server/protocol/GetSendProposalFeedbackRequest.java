@@ -1,6 +1,7 @@
 package Server.protocol;
 
 import core.Daemon.customerApp.Controller.UserAppServerController;
+import core.User.domain.Entities.ShodroneUser;
 
 public class GetSendProposalFeedbackRequest extends UserAppRequest{
     private final String proposalNumber;
@@ -27,13 +28,19 @@ public class GetSendProposalFeedbackRequest extends UserAppRequest{
             }
 
             boolean response = controller.handleProposalFeedback(proposalNumber, decision, feedback);
-
-            if (response) {
-                return "Feedback sent successfully";
-            }
-            return "Failed to send feedback";
+            return buildResponse(response);
         } catch (Exception e) {
             return buildServerError(e.getMessage());
         }
+    }
+
+    private String buildResponse(final boolean success) {
+        StringBuilder response = new StringBuilder();
+        if (success) {
+            response.append("FEEDBACK_EDITED, \"Feedback sent successfully\"\n");
+        } else {
+            response.append("FEEDBACK_EDITED_FAILED, \"Failed to send feedback\"\n");
+        }
+        return response.toString();
     }
 }
