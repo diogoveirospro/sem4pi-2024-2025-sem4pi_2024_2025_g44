@@ -514,7 +514,7 @@ public class UtilsUI {
                 }
                 String wslWorkingDir = workingDir.getCanonicalPath().replace("\\", "/").replace("C:", "/mnt/c");
 
-                String[] command = { "wsl", "bash", "-c", String.format("cd '%s' && make run", wslWorkingDir) };
+                String[] command = { "wsl", "sh", "-c", String.format("cd '%s' && make run", wslWorkingDir) };
                 ProcessBuilder processBuilder = new ProcessBuilder(command);
                 processBuilder.start();
 
@@ -523,7 +523,7 @@ public class UtilsUI {
             }
 
         } else if (os.contains("mac")) {
-            // MacOS: run using bash
+            // MacOS: run using sh
             try {
                 String projectDir = System.getProperty("user.dir");
                 File workingDir = new File(projectDir, path);
@@ -532,7 +532,7 @@ public class UtilsUI {
                     return;
                 }
 
-                String[] command = { "bash", "-c", String.format("cd '%s' && make run", workingDir.getCanonicalPath()) };
+                String[] command = { "sh", "-c", String.format("cd '%s' && make run", workingDir.getCanonicalPath()) };
                 ProcessBuilder processBuilder = new ProcessBuilder(command);
                 processBuilder.start();
 
@@ -541,7 +541,7 @@ public class UtilsUI {
             }
 
         } else if (os.contains("nix") || os.contains("nux")) {
-            // Linux: run using bash (no GUI)
+            // Linux (including Alpine): use /bin/sh
             try {
                 String projectDir = System.getProperty("user.dir");
                 File workingDir = new File(projectDir, path);
@@ -550,7 +550,7 @@ public class UtilsUI {
                     return;
                 }
 
-                String[] command = { "bash", "-c", String.format("cd '%s' && make run", workingDir.getCanonicalPath()) };
+                String[] command = { "sh", "-c", String.format("cd '%s' && make run", workingDir.getCanonicalPath()) };
                 ProcessBuilder processBuilder = new ProcessBuilder(command);
                 processBuilder.start();
 
@@ -562,6 +562,7 @@ public class UtilsUI {
             System.err.println("Unsupported OS: " + os);
         }
     }
+
 
 
     public static void openInNotepad(File file) {

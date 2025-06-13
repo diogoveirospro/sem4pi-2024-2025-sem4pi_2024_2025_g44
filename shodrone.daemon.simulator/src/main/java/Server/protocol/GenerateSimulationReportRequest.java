@@ -22,6 +22,7 @@ public class GenerateSimulationReportRequest extends UserAppRequest {
             List<String> content = controller.generateSimulationReport(path);
             return buildResponse(content);
         } catch (Exception e) {
+            e.printStackTrace();
             return buildServerError("An error occurred while processing the request");
         }
     }
