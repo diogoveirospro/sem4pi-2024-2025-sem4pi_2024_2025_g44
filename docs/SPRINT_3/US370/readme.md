@@ -2,31 +2,30 @@
 
 ## 1. Context
 
-This user story is part of Sprint 3 and introduces the functionality that allows a **Customer** to accept or reject a 
-show proposal and optionally provide feedback on it.
+This user story is part of Sprint 3 and introduces the functionality that allows a **CustomerRepresentative** to get the file of a chosen show proposal to analyse.
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: 🧪 Done
 
-Design: 🧪 Testing
+Design: 🧪 Done
 
-Implementation: 🧪 Testing
+Implementation: 🧪 Done
 
-Testing: ⚪ Not Applicable
+Testing: 🧪 Done
  
 
 ## 2. Requirements
 
-**As a Customer,**  
+**As a Customer RepresentaƟve,**  
 <br>
-**I want** to accept or reject a proposal,  
+**I want**  to have access to a show proposal of mine in the App. 
 <br>
-**So that** I can express whether I agree with the show plan and optionally share my opinion.
+**So that** I received a link/code to download the file.
 
 ### Acceptance Criteria:
 
-* **US371.1** The customer must be able to accept or reject a proposal.
+* **AC01** The customer must receive a link/code.
 * **US371.2** The customer should be able to optionally provide textual feedback.
 * **US371.3** The system must update the proposal status and store any given feedback.
 * **US371.4** This action must be available only for proposals currently pending decision.

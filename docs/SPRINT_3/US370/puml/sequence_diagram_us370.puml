@@ -267,7 +267,11 @@ Controller -> Controller : true
 deactivate Controller
 Controller -> UI : showProposalDTO
 deactivate Controller
+UI --> User : shows proposal info and asks for download confirmation
+deactivate UI
 
+User -> UI : confirms download
+activate UI
 UI -> Controller :decodeFile(showProposalDTO.file)
 activate Controller
 Controller --> UI : fyleBytes
