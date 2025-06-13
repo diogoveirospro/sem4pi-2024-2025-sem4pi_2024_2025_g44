@@ -1,12 +1,14 @@
 @startuml
-actor "Customer" as User
-participant "SendFeedbackProposalUI" as UI
-participant "SendFeedbackProposalController" as Controller
+actor "CustomerRepresentative" as User
+participant "AnalyseProposalUI" as UI
+participant "AnalyseProposalController" as Controller
 participant "CustomerAppProtocolProxy" as Proxy
 participant "GetShodroneUserRequest" as RequestUser
 participant "ClientSocket" as Socket
 participant "CustomerAppServer" as Server
 participant "CustomerAppMessageParser" as Parser
+participant "DatabaseProcessor" as DBPROC
+participant "GetPropByCodeRequest" as RequestDAEMON
 participant "UserAppServerController" as ServerController
 participant "ShodroneUserRepository" as ShodroneUserRepo
 participant "MarshallerUnmarshaller" as MU
@@ -14,19 +16,22 @@ participant "ShodroneUserDTO" as UserDTO
 participant "GetCustomerOfRepresentativeRequest" as GetCustomerRequest
 participant "CustomerDTO" as CustomerDTO
 participant "CustomerRepository" as CustomerRepo
-participant "GetProposalsOfCustomerRequest" as GetProposalsRequest
+participant "GetProposalByCodeRequest" as GetProposalsRequest
 participant "DeliveryReportingRepository" as DeliveryRepo
 participant "ProposalDTO" as ProposalDTO
 participant "SendFeedbackProposalRequest" as Request
 participant "ShowProposalRepository" as ProposalRepo
 participant "SendFeedbackProposalResponse" as Response
 
+
 activate User
 
-User -> UI : request to accept/reject pending proposals
+User -> UI : request to analyse an show proposal
 activate UI
+UI --> User : asks for delivery code
+User -> UI : provides delivery code
 
-UI -> Controller : findProposalByDeliveryCode
+UI -> Controller : findProposalByDeliveryCode(code)
 activate Controller
 
 Controller -> Proxy : getShodroneUser(authenticatedUser)
@@ -44,8 +49,6 @@ activate Server
 
 Server -> Parser : parse(request)
 activate Parser
-
-Server -> Parser : execute(request)
 
 Parser -> ServerController : getShodroneUserByUsername(username)
 activate ServerController
@@ -133,11 +136,12 @@ deactivate MU
 Proxy --> Controller : customer
 deactivate Proxy
 
-Controller -> Proxy : getProposalsDelivered(customer)
+Controller -> Proxy : getProposalByCode(code)
 activate Proxy
 
 Proxy -> GetProposalsRequest : toRequest(customer)
 activate GetProposalsRequest
+GetProposalsRequest --> Proxy : request
 deactivate GetProposalsRequest
 
 Proxy -> Socket : sendAndReceive(request)
@@ -148,17 +152,33 @@ activate Server
 
 Server -> Parser : parse(request)
 activate Parser
+Parser -> RequestDAEMON : parseGetProposalByCode(request)
+activate RequestDAEMON
+RequestDAEMON --> Parser : new GetProposalByCode(request)
+deactivate RequestDAEMON
 
-Server -> Parser : execute(request)
-
-Parser -> ServerController : getDeliveryProposalsOfCustomer(vatNumber)
+Parser -> DBPROC : run()
+activate DBPROC
+DBPROC -> RequestDAEMON : execute()
+activate RequestDAEMON
+RequestDAEMON -> ServerController : findProposalByDeliveryCode(code)
 activate ServerController
-
-ServerController -> DeliveryRepo : findAllProposalsByCustomer(vatNumber)
+ServerController -> DeliveryRepo : findProposalByDeliveryCode(code)
 activate DeliveryRepo
+DeliveryRepo --> ServerController : deliveryReport
 deactivate DeliveryRepo
 
-ServerController --> Parser : response
+ServerController --> RequestDAEMON : deliveryReport
+deactivate ServerController
+RequestDAEMON -> RequestDAEMON : buildResponse(deliveryReport)
+activate RequestDAEMON
+RequestDAEMON --> RequestDAEMON : response
+deactivate RequestDAEMON
+RequestDAEMON --> DBPROC : response
+deactivate RequestDAEMON
+DBPROC --> Parser : response
+deactivate DBPROC
+
 deactivate ServerController
 
 Parser --> Server : response
@@ -173,88 +193,30 @@ deactivate Socket
 Proxy -> MU : parseResponseMessageProposal(response)
 activate MU
 
-MU -> ProposalDTO : ProposalDTO()
+MU -> ProposalDTO : new ShowProposalDTO()
 activate ProposalDTO
+ProposalDTO --> MU
 deactivate ProposalDTO
 
-MU --> Proxy : parseResponseMessageLineShow(response)
+MU --> Proxy : showProposalDTO
 deactivate MU
 
-Proxy --> Controller : proposalDTO
+Proxy --> Controller : showProposalDTO
 deactivate Proxy
 
-Controller --> UI : proposalDTO
+Controller --> UI : showProposalDTO
 deactivate Controller
 
-
-
-UI --> User : asks to select a proposal
-
-User -> UI : selects a proposal
-
-UI --> User : asks feedback on proposal
-
-User -> UI : accept/reject + feedback
-
-
-
-UI -> Controller : sendFeedbackProposal(proposalNumber, decision, feedback)
+UI -> Controller :decodeFile(proposalDTO.file)
 activate Controller
-
-Controller -> Proxy : sendFeedbackProposal(proposalNumber, decision, feedback)
-activate Proxy
-
-Proxy -> Request : toRequest(proposalNumber, decision, feedback)
-activate Request
-deactivate Request
-
-Proxy -> Socket : sendAndReceive(request)
-activate Socket
-
-Socket -> Server : send(request)
-activate Server
-
-Server -> Parser : parse(request)
-activate Parser
-
-Server -> Parser : execute(request)
-
-Parser -> ServerController : handleProposalFeedback(proposalNumber, decision, feedback)
-activate ServerController
-
-ServerController -> ProposalRepo : updateProposalStatusAndFeedback(proposalNumber, decision, feedback)
-activate ProposalRepo
-deactivate ProposalRepo
-
-ServerController --> Parser : response
-deactivate ServerController
-
-Parser --> Server : response
-deactivate Parser
-
-Server --> Socket : response
-deactivate Server
-
-Socket --> Proxy : response
-deactivate Socket
-
-Proxy -> MU : parseResponseMessageFeedback(response)
-activate MU
-
-MU -> Response : FeedbackProposalResponse()
-activate Response
-deactivate Response
-
-MU --> Proxy : parseResponse()
-deactivate MU
-
-Proxy --> Controller : accepted/rejected
-deactivate Proxy
-
-Controller --> UI : show confirmation
+Controller --> UI : fyleBytes
+deactivate Controller
+UI -> Controller : createFile(fyleBytes, showProposalDTO)
+activate Controller
+Controller --> UI : filePath
 deactivate Controller
 
-UI --> User : confirmation: feedback successfully submitted
+UI --> User : File created successfully, here is the path: filePath
 deactivate UI
 deactivate User
 

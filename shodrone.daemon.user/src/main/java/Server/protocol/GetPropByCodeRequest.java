@@ -50,7 +50,6 @@ public class GetPropByCodeRequest extends UserAppRequest {
                 .append("\"").append(proposal.showLocation.toString()).append("\", ")
                 .append("\"").append(fileToString(proposal.document.file())).append("\"\n");
 
-
         return sb.toString();
     }
     private String fileToString(byte[] file) {
