@@ -58,7 +58,7 @@ public class GetPropByCodeRequest extends UserAppRequest {
 
     public String createFile(byte [] file){
         try {
-            Path filePath = Paths.get("shodrone.app.user/rc/main/resources/files/proposal.csv");
+            Path filePath = Paths.get("shodrone.app.user/src/main/java/Shodrone/ShowProposalFiles/proposal.csv");
             Files.write(filePath, file);
             return filePath.toString();
         } catch (IOException e) {
