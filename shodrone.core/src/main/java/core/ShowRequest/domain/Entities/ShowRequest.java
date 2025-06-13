@@ -363,4 +363,17 @@ public class ShowRequest implements AggregateRoot<ShowRequestID> {
     public String toString() {
         return ("Show -> " + this.showRequestID.toString() + "\nStatus - " + this.status + "\n");
     }
+
+    /**
+     * Changes the status of the ShowRequest to the specified new status.
+     * @param newStatus The new status to set for the ShowRequest can be accepted, rejected, or waiting for response.
+     *
+     *
+     */
+    public void changeStatus(ShowRequestStatus newStatus) {
+        if (newStatus == null) {
+            throw new IllegalArgumentException("New status cannot be null");
+        }
+        this.status = newStatus;
+    }
 }

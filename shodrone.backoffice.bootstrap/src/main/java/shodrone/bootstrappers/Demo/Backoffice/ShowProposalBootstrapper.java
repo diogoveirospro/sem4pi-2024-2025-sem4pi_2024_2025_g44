@@ -28,6 +28,7 @@ import core.ShowProposal.domain.ValueObjects.ShowProposalStatus;
 import core.ShowProposal.domain.ValueObjects.Video;
 import core.ShowProposal.repositories.ShowProposalRepository;
 import core.ShowRequest.domain.Entities.ShowRequest;
+import core.ShowRequest.domain.ValueObjects.ShowRequestStatus;
 import core.ShowRequest.repositories.ShowRequestRepository;
 import eapli.framework.actions.Action;
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +61,9 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
         cleanShowDSLFiles();
 
         List<ShowRequest> showRequests = (List<ShowRequest>) showRequestRepository.findAllCreatedShowRequests();
+        for (ShowRequest showRequest : showRequests) {
+            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "Show Request: " + showRequest.identity().showRequestID() + UtilsUI.RESET);
+        }
         List<CRMCollaborator> crmCollaborators = (List<CRMCollaborator>) crmCollaboratorRepository.findAll();
         List<Model> models = (List<Model>) modelRepository.findAll();
         List<Drone> drones = (List<Drone>) droneRepository.findAll();
@@ -386,6 +390,21 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
                 managers.get(0)
         );
 
+        registerAccepted(
+                showRequests.get(3),
+                LocalDate.of(2024, 8, 12),
+                LocalTime.of(21, 0),
+                showRequests.get(0).durationOfShow(),
+                showRequests.get(0).quantityOfDrones(),
+                new Insurance("500", "€"),
+                crmCollaborators.get(0),
+                dronesMapA,
+                figuresSet1,
+                video1,
+                "English (VIP Customer)",
+                managers.get(0)
+        );
+
         return true;
     }
 
@@ -506,6 +525,10 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
                                   CRMCollaborator collaborator, Map<Model, Set<Drone>> drones,
                                   List<Figure> figures, Video video, String template, CRMManager crmManager) {
 
+        if (showRequest.customer().name().toString().equals("Microsoft")){
+            showRequest.changeStatus(ShowRequestStatus.ACCEPTED);
+            showRequestRepository.save(showRequest);
+        }
         ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
                 collaborator);
 
