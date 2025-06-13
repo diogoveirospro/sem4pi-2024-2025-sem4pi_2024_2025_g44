@@ -2,6 +2,7 @@ package core.Drone.domain.ValueObjects;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +12,7 @@ class UsageTimeTest {
 
     @Test
     void shouldCreateValidUsageTime() {
-        UsageTime ut = new UsageTime(LocalTime.of(2, 30));
+        UsageTime ut = new UsageTime(Duration.ofHours(2).plusMinutes(30));
         assertEquals("02:30", ut.toString());
     }
 
@@ -22,35 +23,35 @@ class UsageTimeTest {
 
     @Test
     void shouldAddTimeCorrectly() {
-        UsageTime ut = new UsageTime(LocalTime.of(1, 45));
+        UsageTime ut = new UsageTime(Duration.ofHours(1).plusMinutes(45));
         ut.addTime(LocalTime.of(2, 15)); // total = 4:00
         assertEquals("04:00", ut.toString());
     }
 
     @Test
     void shouldAddTimeWithRollover() {
-        UsageTime ut = new UsageTime(LocalTime.of(23, 0));
+        UsageTime ut = new UsageTime(Duration.ofHours(23));
         ut.addTime(LocalTime.of(2, 30)); // 23:00 + 2:30 = 01:30 (next day)
-        assertEquals("01:30", ut.toString());
+        assertEquals("25:30", ut.toString());
     }
 
     @Test
     void shouldThrowIfTimeToAddIsNull() {
-        UsageTime ut = new UsageTime(LocalTime.of(5, 0));
+        UsageTime ut = new UsageTime(Duration.ofHours(5));
         assertThrows(IllegalArgumentException.class, () -> ut.addTime(null));
     }
 
     @Test
     void shouldThrowIfTimeToAddHasSecondsOrNanos() {
-        UsageTime ut = new UsageTime(LocalTime.of(5, 0));
+        UsageTime ut = new UsageTime(Duration.ofHours(5));
         assertThrows(IllegalArgumentException.class, () -> ut.addTime(LocalTime.of(1, 0, 30)));
         assertThrows(IllegalArgumentException.class, () -> ut.addTime(LocalTime.of(1, 0, 0, 1_000)));
     }
 
     @Test
     void shouldSupportEquality() {
-        UsageTime ut1 = new UsageTime(LocalTime.of(3, 15));
-        UsageTime ut2 = new UsageTime(LocalTime.of(3, 15));
+        UsageTime ut1 = new UsageTime(Duration.ofHours(3).plusMinutes(15));
+        UsageTime ut2 = new UsageTime(Duration.ofHours(3).plusMinutes(15));
         assertEquals(ut1, ut2);
     }
 

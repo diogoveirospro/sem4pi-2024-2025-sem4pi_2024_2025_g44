@@ -2,11 +2,11 @@ package core.Drone.domain.Entities;
 
 import core.Drone.domain.ValueObjects.*;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
 import jakarta.persistence.*;
 
+import java.time.Duration;
 import java.time.LocalTime;
 
 @Entity
@@ -39,7 +39,7 @@ public class Drone implements AggregateRoot<Designation> {
         this.droneStatus = DroneStatus.ACTIVE;
         this.model = model;
         this.removalReason = removalReason;
-        this.usageTime = new UsageTime(LocalTime.of(0, 0));
+        this.usageTime = new UsageTime(Duration.ZERO);
         this.programingLanguage = null;
     }
 

@@ -13,6 +13,7 @@ import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
@@ -37,7 +38,7 @@ class DroneTest {
         reasons.put(now, wewe);
         removalReason = new RemovalReason(reasons);
         model = buildSampleModel();
-        UsageTime usageTime = new UsageTime(LocalTime.of(0, 0));
+        UsageTime usageTime = new UsageTime(Duration.ZERO);
         drone = new Drone(serialNumber, model, removalReason);
     }
 
