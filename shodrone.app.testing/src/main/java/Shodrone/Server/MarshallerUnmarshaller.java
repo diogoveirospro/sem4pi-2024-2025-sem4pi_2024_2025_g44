@@ -65,7 +65,6 @@ public class MarshallerUnmarshaller {
     public void generateReportIfResponseIsCorrect(List<String> response) throws FailedRequestException {
         // Verify if the response is well-formed
         verifyResponseFormat(response);
-
         // Generate the report
         String reportPath = REPORT_FOLDER + "/simulation_report.txt";
         try {
