@@ -405,6 +405,21 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
                 managers.get(0)
         );
 
+        registerAcceptedEAUser(
+                showRequests.get(4),
+                LocalDate.of(2025, 11, 3),
+                LocalTime.of(19, 15),
+                showRequests.get(1).durationOfShow(),
+                showRequests.get(1).quantityOfDrones(),
+                new Insurance("700", "€"),
+                crmCollaborators.get(1),
+                dronesMapB,
+                figuresSet2,
+                video2,
+                "English (Regular Customer)",
+                managers.get(1)
+        );
+
         return true;
     }
 
@@ -548,6 +563,32 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     }
 
 
+    private void registerAcceptedEAUser(ShowRequest showRequest, LocalDate date, LocalTime time,
+                                  Duration duration, QuantityOfDrones quantityOfDrones, Insurance insurance,
+                                  CRMCollaborator collaborator, Map<Model, Set<Drone>> drones,
+                                  List<Figure> figures, Video video, String template, CRMManager crmManager) {
+
+        if (showRequest.customer().name().toString().equals("EA Sports")){
+            showRequest.changeStatus(ShowRequestStatus.ACCEPTED);
+            showRequestRepository.save(showRequest);
+        }
+        ShowProposal showProposal = new ShowProposal(showRequest, date, time, duration, quantityOfDrones, insurance,
+                collaborator);
+
+        ShowConfigurationBuilder builder = new ShowConfigurationBuilder();
+        ShowProposal showProposalWithDrones = addDrones(showProposal, drones, builder);
+        ShowProposal showProposalWithDronesAndFigures = addFigures(showProposalWithDrones, figures, builder);
+        showProposalWithDronesAndFigures.addVideo(video);
+
+        ShowProposal finalShowProposal = addDocument(showProposalWithDronesAndFigures, template, crmManager);
+
+        finalShowProposal.setShowProposalStatus(ShowProposalStatus.ACCEPTED);
+
+        showProposalRepository.save(finalShowProposal);
+
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully registered Show Proposal {}" + UtilsUI.RESET,
+                showProposal.identity().proposalNumber());
+    }
 
     // Auxiliary Methods
 
