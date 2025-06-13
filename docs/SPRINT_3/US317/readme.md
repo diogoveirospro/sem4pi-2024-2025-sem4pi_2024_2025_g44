@@ -1,8 +1,8 @@
-# US 317
+# US 311 
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us317 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task as the objective of concluding the requirements of the us311 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
 
 ### 1.1 List of Issues
 
@@ -16,16 +16,21 @@ This task as the objective of concluding the requirements of the us317 of sprint
 ## 2. Requirements
 
 **As** a CRM Collaborator,  
-**I want** to mark the proposal as accepted by the customer aŌer it has been accepted by a Customer RepresentaƟve in the Customer App.
-**So that** I can conclude the show proposal as a show.
+**I want** to configure the list of drone models (number of drones and model) of a show proposal.
+**So that** I can configure the list of the drones and the model to be used.
 
 ### Acceptance Criteria
 
-- **AC01**: The show proposal can only be accepted or rejected if the show proposal had already been analyzed and given feedback by the customer.
+- **AC01**: The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
+- **AC02**: There is no need to verify if these drones are used in another show on the same date.
+- **AC03**: The same drone cannot be used more than once in the same configuration.
+- **AC04**: The total number of drones in the configuration, need to be the same as the total number of drones of the proposal.
 
 ### Dependencies
 
-- This requirement depends on [US371](../../SPRINT_3/US371/readme.md), as a show proposal must be accepted or refused by a customer first.
+- This requirement depends on [US310](../../SPRINT_3/US310/readme.md), as a show proposal must be created before drones can be added to it.
+- This requirement depends on [US240](../../SPRINT_2/US240/readme.md), as a drone model must be registered in the system before it can be added to a show proposal.
+- This requirement depends on [US241](../../SPRINT_2/US241/readme.md), as a drone must be registered in the system before it can be added to a show proposal.
 
 ---
 
