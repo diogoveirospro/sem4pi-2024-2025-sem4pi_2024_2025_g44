@@ -31,7 +31,8 @@ SharedMemoryParent *shm_parent = NULL; // Global pointer to shared memory
 
 size_t shm_size = 0;
 int shm_fd = 0;
-sem_t **semaphores = NULL;
+sem_t **semaphores_drones = NULL;
+sem_t **semaphores_parent = NULL;
 
 void end()
 {
@@ -266,11 +267,13 @@ int manage_drones(int iter)
       msg_received_cnt++;
       continue;
     }
+    wait_semaphore(semaphores_drones[i]);  // sem_drone_%d
 
-    fprintf(stderr, "Parent: Waiting for drone %d\n", i + 1);
-    wait_semaphore(semaphores[i]);
-    fprintf(stderr, "Parent: Received from drone %d\n", i + 1);
-
+    fprintf(stderr, "Position of drone %d: (%d, %d, %d)\n",
+            i + 1,
+            shm_drones->drones[i].pos.x,
+            shm_drones->drones[i].pos.y,
+            shm_drones->drones[i].pos.z);
     SharedDroneState *drone = &shm_drones->drones[i];
     update_position(i, iter, drone);
 
@@ -297,7 +300,7 @@ int process_position(int iter)
 // send green flag to specific child
 void send_green_flag(int i)
 {
-  post_semaphore(semaphores[i]);
+  post_semaphore(semaphores_parent[i]); // sem_parent_%d
 }
 
 void sync_drones()
@@ -308,6 +311,7 @@ void sync_drones()
     }
   }
 }
+
 
 // repeats process of reading position
 // checking collision
@@ -341,88 +345,74 @@ void start_loop()
 // generates report file
 void do_report()
 {
-  // File name with timestamp
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
 
   char filename[100];
-
   snprintf(filename, sizeof(filename),
            "simulation_report_%02d_%02d_%02d_%02d_%02d_%02d.txt",
            t->tm_mday, t->tm_mon + 1, t->tm_year % 100,
            t->tm_hour, t->tm_min, t->tm_sec);
 
   char path[256];
-
   snprintf(path, sizeof(path), "%s/%s", c.out_dir, filename);
 
-  // Create output directory if it doesn't exist
-  if (mkdir(c.out_dir, 0777) == -1 && errno != EEXIST)
-  {
+  if (mkdir(c.out_dir, 0777) == -1 && errno != EEXIST) {
     perror("Parent: Error creating output directory");
     return;
   }
 
   FILE *f = fopen(path, "w");
-  if (!f)
-  {
+  if (!f) {
     perror("Parent: Error creating report file");
     return;
   }
 
-  // Header
   fprintf(f, "Simulation Report - Shodrone\n\n");
   fprintf(f, "Total drones: %d\n\n", c.num_drones);
 
-  DroneHistory *h;
-
-  // Status of each drone
+  // Status of drones
   fprintf(f, "\nDrone Execution Summary:\n\n");
-
-  for (int i = 0; i < c.num_drones; i++)
-  {
-    h = &shm_parent->history[i];
+  for (int i = 0; i < c.num_drones; i++) {
     fprintf(f, "Drone %d: %d steps, %d collisions\n",
-            h->drone_id, h->count, h->collision_count);
+            shm_parent->history[i].drone_id,
+            shm_parent->history[i].count,
+            shm_parent->history[i].collision_count);
   }
 
-  // Drone Position History
+  // Position history
   fprintf(f, "\n\nDrone Position History:\n\n");
-
-  for (int i = 0; i < c.num_drones; i++)
-  {
-    h = &shm_parent->history[i];
-    fprintf(f, "Drone %d:\n", h->drone_id);
-
-    for (int j = 0; j < h->count; j++)
-    {
+  for (int i = 0; i < c.num_drones; i++) {
+    fprintf(f, "Drone %d:\n", shm_parent->history[i].drone_id);
+    for (int j = 0; j < shm_parent->history[i].count; j++) {
       fprintf(f, "  [t = %.2f] (%d, %d, %d)\n",
-              h->timestamps[j],
-              h->positions[j].x,
-              h->positions[j].y,
-              h->positions[j].z);
+              shm_parent->history[i].timestamps[j],
+              shm_parent->history[i].positions[j].x,
+              shm_parent->history[i].positions[j].y,
+              shm_parent->history[i].positions[j].z);
     }
     fprintf(f, "\n");
   }
 
-  // Collisions (detailed log)
+  // Log collisions
   fprintf(f, "\nCollision Log:\n");
-
   if (s.collisions == 0)
     fprintf(f, "None\n");
-  else
-  {
-    for (int i = 0; i < s.collisions; i++)
-    {
-      CollisionLog *cl =  &shm_parent->collision_log[i];
-
+  else {
+    for (int i = 0; i < s.collisions; i++) {
       fprintf(f, "[t = %.2f] Drones %d (%d, %d, %d) and %d (%d, %d, %d) collided\n",
-              cl->timestamp, cl->drone1, cl->pos1.x, cl->pos1.y, cl->pos1.z, cl->drone2,
-              cl->pos2.x, cl->pos2.y, cl->pos2.z);
+              shm_parent->collision_log[i].timestamp,
+              shm_parent->collision_log[i].drone1,
+              shm_parent->collision_log[i].pos1.x,
+              shm_parent->collision_log[i].pos1.y,
+              shm_parent->collision_log[i].pos1.z,
+              shm_parent->collision_log[i].drone2,
+              shm_parent->collision_log[i].pos2.x,
+              shm_parent->collision_log[i].pos2.y,
+              shm_parent->collision_log[i].pos2.z);
     }
   }
 
-  // Final result
   fprintf(f, "\nValidation Result: %s\n",
           s.collisions >= c.max_collisions ? "FAILED" : "VALIDATED");
 
@@ -455,17 +445,29 @@ void terminate()
   clear_shared_memory("/shm_parent");
 
   // Clear semaphores
-  if (semaphores) {
+  if (semaphores_drones) {
     for (int i = 0; i < c.num_drones; i++) {
       char sem_name[64];
       snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-      if (semaphores[i]) {
+      if (semaphores_drones[i]) {
         clear_semaphore(sem_name, NULL); // Unlink
       }
     }
-    free(semaphores);
-    semaphores = NULL;
+    free(semaphores_drones);
+    semaphores_drones = NULL;
   }
+  if (semaphores_parent) {
+    for (int i = 0; i < c.num_drones; i++) {
+      char sem_name[64];
+      snprintf(sem_name, sizeof(sem_name), "/sem_parent_%d", i+1);
+      if (semaphores_parent[i]) {
+        clear_semaphore(sem_name, NULL); // Unlink
+      }
+    }
+    free(semaphores_parent);
+    semaphores_parent = NULL;
+  }
+
 
   fprintf(stderr, GREEN "\nDone!\n" RESET);
   exit(0);
@@ -523,15 +525,27 @@ void allocate_structs()
   }
 
   // Allocate semaphores for each drone
-  semaphores = malloc(sizeof(sem_t *) * c.num_drones);
-  if (!semaphores) {
+  semaphores_drones = malloc(sizeof(sem_t *) * c.num_drones);
+  if (!semaphores_drones) {
     fprintf(stderr, "Error while allocating semaphores\n");
     end();
   }
+  semaphores_parent = malloc(sizeof(sem_t *) * c.num_drones);
+  if (!semaphores_parent) {
+    fprintf(stderr, "Error while allocating semaphores for parent\n");
+    end();
+  }
+
   for (int i = 0; i < c.num_drones; i++) {
     char sem_name[64];
     snprintf(sem_name, sizeof(sem_name), "/sem_drone_%d", i+1);
-    semaphores[i] = init_semaphore(sem_name, 0);
+    semaphores_drones[i] = init_semaphore(sem_name, 0);
+  }
+
+  for ( int i = 0; i < c.num_drones; i++) {
+    char sem_name[64];
+    snprintf(sem_name, sizeof(sem_name), "/sem_parent_%d", i+1);
+    semaphores_parent[i] = init_semaphore(sem_name, 0);
   }
 }
 
@@ -596,26 +610,25 @@ int main(int argc, char **argv) {
     clear_semaphore(sem_name, NULL); // Unlink semaphore
   }
 
+  for ( int i = 0; i < c.num_drones; i++) {
+    char sem_name[64];
+    snprintf(sem_name, sizeof(sem_name), "/sem_parent_%d", i+1);
+    clear_semaphore(sem_name, NULL); // Unlink semaphore
+  }
+
   //debug_config_file();
 
-  fprintf( stderr, GREEN "Parent: Starting simulation with %d drones...\n" RESET, c.num_drones);
-  fprintf( stderr, GREEN "Parent: Entering set up signals\n" RESET);
   set_up_signals();
 
-  fprintf( stderr, GREEN "Parent: Entering allocate structs\n" RESET);
   allocate_structs();
 
-  fprintf( stderr, GREEN "Parent: Entering set up childs\n" RESET);
   set_up_childs();
 
   //set_up_threads(); // Needs to be implemented
 
-  fprintf( stderr, GREEN "Parent: Entering start loop\n" RESET);
   start_loop();
 
-  fprintf( stderr, GREEN "Parent: Doing report\n" RESET);
   do_report();
 
-  fprintf( stderr, GREEN "Parent: End of simulation\n" RESET);
   terminate();
 }
