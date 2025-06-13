@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GetPropByCodeRequest extends UserAppRequest {
     private final String code;
@@ -51,23 +48,21 @@ public class GetPropByCodeRequest extends UserAppRequest {
                 .append("\"").append(proposal.timeOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.showDuration.toString()).append("\", ")
                 .append("\"").append(proposal.showLocation.toString()).append("\", ")
-                .append("\"").append(createFile(proposal.document)).append("\"\n");
+                .append("\"").append(fileToString(proposal.document.file())).append("\"\n");
 
 
         return sb.toString();
     }
-
-    public String createFile(ShowProposalDocument document){
+    private String fileToString(byte[] file) {
         try {
-            if (document == null || document.file() == null || document.file().length == 0) {
+            if (file == null || file.length == 0) {
                 throw new IOException("Document file is empty or null");
             }
-            Path filePath = Paths.get("C:/Users/FariaG/Documents/sem4pi-2024-2025-sem4pi_2024_2025_g44/files/proposal.txt");
-            Files.write(filePath, document.file());
-            return filePath.toString();
+            return Base64.getEncoder().encodeToString(file);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
+
 }

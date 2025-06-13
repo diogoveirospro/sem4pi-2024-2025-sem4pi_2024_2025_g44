@@ -15,6 +15,7 @@ import shodrone.presentation.UtilsUI;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -39,10 +40,11 @@ public class AnalyseProposalUI extends AbstractFancyUI {
         try {
             String code = Console.readLine("Enter the delivery code:");
             ShowProposalDTO proposalDTO = controller.findProposalByDeliveryCode(code);
+            byte[] fileBytes = controller.decodeFile(proposalDTO.filePath);
+            String filePath = controller.createFile(fileBytes);
 
-
-            if (proposalDTO.filePath != null || !proposalDTO.filePath.isEmpty()) {
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path:"+ proposalDTO.filePath + "\n" + UtilsUI.RESET);
+            if (filePath != null || filePath.isEmpty()) {
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nFile created successfully, here is the path:"+ filePath + "\n" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
             } else {
