@@ -3,6 +3,8 @@ actor "CustomerRepresentative" as User
 participant "AnalyseProposalUI" as UI
 participant "AnalyseProposalController" as Controller
 
+participant "AuthorizationService" as AuthService
+
 participant "CustomerAppProtocolProxy" as Proxy
 
 participant "GetShodroneUserRequest" as RequestUser
@@ -46,6 +48,11 @@ UI -> Controller : findProposalByDeliveryCode(code)
 activate Controller
 Controller -> Controller : findProposalByDeliveryCode(code)
 activate Controller
+Controller -> AuthService : session().get().authenticatedUser()
+activate AuthService
+AuthService --> Controller : currentUser
+deactivate AuthService
+
 Controller -> Proxy : getShodroneUser(currentUser)
 activate Proxy
 
