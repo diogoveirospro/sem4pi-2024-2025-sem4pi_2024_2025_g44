@@ -18,7 +18,7 @@ public class GenerateSimulationReportRequest extends UserAppRequest {
     @Override
     public String execute() {
         try {
-            UtilsUI.openCodeInC(path);
+            UtilsUI.runScript(path);
             List<String> content = controller.generateSimulationReport(path);
             return buildResponse(content);
         } catch (Exception e) {

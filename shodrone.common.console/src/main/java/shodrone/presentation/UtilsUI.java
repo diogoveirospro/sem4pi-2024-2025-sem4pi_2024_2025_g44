@@ -500,6 +500,70 @@ public class UtilsUI {
         }
     }
 
+    public static void runScript(String path) {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            // Windows: run using WSL
+            try {
+                String projectDir = System.getProperty("user.dir");
+                File workingDir = new File(projectDir, path);
+                if (!workingDir.exists()) {
+                    System.err.println("Directory does not exist: " + workingDir.getAbsolutePath());
+                    return;
+                }
+                String wslWorkingDir = workingDir.getCanonicalPath().replace("\\", "/").replace("C:", "/mnt/c");
+
+                String[] command = { "wsl", "bash", "-c", String.format("cd '%s' && make run", wslWorkingDir) };
+                ProcessBuilder processBuilder = new ProcessBuilder(command);
+                processBuilder.start();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else if (os.contains("mac")) {
+            // MacOS: run using bash
+            try {
+                String projectDir = System.getProperty("user.dir");
+                File workingDir = new File(projectDir, path);
+                if (!workingDir.exists()) {
+                    System.err.println("Directory does not exist: " + workingDir.getAbsolutePath());
+                    return;
+                }
+
+                String[] command = { "bash", "-c", String.format("cd '%s' && make run", workingDir.getCanonicalPath()) };
+                ProcessBuilder processBuilder = new ProcessBuilder(command);
+                processBuilder.start();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else if (os.contains("nix") || os.contains("nux")) {
+            // Linux: run using bash (no GUI)
+            try {
+                String projectDir = System.getProperty("user.dir");
+                File workingDir = new File(projectDir, path);
+                if (!workingDir.exists()) {
+                    System.err.println("Directory does not exist: " + workingDir.getAbsolutePath());
+                    return;
+                }
+
+                String[] command = { "bash", "-c", String.format("cd '%s' && make run", workingDir.getCanonicalPath()) };
+                ProcessBuilder processBuilder = new ProcessBuilder(command);
+                processBuilder.start();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            System.err.println("Unsupported OS: " + os);
+        }
+    }
+
+
     public static void openInNotepad(File file) {
         try {
             // Check if the file exists
