@@ -700,4 +700,14 @@ public class UtilsUI {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation not supported on this OS: " + e.getMessage() + UtilsUI.RESET);
         }
     }
+
+    public static String lerFicheiroComoString(String caminhoFicheiro) {
+        try {
+            byte[] bytes = Files.readAllBytes(Paths.get(caminhoFicheiro));
+            return new String(bytes);
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o ficheiro: " + e.getMessage());
+            return null;
+        }
+    }
 }
