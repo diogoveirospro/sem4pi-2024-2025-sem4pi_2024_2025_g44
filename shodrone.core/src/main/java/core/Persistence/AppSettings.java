@@ -50,6 +50,7 @@ public class AppSettings {
     private static final String USE_EVENTFUL_CONTROLLERS = "UseEventfulControllers";
     private static final String SHODRONE_DOMAIN = "ShodroneDomain";
     private static final String SERVER_PORT = "shodrone.server.port";
+    private static final String DRONE_RUNNER_PORT = "shodrone.server.port.droneRunner";
     private static final String DATABASE_PORT = "shodrone.database.port";
     private static final String SERVER_IP = "shodrone.server.ip";
     private static final String REPORT_PATH = "simulation.report.path";
@@ -134,6 +135,10 @@ public class AppSettings {
 
     public String getReportPath() {
         return applicationProperties.getProperty(REPORT_PATH);
+    }
+
+    public String droneRunnerPort() {
+        return applicationProperties.getProperty(DRONE_RUNNER_PORT);
     }
 
     public String getProperty(final String prop) {

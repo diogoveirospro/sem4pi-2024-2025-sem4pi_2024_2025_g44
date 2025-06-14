@@ -2,7 +2,11 @@ package shodrone.presentation;
 
 import eapli.framework.strings.util.StringPredicates;
 
+import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -678,4 +682,22 @@ public class UtilsUI {
         }
     }
 
+    public static void openFileForEditing(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+            if (!Files.exists(path)) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFile does not exist: " + filePath + UtilsUI.RESET);
+                return;
+            }
+
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(path.toFile());
+
+            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nFile opened in the default editor. Save changes when done.\n" + UtilsUI.RESET);
+        } catch (IOException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError Opening File: " + e.getMessage() + UtilsUI.RESET);
+        } catch (UnsupportedOperationException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nOperation not supported on this OS: " + e.getMessage() + UtilsUI.RESET);
+        }
+    }
 }
