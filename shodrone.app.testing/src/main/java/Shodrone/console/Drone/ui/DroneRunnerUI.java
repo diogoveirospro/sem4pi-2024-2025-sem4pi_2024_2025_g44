@@ -97,7 +97,19 @@ public class DroneRunnerUI extends AbstractFancyUI {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
                 String filePath = directoryPath + "/" + files.get(option);
-                checkFileChangesAndSend(filePath);
+
+                boolean eliminateDrone = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to eliminate this drone? (y/n): " + UtilsUI.RESET);
+                if (eliminateDrone) {
+                    try {
+                        Files.delete(Paths.get(filePath));
+                        controller.sendFileToServer(filePath);
+                        System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nDrone file deleted successfully.\n" + UtilsUI.RESET);
+                    } catch (IOException e) {
+                        System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError Deleting Drone File: " + e.getMessage() + UtilsUI.RESET);
+                    }
+                } else {
+                    checkFileChangesAndSend(filePath);
+                }
                 return;
             }
         } while (true);

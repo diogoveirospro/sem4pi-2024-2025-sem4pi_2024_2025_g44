@@ -13,6 +13,16 @@ public class DroneRunnerController {
 
             Path targetPath = Paths.get(filePath);
 
+            if ("ELIMINATE".equals(fileContent.trim())) {
+                if (Files.exists(targetPath)) {
+                    Files.delete(targetPath);
+                    System.out.println("File successfully deleted: " + targetPath.toAbsolutePath());
+                } else {
+                    System.out.println("File does not exist: " + targetPath.toAbsolutePath());
+                }
+                return true;
+            }
+
             Files.createDirectories(targetPath.getParent());
 
             String formattedContent = formatFileContent(fileContent);
@@ -23,12 +33,10 @@ public class DroneRunnerController {
             return true;
 
         } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
+            System.out.println("Error processing file: " + e.getMessage());
             return false;
         }
     }
-
-
 
     private String formatFileContent(String fileContent) {
         StringBuilder formattedContent = new StringBuilder();
@@ -39,11 +47,7 @@ public class DroneRunnerController {
             String[] coordinates = entry.split(",");
 
             if (coordinates.length == 3) {
-                if (i == 0) {
-                    formattedContent.append(String.join(",", coordinates)).append("\n");
-                } else {
-                    formattedContent.append(String.join(",", coordinates)).append("\n");
-                }
+                formattedContent.append(String.join(",", coordinates)).append("\n");
             }
         }
 

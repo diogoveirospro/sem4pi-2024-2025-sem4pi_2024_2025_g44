@@ -21,6 +21,18 @@ public class DroneRunnerController {
 
             if (!Files.exists(absolutePath)) {
                 System.out.println("File does not exist: " + absolutePath);
+
+                String cleanedPath = filePath.replace("\\", "/");
+                int index = cleanedPath.indexOf("DroneTests/");
+                if (index != -1) {
+                    String relativeToDroneTests = cleanedPath.substring(index + "DroneTests/".length());
+                    String fullServerPath = PATH_PREFIX + relativeToDroneTests;
+
+                    System.out.println("Sending elimination message to server: " + fullServerPath);
+                    server.sendFileToServer(fullServerPath, "ELIMINATE");
+                } else {
+                    System.out.println("ERROR: 'DroneTests' folder not found in path: " + cleanedPath);
+                }
                 return;
             }
 
