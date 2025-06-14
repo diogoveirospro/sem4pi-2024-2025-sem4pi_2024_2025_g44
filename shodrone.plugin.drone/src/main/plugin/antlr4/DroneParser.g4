@@ -29,8 +29,8 @@ description
     ;
 
 variable_declaration
-    : TYPE_NAME IDENTIFIER ASSIGN expression SEMICOLON NEWLINE*
-    | LT TYPE_NAME GT LT IDENTIFIER GT ASSIGN expression SEMICOLON NEWLINE*
+    : (TYPE_NAME | PLACEHOLDER) (IDENTIFIER | PLACEHOLDER) ASSIGN (expression | PLACEHOLDER) SEMICOLON NEWLINE*
+    | LT (TYPE_NAME | PLACEHOLDER) GT LT (IDENTIFIER | PLACEHOLDER) GT ASSIGN (expression | PLACEHOLDER) SEMICOLON NEWLINE*
     ;
 
 instruction
@@ -38,7 +38,7 @@ instruction
     | LAND LPAREN expression RPAREN SEMICOLON NEWLINE*
     | MOVE LPAREN expression COMMA expression RPAREN SEMICOLON NEWLINE*
     | MOVE LPAREN expression COMMA expression COMMA expression RPAREN SEMICOLON NEWLINE*
-    | MOVEPATH LPAREN array_of_positions COMMA expression RPAREN SEMICOLON NEWLINE*
+    | MOVEPATH LPAREN expression COMMA expression RPAREN SEMICOLON NEWLINE*
     | MOVECIRCLE LPAREN expression COMMA expression COMMA expression RPAREN SEMICOLON NEWLINE*
     | HOOVER LPAREN expression RPAREN SEMICOLON NEWLINE*
     | LIGHTSON LPAREN RPAREN SEMICOLON NEWLINE*
@@ -49,6 +49,8 @@ instruction
 
 expression
     : arithmetic
+    | array_of_positions
+    | PLACEHOLDER
     ;
 
 arithmetic
@@ -70,7 +72,7 @@ factor
     ;
 
 point
-    : LPAREN FLOAT COMMA FLOAT COMMA FLOAT RPAREN
+    : LPAREN signed_number COMMA signed_number COMMA signed_number RPAREN
     ;
 
 vector
@@ -78,7 +80,11 @@ vector
     ;
 
 array_of_positions
-    : LPAREN LPAREN point (COMMA point)* RPAREN RPAREN
+    : LPAREN point (COMMA point)* RPAREN
+    ;
+
+signed_number
+    : DASH? number
     ;
 
 number

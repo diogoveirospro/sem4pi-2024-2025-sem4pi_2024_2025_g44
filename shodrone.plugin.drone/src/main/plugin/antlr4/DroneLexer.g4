@@ -41,6 +41,8 @@ TYPE_NAME : 'Position'
     | 'Time'
     ;
 
+PLACEHOLDER : LT [a-zA-Z0-9_ ]+ GT;
+
 IDENTIFIER : [a-zA-Z] [a-zA-Z0-9_]*;
 
 FLOAT : [0-9]+ '.' [0-9]+;
