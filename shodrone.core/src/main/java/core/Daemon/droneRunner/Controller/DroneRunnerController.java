@@ -11,8 +11,7 @@ public class DroneRunnerController {
         try {
             filePath = filePath.replace("\\", "/");
 
-            Path baseDir = Paths.get("").toAbsolutePath();
-            Path targetPath = baseDir.resolve(filePath).normalize();
+            Path targetPath = Paths.get(filePath);
 
             Files.createDirectories(targetPath.getParent());
 
@@ -28,6 +27,7 @@ public class DroneRunnerController {
             return false;
         }
     }
+
 
 
     private String formatFileContent(String fileContent) {

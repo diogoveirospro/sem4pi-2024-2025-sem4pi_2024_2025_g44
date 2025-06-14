@@ -13,6 +13,7 @@ import java.util.List;
 @UseCaseController
 public class DroneRunnerController {
     private final DroneRunnerAppProtocolProxy server = new DroneRunnerAppProtocolProxy();
+    private static final String PATH_PREFIX = "/root/sem4pi-2024-2025-sem4pi_2024_2025_g44/SCOMP/srcs/DroneTests/";
 
     public void sendFileToServer(String filePath) {
         try {
@@ -40,21 +41,20 @@ public class DroneRunnerController {
                 formattedContent.setLength(formattedContent.length() - 1);
             }
 
-            String relativePath = filePath.replace("\\", "/");
-            int index = relativePath.indexOf("DroneFiles");
+            String cleanedPath = filePath.replace("\\", "/");
+            int index = cleanedPath.indexOf("DroneTests/");
             if (index != -1) {
-                relativePath = "/sem4pi-2024-2025-sem4pi_2025_g44/SCOMP/srcs/" + relativePath.substring(index);
-            } else {
-                System.out.println("ERROR: File is not in DroneFiles directory.");
-                return;
-            }
+                String relativeToDroneTests = cleanedPath.substring(index + "DroneTests/".length());
+                String fullServerPath = PATH_PREFIX + relativeToDroneTests;
 
-            server.sendFileToServer(relativePath, formattedContent.toString());
+                System.out.println("Sending file to server: " + fullServerPath);
+                server.sendFileToServer(fullServerPath, formattedContent.toString());
+            } else {
+                System.out.println("ERROR: 'DroneTests' folder not found in path: " + cleanedPath);
+            }
 
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
-
-
 }
