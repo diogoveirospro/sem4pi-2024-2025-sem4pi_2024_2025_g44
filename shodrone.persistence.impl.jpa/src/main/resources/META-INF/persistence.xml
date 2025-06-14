@@ -63,6 +63,7 @@
     <!-- Service for Duration -->
     <class>core.ShowProposal.application.Service.DurationConverter</class>
     <class>core.ShowRequest.application.Service.DurationConverter</class>
+    <class>core.Drone.application.Service.DurationToLongConverter</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>

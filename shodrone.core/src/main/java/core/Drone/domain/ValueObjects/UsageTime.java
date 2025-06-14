@@ -1,14 +1,12 @@
 package core.Drone.domain.ValueObjects;
 
-import core.Drone.repositories.DurationToLongConverter;
-import eapli.framework.domain.model.ValueObject;
+import core.Drone.application.Service.DurationToLongConverter;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @Embeddable
 public class UsageTime implements Serializable {

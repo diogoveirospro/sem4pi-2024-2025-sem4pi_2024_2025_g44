@@ -1,4 +1,4 @@
-package core.Drone.repositories;
+package core.Drone.application.Service;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
