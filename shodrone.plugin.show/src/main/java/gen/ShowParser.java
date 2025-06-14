@@ -1,4 +1,4 @@
-// Generated from ShowParser.g4 by ANTLR 4.13.2
+// Generated from ShowParser.g4 by ANTLR 4.7.2
 
 package gen;
 
@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ShowParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.13.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7.2", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -95,8 +95,6 @@ public class ShowParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
-
-	@SuppressWarnings("CheckReturnValue")
 	public static class StartContext extends ParserRuleContext {
 		public TerminalNode SHOW() { return getToken(ShowParser.SHOW, 0); }
 		public TerminalNode PROPNUMBER() { return getToken(ShowParser.PROPNUMBER, 0); }
@@ -110,6 +108,14 @@ public class ShowParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_start; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ShowParserListener ) ((ShowParserListener)listener).enterStart(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ShowParserListener ) ((ShowParserListener)listener).exitStart(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ShowParserVisitor ) return ((ShowParserVisitor<? extends T>)visitor).visitStart(this);
@@ -148,7 +154,6 @@ public class ShowParser extends Parser {
 		return _localctx;
 	}
 
-	@SuppressWarnings("CheckReturnValue")
 	public static class FigurelistContext extends ParserRuleContext {
 		public TerminalNode FIGURELIST() { return getToken(ShowParser.FIGURELIST, 0); }
 		public TerminalNode LCURLYBRACE() { return getToken(ShowParser.LCURLYBRACE, 0); }
@@ -167,6 +172,14 @@ public class ShowParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_figurelist; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ShowParserListener ) ((ShowParserListener)listener).enterFigurelist(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ShowParserListener ) ((ShowParserListener)listener).exitFigurelist(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ShowParserVisitor ) return ((ShowParserVisitor<? extends T>)visitor).visitFigurelist(this);
@@ -224,7 +237,6 @@ public class ShowParser extends Parser {
 		return _localctx;
 	}
 
-	@SuppressWarnings("CheckReturnValue")
 	public static class FigureitemContext extends ParserRuleContext {
 		public TerminalNode FIGURECODE() { return getToken(ShowParser.FIGURECODE, 0); }
 		public TerminalNode ARROW() { return getToken(ShowParser.ARROW, 0); }
@@ -234,6 +246,14 @@ public class ShowParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_figureitem; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ShowParserListener ) ((ShowParserListener)listener).enterFigureitem(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ShowParserListener ) ((ShowParserListener)listener).exitFigureitem(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ShowParserVisitor ) return ((ShowParserVisitor<? extends T>)visitor).visitFigureitem(this);
@@ -269,27 +289,15 @@ public class ShowParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u000f!\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
-		"\u0002\u0007\u0002\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001"+
-		"\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0005\u0001\u0014\b\u0001\n\u0001\f\u0001"+
-		"\u0017\t\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0000\u0000\u0003\u0000"+
-		"\u0002\u0004\u0000\u0000\u001e\u0000\u0006\u0001\u0000\u0000\u0000\u0002"+
-		"\r\u0001\u0000\u0000\u0000\u0004\u001b\u0001\u0000\u0000\u0000\u0006\u0007"+
-		"\u0005\u0001\u0000\u0000\u0007\b\u0005\u0003\u0000\u0000\b\t\u0005\u0007"+
-		"\u0000\u0000\t\n\u0005\u000e\u0000\u0000\n\u000b\u0003\u0002\u0001\u0000"+
-		"\u000b\f\u0005\u0000\u0000\u0001\f\u0001\u0001\u0000\u0000\u0000\r\u000e"+
-		"\u0005\u0002\u0000\u0000\u000e\u000f\u0005\b\u0000\u0000\u000f\u0010\u0005"+
-		"\u000e\u0000\u0000\u0010\u0015\u0003\u0004\u0002\u0000\u0011\u0012\u0005"+
-		"\u000e\u0000\u0000\u0012\u0014\u0003\u0004\u0002\u0000\u0013\u0011\u0001"+
-		"\u0000\u0000\u0000\u0014\u0017\u0001\u0000\u0000\u0000\u0015\u0013\u0001"+
-		"\u0000\u0000\u0000\u0015\u0016\u0001\u0000\u0000\u0000\u0016\u0018\u0001"+
-		"\u0000\u0000\u0000\u0017\u0015\u0001\u0000\u0000\u0000\u0018\u0019\u0005"+
-		"\u000e\u0000\u0000\u0019\u001a\u0005\t\u0000\u0000\u001a\u0003\u0001\u0000"+
-		"\u0000\u0000\u001b\u001c\u0005\u0004\u0000\u0000\u001c\u001d\u0005\u000b"+
-		"\u0000\u0000\u001d\u001e\u0005\f\u0000\u0000\u001e\u001f\u0005\u0007\u0000"+
-		"\u0000\u001f\u0005\u0001\u0000\u0000\u0000\u0001\u0015";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\21#\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\7\3\26"+
+		"\n\3\f\3\16\3\31\13\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\2\2\5\2\4\6"+
+		"\2\2\2 \2\b\3\2\2\2\4\17\3\2\2\2\6\35\3\2\2\2\b\t\7\3\2\2\t\n\7\5\2\2"+
+		"\n\13\7\t\2\2\13\f\7\20\2\2\f\r\5\4\3\2\r\16\7\2\2\3\16\3\3\2\2\2\17\20"+
+		"\7\4\2\2\20\21\7\n\2\2\21\22\7\20\2\2\22\27\5\6\4\2\23\24\7\20\2\2\24"+
+		"\26\5\6\4\2\25\23\3\2\2\2\26\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30"+
+		"\32\3\2\2\2\31\27\3\2\2\2\32\33\7\20\2\2\33\34\7\13\2\2\34\5\3\2\2\2\35"+
+		"\36\7\6\2\2\36\37\7\r\2\2\37 \7\16\2\2 !\7\t\2\2!\7\3\2\2\2\3\27";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
