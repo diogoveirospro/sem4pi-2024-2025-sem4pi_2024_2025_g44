@@ -4,7 +4,7 @@ This readme contains all the process and information related to the development 
 
 ## Diagram with the components and processes for the solution.
 
-![SCOMP Diagram](../SCOMP/images/Solution.svg)
+![SCOMP Diagram](../images/Solution.svg)
 
 ## Drone Script
 

@@ -1,10 +1,16 @@
 @startuml
 
 actor User
-participant "Parent Process" as Parent
-participant "Child Drone[N]" as Drone
-database "Input File" as InputFile
-database "Config File" as Config
+participant Parent
+participant Drone
+participant CollisionThread
+participant ReportThread
+database InputFile
+database Config
+database ShmDrone
+database ShmParent
+database SemParent2Drone
+database SemDrone2Parent
 
 activate User
 == Initialization ==
@@ -17,12 +23,26 @@ activate Config
 
 Config --> Parent : Config data
 deactivate Config
-Parent -> Parent : Setup signals, allocs
+Parent -> Parent : Setup signals, allocs, semaphores and shared memory
+
+Parent -> ShmParent : Create shared memory for Parent
+activate ShmParent
+
+Parent -> ShmDrone : Create shared memory for Drone
+activate ShmDrone
+
+Parent -> SemParent2Drone : Create semaphore for Parent to Drone communication
+activate SemParent2Drone
+
+Parent -> SemDrone2Parent : Create semaphore for Drone to Parent communication
+activate SemDrone2Parent
+
+
 
 == Drone Creation ==
 
 loop For each drone
-    Parent -> Parent : fork() and pipes
+    Parent -> Parent : fork()
     Parent -> Drone : Creates child process
     activate Drone
 
@@ -32,54 +52,64 @@ loop For each drone
 
 end
 
+== Threads ==
+
+Parent -> CollisionThread : Create thread for collision
+activate CollisionThread
+
+Parent -> ReportThread : Create thread for report generation
+activate ReportThread
+
+CollisionThread -> CollisionThread : Run function thread_check_collisions
+ReportThread -> ReportThread : Run function thread_do_report
+
 == Simulation Loop ==
-    group Send timestep
-        Drone -> Drone : wait for timestep
-        Parent -> Drone : write(timestep)
-    end
 loop while drones active
 
-    group Drone responds
+    group Drone answer
         Drone -> InputFile : get position or vector
         activate InputFile
-        Drone -> Drone : calculate new position
-        Drone -> Parent : Message (position)
+        Drone -> Drone : calculate position
+        Drone -> ShmDrone : Write position to shared memory
+        Drone -> SemDrone2Parent : Signal semaphore to Parent
     end
 
-    group Position validation
-        Parent -> Parent : validate bounds
-        Parent -> Parent : update history/position
+    group Parent read position
+        Parent -> SemDrone2Parent : waits for semaphore
+        Parent -> ShmDrone : Read position from shared memory
+        Parent -> Parent : validate position and update is history
     end
 
     group Check Collisions
-        Parent -> Parent : check_collisions()
+        CollisionThread -> CollisionThread : check_collisions()
+        CollisionThread -> ShmParent : Read positions from shared memory
         alt Collision Detected
-            Parent -> Drone : SIGUSR1
+            CollisionThread -> Drone : SIGUSR1
+            CollisionThread -> CollisionThread : update collision log
         end
     end
 
     alt Too Many Collisions
-        Parent -> Drone : SIGKILL
+        Parent -> Drone : SIGUSR2
         Parent -> Parent : waitpid
         Parent -> Parent : generate report
         Parent -> Parent : terminate()
     else
-        Parent -> Drone : Continue flag
+        Parent -> SemParent2Drone : Signals semaphore for the drone to continue
     end
 
 end
 InputFile -> Drone : End of the file
 deactivate InputFile
-Drone -> Parent : Send message saying done
+Drone -> ShmDrone : Mark end of file
+Drone -> SemParent2Drone :  Signal semaphore to Parent
 deactivate Drone
 
 == Wrap Up ==
 
-
-
-Parent -> Parent : do_report()
+ReportThread -> ReportThread : do_report()
+ReportThread -> ShmParent : Read all the data from shared memory
+ReportThread -> User : Generate report and send to User
 Parent -> Parent : terminate()
-Parent -> User : Report
-deactivate Parent
 deactivate User
 @enduml
