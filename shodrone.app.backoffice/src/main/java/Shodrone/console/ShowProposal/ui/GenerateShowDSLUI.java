@@ -1,6 +1,5 @@
 package Shodrone.console.ShowProposal.ui;
 
-import Shodrone.console.ShowProposal.printer.AnotherShowProposalPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.ShowProposal.application.GenerateShowDSLController;
@@ -80,7 +79,7 @@ public class GenerateShowDSLUI extends AbstractFancyUI {
         List<ShowProposal> proposalList = new ArrayList<>();
         proposals.forEach(proposalList::add);
 
-        AnotherShowProposalPrinter proposalPrinter = new AnotherShowProposalPrinter();
+        ShowProposalPrinter proposalPrinter = new ShowProposalPrinter();
 
         ListWidget<ShowProposal> proposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Show Proposal:\n" +
                 UtilsUI.RESET, proposalList, proposalPrinter);

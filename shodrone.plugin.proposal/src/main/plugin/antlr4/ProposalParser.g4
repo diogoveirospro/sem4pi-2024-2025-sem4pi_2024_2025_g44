@@ -1,5 +1,9 @@
 parser grammar ProposalParser;
 
+@header {
+package gen;
+}
+
 options { tokenVocab=ProposalLexer; }
 
 start

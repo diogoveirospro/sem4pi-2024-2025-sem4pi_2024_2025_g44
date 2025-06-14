@@ -1,4 +1,4 @@
-# Makefile for generating ANTLR4 code in Java for the Figure grammar
+# Makefile for generating ANTLR4 code in Java for the Proposal grammar
 
 # Base name of grammars
 GRAMMAR_BASE = Proposal
@@ -8,14 +8,11 @@ PACKAGE = gen
 # Output directory for the generated Java files
 OUT_DIR = ../../java/gen
 
-# Path to ANTLR4 jar
-ANTLR4 = java -jar /usr/local/lib/antlr-4.13.0-complete.jar
-
 clean:
 	@rm -f $(OUT_DIR)/$(GRAMMAR_BASE)*.java
 	@rm -f $(OUT_DIR)/$(GRAMMAR_BASE)*.tokens
 	@rm -f $(OUT_DIR)/$(GRAMMAR_BASE)*.interp
 
-generate: clean
-	@$(ANTLR4) -Dlanguage=Java -visitor -no-listener -o $(OUT_DIR) $(GRAMMAR_BASE)Lexer.g4 $(GRAMMAR_BASE)Parser.g4
-	@find $(OUT_DIR) -name "*.java" -exec sed -i '1s|^|package '$(PACKAGE)';\n|' {} +
+generate:
+	@antlr4 -Dlanguage=Java -visitor -no-listener -o $(OUT_DIR) $(GRAMMAR_BASE)Lexer.g4 $(GRAMMAR_BASE)Parser.g4
+	@sed -i '1s|^|package '$(PACKAGE)';\n|' $(OUT_DIR)/$(GRAMMAR_BASE)Lexer.java

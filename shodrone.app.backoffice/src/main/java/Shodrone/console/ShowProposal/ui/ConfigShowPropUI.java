@@ -27,13 +27,11 @@ public class ConfigShowPropUI extends AbstractFancyUI {
 
             ShowConfigurationBuilder configBuilder = new ShowConfigurationBuilder();
             boolean configuring = true;
-            Scanner scanner = new Scanner(System.in);
 
             int remainingToConfigure = showProposal.quantityOfDrones().getQuantityOfDrones();
             Map<Model, Integer> verification = new LinkedHashMap<>();
 
             while (configuring && remainingToConfigure > 0) {
-                System.out.println(UtilsUI.CYAN + "\nRemaining drones to configure: " + remainingToConfigure + UtilsUI.RESET);
 
                 Model model = selectModel();
                 if (model == null) continue;
@@ -44,32 +42,32 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 drones.forEach(droneList::add);
 
                 if (droneList.isEmpty()) {
-                    System.out.println(UtilsUI.RED + "No drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + "\nNo drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
                     continue;
                 }
 
                 int availableDrones = droneList.size() - alreadySelected;
                 if (availableDrones <= 0) {
-                    System.out.println(UtilsUI.RED + "No more drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + "\nNo more drones available for model '" + model.identity() + "'." + UtilsUI.RESET);
                     continue;
                 }
 
                 int maxAllowed = Math.min(availableDrones, remainingToConfigure);
-                System.out.print(UtilsUI.BOLD + "Enter number of drones for model '" + model.identity() + "' (Max allowed: " + maxAllowed + "): " + UtilsUI.RESET);
 
                 int quantity;
                 try {
-                    quantity = Integer.parseInt(scanner.nextLine());
+                    quantity = UtilsUI.readIntegerFromConsole(UtilsUI.BOLD + "\nEnter number of drones for " +
+                            "model '" + model.identity() + "' (Max allowed: " + maxAllowed + "): " + UtilsUI.RESET);
                     if (quantity <= 0) {
-                        System.out.println(UtilsUI.RED + "Invalid quantity!" + UtilsUI.RESET);
+                        System.out.println(UtilsUI.RED + "\nInvalid quantity!" + UtilsUI.RESET);
                         continue;
                     }
                     if (quantity > maxAllowed) {
-                        System.out.println(UtilsUI.RED + "You can assign at most " + maxAllowed + " drones." + UtilsUI.RESET);
+                        System.out.println(UtilsUI.RED + "\nYou can assign at most " + maxAllowed + " drones." + UtilsUI.RESET);
                         continue;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println(UtilsUI.RED + "Please enter a valid number." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + "\nPlease enter a valid number." + UtilsUI.RESET);
                     continue;
                 }
 
@@ -82,18 +80,16 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 remainingToConfigure -= quantity;
 
                 if (remainingToConfigure <= 0) {
-                    System.out.println(UtilsUI.GREEN + "Drone requirement fulfilled." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.GREEN + "\nDrone requirement fulfilled." + UtilsUI.RESET);
                     break;
                 }
 
-                System.out.print("Add another model? (y/n): ");
-                String more = scanner.nextLine().trim().toLowerCase();
-                if (!more.equals("y")) {
+                if (!UtilsUI.confirm("\nAdd another model? (Y/N):")){
                     configuring = false;
                 }
             }
 
-            System.out.println(UtilsUI.BOLD + "\nConfiguration Summary:" + UtilsUI.RESET);
+            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nConfiguration Summary:" + UtilsUI.RESET);
 
             Map<Model, List<Drone>> groupedByModel = new LinkedHashMap<>();
             for (ShowConfigurationEntry entry : configBuilder.showConfiguration()) {
@@ -107,17 +103,13 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 List<Drone> drones = entry.getValue();
                 System.out.printf(" - Model: %s, Quantity: %d%n", model.identity(), drones.size());
                 for (Drone drone : drones) {
-                    System.out.println("    • Drone SerialNumber: " + drone.identity());
+                    System.out.println("    -> Drone SerialNumber: " + drone.identity());
                 }
             }
 
-            System.out.print("\nConfirm configuration? (y/n): ");
-            String confirm = scanner.nextLine().trim().toLowerCase();
-            if (!confirm.equals("y")) {
-                System.out.println(UtilsUI.YELLOW + "Configuration cancelled." + UtilsUI.RESET);
-                return false;
+            if (!UtilsUI.confirm("\nConfirm configuration? (Y/N): ")){
+                throw new UserCancelledException("\nConfiguration cancelled by user.");
             }
-
 
             boolean success = controller.configureShow(showProposal, configBuilder);
             if (success) {
@@ -131,13 +123,18 @@ public class ConfigShowPropUI extends AbstractFancyUI {
             }
         } catch (UserCancelledException e) {
             System.out.println(UtilsUI.BOLD + UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nError: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
 
     @Override
     public String headline() {
-        return "Add a Drone to the Inventory";
+        return "Add Drones to Show Proposal";
     }
 
     private ShowProposal selectProposal() {
@@ -181,7 +178,7 @@ public class ConfigShowPropUI extends AbstractFancyUI {
         List<Model> modelList = new ArrayList<>();
         models.forEach(modelList::add);
 
-        ListWidget<Model> modelListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Model: \n" +
+        ListWidget<Model> modelListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Model: \n" +
                 UtilsUI.RESET, modelList, new ModelPrinter());
         modelListWidget.show();
 

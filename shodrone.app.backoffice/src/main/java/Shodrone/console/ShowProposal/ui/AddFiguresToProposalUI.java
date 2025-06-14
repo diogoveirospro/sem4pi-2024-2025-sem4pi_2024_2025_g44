@@ -1,6 +1,6 @@
 package Shodrone.console.ShowProposal.ui;
 
-import Shodrone.console.Figure.printer.FiguresPrinter;
+import Shodrone.console.ShowProposal.printer.FiguresPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Customer.domain.Entities.Customer;
@@ -40,7 +40,6 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
                 boolean configuring = true;
 
                 while (configuring) {
-                    System.out.println(UtilsUI.CYAN + "\nAdd a new figure to the proposal:" + UtilsUI.RESET);
 
                     Figure figure = selectFigure(customer);
                     if (figure == null) continue;
@@ -49,7 +48,7 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
                     selectedFigures.add(figure);
                     System.out.println(UtilsUI.GREEN + "Figure selected successfully!" + UtilsUI.RESET);
 
-                    configuring = UtilsUI.confirm("Add another figure? (y/n): ");
+                    configuring = UtilsUI.confirm("Add another figure? (Y/N): ");
                 }
 
                 if (selectedFigures.isEmpty()) {
@@ -62,7 +61,7 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
                     System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + fig.toString() + UtilsUI.RESET);
                 }
 
-                if (!UtilsUI.confirm("\nConfirm adding the selected figures to the proposal? (y/n): ")) {
+                if (!UtilsUI.confirm("\nConfirm adding the selected figures to the proposal? (Y/N): ")) {
                     System.out.println(UtilsUI.YELLOW + "Operation cancelled." + UtilsUI.RESET);
                     return false;
                 }
@@ -85,6 +84,7 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
             }
         } catch (UserCancelledException e) {
             System.out.println(UtilsUI.BOLD + UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
@@ -153,7 +153,7 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
         try {
             ShowConfiguration configuration = proposal.configuration();
             if (configuration == null || configuration.droneModels() == null || configuration.droneModels().isEmpty()) {
-                throw new UserCancelledException("No drones available in the configuration.");
+                throw new IllegalArgumentException("No drones available in the configuration.");
             }
 
             Set<String> droneTypes = figure.DSLDescription().requiredDroneTypes();
@@ -191,6 +191,9 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
             }
         } catch (NullPointerException e) {
             System.out.println(UtilsUI.RED + "Warning: An error occurred while accessing the show configuration. Returning to the main menu." + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + "Error: " + e.getMessage() + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
         }
     }

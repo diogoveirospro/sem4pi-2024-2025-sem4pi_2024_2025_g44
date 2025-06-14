@@ -1,4 +1,4 @@
-// Generated from DroneParser.g4 by ANTLR 4.7.2
+// Generated from DroneParser.g4 by ANTLR 4.13.2
 
 package gen;
 
@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
+@SuppressWarnings("CheckReturnValue")
 public class DroneParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements DroneParserVisitor<T> {
 	/**
 	 * {@inheritDoc}

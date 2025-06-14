@@ -48,44 +48,37 @@ public class ConfigShowPropController {
     }
     public boolean verifyConfiguration(ShowProposal showProposal, ShowConfiguration configuration) {
         if (configuration == null || configuration.showConfiguration().isEmpty()) {
-            System.out.println("Configuration is null or empty.");
-            return false;
+            throw new IllegalArgumentException("Invalid configuration: configuration cannot be null or empty.");
         }
 
         int totalAssigned = configuration.showConfiguration().size();
         int requiredQuantity = showProposal.quantityOfDrones().getQuantityOfDrones();
 
         if (totalAssigned != requiredQuantity) {
-            System.out.println("The total number of configured drones (" + totalAssigned + ") does not match the required number (" + requiredQuantity + ").");
-            return false;
+            throw new IllegalArgumentException("Invalid configuration: expected " + requiredQuantity + " drones, but " +
+                    "got " + totalAssigned + ".");
         }
 
         Set<Drone> assignedDroneSerialNumbers = new HashSet<>();
 
         for (ShowConfigurationEntry entry : configuration.showConfiguration()) {
             if (entry == null) {
-                System.out.println("Invalid configuration entry: entry is null.");
-                return false;
+                throw new IllegalArgumentException("Invalid configuration: entry cannot be null.");
             }
             if (entry.model() == null) {
-                System.out.println("Invalid configuration entry: model is null.");
-                return false;
+                throw new IllegalArgumentException("Invalid configuration: model cannot be null.");
             }
             if (entry.drone() == null) {
-                System.out.println("Invalid configuration entry: drone is null.");
-                return false;
+                throw new IllegalArgumentException("Invalid configuration: drone cannot be null.");
             }
 
-            // AC01: Verificar se o drone realmente existe
             if (entry.drone().droneStatus() != DroneStatus.ACTIVE) {
-                System.out.println("Invalid drone: " + entry.drone().identity() + " does not exist in the iventory.");
-                return false;
+                throw new IllegalArgumentException("Invalid configuration: drone " + entry.drone().identity() + " is " +
+                        "not active.");
             }
 
-            // AC03: Verificar se o mesmo drone não está sendo usado mais de uma vez
             if (!assignedDroneSerialNumbers.add(entry.drone())) {
-                System.out.println("Drone " + entry.drone().identity() + " is assigned more than once in the configuration.");
-                return false;
+                throw new IllegalArgumentException("Drone " + entry.drone().identity() + " is already assigned.");
             }
         }
         return true;
