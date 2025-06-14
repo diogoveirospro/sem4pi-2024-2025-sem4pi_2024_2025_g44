@@ -9,19 +9,26 @@ import java.nio.file.Paths;
 public class DroneRunnerController {
     public boolean sendDroneRunnerFile(String filePath, String fileContent) {
         try {
-            Path path = Paths.get(filePath);
+            filePath = filePath.replace("\\", "/");
+
+            Path baseDir = Paths.get("").toAbsolutePath();
+            Path targetPath = baseDir.resolve(filePath).normalize();
+
+            Files.createDirectories(targetPath.getParent());
 
             String formattedContent = formatFileContent(fileContent);
 
-            Files.write(path, formattedContent.getBytes(StandardCharsets.UTF_8));
+            Files.write(targetPath, formattedContent.getBytes(StandardCharsets.UTF_8));
 
-            System.out.println("File successfully written: " + path.toAbsolutePath());
+            System.out.println("File successfully written: " + targetPath.toAbsolutePath());
             return true;
+
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
             return false;
         }
     }
+
 
     private String formatFileContent(String fileContent) {
         StringBuilder formattedContent = new StringBuilder();

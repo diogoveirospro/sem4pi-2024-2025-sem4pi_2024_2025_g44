@@ -16,17 +16,18 @@ public class DroneRunnerController {
 
     public void sendFileToServer(String filePath) {
         try {
-            Path path = Paths.get(filePath);
-            if (!Files.exists(path)) {
-                System.out.println("File does not exist: " + filePath);
+            Path absolutePath = Paths.get(filePath).toAbsolutePath().normalize();
+
+            if (!Files.exists(absolutePath)) {
+                System.out.println("File does not exist: " + absolutePath);
                 return;
             }
 
             StringBuilder formattedContent = new StringBuilder();
-            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(absolutePath, StandardCharsets.UTF_8);
 
-            for (int i = 0; i < lines.size(); i++) {
-                String[] coordinates = lines.get(i).split(",");
+            for (String line : lines) {
+                String[] coordinates = line.split(",");
                 if (coordinates.length == 3) {
                     formattedContent.append("(")
                             .append(coordinates[0].trim()).append(",")
@@ -39,10 +40,21 @@ public class DroneRunnerController {
                 formattedContent.setLength(formattedContent.length() - 1);
             }
 
-            server.sendFileToServer(filePath ,formattedContent.toString());
+            String relativePath = filePath.replace("\\", "/");
+            int index = relativePath.indexOf("DroneFiles");
+            if (index != -1) {
+                relativePath = "/sem4pi-2024-2025-sem4pi_2025_g44/SCOMP/srcs/" + relativePath.substring(index);
+            } else {
+                System.out.println("ERROR: File is not in DroneFiles directory.");
+                return;
+            }
+
+            server.sendFileToServer(relativePath, formattedContent.toString());
 
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
+
+
 }
