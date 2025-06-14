@@ -126,4 +126,6 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         }
         configurationDrones.add(entry);
     }
+
+
 }

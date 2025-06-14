@@ -26,7 +26,7 @@ public class AccShowPropController {
         if (showProposal == null) {
             return false;
         }
-        if (showProposal.customerFeedback().feedbackStatus() == CustomerFeedbackStatus.PENDING) {
+        if (showProposal.customerFeedback() == null) {
             return false;
         }
         return true;

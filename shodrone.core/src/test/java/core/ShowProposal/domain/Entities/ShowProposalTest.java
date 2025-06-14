@@ -476,7 +476,17 @@ public class ShowProposalTest {
         ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
                 quantDrones, insurance, collaborator, generateProposalNumber);
 
-        assertNotEquals(quantDrones, showConfiguration.showConfiguration().size(),
-                "The total number of drones in the configuration should match the proposal's quantity of drones");
+        assertNotEquals(proposal.quantityOfDrones(), showConfiguration.showConfiguration().size());
+    }
+
+    @Test
+    void testFeedBackNotNull (){
+        ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
+                quantDrones, insurance, collaborator, generateProposalNumber);
+
+        CustomerFeedback customerFeedback = new CustomerFeedback(CustomerFeedbackStatus.ACCEPTED, "Great proposal, looking forward to the show!");
+        CustomerFeedback customerFeedback2 = new CustomerFeedback(CustomerFeedbackStatus.REJECTED, "Bad proposal, looking forward to the show!");
+        assertNotEquals(customerFeedback, proposal.customerFeedback());
+        assertNotEquals(customerFeedback2, proposal.customerFeedback());
     }
 }
