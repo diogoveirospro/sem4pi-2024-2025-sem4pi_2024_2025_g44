@@ -27,7 +27,7 @@ import eapli.framework.csv.CsvRecord;
  * @author Paulo Gandra Sousa 03/06/2020
  *
  */
-public abstract class BaseErrorRequest extends UserAppRequest {
+public abstract class BaseErrorRequest extends SimulatorAppRequest {
 
     private final String errorDescription;
 

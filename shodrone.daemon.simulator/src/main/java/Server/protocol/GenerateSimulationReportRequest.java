@@ -5,7 +5,7 @@ import shodrone.presentation.UtilsUI;
 
 import java.util.List;
 
-public class GenerateSimulationReportRequest extends UserAppRequest {
+public class GenerateSimulationReportRequest extends SimulatorAppRequest {
 
     private final String path;
 

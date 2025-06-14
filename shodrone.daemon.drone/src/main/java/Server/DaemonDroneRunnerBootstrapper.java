@@ -2,6 +2,7 @@ package Server;
 
 import Server.protocol.ThreadProcess.DatabaseProcessor;
 import Server.protocol.ThreadProcess.RequestMessage;
+import core.Daemon.droneRunner.Controller.DroneRunnerController;
 import core.Daemon.simulation.Controller.SimulatorServerController;
 import core.Persistence.Application;
 import core.Persistence.PersistenceContext;
@@ -57,7 +58,7 @@ public class DaemonDroneRunnerBootstrapper {
 
     private static DroneRunnerMessageParser buildServerDependencies() {
         return new DroneRunnerMessageParser(
-                new SimulatorServerController(),
+                new DroneRunnerController(),
                 AuthzRegistry.authenticationService()
         );
     }

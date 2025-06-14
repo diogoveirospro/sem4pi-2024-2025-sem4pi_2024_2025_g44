@@ -84,4 +84,24 @@ public class MarshallerUnmarshaller {
             throw new FailedRequestException("Failed to generate report: " + e.getMessage());
         }
     }
+
+    public void verifyIfDroneRunnerFileWasSent(List<String> response) {
+        if (response == null || response.isEmpty()) {
+            System.out.println("Response is empty or null.");
+            return;
+        }
+
+        String firstLine = response.get(0);
+        if ("SEND_DRONE_RUNNER_FILE_RESPONSE".equals(firstLine)) {
+            if (response.size() > 1 && "File successfully sent.".equals(response.get(1))) {
+                System.out.println("The file was successfully sent.");
+            } else if (response.size() > 1 && "Failed to send file.".equals(response.get(1))) {
+                System.out.println("The file failed to send.");
+            } else {
+                System.out.println("Unexpected response format.");
+            }
+        } else {
+            System.out.println("Invalid response type.");
+        }
+    }
 }

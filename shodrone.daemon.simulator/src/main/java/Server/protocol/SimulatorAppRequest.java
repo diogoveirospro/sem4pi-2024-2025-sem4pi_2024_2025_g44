@@ -27,12 +27,12 @@ import core.Daemon.simulation.Controller.SimulatorServerController;
  * @author Paulo Gandra Sousa 01/06/2020
  *
  */
-public abstract class UserAppRequest {
+public abstract class SimulatorAppRequest {
 
     protected final String request;
     protected final SimulatorServerController controller;
 
-    protected UserAppRequest(final SimulatorServerController controller, final String inputRequest) {
+    protected SimulatorAppRequest(final SimulatorServerController controller, final String inputRequest) {
         this.request = inputRequest;
         this.controller = controller;
     }

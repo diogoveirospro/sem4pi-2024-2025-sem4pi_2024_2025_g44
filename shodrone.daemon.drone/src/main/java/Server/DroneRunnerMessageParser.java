@@ -1,8 +1,7 @@
 package Server;
 
 import Server.protocol.*;
-import core.Daemon.simulation.Controller.SimulatorServerController;
-import eapli.framework.csv.util.CsvLineMarshaler;
+import core.Daemon.droneRunner.Controller.DroneRunnerController;
 import eapli.framework.infrastructure.authz.application.Authenticator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +19,7 @@ public class DroneRunnerMessageParser {
     /**
      * The controller that will handle the requests.
      */
-    private final SimulatorServerController controller;
+    private final DroneRunnerController controller;
 
     /**
      * The authentication service used to verify user credentials.
@@ -33,7 +32,7 @@ public class DroneRunnerMessageParser {
      * @param controller            The controller that will handle the requests.
      * @param authenticationService The authentication service used to verify user credentials.
      */
-    public DroneRunnerMessageParser(final SimulatorServerController controller,
+    public DroneRunnerMessageParser(final DroneRunnerController controller,
                                     Authenticator authenticationService) {
         this.controller = controller;
         this.authenticationService = authenticationService;
@@ -44,7 +43,7 @@ public class DroneRunnerMessageParser {
      *
      * @return The controller.
      */
-    private SimulatorServerController getController() {
+    private DroneRunnerController getController() {
         return controller;
     }
 
@@ -54,8 +53,8 @@ public class DroneRunnerMessageParser {
      * @param inputLine
      * @return
      */
-    public UserAppRequest parse(final String inputLine) {
-        UserAppRequest request = new UnknownRequest(inputLine);
+    public DroneRunnerAppRequest parse(final String inputLine) {
+        DroneRunnerAppRequest request = new UnknownRequest(inputLine);
 
         try {
             int firstSpaceIndex = inputLine.indexOf(' ');
@@ -63,6 +62,9 @@ public class DroneRunnerMessageParser {
 
             String[] tokens = inputLine.split(" ");
 
+            if ("SEND_DRONE_RUNNER_FILE".equals(command)) {
+                request = parseSendDroneRunnerFileRequest(inputLine,tokens);
+            }
 
         } catch (final Exception e) {
             LOGGER.info("Unable to parse request: {}", inputLine);
@@ -70,6 +72,22 @@ public class DroneRunnerMessageParser {
         }
 
         return request;
+    }
+
+    private DroneRunnerAppRequest parseSendDroneRunnerFileRequest(String inputLine, String[] tokens) {
+        if (tokens.length <= 2) {
+            return new BadRequest(tokens[0], "Wrong number of parameters");
+        } else {
+            String filePath = tokens[1];
+            StringBuilder droneInfo = new StringBuilder();
+            for (int i = 2; i < tokens.length; i++) {
+                droneInfo.append(tokens[i]).append(" ");
+            }
+            if (droneInfo.length() > 0) {
+                droneInfo.setLength(droneInfo.length() - 1);
+            }
+            return new SendDroneRunnerFileRequest(getController(), inputLine,filePath, droneInfo.toString());
+        }
     }
 
 

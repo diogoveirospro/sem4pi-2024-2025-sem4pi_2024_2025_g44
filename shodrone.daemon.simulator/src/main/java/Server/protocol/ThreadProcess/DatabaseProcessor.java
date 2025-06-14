@@ -1,7 +1,7 @@
 package Server.protocol.ThreadProcess;
 
 import Server.SimulatorMessageParser;
-import Server.protocol.UserAppRequest;
+import Server.protocol.SimulatorAppRequest;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -21,7 +21,7 @@ public class DatabaseProcessor extends Thread {
                 System.out.println("Waiting for request...");
                 RequestMessage request = requestQueue.take(); // waits for request
                 System.out.println("Processing request: " + request.rawInput);
-                UserAppRequest parsed = parser.parse(request.rawInput);
+                SimulatorAppRequest parsed = parser.parse(request.rawInput);
                 System.out.println("Parsed request: " + parsed);
                 String response = parsed.execute();
                 System.out.println("Response generated: " + response);

@@ -216,7 +216,7 @@ public class DroneRunnerUI extends AbstractFancyUI {
 
             if (!previousContent.equals(updatedContent)) {
                 System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nFile has been modified. Sending to server...\n" + UtilsUI.RESET);
-                sendFileToServer(filePath);
+                controller.sendFileToServer(filePath);
             } else {
                 System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nNo changes detected in the file.\n" + UtilsUI.RESET);
             }
@@ -225,9 +225,6 @@ public class DroneRunnerUI extends AbstractFancyUI {
         }
     }
 
-    private void sendFileToServer(String filePath) {
-        System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nSending file to server: " + filePath + UtilsUI.RESET);
-        // Implementação para enviar o arquivo ao servidor
-    }
+
 
 }
