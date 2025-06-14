@@ -1,9 +1,8 @@
 package Server.protocol;
 
-import core.Daemon.customerApp.Controller.UserAppServerController;
 import core.Daemon.simulation.Controller.SimulatorServerController;
 
-public class EditConfigRequest extends UserAppRequest {
+public class EditConfigRequest extends SimulatorAppRequest {
     private final String configFileName;
     private final String inputDirectory;
     private final int maxCollisions;

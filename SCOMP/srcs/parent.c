@@ -34,6 +34,15 @@ int shm_fd = 0;
 sem_t **semaphores_drones = NULL;
 sem_t **semaphores_parent = NULL;
 
+// thread for generating report
+pthread_t t_report;
+// thread for checking collisions
+pthread_t t_collisions;
+
+pthread_mutex_t mutex_simulation = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond_simulation_end = PTHREAD_COND_INITIALIZER;
+int simulation_finished = 0;
+
 void end()
 {
   raise(SIGUSR2);
@@ -234,13 +243,8 @@ int check_collisions(int iter)
 // updates position in all needed places
 void update_position(int i, int iter, SharedDroneState *drone)
 {
-  if (shm_drones->drones[i].active == 0) {
-    s.finished[i] = 1;
-    s.active_drones--;
-  } else {
-    add_position_timestamp(&shm_parent->history[i], drone->pos, iter * c.timestep);
-    move_drone(space, shm_drones->drones, i, drone->pos, c.max_X, c.max_Y, c.max_Z);
-  }
+  add_position_timestamp(&shm_parent->history[i], drone->pos, iter * c.timestep);
+  move_drone(space, shm_drones->drones, i, drone->pos, c.max_X, c.max_Y, c.max_Z);
 }
 
 // reads all childs messages
@@ -251,8 +255,6 @@ void update_position(int i, int iter, SharedDroneState *drone)
 // return -1 in case no more drones
 int manage_drones(int iter)
 {
-  int msg_received_cnt = 0;
-
   for (int i = 0; i < c.num_drones; i++) {
     if (s.finished[i])
       continue;
@@ -260,15 +262,21 @@ int manage_drones(int iter)
     wait_semaphore(semaphores_drones[i]);  // sem_drone_%d
 
     SharedDroneState *drone = &shm_drones->drones[i];
-    update_position(i, iter, drone);
 
-    msg_received_cnt++;
+    if (drone->active == 0) {
+      s.finished[i] = 1;
+      s.active_drones--;
+      fprintf(stderr, "drone %d terminou\n", i + 1);
+    } else {
+      update_position(i, iter, drone);
+    }
   }
 
   if (s.active_drones == 0)
     return -1;
   return 0;
 }
+
 
 // checks for collision limit
 int process_position(int iter)
@@ -295,6 +303,32 @@ void sync_drones()
       send_green_flag(i);
     }
   }
+}
+
+// Thread for checking collisions
+void *thread_check_collisions(void *arg) {
+  int iter = 0;
+  while (!simulation_finished) {
+    check_collisions(iter);
+    iter++;
+  }
+  return NULL;
+}
+
+// Thread for generating the report at the end
+void *thread_do_report(void *arg) {
+  do_report();
+}
+
+void set_up_threads() {
+
+  simulation_finished = 0;
+
+  // Start collision checking thread
+  pthread_create(&t_collisions, NULL, thread_check_collisions, NULL);
+
+  // Start report thread (will only generate report at the end)
+  pthread_create(&t_report, NULL, thread_do_report, NULL);
 }
 
 
@@ -324,7 +358,14 @@ void start_loop()
     sync_drones();
 
     n_iter++;
+    fprintf(stderr, "Active drones: %d\n", s.active_drones);
   }
+
+  pthread_mutex_lock(&mutex_simulation);
+  simulation_finished = 1;
+  fprintf(stderr, "Main: vou sinalizar o fim da simulação\n");
+  pthread_cond_signal(&cond_simulation_end);
+  pthread_mutex_unlock(&mutex_simulation);
 }
 
 // generates report file
@@ -355,6 +396,17 @@ void do_report()
 
   fprintf(f, "Simulation Report - Shodrone\n\n");
   fprintf(f, "Total drones: %d\n\n", c.num_drones);
+
+
+  pthread_mutex_lock(&mutex_simulation);
+  fprintf(stderr, "Thread do report: antes do while\n");
+  while (!simulation_finished) {
+    fprintf(stderr, "Thread do report: estou à espera\n");
+    pthread_cond_wait(&cond_simulation_end, &mutex_simulation);
+  }
+  fprintf(stderr, "Thread do report: saí do wait\n");
+  pthread_mutex_unlock(&mutex_simulation);
+
 
   // Status of drones
   fprintf(f, "\nDrone Execution Summary:\n\n");
@@ -407,6 +459,11 @@ void do_report()
 
 void terminate()
 {
+
+  // Wait for both threads to finish
+  pthread_join(t_collisions, NULL);
+  pthread_join(t_report, NULL);
+
   // Free allocated memory
   int_free_matrix(collision_state, c.num_drones);
   free_space(space, c.max_X, c.max_Y);
@@ -609,11 +666,11 @@ int main(int argc, char **argv) {
 
   set_up_childs();
 
-  //set_up_threads(); // Needs to be implemented
+  set_up_threads();
 
   start_loop();
 
-  do_report();
+  //do_report();
 
   terminate();
 }

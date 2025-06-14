@@ -2,108 +2,84 @@
 
 ## 1. Context
 
-This user story is part of Sprint 3 and introduces the functionality that allows a **Customer** to accept or reject a 
-show proposal and optionally provide feedback on it.
+This user story is part of Sprint 3 and introduces the functionality that allows a **CustomerRepresentative** to get the file of a chosen show proposal to analyse.
 
 ### 1.1 List of issues
 
-Analysis: 🧪 Testing
+Analysis: Done
 
-Design: 🧪 Testing
+Design: Done
 
-Implementation: 🧪 Testing
+Implementation: Done
 
-Testing: ⚪ Not Applicable
- 
+Testing: Done
+
+--- 
 
 ## 2. Requirements
 
-**As a Customer,**  
+**As a Customer RepresentaƟve,**  
 <br>
-**I want** to accept or reject a proposal,  
+**I want**  to have access to a show proposal of mine in the App. 
 <br>
-**So that** I can express whether I agree with the show plan and optionally share my opinion.
+**So that** I received a link/code to download the file.
 
 ### Acceptance Criteria:
 
-* **US371.1** The customer must be able to accept or reject a proposal.
-* **US371.2** The customer should be able to optionally provide textual feedback.
-* **US371.3** The system must update the proposal status and store any given feedback.
-* **US371.4** This action must be available only for proposals currently pending decision.
+* **AC01** The customer must receive a link/code.
+* **AC02** The customer can't use a code from a show proposal from another customer.
 
 ### Dependencies/References
 
 * **US370 – Analyse a proposal**: to view the proposal before taking action.
 
+---
+
 ## 3. Analysis
 
-This user story focuses on enabling the customer to accept or reject a previously delivered proposal, and optionally 
-provide feedback.
+This user story focuses on allowing a customer to receive a specific show proposal file, given a valid delivery code, and ensuring that the customer is authorized to download it.
+
 
 All required domain elements are already in place:
 
 - `ShowProposal` entity includes:
-    - `proposalStatus` (of type `ShowProposalStatus`)
-    - `customerFeedback` (of type `CustomerFeedback`)
+    - `document` (of type `ShowProposalDocument`) that includes
+      - `file` (binary content encoded)
+      
+- `ProposalDeliveryInfo` entity includes:
+    - `deliveryCode` (of type `ProposalDeliveryInfoCode`)
+    - `proposal` (of type `ShowProposal`)
+
 - The proposal is linked to the customer via the `ProposalDeliveryInfo` aggregate.
 
 The system must ensure that:
-- Only proposals with status `WAITING FOR RESPONSE` can be accepted or rejected.
-- The customer's response is persisted in the `ShowProposal` instance.
-- Optional feedback is stored in the associated `CustomerFeedback` value object.
+- Only authorized customer representatives can download proposals linked to their customer.
+- The file content is correctly decoded and saved to a local file.
 
 There is **no need to modify the domain model**, only to apply its existing operations correctly.
 
 ### Responsibilities per component
 
-- **Customer App**: UI element to choose between accept/reject and optionally submit feedback.
-- **Customer App Protocol Proxy**: constructs and sends an `AcceptRejectProposalRequest` over the socket.
+- **Customer App**: UI element to send the delivery code and receive the file.
+- **Customer App Protocol Proxy**: constructs and sends several `Request` over the socket.
 - **Customer App Server**:
     - Parses and validates the request.
-    - Verifies the current proposal status.
-    - Applies the decision (updates status and feedback).
-    - Returns success/failure response.
+    - Returns the showProposal from the response.
 
 ![Domain Model - Show Proposal Aggregate](../../global_artifacts/analysis/images/domain_model_show_proposal.svg)
 
+---
+
 ## 4. Design
 
-This section presents the design adopted for implementing **US371 – Accept/Reject Proposal**.
+This section presents the design adopted for implementing **US370 – Analyze a Proposal**.
 
 ### 4.1 Realisation
 
 The following sequence diagram illustrates the interaction flow between the user interface, controller, network proxy, 
-socket layer, server components, and repositories:
+socket layer, server components, repositories and DTOS:
 
-![Sequence Diagram for US371](images/sequence_diagram_us370.svg)
-
-The process begins in the `SendFeedbackProposalUI`, where the **Customer** requests to view all show proposals that are 
-pending a decision. The UI triggers the `SendFeedbackProposalController`, which initiates a multistep lookup process 
-to determine the authenticated user and fetch the proposals addressed to their customer account.
-
-First, the controller retrieves the authenticated `ShodroneUser` by delegating to the `CustomerAppProtocolProxy`. The 
-proxy constructs a `GetShodroneUserRequest` and sends it via TCP using the `ClientSocket`. The `CustomerAppServer` 
-receives and parses the request through the `CustomerAppMessageParser`, which delegates the operation to the 
-`UserAppServerController`. The user repository (`ShodroneUserRepository`) is queried, and the result is returned to the 
-client, where the `MarshallerUnmarshaller` deserializes the response into a `ShodroneUserDTO`.
-
-With the user data retrieved, the controller continues by requesting the `Customer` information and then the list of 
-show proposals pending feedback. The proxy builds and sends respective requests (`GetCustomerOfRepresentativeRequest`, 
-`GetProposalsOfCustomerRequest`) through the socket. On the server side, the `CustomerRepository` and the 
-`DeliveryReportingRepository` are queried to retrieve the relevant data. The resulting proposals are returned and 
-presented to the customer.
-
-After reviewing the available proposals, the customer selects one and is prompted to accept or reject it, optionally 
-providing textual feedback.
-
-When the feedback is submitted, the controller calls `sendFeedbackProposal(...)` on the proxy. A 
-`SendFeedbackProposalRequest` is constructed and sent via the `ClientSocket`. On the server side, the 
-`handleProposalFeedback(...)` method in the `UserAppServerController` processes the request. This method accesses the 
-`ShowProposalRepository`, where the matching proposal is located and its state updated according to the customer's 
-decision and feedback. The proposal is then persisted.
-
-A `SendFeedbackProposalResponse` is created and returned to the client, where it is parsed and interpreted. The 
-controller then informs the UI of the outcome, and a confirmation message is shown to the customer.
+![Sequence Diagram for US370](images/sequence_diagram_us370.svg)
 
 This design ensures a clear separation of concerns:
 
@@ -113,73 +89,124 @@ This design ensures a clear separation of concerns:
 - The **socket layer** abstracts low-level network transport.
 - The **message parser** interprets incoming requests and responses.
 - The **server controller** executes the domain logic and updates aggregate state.
-- The **repositories** provide persistent access to both customer-related information (`DeliveryReportingRepository`, 
-`CustomerRepository`) and proposal lifecycle (`ShowProposalRepository`).
+- The **repositories** provide persistent access to both customer-related information (`DeliveryReportingRepository`, `CustomerRepository`) and proposal lifecycle (`ShowProposalRepository`).
+- The **DTOS** encapsulate the data exchanged between client and server, ensuring type safety and clarity in communication.
 
-## 5. Implementation
+---
+## 6. Implementation
 
-The implementation of **US371** focused on enabling customers to submit feedback by accepting or rejecting a delivered 
-show proposal, optionally providing a comment.
+---
 
-A new request/response pair was created: `SendFeedbackProposalRequest` and `SendFeedbackProposalResponse`, responsible 
-for encapsulating the customer's decision and the response from the server.
+### 👤 Actor
 
-The interaction starts in the `SendFeedbackProposalUI`, where the customer selects a proposal and submits a decision 
-along with optional feedback. The `SendFeedbackProposalController` coordinates this action and delegates to the 
-`CustomerAppProtocolProxy`.
+#### Customer Representative
+- **Role:** The end-user who initiates the configuration of drone models for a show proposal.
+- **Interaction:** Requests to analyze a show proposal by providing a delivery code, views the proposal information, and downloads the proposal file.
 
-The proxy builds the request and sends it through a TCP socket using the `ClientSocket`. On the server side, the 
-request is parsed by the `CustomerAppMessageParser`, which delegates its handling to the `UserAppServerController`.
+---
 
-The method `handleProposalFeedback(...)` in the server controller is responsible for processing the request. It accesses
-the `ShowProposalRepository`, locates the relevant proposal using its number, and applies the decision (either 
-`accept(...)` or `reject(...)`) with the feedback provided.
+### 💻 UI Layer
 
-The proposal is then persisted, and a `SendFeedbackProposalResponse` is returned to the client. The client-side 
-`MarshallerUnmarshaller` handles response parsing and communicates the result back to the controller and UI.
+#### AnalyseProposalUI
+   - The UI starts by asking the user to input the delivery code for the proposal.
+   - Once the code is provided, it invokes `AnalyseProposalController.findProposalByDeliveryCode(code)`.
+   - After receiving the proposal data, it shows the proposal details to the user.
+   - If the user confirms, it requests the decoding and creation of the physical file from the controller and notifies the user upon successful file creation.
+---
 
-The implementation respects the DDD principles, ensuring the domain model (`ShowProposal`) remains in control of its 
-own state and transitions.
+### 🎮 Application Layer
 
-Relevant commit messages:
+#### :AnalyseProposalController
+- Receives the delivery code from the UI.
+- Retrieves the authenticated user via `AuthorizationService`.
+- Contacts the remote server via `CustomerAppProtocolProxy` to:
+- Obtain the **ShodroneUserDTO** of the authenticated user.
+- Retrieve the corresponding **CustomerDTO** for that user.
+- Request the **ShowProposalDTO** using the delivery code.
+- It then validates whether the proposal belongs to the corresponding customer.
+- If validation is successful, it passes the proposal data back to the UI.
+- Responsible for decoding the Base64 encoded file (decodeFile) and creating the physical file (createFile).
 
-* [US371 - Accept/Reject Proposal – Feedback flow](https://github.com/Departamento-de-Engenharia-Informatica/sem4pi-2024-2025-sem4pi_2024_2025_g44/commit/placeholder-commit-hash)
+
+---
+
+### 🌐 Communication Layer
+
+#### CustomerAppProtocolProxy
+  - Acts as a proxy between the application and the remote server.
+  - Handles the creation of requests and communication over TCP sockets.
+  - Serializes and deserializes requests and responses using MarshallerUnmarshaller.
+  - Main Remote Calls:
+    - `getShodroneUser(currentUser.username)`:
+
+      - Uses **GetShodroneUserRequest** to retrieve user data.
+
+    - `getCustomerOfRepresentative(email)`:
+
+      - Uses **GetCustomerOfRepresentativeRequest** to retrieve customer data.
+
+    - `getProposalByCode(code)`:
+
+      - Uses **GetProposalByCodeRequest** to retrieve proposal data.
+
+---
+
+### 🌐  Server Side (CustomerAppServer)
+
+#### CustomerAppMessageParse
+- Parses incoming requests and dispatches them to the correct handler.
+- Request Handlers:
+  - **GetShodroneUserRequest**:
+    - Retrieves ShodroneUser data from ShodroneUserRepository.
+  - **GetCustomerRequest**:
+    - Retrieves Customer data from CustomerRepository.
+  - **GetPropByCodeRequest**:
+    - Retrieves the proposal data from DeliveryReportingRepository using the delivery code.
+
+#### UserAppServerController
+- The server-side controller layer that interacts with repositories.
+
+---
+
+### 🗄️  Persistence Layer
+#### Repositories
+- ShodroneUserRepository: Retrieves authenticated user data.
+- CustomerRepository: Retrieves customer data based on representative's email.
+- DeliveryReportingRepository: Retrieves proposal delivery data.
+
+---
+
+### 🧠 Domain Layer
+
+#### DTOs involved
+- `ShodroneUserDTO`: Holds data related to the authenticated user.
+
+- `CustomerDTO`: Holds data related to the customer.
+
+- `ShowProposalDTO` : Holds all information related to the show proposal.
 
 ---
 
 ## 6. Integration/Demonstration
 
-The functionality developed in **US371** was integrated into the customer-side application via the `SendFeedbackProposalUI`.
-
-When the customer opens the feedback screen, the application queries for all proposals delivered to their account and 
-presents them in a selectable list. Upon selecting one, the system prompts for a decision (accept/reject) and optional 
-feedback. Once submitted, the proposal's status is updated and persisted accordingly.
-
-This process closes the proposal loop, providing essential feedback to the CRM team and preparing the proposal for 
-archival or revision depending on the customer's response.
+The functionality developed in **US370** was integrated into the customer-side application via the `AnalyseProposalUI`.
 
 ### Demonstration Instructions
 
-To demonstrate the functionality, follow these steps:
-
-1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md)).
+1. **Launch the application**.
 2. **Log in as a Customer**.
-3. Navigate the **Send Feedback Proposal** option.
-4. Select one of the available proposals.
-5. Provide a decision (Accept or Reject) and optional feedback.
-6. Submit the form.
-7. A confirmation message will appear, indicating the operation was successful.
+3. Select **Analyse Proposal** option.
+4. Enter a valid delivery code.
+5. Shows the proposal from the delivery code and asks to confirm download.
+6. The file will be saved locally, and the file path will be shown.
 
 ---
 
 ## 7. Observations
 
-* The request/response logic is based on a TCP socket communication layer.
-* The feedback is processed in the server's domain model via `accept(feedback)` or `reject(feedback)` methods on 
-`ShowProposal`.
-* The list of proposals is obtained via `DeliveryReportingRepository`, ensuring read-only access to pre-filtered data.
-* The response parsing is handled in a centralized manner using the `MarshallerUnmarshaller`.
-* The integration follows the CQRS principle: querying through a reporting repository, and writing via the aggregate 
-repository.
-* This implementation contributes directly to the closing of the proposal lifecycle, supporting future reporting and 
-archival logic.
+- Full client-server interaction via TCP socket.
+- Proxy pattern on the client side to decouple the controller logic from low-level socket communication.
+- DTO pattern to transport data between layers and across network boundaries.
+- Repository pattern on server side for database operations.
+- Marshaller/Unmarshaller responsible for serializing/deserializing requests/responses.
+

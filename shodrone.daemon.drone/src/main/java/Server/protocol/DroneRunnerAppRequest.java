@@ -20,8 +20,7 @@
  */
 package Server.protocol;
 
-import Server.protocol.BaseErrorRequest;
-import core.Daemon.customerApp.Controller.UserAppServerController;
+import core.Daemon.droneRunner.Controller.DroneRunnerController;
 import core.Daemon.simulation.Controller.SimulatorServerController;
 
 /**
@@ -29,12 +28,12 @@ import core.Daemon.simulation.Controller.SimulatorServerController;
  * @author Paulo Gandra Sousa 01/06/2020
  *
  */
-public abstract class UserAppRequest {
+public abstract class DroneRunnerAppRequest {
 
     protected final String request;
-    protected final SimulatorServerController controller;
+    protected final DroneRunnerController controller;
 
-    protected UserAppRequest(final SimulatorServerController controller, final String inputRequest) {
+    protected DroneRunnerAppRequest(final DroneRunnerController controller, final String inputRequest) {
         this.request = inputRequest;
         this.controller = controller;
     }

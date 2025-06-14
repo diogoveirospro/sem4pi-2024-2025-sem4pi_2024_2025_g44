@@ -1,5 +1,6 @@
 package Shodrone.console.Menu;
 
+import Shodrone.console.Drone.Actions.DroneRunnerAction;
 import Shodrone.console.Simulator.Actions.TestingAction;
 import Shodrone.console.Simulator.ui.SimulateShowUI;
 import core.Persistence.Application;
@@ -46,7 +47,8 @@ public class MainMenu extends AbstractFancyUI {
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int TESTING_MENU = 2;
+    private static final int CONFIGURE_DRONE_RUNNER = 2;
+    private static final int TESTING_MENU = 3;
 
     private static final int SIMULATOR = 1;
 
@@ -97,6 +99,8 @@ public class MainMenu extends AbstractFancyUI {
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.DRONETECH, ShodroneRoles.POWER_USER)) {
+            final SubMenu droneRunnerMenu = buildDroneRunnerMenu();
+            mainMenu.addSubMenu(CONFIGURE_DRONE_RUNNER, droneRunnerMenu);
             final SubMenu simulatorMenu = buildSimulatorManu();
             mainMenu.addSubMenu( TESTING_MENU, simulatorMenu);
         }
@@ -108,6 +112,15 @@ public class MainMenu extends AbstractFancyUI {
         mainMenu.addItem(EXIT_OPTION, "Exit", new ExitWithMessageAction(""));
 
         return mainMenu;
+    }
+
+    private SubMenu buildDroneRunnerMenu() {
+
+        final SubMenu menu = new SubMenu("Drone Runner", SHOW_MENU_TITLE);
+
+        menu.addItem( SIMULATOR, "Configure Drone Runner", new DroneRunnerAction());
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+        return menu;
     }
 
 

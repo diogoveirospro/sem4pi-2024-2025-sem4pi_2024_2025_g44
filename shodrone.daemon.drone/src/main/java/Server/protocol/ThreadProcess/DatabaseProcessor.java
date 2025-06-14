@@ -1,15 +1,15 @@
 package Server.protocol.ThreadProcess;
 
-import Server.SimulatorMessageParser;
-import Server.protocol.SimulatorAppRequest;
+import Server.DroneRunnerMessageParser;
+import Server.protocol.DroneRunnerAppRequest;
 
 import java.util.concurrent.BlockingQueue;
 
 public class DatabaseProcessor extends Thread {
     private final BlockingQueue<RequestMessage> requestQueue;
-    private final SimulatorMessageParser parser;
+    private final DroneRunnerMessageParser parser;
 
-    public DatabaseProcessor(BlockingQueue<RequestMessage> requestQueue, SimulatorMessageParser parser) {
+    public DatabaseProcessor(BlockingQueue<RequestMessage> requestQueue, DroneRunnerMessageParser parser) {
         this.requestQueue = requestQueue;
         this.parser = parser;
     }
@@ -21,7 +21,7 @@ public class DatabaseProcessor extends Thread {
                 System.out.println("Waiting for request...");
                 RequestMessage request = requestQueue.take(); // waits for request
                 System.out.println("Processing request: " + request.rawInput);
-                SimulatorAppRequest parsed = parser.parse(request.rawInput);
+                DroneRunnerAppRequest parsed = parser.parse(request.rawInput);
                 System.out.println("Parsed request: " + parsed);
                 String response = parsed.execute();
                 System.out.println("Response generated: " + response);

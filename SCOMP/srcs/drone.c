@@ -76,7 +76,7 @@ void mark_finished_in_shm()
   post_semaphore(sem_d2p);
 
   // Still wait for parent's green flag so sync stays consistent
-  wait_semaphore(sem_p2d);
+  //wait_semaphore(sem_p2d);
 }
 
 

@@ -1,7 +1,6 @@
 package Server;
 
 import Server.protocol.*;
-import core.Daemon.customerApp.Controller.UserAppServerController;
 import core.Daemon.simulation.Controller.SimulatorServerController;
 import eapli.framework.csv.util.CsvLineMarshaler;
 import eapli.framework.infrastructure.authz.application.Authenticator;
@@ -55,8 +54,8 @@ public class SimulatorMessageParser {
      * @param inputLine
      * @return
      */
-    public UserAppRequest parse(final String inputLine) {
-        UserAppRequest request = new UnknownRequest(inputLine);
+    public SimulatorAppRequest parse(final String inputLine) {
+        SimulatorAppRequest request = new UnknownRequest(inputLine);
 
         try {
             int firstSpaceIndex = inputLine.indexOf(' ');
@@ -80,7 +79,7 @@ public class SimulatorMessageParser {
         return request;
     }
 
-    private UserAppRequest parseGenerateSimulationReport(String inputLine, String[] tokens) {
+    private SimulatorAppRequest parseGenerateSimulationReport(String inputLine, String[] tokens) {
         if (tokens.length != 2) {
             return new BadRequest(inputLine, "Wrong number of parameters");
         } else {
@@ -93,7 +92,7 @@ public class SimulatorMessageParser {
         }
     }
 
-    private UserAppRequest parseEditConfig(String inputLine, String[] tokens) {
+    private SimulatorAppRequest parseEditConfig(String inputLine, String[] tokens) {
         if (tokens.length != 10) {
             return new BadRequest(inputLine, "Wrong number of parameters");
         } else {
