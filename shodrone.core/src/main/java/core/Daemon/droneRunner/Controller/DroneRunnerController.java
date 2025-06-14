@@ -40,9 +40,9 @@ public class DroneRunnerController {
 
             if (coordinates.length == 3) {
                 if (i == 0) {
-                    formattedContent.append(String.join(", ", coordinates)).append("\n");
+                    formattedContent.append(String.join(",", coordinates)).append("\n");
                 } else {
-                    formattedContent.append(String.join(", ", coordinates)).append("\n");
+                    formattedContent.append(String.join(",", coordinates)).append("\n");
                 }
             }
         }

@@ -23,8 +23,9 @@ public class JpaShowRequestRepository extends JpaAutoTxRepository<ShowRequest, S
     @Override
     public Iterable<ShowRequest> findAllCreatedShowRequestsByCustomer(Customer customer) {
         final TypedQuery<ShowRequest> query = entityManager().createQuery(
-                "SELECT s FROM ShowRequest s WHERE s.customer = :customer", ShowRequest.class);
+                "SELECT s FROM ShowRequest s WHERE s.customer = :customer AND s.status = :status", ShowRequest.class);
         query.setParameter("customer", customer);
+        query.setParameter("status", ShowRequestStatus.CREATED);
         return query.getResultList();
     }
 
