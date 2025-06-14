@@ -2,6 +2,7 @@ package core.ShowProposal.domain.Entities;
 
 import core.Figure.domain.Entities.Figure;
 import core.ModelOfDrone.domain.Entities.Model;
+import core.ShowProposal.domain.ValueObjects.ShowConfigurationFigure;
 import core.ShowProposal.domain.ValueObjects.ShowDSLDescription;
 import eapli.framework.domain.model.DomainEntity;
 import jakarta.persistence.*;
@@ -113,16 +114,10 @@ public class ShowConfiguration implements Serializable, DomainEntity<Long> {
         if (!figures.isEmpty() && figures.get(figures.size() - 1).figure().equals(figure)) {
             throw new IllegalArgumentException("Cannot add the same figure consecutively.");
         }
+        if (!figure.isActive()){
+            throw new IllegalArgumentException("Cannot add an inactive figure.");
+        }
         figures.add(new ShowConfigurationFigure(figure));
-    }
-
-    public void removeFigure(ShowConfigurationFigure figure) {
-        if (figure == null) {
-            throw new IllegalArgumentException("Figure cannot be null.");
-        }
-        if (!this.figures.remove(figure)) {
-            throw new IllegalStateException("Figure not found in the configuration.");
-        }
     }
 
     public void addDrone(ShowConfigurationEntry entry) {
