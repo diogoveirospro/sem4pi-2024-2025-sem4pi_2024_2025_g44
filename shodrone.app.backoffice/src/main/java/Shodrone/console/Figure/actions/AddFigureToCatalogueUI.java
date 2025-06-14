@@ -1,5 +1,6 @@
 package Shodrone.console.Figure.actions;
 
+import Shodrone.console.Figure.printer.AnotherFiguresPrinter;
 import Shodrone.console.Figure.printer.CategoriesPrinter;
 import Shodrone.console.Figure.printer.CustomerPrinter;
 import Shodrone.console.Figure.printer.FileNamePrinter;
@@ -9,6 +10,7 @@ import core.Customer.domain.Entities.Customer;
 import core.Figure.application.AddFigureToCatalogueController;
 import core.Figure.application.Service.DSLValidate;
 import core.Figure.domain.Entities.Exclusivity;
+import core.Figure.domain.Entities.Figure;
 import core.Figure.domain.ValueObjects.*;
 import core.Persistence.PersistenceContext;
 import core.Shared.domain.ValueObjects.Description;
@@ -67,14 +69,6 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
         try {
             if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.SHOWDESIGNER)){
 
-                Code code = enterValidCode();
-                Version version = enterValidVersion();
-                Name name = enterValidName();
-                Description description = enterValidDescription();
-                DSLDescription dslDescription = enterValidDSLDescription();
-                Set<Keyword> keywords = enterValidKeywords();
-                Set<Category> categories = showCategoriesAndSelect();
-                Exclusivity exclusivity = enterValidExclusivity();
                 ShowDesigner showDesigner = null;
 
                 if (authz.session().isPresent()) {
@@ -82,10 +76,29 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
                     showDesigner = showDesignerRepository.findByEmail(email);
                 }
 
-                if (exclusivity != null) {
-                    success = addExclusiveFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+                if (UtilsUI.confirm(UtilsUI.BOLD + "Do You Want to Add a New Version of an Existing Figure? (Y/N):" + UtilsUI.RESET)){
+                    Figure figure = showFiguresAndSelect();
+
+                    Version version = enterValidVersion();
+                    DSLDescription dslDescription = enterValidDSLDescription();
+
+                    success = addNewVersionOfFigureToCatalogue(figure, version, dslDescription, showDesigner);
+
                 } else {
-                    success = addPublicFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner);
+                    Code code = enterValidCode();
+                    Version version = enterValidVersion();
+                    Name name = enterValidName();
+                    Description description = enterValidDescription();
+                    DSLDescription dslDescription = enterValidDSLDescription();
+                    Set<Keyword> keywords = enterValidKeywords();
+                    Set<Category> categories = showCategoriesAndSelect();
+                    Exclusivity exclusivity = enterValidExclusivity();
+
+                    if (exclusivity != null) {
+                        success = addExclusiveFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+                    } else {
+                        success = addPublicFigureToCatalogue(code, version, name, description, dslDescription, keywords, categories, showDesigner);
+                    }
                 }
 
                 if (success){
@@ -139,7 +152,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             Throwable cause = e.getCause();
             if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Unique index or primary key violation")) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD +
-                        "\nError: A picture with this code and version already exists!" + UtilsUI.RESET);
+                        "\nError: A figure with this code and version already exists!" + UtilsUI.RESET);
                 Thread.sleep(2000);
             } else {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD +
@@ -168,7 +181,7 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             Throwable cause = e.getCause();
             if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Unique index or primary key violation")) {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD +
-                        "\nError: A picture with this code and version already exists!" + UtilsUI.RESET);
+                        "\nError: A figure with this code and version already exists!" + UtilsUI.RESET);
                 Thread.sleep(2000);
             } else {
                 System.out.println(UtilsUI.RED + UtilsUI.BOLD +
@@ -178,6 +191,69 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
             new AddFigureToCatalogueUI().show();
         }
         return false;
+    }
+
+    private boolean addNewVersionOfFigureToCatalogue(Figure figure, Version version, DSLDescription dslDescription, ShowDesigner showDesigner)
+            throws InterruptedException {
+        try{
+            return controller.addNewVersionOfFigureToCatalogue(figure, version, dslDescription, showDesigner);
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "Error: " + e.getMessage() + UtilsUI.RESET);
+            new AddFigureToCatalogueUI().show();
+        } catch (PersistenceException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Unique index or primary key violation")) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                        "\nError: A figure with this code and version already exists!" + UtilsUI.RESET);
+                Thread.sleep(2000);
+            } else {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                        "\nError saving to the database!" + UtilsUI.RESET);
+                UtilsUI.goBackAndWait();
+                Thread.sleep(2000);
+            }
+            new AddFigureToCatalogueUI().show();
+        }
+        return false;
+    }
+
+    /**
+     * Show the figures and allow the user to select one.
+     * @return the selected figure.
+     */
+    private Figure showFiguresAndSelect() {
+        Iterable<Figure> figures = controller.listFigures();
+        if (figures == null || !figures.iterator().hasNext()) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo figures available." + UtilsUI.RESET);
+            return null;
+        }
+
+        List<Figure> figureList = new ArrayList<>();
+        figures.forEach(figureList::add);
+
+        AnotherFiguresPrinter figuresPrinter = new AnotherFiguresPrinter();
+
+        ListWidget<Figure> figureListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Figure:\n" +
+                UtilsUI.RESET, figureList, figuresPrinter);
+        figureListWidget.show();
+
+        int option;
+        do {
+            option = UtilsUI.selectsIndex(figureList);
+            if (option == -2) {
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+            }
+
+            if (option < 0 || option > figureList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+            } else {
+                Figure selected = figureList.get(option);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nSelected figure: " + selected.identity().code().toString()  + "\n"
+                        + UtilsUI.RESET);
+                return selected;
+            }
+
+        } while (true);
     }
 
     /**
