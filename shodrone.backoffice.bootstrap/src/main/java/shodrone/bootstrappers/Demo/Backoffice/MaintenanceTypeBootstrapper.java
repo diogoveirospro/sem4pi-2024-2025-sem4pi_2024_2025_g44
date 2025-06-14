@@ -33,7 +33,7 @@ public class MaintenanceTypeBootstrapper extends UsersBootstrapperBase implement
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully registered Maintenance Type {}" + UtilsUI.RESET,
                 maintenanceTypeName.toString());
         if (repo.findByName(maintenanceTypeName).isEmpty()) {
-            repo.save(new MaintenanceType(maintenanceTypeName));
+            repo.save(new MaintenanceType(maintenanceTypeName, true));
         }
     }
 }

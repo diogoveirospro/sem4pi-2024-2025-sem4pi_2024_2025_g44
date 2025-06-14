@@ -13,7 +13,7 @@ import jakarta.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.util.List;
 
-public class JpaMaintenanceRepository extends JpaAutoTxRepository<Maintenance, Long, MaintenanceID>
+public class JpaMaintenanceRepository extends JpaAutoTxRepository<Maintenance, Long, Long>
         implements MaintenanceRepository {
 
     public JpaMaintenanceRepository(String persistenceUnitName) {
@@ -29,6 +29,13 @@ public class JpaMaintenanceRepository extends JpaAutoTxRepository<Maintenance, L
         final TypedQuery<Maintenance> query = entityManager().createQuery(
                 "SELECT m FROM Maintenance m WHERE m.drone = :drone", Maintenance.class);
         query.setParameter("drone", drone);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Drone> findAllWithMaintenance() {
+        final var query = entityManager().createQuery(
+                "SELECT DISTINCT m.drone FROM Maintenance m", Drone.class);
         return query.getResultList();
     }
 

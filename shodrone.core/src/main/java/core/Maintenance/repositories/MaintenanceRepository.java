@@ -9,10 +9,12 @@ import eapli.framework.domain.repositories.DomainRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface MaintenanceRepository extends DomainRepository<MaintenanceID, Maintenance> {
+public interface MaintenanceRepository extends DomainRepository<Long, Maintenance> {
     List<Maintenance> findByDrone(Drone drone);
 
     List<Maintenance> findByDroneAndDateBetween(Drone drone, LocalDate startDate, LocalDate endDate);
+
+    Iterable<Drone> findAllWithMaintenance();
 
     List<Maintenance> findByType(MaintenanceType type);
 }

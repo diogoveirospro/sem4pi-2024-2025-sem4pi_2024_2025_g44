@@ -1,4 +1,4 @@
-package Shodrone.console.Maintenance;
+package Shodrone.console.Maintenance.ui;
 
 import Shodrone.console.Drone.printer.DronePrinter;
 import core.Drone.domain.Entities.Drone;

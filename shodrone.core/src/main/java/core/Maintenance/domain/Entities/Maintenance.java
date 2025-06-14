@@ -11,13 +11,14 @@ import java.time.LocalDate;
 
 
 @Entity
-public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
+public class Maintenance implements Serializable,AggregateRoot<Long> {
 
-    @EmbeddedId
-    @Column(name = "maintenance_id", nullable = false)
-    private MaintenanceID id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "drone_id", nullable = false)
     private Drone drone;
 
     @ManyToOne(optional = false)
@@ -31,7 +32,7 @@ public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
     private LocalDate date;
 
     @Override
-    public MaintenanceID identity() {
+    public Long identity() {
         return this.id;
     }
 
@@ -46,20 +47,24 @@ public class Maintenance implements Serializable,AggregateRoot<MaintenanceID> {
 
     }
 
-    public Maintenance(MaintenanceID id, Drone drone, MaintenanceType type, Description description, LocalDate date) {
+    public Maintenance(Drone drone, MaintenanceType type, Description description, LocalDate date) {
         if (drone == null || type == null || description == null || date == null)
             throw new IllegalArgumentException("All fields must be non-null.");
 
-        this.id = id;
+
         this.drone = drone;
         this.type = type;
         this.description = description;
         this.date = date;
     }
 
-    public MaintenanceID id() { return id; }
+    public Long id() { return id; }
     public Drone drone() { return drone; }
     public MaintenanceType type() { return type; }
     public Description description() { return description; }
     public LocalDate date() { return date; }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

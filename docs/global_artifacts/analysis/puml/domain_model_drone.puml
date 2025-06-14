@@ -20,10 +20,14 @@ package "Drone " <<aggregate>> {
     class DroneLanguageValidate <<Service>>{
     }
 
+    class UsageTime <<Value Object>>{
+    }
+
     Drone --> "1" DroneStatus: status
     Drone --> "1" SerialNumber: serialNumber
     Drone --> "0..*" RemovalReason: removalReason
     Drone --> "1" DroneLanguage: language
+    Drone --> "1" UsageTime: usageTime
     DroneLanguageValidate ..> "1" DroneLanguage: validates
 }
 

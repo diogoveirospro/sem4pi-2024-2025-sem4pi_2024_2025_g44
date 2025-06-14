@@ -1,6 +1,7 @@
 package core.Drone.domain.Entities;
 
 import core.Drone.domain.ValueObjects.*;
+import core.Maintenance.domain.Entities.Maintenance;
 import core.ModelOfDrone.domain.Entities.Model;
 import eapli.framework.domain.model.AggregateRoot;
 import eapli.framework.general.domain.model.Designation;
@@ -8,6 +9,8 @@ import jakarta.persistence.*;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Drone implements AggregateRoot<Designation> {
@@ -79,6 +82,10 @@ public class Drone implements AggregateRoot<Designation> {
 
     public void addUsageTime(LocalTime usageTime) {
         this.usageTime.addTime(usageTime);
+    }
+
+    public void resetUsageTime() {
+        this.usageTime.resetUsageTime();
     }
     public ProgramingLanguage programingLanguage() {
         return programingLanguage;

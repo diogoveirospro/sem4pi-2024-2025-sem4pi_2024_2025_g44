@@ -14,14 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class MaintenanceTest {
 
     private final Drone dummyDrone = DroneTestHelper.createDummyDrone();
-    private final MaintenanceType type = new MaintenanceType(new Name("Verification"));
+    private final MaintenanceType type = new MaintenanceType(new Name("Verification"),true);
     private final Description description = Description.valueOf("Verification after flight");
     private final LocalDate date = LocalDate.now();
 
     @Test
     void shouldCreateValidMaintenance() {
         Maintenance m = new Maintenance(
-                MaintenanceID.newID(), dummyDrone, type, description, date
+               dummyDrone, type, description, date
         );
 
         assertNotNull(m);
@@ -35,27 +35,31 @@ class MaintenanceTest {
     void shouldThrowIfAnyArgumentIsNull() {
         MaintenanceID id = MaintenanceID.newID();
 
-        assertThrows(IllegalArgumentException.class, () -> new Maintenance(id, null, type, description, date));
-        assertThrows(IllegalArgumentException.class, () -> new Maintenance(id, dummyDrone, null, description, date));
-        assertThrows(IllegalArgumentException.class, () -> new Maintenance(id, dummyDrone, type, null, date));
-        assertThrows(IllegalArgumentException.class, () -> new Maintenance(id, dummyDrone, type, description, null));
+        assertThrows(IllegalArgumentException.class, () -> new Maintenance(null, type, description, date));
+        assertThrows(IllegalArgumentException.class, () -> new Maintenance(dummyDrone, null, description, date));
+        assertThrows(IllegalArgumentException.class, () -> new Maintenance( dummyDrone, type, null, date));
+        assertThrows(IllegalArgumentException.class, () -> new Maintenance( dummyDrone, type, description, null));
     }
 
     @Test
     void shouldBeSameAsIfSameID() {
         MaintenanceID id = MaintenanceID.newID();
 
-        Maintenance m1 = new Maintenance(id, dummyDrone, type, description, date);
-        Maintenance m2 = new Maintenance(id, dummyDrone, type, description, date);
+        Maintenance m1 = new Maintenance(dummyDrone, type, description, date);
+        Maintenance m2 = new Maintenance(dummyDrone, type, description, date);
 
+        m1.setId(1L);
+        m2.setId(1L);
         assertTrue(m1.sameAs(m2));
     }
 
     @Test
     void shouldNotBeSameAsIfDifferentID() {
-        Maintenance m1 = new Maintenance(MaintenanceID.newID(), dummyDrone, type, description, date);
-        Maintenance m2 = new Maintenance(MaintenanceID.newID(), dummyDrone, type, description, date);
+        Maintenance m1 = new Maintenance( dummyDrone, type, description, date);
+        Maintenance m2 = new Maintenance(dummyDrone, type, description, date);
 
+        m1.setId(1L);
+        m2.setId(2L);
         assertFalse(m1.sameAs(m2));
     }
 }

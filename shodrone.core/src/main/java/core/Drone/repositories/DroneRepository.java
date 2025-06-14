@@ -10,12 +10,12 @@ import eapli.framework.domain.repositories.DomainRepository;
 import eapli.framework.general.domain.model.Designation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DroneRepository extends DomainRepository<Designation, Drone> {
 
     List<Drone> getDrnModelList(Model droneModel);
 
     Iterable<Drone> findAllDronesInventory();
-
 
 }

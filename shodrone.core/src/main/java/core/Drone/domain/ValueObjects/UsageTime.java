@@ -56,9 +56,9 @@ public class UsageTime implements Serializable {
             throw new IllegalArgumentException("Invalid time format. Only hours and minutes are allowed.");
         }
 
-        //if (time.getHour() < 0 || time.getMinute() < 0 || time.getHour() > 23 || time.getMinute() > 59) {
-            //throw new IllegalArgumentException("Invalid time value. Hours must be between 0 and 23, and minutes between 0 and 59.");
-       // }
+        /*if (time.getHour() < 0 || time.getMinute() < 0 || time.getHour() > 23 || time.getMinute() > 59) {
+            throw new IllegalArgumentException("Invalid time value. Hours must be between 0 and 23, and minutes between 0 and 59.");
+        }*/
        if (this.usageTime == null) {
            this.usageTime = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
         }
@@ -66,7 +66,10 @@ public class UsageTime implements Serializable {
         this.usageTime = this.usageTime.plusHours(time.getHour())
                 .plusMinutes(time.getMinute());
         }
-
-
     }
+
+    public void resetUsageTime() {
+        this.usageTime = Duration.ZERO;
+    }
+
 }

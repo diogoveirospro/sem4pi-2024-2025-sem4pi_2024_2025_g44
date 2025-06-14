@@ -7,7 +7,8 @@ import Shodrone.console.Category.printer.ListExistingCategoriesUI;
 import Shodrone.console.Customer.ui.*;
 import Shodrone.console.Drone.ui.AddDroneUI;
 import Shodrone.console.Drone.ui.RegisterUsageTimeUI;
-import Shodrone.console.Maintenance.ListDroneMaintenanceHistoryUI;
+import Shodrone.console.Maintenance.ui.AddMaintenanceRecordDroneUI;
+import Shodrone.console.Maintenance.ui.ListDroneMaintenanceHistoryUI;
 import Shodrone.console.Model.ui.CreateModelUI;
 import Shodrone.console.Drone.ui.ListDroneUI;
 import Shodrone.console.Drone.ui.RemoveDroneUI;
@@ -20,7 +21,6 @@ import Shodrone.console.ShowProposal.ui.*;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
 import Shodrone.console.ShowRequest.ui.ListShowRequestsUI;
 import Shodrone.console.ShowRequest.ui.RegisterShowRequestUI;
-import Shodrone.console.Simulator.ui.SimulateShowUI;
 import Shodrone.console.authz.ui.DisableEnableUserUI;
 import Shodrone.console.authz.ui.ListUsersUI;
 import Shodrone.console.authz.ui.RegisterUserUI;
@@ -207,6 +207,7 @@ public class MainMenu extends AbstractFancyUI {
     private static final int LIST_DRONES_OPTION = 4;
     private static final int DRONE_TECH_REGISTER_USAGE_TIME_OPTION = 5;
     private static final int DRONE_TECH_LIST_MAINTENANCE_HISTORY_OPTION = 6;
+    private static final int DRONE_TECH_ADD_MAINTENANCE_RECORD_OPTION = 7;
 
     // PROPOSAL COLLABORATOR MENU
     private static final int COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION = 1;
@@ -459,6 +460,7 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(LIST_DRONES_OPTION, "List a Model of Drone", new ListDroneUI()::show);
         menu.addItem(DRONE_TECH_REGISTER_USAGE_TIME_OPTION, "Register Usage Time for Drone", new RegisterUsageTimeUI()::show);
         menu.addItem(DRONE_TECH_LIST_MAINTENANCE_HISTORY_OPTION, "List Maintenance History of Drone", new ListDroneMaintenanceHistoryUI()::show);
+        menu.addItem(DRONE_TECH_ADD_MAINTENANCE_RECORD_OPTION, "Add Maintenance Record to a Drone", new AddMaintenanceRecordDroneUI()::show);
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;

@@ -1,27 +1,25 @@
 @startuml
-'skinparam monochrome
-
 skinparam packageStyle rectangle
 skinparam shadowing false
 
 autonumber
 
 actor "Drone Tech" as DT
-participant ":MaintenanceUI" as UI
-participant ":MaintenanceController" as CTRL
+participant ":AddMaintenanceRecordDroneUI" as UI
+participant ":AddMaintenanceRecordDroneController" as CTRL
 participant ":Persistence" as PERS
 participant ":RepositoryFactory" as REPOS
 participant ":DroneRepository" as DRONE_REPO
+participant ":MaintenanceTypeRepository" as TYPE_REPO
 participant ":MaintenanceRepository" as MAINT_REPO
 participant ":Maintenance" as MAINT
 
 activate DT
 
-DT -> UI : request to add maintenance (droneId, maintenanceType, date, description, technician)
+DT -> UI : request to add maintenance
 activate UI
-    UI -> CTRL : collect maintenance data
-    activate CTRL
-
+  UI -> CTRL : getDronesWithMaintenance()
+  activate CTRL
     CTRL --> PERS : getRepositoryFactory()
     activate PERS
     PERS --> CTRL : repositoryFactory
@@ -32,44 +30,48 @@ activate UI
     REPOS --> CTRL : repositories
     deactivate REPOS
 
-    CTRL -> REPOS : getDroneRepository()
-    activate REPOS
-    REPOS --> CTRL : droneRepository
-    deactivate REPOS
+    CTRL -> DRONE_REPO : findAllDronesWithMaintenance()
+    activate DRONE_REPO
+    DRONE_REPO --> CTRL : droneList
+    deactivate DRONE_REPO
+
+  CTRL --> UI : droneList
+  deactivate CTRL
+UI --> DT : display drone list
+deactivate UI
+
+DT -> UI : select drone and maintenance type, enter date and description
+activate UI
+  UI -> CTRL : addMaintenance(droneId, maintenanceType, date, description, technician)
+  activate CTRL
 
     CTRL -> DRONE_REPO : findBySerialNumber(droneId)
     activate DRONE_REPO
-    DRONE_REPO --> CTRL : drone (exists, active status)
+    DRONE_REPO --> CTRL : drone
     deactivate DRONE_REPO
 
-    alt if drone is active
-        CTRL -> REPOS : getMaintenanceRepository()
-        activate REPOS
-        REPOS --> CTRL : maintenanceRepository
-        deactivate REPOS
+    CTRL -> TYPE_REPO : findByName(maintenanceType)
+    activate TYPE_REPO
+    TYPE_REPO --> CTRL : type
+    deactivate TYPE_REPO
 
-        CTRL -> MAINT_REPO : addMaintenance(droneId, maintenanceType, date, description, technician)
-        activate MAINT_REPO
-        MAINT_REPO --> CTRL : maintenance record added
-        deactivate MAINT_REPO
+    CTRL -> MAINT : createMaintenance(drone, type, date, description, technician)
+    activate MAINT
+    MAINT --> CTRL : maintenanceRecord
+    deactivate MAINT
 
-        CTRL -> MAINT : createMaintenanceRecord(droneId, maintenanceType, date, description, technician)
-        activate MAINT
-        MAINT --> CTRL : maintenanceRecord
-        deactivate MAINT
+    CTRL -> MAINT_REPO : save(maintenanceRecord)
+    activate MAINT_REPO
+    MAINT_REPO --> CTRL : success
+    deactivate MAINT_REPO
 
-        CTRL -> MAINT_REPO : save(maintenanceRecord)
-        activate MAINT_REPO
-        MAINT_REPO --> CTRL : success
-        deactivate MAINT_REPO
-
-        CTRL --> UI : show success message
-    else if drone is inactive
-        CTRL --> UI : show error message ("Drone is not active")
+    alt if type resets usage
+        CTRL -> drone : resetUsageTime()
     end
 
-    deactivate CTRL
-UI --> DT : display result (success or error)
+  CTRL --> UI : success
+  deactivate CTRL
+UI --> DT : show result
 deactivate UI
 deactivate DT
 @enduml

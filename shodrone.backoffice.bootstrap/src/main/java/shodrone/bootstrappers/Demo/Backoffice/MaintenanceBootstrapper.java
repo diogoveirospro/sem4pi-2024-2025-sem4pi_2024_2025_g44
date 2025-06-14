@@ -53,7 +53,6 @@ public class MaintenanceBootstrapper extends UsersBootstrapperBase implements Ac
     private void register(Drone drone, MaintenanceType type, String desc, LocalDate date) {
 
         Maintenance m = new Maintenance(
-                MaintenanceID.newID(),
                 drone,
                 type,
                 new Description(desc),

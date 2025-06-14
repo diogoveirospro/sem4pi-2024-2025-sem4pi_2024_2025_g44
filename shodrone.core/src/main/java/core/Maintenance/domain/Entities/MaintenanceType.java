@@ -18,12 +18,16 @@ public class MaintenanceType implements Serializable, AggregateRoot<Designation>
     @Column(name = "type_name", unique = true, nullable = false)
     private Name name;
 
+    @Column(name = "resetUsageTime")
+    private boolean resetUsageTime;
+
     protected MaintenanceType() {}
 
-    public MaintenanceType(Name name) {
+    public MaintenanceType(Name name, boolean resetUsageTime) {
         if (name == null || name.toString().isBlank())
             throw new IllegalArgumentException("Maintenance type name cannot be null or blank.");
         this.name = name;
+        this.resetUsageTime = resetUsageTime;
     }
 
     public Long id() {
@@ -43,6 +47,10 @@ public class MaintenanceType implements Serializable, AggregateRoot<Designation>
         if (newName == null || newName.toString().isBlank())
             throw new IllegalArgumentException("New name cannot be null or blank.");
         this.name = newName;
+    }
+
+    public boolean resetUsageTime() {
+        return resetUsageTime;
     }
 
     @Override
