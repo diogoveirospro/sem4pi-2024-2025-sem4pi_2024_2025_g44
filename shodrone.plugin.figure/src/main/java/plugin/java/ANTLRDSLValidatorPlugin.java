@@ -5,6 +5,8 @@ import core.Figure.application.Service.plugin.DSLValidatorPlugin;
 import gen.FigureLexer;
 import gen.FigureParser;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +32,32 @@ public class ANTLRDSLValidatorPlugin implements DSLValidatorPlugin {
             @Override
             public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                                     int line, int charPositionInLine, String msg, RecognitionException e) {
-                errors.add("line " + line + ":" + charPositionInLine + " " + msg);
+                errors.add("Syntax error at line " + line + ":" + charPositionInLine + " " + msg);
             }
         });
 
         // Start parsing from the entry point defined in your grammar
-        parser.start();
+        ParseTree tree = parser.start();
+
+        // If there are syntax errors, return early
+        if (!errors.isEmpty()) {
+            return new DSLValidationResult(false, errors);
+        }
+
+        // Use Listener for semantic validation
+        FigureListener listener = new FigureListener();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(listener, tree);
+
+        // Add semantic errors from listener
+        errors.addAll(listener.semanticErrors());
+
+        // Use Visitor for additional validation and symbol table building
+        FigureVisitor visitor = new FigureVisitor();
+        visitor.visit(tree);
+
+        // Add validation errors from visitor
+        errors.addAll(visitor.validationErrors());
 
         // Return validation result
         return new DSLValidationResult(errors.isEmpty(), errors);
