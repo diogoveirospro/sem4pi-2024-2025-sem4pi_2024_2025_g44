@@ -79,6 +79,35 @@ public class AddFigureToCatalogueController {
     }
 
     /**
+     * Add a new version of an existing figure to the catalogue.
+     * @param figure the existing figure to update
+     * @param version the new version of the figure
+     * @param dslDescription DSL description of the figure
+     * @param showDesigner show designer associated with the figure
+     * @return true if the new version was added successfully, false otherwise
+     */
+    public boolean addNewVersionOfFigureToCatalogue(Figure figure, Version version, DSLDescription dslDescription, ShowDesigner showDesigner) {
+        Preconditions.noneNull(version, dslDescription, showDesigner);
+
+        Code code = figure.figureID().code();
+        Name name = figure.name();
+        Description description = figure.description();
+        Set<Keyword> keywords = figure.keywords();
+        Set<Category> categories = figure.categories();
+
+        Figure newFigure;
+
+        if (figure.isExclusive()){
+            Exclusivity exclusivity = figure.exclusivity();
+            newFigure = new Figure(code, version, name, description, dslDescription, keywords, categories, showDesigner, exclusivity);
+        } else {
+            newFigure = new Figure(code, version, name, description, dslDescription, keywords, categories, showDesigner);
+        }
+        figureRepository.save(newFigure);
+        return true;
+    }
+
+    /**
      * List all categories in the system.
      * @return an iterable of categories
      */
@@ -92,5 +121,13 @@ public class AddFigureToCatalogueController {
      */
     public Iterable<Customer> listCustomers() {
         return customerRepository.findAllCreatedCustomers();
+    }
+
+    /**
+     * List all figures in the catalogue.
+     * @return an iterable of figures
+     */
+    public Iterable<Figure> listFigures() {
+        return figureRepository.findAll();
     }
 }
