@@ -12,17 +12,19 @@ int shm_fd = 0;
 // Receives the SIGUSR2
 void end()
 {
-    if (sem_d2p) sem_close(sem_d2p);
-    if (sem_p2d) sem_close(sem_p2d);
-    if (shm) detach_shared_memory(shm, shm_size);
-    free(s.filename);
-    exit(0);
+  if (sem_d2p) sem_close(sem_d2p);
+  if (sem_p2d) sem_close(sem_p2d);
+  if (shm) detach_shared_memory(shm, shm_size);
+
+  free(s.filename);
+  exit(0);
 }
 
 // sends SIGUSR2 to parent to kill everything
 void handler_sigusr2(int sig)
 {
   (void)sig;
+
   end();
 }
 
@@ -214,7 +216,7 @@ void start_working()
 // Starts shared memory and semaphore
 void set_up_shared_memory_and_semaphore()
 {
-  shm_fd = open_shared_memory("/shm_drones");
+  shm_fd = open_shared_memory(DRONES_SHM_NAME);
 
   shm_size = sizeof(SharedMemoryDrone);
   shm = attach_shared_memory(shm_fd, shm_size);
@@ -225,13 +227,6 @@ void set_up_shared_memory_and_semaphore()
 
   snprintf(name, sizeof(name), "/sem_parent_%d", s.id);
   sem_p2d = open_semaphore(name);  // Parent to drone
-}
-
-
-void terminate()
-{
-  free(s.filename);
-  exit(0);
 }
 
 // argv[1] input_directory

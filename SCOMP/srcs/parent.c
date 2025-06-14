@@ -26,22 +26,30 @@ ParentData s;
 
 SpaceCell ***space;
 int **collision_state = NULL; // 0: no collision, 1: collision
+
 SharedMemoryDrone *shm_drones = NULL;
 SharedMemoryParent *shm_parent = NULL; // Global pointer to shared memory
 
 size_t shm_size = 0;
 int shm_fd = 0;
+
 sem_t **semaphores_drones = NULL;
 sem_t **semaphores_parent = NULL;
 
-// thread for generating report
 pthread_t t_report;
-// thread for checking collisions
 pthread_t t_collisions;
 
 pthread_mutex_t mutex_simulation = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond_simulation_end = PTHREAD_COND_INITIALIZER;
+
+pthread_mutex_t mutex_collision_check = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond_collision_check = PTHREAD_COND_INITIALIZER;
+
 int simulation_finished = 0;
+
+int collisions_limit = 0;
+
+int can_proceed = 0;
 
 void end()
 {
@@ -135,6 +143,9 @@ void process_config_file()
 
 void set_up_childs()
 {
+    pid_t pid;
+    char str_i[10], str_x[10], str_y[10], str_z[10];
+
     s.pids = (int *) malloc(sizeof(int) * c.num_drones);
     if (s.pids == NULL)
         end();
@@ -142,16 +153,17 @@ void set_up_childs()
 
     for (int i = 0; i < c.num_drones; i++)
     {
-        pid_t pid = fork();
+        pid = fork();
         if (pid == 0)
         {
-            char str_i[10], str_x[10], str_y[10], str_z[10];
             snprintf(str_i, sizeof(str_i), "%d", i + 1);
             snprintf(str_x, sizeof(str_x), "%d", c.max_X);
             snprintf(str_y, sizeof(str_y), "%d", c.max_Y);
             snprintf(str_z, sizeof(str_z), "%d", c.max_Z);
+
             execl(DRONE_FILE, DRONE_FILE, c.inp_dir, str_i, str_x, str_y, str_z, NULL);
-            exit(1);
+
+            kill(getppid(), SIGUSR2);
         }
         s.pids[i] = pid;
     }
@@ -196,7 +208,6 @@ int check_collisions(int iter)
     double distance;
 
     for (int i = 0; i < c.num_drones; i++)
-    {
         for (int j = i + 1; j < c.num_drones; j++)
         {
             distance = calculate_distance(shm_drones->drones[i].pos, shm_drones->drones[j].pos);
@@ -211,8 +222,8 @@ int check_collisions(int iter)
 
                     shm_parent->history[i].collision_count++;
                     shm_parent->history[j].collision_count++;
-                    shm_drones->drones[i].collision_count++;
-                    shm_drones->drones[j].collision_count++;
+                    //shm_drones->drones[i].collision_count++;
+                    //shm_drones->drones[j].collision_count++;
 
                     new_collisions++;
 
@@ -236,7 +247,6 @@ int check_collisions(int iter)
                 collision_state[j][i] = 0;
             }
         }
-    }
     return new_collisions;
 }
 
@@ -255,7 +265,9 @@ void update_position(int i, int iter, SharedDroneState *drone)
 // return -1 in case no more drones
 int manage_drones(int iter)
 {
-  for (int i = 0; i < c.num_drones; i++) {
+
+  for (int i = 0; i < c.num_drones; i++)
+  {
     if (s.finished[i])
       continue;
 
@@ -263,13 +275,13 @@ int manage_drones(int iter)
 
     SharedDroneState *drone = &shm_drones->drones[i];
 
-    if (drone->active == 0) {
+    if (drone->active == 0)
+    {
       s.finished[i] = 1;
       s.active_drones--;
-      fprintf(stderr, "drone %d terminou\n", i + 1);
-    } else {
+    } 
+    else
       update_position(i, iter, drone);
-    }
   }
 
   if (s.active_drones == 0)
@@ -281,11 +293,7 @@ int manage_drones(int iter)
 // checks for collision limit
 int process_position(int iter)
 {
-  static int collisions = 0;
-
-  collisions += check_collisions(iter);
-
-  if (collisions >= c.max_collisions)
+  if (collisions_limit >= c.max_collisions)
     return -1;
   return 0;
 }
@@ -309,8 +317,18 @@ void sync_drones()
 void *thread_check_collisions(void *arg) {
   int iter = 0;
   while (!simulation_finished) {
-    check_collisions(iter);
+
+    pthread_mutex_lock(&mutex_collision_check);
+
+    while (!can_proceed)
+    {
+      pthread_cond_wait(&cond_collision_check, &mutex_collision_check);
+    }
+
+    collisions_limit += check_collisions(iter);
     iter++;
+
+    pthread_mutex_unlock(&mutex_collision_check);
   }
   return NULL;
 }
@@ -318,17 +336,8 @@ void *thread_check_collisions(void *arg) {
 // Thread for generating the report at the end
 void *thread_do_report(void *arg) {
   do_report();
-}
 
-void set_up_threads() {
-
-  simulation_finished = 0;
-
-  // Start collision checking thread
-  pthread_create(&t_collisions, NULL, thread_check_collisions, NULL);
-
-  // Start report thread (will only generate report at the end)
-  pthread_create(&t_report, NULL, thread_do_report, NULL);
+  return NULL;
 }
 
 
@@ -349,22 +358,32 @@ void start_loop()
 
   while (1)
   {
+
     if (manage_drones(n_iter) == -1)
       break;
 
     if (process_position(n_iter) == -1)
       break;
 
+    pthread_mutex_lock(&mutex_collision_check);
+
+    can_proceed = 1;
+
+    pthread_cond_signal(&cond_collision_check);
+    
+    pthread_mutex_unlock(&mutex_collision_check);
+
     sync_drones();
 
     n_iter++;
-    fprintf(stderr, "Active drones: %d\n", s.active_drones);
   }
 
   pthread_mutex_lock(&mutex_simulation);
+
   simulation_finished = 1;
-  fprintf(stderr, "Main: vou sinalizar o fim da simulação\n");
+
   pthread_cond_signal(&cond_simulation_end);
+
   pthread_mutex_unlock(&mutex_simulation);
 }
 
@@ -399,12 +418,11 @@ void do_report()
 
 
   pthread_mutex_lock(&mutex_simulation);
-  fprintf(stderr, "Thread do report: antes do while\n");
+
   while (!simulation_finished) {
-    fprintf(stderr, "Thread do report: estou à espera\n");
     pthread_cond_wait(&cond_simulation_end, &mutex_simulation);
   }
-  fprintf(stderr, "Thread do report: saí do wait\n");
+
   pthread_mutex_unlock(&mutex_simulation);
 
 
@@ -459,7 +477,6 @@ void do_report()
 
 void terminate()
 {
-
   // Wait for both threads to finish
   pthread_join(t_collisions, NULL);
   pthread_join(t_report, NULL);
@@ -483,8 +500,8 @@ void terminate()
   }
 
   // Unlink shared memory
-  clear_shared_memory("/shm_drones");
-  clear_shared_memory("/shm_parent");
+  clear_shared_memory(DRONES_SHM_NAME);
+  clear_shared_memory(PARENT_SHM_NAME);
 
   // Clear semaphores
   if (semaphores_drones) {
@@ -515,6 +532,17 @@ void terminate()
   exit(0);
 }
 
+void set_up_threads() {
+
+  simulation_finished = 0;
+
+  // Start collision checking thread
+  pthread_create(&t_collisions, NULL, thread_check_collisions, NULL);
+
+  // Start report thread (will only generate report at the end)
+  pthread_create(&t_report, NULL, thread_do_report, NULL);
+}
+
 void allocate_structs()
 {
   // Collision state matrix
@@ -532,11 +560,11 @@ void allocate_structs()
   s.collisions = 0;
 
   // Shared Memory for drones
-  int fd_drones = create_shared_memory("/shm_drones", sizeof(SharedMemoryDrone));
+  int fd_drones = create_shared_memory(DRONES_SHM_NAME, sizeof(SharedMemoryDrone));
   shm_drones = mmap(NULL, sizeof(SharedMemoryDrone), PROT_READ | PROT_WRITE, MAP_SHARED, fd_drones, 0);
 
   // Shared Memory for parent
-  int fd_parent = create_shared_memory("/shm_parent", sizeof(SharedMemoryParent));
+  int fd_parent = create_shared_memory(PARENT_SHM_NAME, sizeof(SharedMemoryParent));
   shm_parent = mmap(NULL, sizeof(SharedMemoryParent), PROT_READ | PROT_WRITE, MAP_SHARED, fd_parent, 0);
 
   // Initialize SharedMemoryDrone
@@ -591,20 +619,6 @@ void allocate_structs()
   }
 }
 
-void debug_config_file()
-{
-  fprintf(stderr, CYAN "\nSimulation Configurations:\n" RESET);
-  fprintf(stderr, "Input Directory: %s\n", c.inp_dir);
-  fprintf(stderr, "Output Directory: %s\n", c.out_dir);
-  fprintf(stderr, "Maximum collisions: %d\n", c.max_collisions);
-  fprintf(stderr, "Number of Drones: %d\n", c.num_drones);
-  fprintf(stderr, "Drone Radius: %d\n", c.drone_radius);
-  fprintf(stderr, "Maximum Coordinate X: %d\n", c.max_X);
-  fprintf(stderr, "Maximum Coordinate Y: %d\n", c.max_Y);
-  fprintf(stderr, "Maximum Coordinate Z: %d\n", c.max_Z);
-  fprintf(stderr, "Timestep: %f\n\n", c.timestep);
-}
-
 void process_comand_line_args(char **argv)
 {
   c.inp_dir = argv[1];
@@ -618,32 +632,11 @@ void process_comand_line_args(char **argv)
   c.timestep = atof(argv[9]);
 }
 
-//void set_up_log_file();
-
-// argv[1] inp_dir
-// argv[2] out_dir
-// argv[3] max_collisions
-// argv[4] num_drones
-// argv[5] drone_radius
-// argv[6] max_X
-// argv[7] max_Y
-// argv[8] max_Z
-// argv[9] timestep
-
-int main(int argc, char **argv) {
-
-  // set_up_log_file();
-
-  if (argc == 1)
-    process_config_file();
-  else if (argc == 9)
-    process_comand_line_args(argv);
-  else
-    end();
-
+void pre_clean_shm_and_sem()
+{
   // Clear shared memory from previous runs
-  clear_shared_memory("/shm_drones");
-  clear_shared_memory("/shm_parent");
+  shm_unlink(DRONES_SHM_NAME);
+  shm_unlink(PARENT_SHM_NAME);
 
   // Clean up semaphores from previous runs
   for (int i = 0; i < c.num_drones; i++) {
@@ -657,10 +650,20 @@ int main(int argc, char **argv) {
     snprintf(sem_name, sizeof(sem_name), "/sem_parent_%d", i+1);
     clear_semaphore(sem_name, NULL); // Unlink semaphore
   }
+}
 
-  //debug_config_file();
+int main(int argc, char **argv) {
+
+  if (argc == 1)
+    process_config_file();
+  else if (argc == 9)
+    process_comand_line_args(argv);
+  else
+    end();
 
   set_up_signals();
+
+  pre_clean_shm_and_sem();;
 
   allocate_structs();
 
@@ -670,7 +673,6 @@ int main(int argc, char **argv) {
 
   start_loop();
 
-  //do_report();
-
   terminate();
 }
+
