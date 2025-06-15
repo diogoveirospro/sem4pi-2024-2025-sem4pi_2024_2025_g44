@@ -122,8 +122,6 @@ public class ConfigShowPropUI extends AbstractFancyUI {
                 return false;
             }
         } catch (UserCancelledException e) {
-            System.out.println(UtilsUI.BOLD + UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
-            UtilsUI.goBackAndWait();
             return false;
         } catch (IllegalArgumentException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nError: " + e.getMessage() + UtilsUI.RESET);

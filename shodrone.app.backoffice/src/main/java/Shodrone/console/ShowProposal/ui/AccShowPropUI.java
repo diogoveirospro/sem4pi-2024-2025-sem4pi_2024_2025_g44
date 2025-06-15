@@ -18,7 +18,7 @@ public class AccShowPropUI extends AbstractFancyUI {
     @Override
     protected boolean doShow() {
         try {
-            ShowProposal showProposal = selectProposal();
+            ShowProposal showProposal = showProposalAndSelect();
             if (showProposal == null) return false;
             boolean success = controller.acceptProp(showProposal);
             if (success) {
@@ -31,7 +31,10 @@ public class AccShowPropUI extends AbstractFancyUI {
                 return false;
             }
         } catch (UserCancelledException e) {
-            System.out.println(UtilsUI.BOLD + UtilsUI.RED + e.getMessage() + UtilsUI.RESET);
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
             return false;
         }
     }
@@ -44,7 +47,7 @@ public class AccShowPropUI extends AbstractFancyUI {
      */
     @Override
     public String headline() {
-        return "Add a Drone to the Inventory";
+        return "Accept a Show Proposal";
     }
 
     /**
@@ -53,33 +56,37 @@ public class AccShowPropUI extends AbstractFancyUI {
      * @return the selected {@link Model} or null if none are available.
      * @throws UserCancelledException if the user cancels the action.
      */
-    private ShowProposal selectProposal() {
-        Iterable<ShowProposal> showProposals = controller.getShowProposalCheckedList();
-
-        if (showProposals == null || !showProposals.iterator().hasNext()) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo show proposal available." + UtilsUI.RESET);
-            return null;
+    public ShowProposal showProposalAndSelect() {
+        Iterable<ShowProposal> proposals = controller.getShowProposalCheckedList();
+        if (proposals == null || !proposals.iterator().hasNext()) {
+            throw new IllegalArgumentException("No Show Proposals available.");
         }
 
-        List<ShowProposal> showProposalList = new ArrayList<>();
-        showProposals.forEach(showProposalList::add);
+        List<ShowProposal> proposalList = new ArrayList<>();
+        proposals.forEach(proposalList::add);
 
-        ListWidget<ShowProposal> showProposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\nChoose a Model: \n" +
-                UtilsUI.RESET, showProposalList, new ShowProposalPrinter());
-        showProposalListWidget.show();
+        ShowProposalPrinter proposalPrinter = new ShowProposalPrinter();
+
+        ListWidget<ShowProposal> proposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nChoose a Show Proposal:\n" +
+                UtilsUI.RESET, proposalList, proposalPrinter);
+        proposalListWidget.show();
 
         int option;
         do {
-            option = UtilsUI.selectsIndex(showProposalList);
-
+            option = UtilsUI.selectsIndex(proposalList);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
             }
-            if (option == -1) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid option. Please try again." + UtilsUI.RESET);
+
+            if (option < 0 || option > proposalList.size()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid option. Please try again." + UtilsUI.RESET);
             } else {
-                return showProposalList.get(option);
+                ShowProposal selected = proposalList.get(option);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nSelected Show Proposal: " +
+                        selected.identity().proposalNumber() + "\n" + UtilsUI.RESET);
+                return selected;
             }
+
         } while (true);
     }
 

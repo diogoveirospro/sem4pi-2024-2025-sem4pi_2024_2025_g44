@@ -62,7 +62,6 @@ public class CreateShowProposalUI extends AbstractFancyUI {
             UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
-            System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);

@@ -120,7 +120,6 @@ public class MainMenu extends AbstractFancyUI {
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int HELP_MENU = 8;
 
     // ADMIN MENUS
     private static final int ADMIN_USERS_MENU = 2;
@@ -142,7 +141,6 @@ public class MainMenu extends AbstractFancyUI {
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
     private static final int DRONE_TECH_SHOW_PROPOSALS_MENU = 3;
-    private static final int SIMULATOR_MENU = 4;
 
     // POWER USER MENUS
     private static final int POWER_USER_USERS_MENU = 2;
@@ -152,7 +150,6 @@ public class MainMenu extends AbstractFancyUI {
     private static final int POWER_USER_SHOW_PROPOSAL_MENU = 6;
     private static final int POWER_USER_FIGURE_CATEGORY_MENU = 7;
     private static final int POWER_USER_DRONE_MENU = 8;
-    private static final int POWER_USER_SIMULATOR_MENU = 9;
 
     // CUSTOMER MENU
     private static final int REGISTER_CUSTOMER_OPTION = 1;
@@ -221,10 +218,6 @@ public class MainMenu extends AbstractFancyUI {
 
     // PROPOSAL DRONE TECH MENU
     private static final int DRONE_TECH_GENERATE_SHOW_DSL_OPTION = 1;
-
-    // SIMULATOR MENU
-    private static final int SIMULATE_SHOW_OPTION = 1;
-    private static final int CHANGE_CONFIG_FILE_OPTION = 2;
 
 
     private static final String SEPARATOR_LABEL = "----------------------------";

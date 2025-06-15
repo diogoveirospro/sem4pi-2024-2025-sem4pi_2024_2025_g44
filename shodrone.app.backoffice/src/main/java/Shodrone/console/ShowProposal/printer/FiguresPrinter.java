@@ -9,7 +9,7 @@ public class FiguresPrinter implements Visitor<Figure> {
 
     @Override
     public void visit(Figure visitee) {
-        System.out.printf("%s - %s - %s |\n",
+        System.out.printf("%s - %s - %s",
                 visitee.identity().code().toString(),
                 visitee.identity().version().toString(),
                 visitee.description().toString()
