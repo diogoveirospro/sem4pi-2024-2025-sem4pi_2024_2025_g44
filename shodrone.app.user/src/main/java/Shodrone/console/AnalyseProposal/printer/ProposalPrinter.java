@@ -1,4 +1,4 @@
-package Shodrone.console.SendFeedbackProposal.printer;
+package Shodrone.console.AnalyseProposal.printer;
 
 import Shodrone.DTO.ShowProposalDTO;
 import eapli.framework.visitor.Visitor;

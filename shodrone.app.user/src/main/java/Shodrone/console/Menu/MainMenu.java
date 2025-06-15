@@ -6,6 +6,7 @@ import Shodrone.console.SheduledShows.actions.ScheduledShowsAction;
 import Shodrone.console.ShowInfo.actions.ShowInfoAction;
 import core.Persistence.Application;
 import core.User.domain.ShodroneRoles;
+import eapli.framework.actions.Actions;
 import eapli.framework.actions.menu.Menu;
 import eapli.framework.actions.menu.MenuItem;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
@@ -26,31 +27,25 @@ public class MainMenu extends AbstractFancyUI {
 
     // BIG TITLES SUBMENUS
 
-    private static final String SHOW_PROPOSALS_MENU_TITLE = "  _____   __    __     ____     ___       ___      _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
-            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
-            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
-            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
-            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
-            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
-            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
-            "\n";
-
-    private static final String SHOW_MENU_TITLE = "  _____   __    __     ____     ___       ___      _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
-            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
-            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
-            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
-            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
-            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
-            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
+    private static final String MY_PROPOSALS_MENU_TITLE = "   __    __    __      __     _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
+            "   \\ \\  / /    ) \\    / (    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
+            "   () \\/ ()     \\ \\  / /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
+            "   / _  _ \\      \\ \\/ /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
+            "  / / \\/ \\ \\      \\  /        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
+            " /_/      \\_\\      )(        ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
+            "(/          \\)    /__\\       /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
             "\n";
 
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int ANALYSE_PROPOSAL = 2;
-    private static final int SEND_FEEDBACK_PROPOSAL = 3;
-    private static final int SCHEDULED_SHOWS = 4;
-    private static final int SHOW_INFO = 5;
+    private static final int MY_PROPOSALS_MENU = 2;
+
+    // MY PROPOSALS MENU
+    private static final int ANALYSE_PROPOSAL = 1;
+    private static final int SEND_FEEDBACK_PROPOSAL = 2;
+    private static final int SCHEDULED_SHOWS = 3;
+    private static final int SHOW_INFO = 4;
 
 
     private static final String SEPARATOR_LABEL = "----------------------------";
@@ -100,10 +95,11 @@ public class MainMenu extends AbstractFancyUI {
         }
 
         if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.CUSTOMERREPRESENTATIVE)) {
-            mainMenu.addItem(ANALYSE_PROPOSAL, "Analyse Proposal", new AnalyseProposalAction());
-            mainMenu.addItem(SEND_FEEDBACK_PROPOSAL, "Send Feedback Proposal", new SendFeedbackProposalAction());
-            mainMenu.addItem(SCHEDULED_SHOWS, "Scheduled Shows", new ScheduledShowsAction());
-            mainMenu.addItem(SHOW_INFO, "Show Info", new ShowInfoAction());
+            final SubMenu customerMenu = buildMyProposalsMenu();
+            mainMenu.addSubMenu(MY_PROPOSALS_MENU, customerMenu);
+        } else {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD +
+                    "You are not authorised to log in to the User App. Please contact your System Administrator.\n" + UtilsUI.RESET);
         }
 
         if (!Application.settings().isMenuLayoutHorizontal()) {
@@ -113,6 +109,19 @@ public class MainMenu extends AbstractFancyUI {
         mainMenu.addItem(EXIT_OPTION, "Exit", new ExitWithMessageAction(""));
 
         return mainMenu;
+    }
+
+    private SubMenu buildMyProposalsMenu() {
+        final SubMenu menu = new SubMenu("My Proposals", MY_PROPOSALS_MENU_TITLE);
+
+        menu.addItem(ANALYSE_PROPOSAL, "Analyse Proposal", new AnalyseProposalAction());
+        menu.addItem(SEND_FEEDBACK_PROPOSAL, "Send Feedback Proposal", new SendFeedbackProposalAction());
+        menu.addItem(SCHEDULED_SHOWS, "Scheduled Shows", new ScheduledShowsAction());
+        menu.addItem(SHOW_INFO, "Show Info", new ShowInfoAction());
+
+        menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
+
+        return menu;
     }
 
 

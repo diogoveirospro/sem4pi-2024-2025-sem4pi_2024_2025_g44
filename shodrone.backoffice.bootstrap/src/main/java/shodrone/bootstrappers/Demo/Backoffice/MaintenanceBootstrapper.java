@@ -59,6 +59,6 @@ public class MaintenanceBootstrapper extends UsersBootstrapperBase implements Ac
                 date
         );
         maintenanceRepo.save(m);
-        LOGGER.info(UtilsUI.GREEN + "Inserted maintenance: {} on {}" + UtilsUI.RESET, desc, date);
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Inserted maintenance: {} on {}" + UtilsUI.RESET, desc, date);
     }
 }

@@ -46,7 +46,7 @@ public class GetPropByCodeRequest extends UserAppRequest {
         sb.append("\"").append(proposal.proposalNumber.proposalNumber()).append("\", ")
                 .append("\"").append(proposal.dateOfShow.toString()).append("\", ")
                 .append("\"").append(proposal.timeOfShow.toString()).append("\", ")
-                .append("\"").append(proposal.showDuration.toString()).append("\", ")
+                .append("\"").append(proposal.showDuration.toMinutes()).append(" minutes").append("\", ")
                 .append("\"").append(proposal.showLocation.toString()).append("\", ")
                 .append("\"").append(fileToString(proposal.document.file())).append("\"\n");
 
