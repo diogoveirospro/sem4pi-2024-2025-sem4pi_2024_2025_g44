@@ -2,11 +2,9 @@ package Shodrone.console.Drone.ui;
 
 import core.Drone.application.Service.DroneValidate;
 import core.Drone.application.Service.DroneValidationResult;
-import org.antlr.v4.runtime.CharStream;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
-import java.io.File;
 import java.util.Scanner;
 
 public class ValidateDroneProgramUI extends AbstractFancyUI {
@@ -20,8 +18,7 @@ public class ValidateDroneProgramUI extends AbstractFancyUI {
             Scanner scanner = new Scanner(System.in);
             String filePath = scanner.nextLine();
 
-// Agora sim, ler o ficheiro
-            String fileContent = UtilsUI.lerFicheiroComoString(filePath);
+            String fileContent = UtilsUI.readFileAsString(filePath);
             // Validate the drone code using the plugin
             DroneValidationResult result = droneValidate.validateTemplate(fileContent);
 

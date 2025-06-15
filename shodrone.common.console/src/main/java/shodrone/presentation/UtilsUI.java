@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class UtilsUI {
@@ -693,7 +691,7 @@ public class UtilsUI {
             Desktop desktop = Desktop.getDesktop();
             desktop.open(path.toFile());
 
-            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nFile opened in the default editor. Save changes when done.\n" + UtilsUI.RESET);
+            System.out.println(UtilsUI.BOLD + "\n\nFile opened in the default editor. Save changes when done.\n" + UtilsUI.RESET);
         } catch (IOException e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError Opening File: " + e.getMessage() + UtilsUI.RESET);
         } catch (UnsupportedOperationException e) {
@@ -701,12 +699,12 @@ public class UtilsUI {
         }
     }
 
-    public static String lerFicheiroComoString(String caminhoFicheiro) {
+    public static String readFileAsString(String caminhoFicheiro) {
         try {
             byte[] bytes = Files.readAllBytes(Paths.get(caminhoFicheiro));
             return new String(bytes);
         } catch (IOException e) {
-            System.err.println("Erro ao ler o ficheiro: " + e.getMessage());
+            System.err.println("Error reading file: " + e.getMessage());
             return null;
         }
     }
