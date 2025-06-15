@@ -37,12 +37,12 @@ public class DroneRunnerUI extends AbstractFancyUI {
 
             if (editExistingFile) {
                 System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nFile structure:\n" + UtilsUI.RESET);
-                System.out.println("X, Y, Z\nVX1, VY1, VZ1\nVX2, VY2, VZ2\n...\nVXN, VYN, VZN\n");
+                System.out.println("X,Y,Z\nVX1,VY1,VZ1\nVX2,VY2,VZ2\n...\nVXN,VYN,VZN\n");
                 System.out.println(UtilsUI.YELLOW + "X, Y, Z is the initial position.\nVXN, VYN, VZN are the vectors." + UtilsUI.RESET);
                 chooseFileInDirectory(inputDirectory);
             } else {
                 System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nFile structure:\n" + UtilsUI.RESET);
-                System.out.println("X, Y, Z\nVX1, VY1, VZ1\nVX2, VY2, VZ2\n...\nVXN, VYN, VZN\n");
+                System.out.println("X,Y,Z\nVX1,VY1,VZ1\nVX2,VY2,VZ2\n...\nVXN,VYN,VZN\n");
                 System.out.println(UtilsUI.YELLOW + "X, Y, Z is the initial position.\nVXN, VYN, VZN are the vectors." + UtilsUI.RESET);
                 createNewFile(inputDirectory);
             }
@@ -206,13 +206,17 @@ public class DroneRunnerUI extends AbstractFancyUI {
 
             List<String> previousContent = Files.exists(path) ? Files.readAllLines(path, StandardCharsets.UTF_8) : new ArrayList<>();
 
-            UtilsUI.openFileForEditing(filePath);
-            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nWaiting for the customer to close the file...\n" + UtilsUI.RESET);
+
             boolean confirm = false;
             while (!confirm) {
                 try {
+                    UtilsUI.openFileForEditing(filePath);
+                    System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nWaiting for the customer to close the file...\n" + UtilsUI.RESET);
                     confirm = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to continue (y/n): " + UtilsUI.RESET);
                     Thread.sleep(1000);
+                    if (!isFileFormatValid(filePath)) {
+                        confirm = false;
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
@@ -237,6 +241,34 @@ public class DroneRunnerUI extends AbstractFancyUI {
         }
     }
 
+    private boolean isFileFormatValid(String filePath) {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
 
+            if (lines.isEmpty()) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nFile is empty: " + filePath + UtilsUI.RESET);
+                return false;
+            }
+
+            if (!lines.get(0).matches("\\d+,\\d+,\\d+")) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid format in the first line: " + lines.get(0) + UtilsUI.RESET);
+                return false;
+            }
+
+            for (int i = 1; i < lines.size(); i++) {
+                if (!lines.get(i).matches("\\d+,\\d+,\\d+")) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid format in line " + (i + 1) + ": " + lines.get(i) + UtilsUI.RESET);
+                    return false;
+                }
+            }
+
+            System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nFile format is valid: " + filePath + UtilsUI.RESET);
+            return true;
+
+        } catch (IOException e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError Reading File: " + e.getMessage() + UtilsUI.RESET);
+            return false;
+        }
+    }
 
 }

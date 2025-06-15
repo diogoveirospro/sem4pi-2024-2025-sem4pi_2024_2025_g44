@@ -2,8 +2,8 @@ package core.ShowProposal.domain.ValueObjects;
 
 public enum CustomerFeedbackStatus {
     ACCEPTED("Accepted"),
-    REJECTED("Rejected"),
-    PENDING("Pending");
+    REJECTED("Rejected");
+
     private final String status;
 
     CustomerFeedbackStatus(String status) {

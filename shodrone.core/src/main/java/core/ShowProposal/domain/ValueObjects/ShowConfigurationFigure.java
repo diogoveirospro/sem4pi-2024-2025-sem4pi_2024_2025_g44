@@ -1,4 +1,4 @@
-package core.ShowProposal.domain.Entities;
+package core.ShowProposal.domain.ValueObjects;
 
 import core.Figure.domain.Entities.Figure;
 import jakarta.persistence.Embeddable;

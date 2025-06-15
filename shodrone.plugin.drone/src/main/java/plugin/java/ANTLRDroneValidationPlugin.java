@@ -43,5 +43,3 @@ public class ANTLRDroneValidationPlugin implements DroneValidationPlugin {
         return new DroneValidationResult(errors.isEmpty(), errors);
     }
 }
-
-

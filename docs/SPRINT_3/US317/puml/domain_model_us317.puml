@@ -22,10 +22,13 @@ package "ShowProposal " <<aggregate>>{
     class ShowConfiguration <<Entity>>{
     }
 
+    class ShowConfigurationFigure <<Value Object>>{
+    }
+
     class Video <<Value Object>>{
     }
 
-    class DocumentValidate <<Service>> {
+    class ProposalDocumentGenerator <<Service>> {
     }
 
     class ShowDSLDescription <<Value Object>> {
@@ -36,6 +39,7 @@ package "ShowProposal " <<aggregate>>{
 
     'ShowProposal -> x
     ShowProposal --> "1" CustomerFeedback: customerFeedback
+    ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" CRMManager: template configured by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
@@ -49,11 +53,14 @@ package "ShowProposal " <<aggregate>>{
     GenerateShowDSL ..> ShowConfiguration: uses
     GenerateShowDSL --> ShowDSLDescription: returns
 
-    'DocumentValidate -> x
-    DocumentValidate ..> "1" ShowProposalDocument: validates
+    'ProposalDocumentGenerator -> x
+    ProposalDocumentGenerator ..> "1" ShowProposalDocument: validates & generates
 
     'ShowConfiguration -> x
-    ShowConfiguration --> "0..1" ShowDSLDescription: showDSLDescription
+    ShowConfiguration --> "1..*" ShowConfigurationFigure: figures
+        ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
+
+
 }
 
 

@@ -69,7 +69,7 @@ package "ShowProposal " <<aggregate>>{
     class ShowProposal <<Entity>> <<root>>{
     }
 
-    class ShowProposalTemplate <<Value Object>>{
+    class ShowProposalDocument <<Value Object>>{
     }
 
     class ShowProposalNumber <<Value Object>>{
@@ -84,10 +84,13 @@ package "ShowProposal " <<aggregate>>{
     class ShowConfiguration <<Entity>>{
     }
 
+    class ShowConfigurationFigure <<Value Object>>{
+    }
+
     class Video <<Value Object>>{
     }
 
-    class TemplateValidate <<Service>> {
+    class ProposalDocumentGenerator <<Service>> {
     }
 
     class ShowDSLDescription <<Value Object>> {
@@ -98,10 +101,11 @@ package "ShowProposal " <<aggregate>>{
 
     'ShowProposal -> x
     ShowProposal --> "1" CustomerFeedback: customerFeedback
+    ShowProposal --> "1" CRMCollaborator: created by
     ShowProposal --> "1" CRMManager: template configured by
     ShowProposal --> "1" ShowRequest: based on
     ShowProposal --> "1" ShowProposalStatus: proposalStatus
-    ShowProposal --> "1" ShowProposalTemplate: template
+    ShowProposal --> "1" ShowProposalDocument: document
     ShowProposal --> "1" ShowProposalNumber: proposalNumber
     ShowProposal --> "1" Insurance: insurance
     ShowProposal --> "1" ShowConfiguration: showConfiguration
@@ -111,13 +115,18 @@ package "ShowProposal " <<aggregate>>{
     GenerateShowDSL ..> ShowConfiguration: uses
     GenerateShowDSL --> ShowDSLDescription: returns
 
-    'TemplateValidate -> x
-    TemplateValidate ..> "1" ShowProposalTemplate: validates
+    'ProposalDocumentGenerator -> x
+    ProposalDocumentGenerator ..> "1" ShowProposalDocument: validates & generates
 
     'ShowConfiguration -> x
-    ShowConfiguration --> "1..*" Drone: drones
+    ShowConfiguration --> "1..*" ShowConfigurationFigure: figures
+        ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
+
+
+    'ShowConfiguration -> x
+    ShowConfiguration --> "1..*" Model: models
+
     ShowConfiguration -> "0..1" ShowDSLDescription: showDSLDescription
-        ShowConfiguration --> "1..*" Model: model
 
 }
 

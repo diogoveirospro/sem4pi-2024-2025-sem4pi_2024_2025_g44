@@ -1,8 +1,8 @@
-# US 311 
+# US 317 
 
 ## 1. Context
 
-This task as the objective of concluding the requirements of the us311 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task as the objective of concluding the requirements of the us317 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
 
 ### 1.1 List of Issues
 
@@ -16,21 +16,16 @@ This task as the objective of concluding the requirements of the us311 of sprint
 ## 2. Requirements
 
 **As** a CRM Collaborator,  
-**I want** to configure the list of drone models (number of drones and model) of a show proposal.
-**So that** I can configure the list of the drones and the model to be used.
+**I want** to mark the proposal as accepted by the customer after it has been accept by a Customer RepresentaƟve in the Customer App.
+**So that** I can see if the show proposal will be a confirmed show or not.
 
 ### Acceptance Criteria
 
-- **AC01**: The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
-- **AC02**: There is no need to verify if these drones are used in another show on the same date.
-- **AC03**: The same drone cannot be used more than once in the same configuration.
-- **AC04**: The total number of drones in the configuration, need to be the same as the total number of drones of the proposal.
+- **AC01**: The show proposal can only be accepted or rejected if the show proposal have already a customer feedback.
 
 ### Dependencies
 
-- This requirement depends on [US310](../../SPRINT_3/US310/readme.md), as a show proposal must be created before drones can be added to it.
-- This requirement depends on [US240](../../SPRINT_2/US240/readme.md), as a drone model must be registered in the system before it can be added to a show proposal.
-- This requirement depends on [US241](../../SPRINT_2/US241/readme.md), as a drone must be registered in the system before it can be added to a show proposal.
+- This requirement depends on [US371](../../SPRINT_3/US371/readme.md), as a show proposal must have a customer feedback about the show.
 
 ---
 
@@ -56,36 +51,11 @@ The `Show Proposal` aggregate  includes:
 - **GenerateShowDSL** – A domain service that generates a DSL (domain-specific language) description of the show.
 - **ShowDSLDescription** – A DSL representation of the show’s technical configuration.
 
-The principal element of show proposal for this US is the **ShowConfiguration**, with a list of all the drones needed for the show proposal, for each **DroneModel**.
+The principal element of show proposal for this US is the **CustomerFeedback**, that have the information to accept or reject a show proposal.
 
-### Drone Aggregate
-The Drone aggregate is responsible for representing an individual drone in the system. This aggregate ensures the integrity and consistency of a drone throughout its lifecycle, including its unique identifiers, operational status, and language settings.
-
-The `Drone` aggregate includes:
-
-- **SerialNumber** – Unique identifier for each drone.
-- **DroneStatus** – Current status of the drone (e.g., active, under maintenance, removed).
-- **RemovalReason** – Reason for the drone’s removal, if applicable.
-- **DroneLanguage** – Configuration or operational language of the drone.
-- **DroneLanguageValidate** – Domain service that validates the selected language for a drone.
-
-For this US, the important elemente from **Drone** is the **SerialNumber**, to indentify the drone in the proposal.
-
-### ModelOfDrone  Aggregate
-The Model aggregate represents a generic drone model, including its technical specifications, name, and configuration. It is directly related to physical drones (Drone entities) that adopt this model.
-
-The `ModelOfDrone ` aggregate includes:
-
-- **ModelName** – Identifier for the model’s name.
-- **Configuration** – Technical configuration and specifications of the drone model.
-- **WindSpeed** – Maximum wind speed tolerances defined for the model.
-- **PositionTolerance** – Accepted deviation or precision in positioning.
-- **SafetyStatus** – Current safety certification of the model (e.g., approved, rejected, under review).
-
-For this US, the important elemente from **Model** is the **ModelName**, to indentify the model to add the drones in the proposal.
 
 ---
-![Domain model](images/domain_model_us311.svg "Domain Model")
+![Domain model](images/domain_model_us317.svg "Domain Model")
 
 ---
 
@@ -102,56 +72,31 @@ This layered architecture ensures clear separation of concerns and supports main
 
 ### 4.1 Realization
 
-![US311 Sequence Diagram](images/sequence_diagram_us311.svg "US311 Sequence Diagram")
+![US317 Sequence Diagram](images/sequence_diagram_us317.svg "US317 Sequence Diagram")
 
 ---
 
 ## 5. Tests
 
-The following tests validate the acceptance criteria defined for **US311**. These tests ensure that the system behaves as expected when configuring drone models in a show proposal.
+The following tests validate the acceptance criteria defined for **US317**. These tests ensure that the system behaves as expected when accepting a show proposal.
 
 ---
 
 ### Test 1: Customer is a user of the system
 
 **Refers to Acceptance Criteria:** AC01  
-**Description:** The drones in the proposal must be compatible with the drones in the Shodrone’s inventory.
+**Description:** The customer feedback must not be null when accepting or rejecting a show proposal.
 
 ```java
     @Test
-    void testDroneIventory() {
-            ShowConfigurationEntry entry = new ShowConfigurationEntry(model, drone);
-            assertEquals(entry.drone().droneStatus(), DroneStatus.ACTIVE);
-            }
-```
-
----
-
-### Test 2: Configuration cant have the same drone multiple times
-
-**Refers to Acceptance Criteria:** AC03  
-**Description:** Verifies that the same drone is not used more than 1 time on the same configuration.
-
-```java
-    void testNotEqualsDifferentDrone() {
-        ShowConfigurationEntry entry1 = new ShowConfigurationEntry(model, drone);
-        ShowConfigurationEntry entry2 = new ShowConfigurationEntry(model, drone2);
-        assertNotEquals(entry1, entry2);
-        }
-```
-
-### Test 3 Configuration needs to have the same number of drones as the proposal
-
-**Refers to Acceptance Criteria:** AC04  
-**Description:** The total number of drones in the configuration, need to be the same as the total number of drones of the proposal.
-
-```java
-    void ensureTotalDronesInConfigurationMatchesProposalQuantity() {
+    void testFeedBackNotNull (){
             ShowProposal proposal = new ShowProposal(showRequest, date, time, duration,
             quantDrones, insurance, collaborator, generateProposalNumber);
 
-            assertNotEquals(quantDrones, showConfiguration.showConfiguration().size(),
-            "The total number of drones in the configuration should match the proposal's quantity of drones");
+            CustomerFeedback customerFeedback = new CustomerFeedback(CustomerFeedbackStatus.ACCEPTED, "Great proposal, looking forward to the show!");
+            CustomerFeedback customerFeedback2 = new CustomerFeedback(CustomerFeedbackStatus.REJECTED, "Bad proposal, looking forward to the show!");
+            assertNotEquals(customerFeedback, proposal.customerFeedback());
+            assertNotEquals(customerFeedback2, proposal.customerFeedback());
             }
 ```
 
@@ -160,91 +105,97 @@ The following tests validate the acceptance criteria defined for **US311**. Thes
 
 ---
 
-### 👤 Actor
+### Architecture Layers
 
-#### CRM Collaborator
-- **Role:** The end-user who initiates the configuration of drone models for a show proposal.
-- **Interaction:** Navigates the UI to select a show proposal, choose drone models, specify quantities, and confirm the configuration.
-
----
-
-### 💻 UI Layer
-
-#### :ConfigShowPropUI
-- **Role:** Manages interaction with the CRM Collaborator. Collects and displays data.
-- **Main Methods:**
-  - `getShowProposalList()`: Requests available show proposals.
-  - `getModelList()`: Requests a list of drone models for selection.
-  - `getDrnModelList(model)`: Requests the list of physical drones for a selected model.
-  - `configureShow(showProposal, configuration)`: Sends the final configuration to the controller.
+| Layer | Components | Responsibility |
+|-------|------------|-----------------|
+| **Presentation/UI Layer** | `:AccShowPropUI` | Handles user interaction |
+| **Application/Controller Layer** | `:AccShowPropController` | Coordinates business logic |
+| **Persistence Layer** | `:Persistence` `:RepositoryFactory` `:repositoryFactory::RepositoryFactory` | Provides access to repositories |
+| **Repository Layer** | `showProposalRepository` `modelRepository` | CRUD operations for domain models |
+| **Domain Model Layer** | `showProposal` | Represents business entities and rules |
 
 ---
 
-### 🎮 Application Layer
+### Detailed Step-by-Step Process
 
-#### :ConfigShowPropController
-- **Role:**  Coordinates the acceptance logic by interacting with repositories and domain objects.
-- **Main Methods:**
-  - `getShowProposalList()`: Fetches show proposals using the `ShowProposalRepository`.
-  - `getModelList()`: Fetches drone models using the **ModelRepository**.
-  - `getDrnModelList(model)`: Retrieves drones associated with a specific model.
-  - `getShowProposalRepository()`: Resolves and caches the repository instance.
-  - `configureShow(showProposal, configuration)`: Builds, validates, and saves the configuration.
-  - `verifyShowPropConfig(configuration)`: Ensures the configuration is valid (no duplicate drones, availability checks, etc.).
+#### 1. User Initiates the Action
+
+- Actor: `CRM Collaborator` (`DT`)
+- Action: Requests to accept a show proposal
+- Message: `DT -> UI: requests to accept a show proposal`
+
+#### 2. UI Layer: Request for Data
+
+- `UI -> CTRL: getShowProposalCheckedList()`
+- The UI delegates to Controller to retrieve the list of proposals ready for acceptance.
+
+#### 3. Controller Layer: Retrieve Repository Factory
+
+- `CTRL --> PERS: getRepositoryFactory()`
+- Persistence returns repositoryFactory instance.
+- `CTRL -> REPOS: getInstance()`
+- RepositoryFactory returns repository singleton.
+
+#### 4. Repository Layer: Get Show Proposal Repository
+
+- `CTRL -> REPOS_SINGLETON: getShowProposalRepository()`
+- Gets repository instance for show proposals.
+- `CTRL -> SP_REPO: getShowProposalCheckedList()`
+- Retrieves list of proposals marked for checking.
+- Result sent back up the stack: `CTRL --> UI: showProposalCheckedList` then `UI --> DT`.
+
+#### 5. User Selects a Proposal
+
+- `DT -> UI: selects one`
+- The collaborator selects a specific show proposal from the presented list.
+
+#### 6. UI Sends Selection to Controller
+
+- `UI -> CTRL: acceptProp(showProposal)`
+- The UI calls the business logic to accept the selected proposal.
+
+#### 7. Controller Layer: Access Repository Again
+
+- Controller again repeats:
+  - Gets repository factory via persistence.
+  - Gets repository singleton via repository factory.
+  - Retrieves `showProposalRepository`.
+
+#### 8. Business Logic Execution
+
+- `CTRL -> CTRL: verifyShowProp(showProposal)`
+  - Validates that the proposal can be accepted.
+  - Returns `true` if validation passes.
+
+#### 9. Domain Model Change
+
+- `CTRL -> SP: setShowProposalStatus(ACCEPTED)`
+  - The domain object updates its internal state to `ACCEPTED`.
+
+#### 10. Persist the Updated Proposal
+
+- `CTRL -> SP_REPO: save(showProposal)`
+- Repository saves the updated show proposal to persistence storage.
+
+#### 11. Final UI Feedback
+
+- `CTRL --> UI: true`
+- `UI --> DT: displays success message`
+- User sees confirmation that the proposal was successfully accepted.
 
 ---
 
-### 🗃 Persistence Layer
+### Main Methods Involved
 
-#### :Persistence
-- **Role:** Provides access to the persistence infrastructure and repository factory.
-- **Main Method:**
-  - `getRepositoryFactory()`: Returns a factory capable of creating repository instances.
-
----
-
-### 🏗 Repository Layer
-
-#### :RepositoryFactory
-- **Role:** Abstract factory interface to provide access to various domain repositories.
-
-#### :repositoryFactory::RepositoryFactory (Singleton)
-- **Role:** Singleton implementation that returns concrete repositories for domain access.
-- **Main Methods:**
-  - `getShowProposalRepository()`: Retrieves the `ShowProposalRepository` instance.
-  - `getModelRepository()`: Retrieves the `ModelRepository` instance.
-
-#### showProposalRepository: ShowProposalRepository
-- **Role:** Manages persistent storage of ShowProposal entities.
-- **Main Methods:**
-  - `getShowProposalList()`: Returns all existing show proposals.
-  - `save(showProposal)`: Persists the updated show proposal with the new configuration.
-
-#### showProposalRepository: ShowProposalRepository
-- **Role:** Handles persistent storage and retrieval of `ShowProposal` entities.
-- **Main Methods:**
-  - `getModelList()`: Returns the list of available drone models.
-  - `getDrnModelList(model)`: Returns the list of physical drones belonging to a specific model.
-
-#### modelRepository: ModelRepository
-- **Role:** Provides access to drone model data.
-- **Main Method:**
-  - `getModelList()`: Returns the list of available drone models.
-
----
-
-### 🧠 Domain Layer
-
-#### configuration: Configuration
-- **Role:** Responsible for encapsulating the logic and data structure for a show configuration.
-- **Main Method:**
-  - `createConfig(configuration)`: Builds a configuration object from the user input (model and quantity data).
-
-#### showProposal: ShowProposal
-- **Role:** Represents a single show proposal entity and contains business rules.
-- **Main Methods:**
-  - `setConfig(showConfiguration)`: Adds the configuration to the proposal.
-  - `verifyShowProp(showProposal)`: Validates the configuration according to business rules.
+| Layer | Method | Responsibility |
+|-------|--------|-----------------|
+| UI | `getShowProposalCheckedList()`, `acceptProp(showProposal)` | UI triggers data fetch and submission |
+| Controller | `verifyShowProp(showProposal)`, `acceptProp()` | Coordinates business logic |
+| Persistence | `getRepositoryFactory()` | Provides RepositoryFactory |
+| RepositoryFactory | `getInstance()`, `getShowProposalRepository()` | Repository creation |
+| Repository | `getShowProposalCheckedList()`, `save(showProposal)` | CRUD operations |
+| Domain Model | `setShowProposalStatus(ACCEPTED)` | Changes business state |
 
 ---
 
@@ -252,20 +203,16 @@ The following tests validate the acceptance criteria defined for **US311**. Thes
 
 ### 🔁 Process Flow Summary
 
-1. **CRM Collaborator** starts the process in the UI.
-2. The UI requests available **Show Proposals** via the **Controller**, which fetches them through the **ShowProposalRepository**.
-3. The user selects a proposal.
-4. For each drone model:
-- The UI requests available models via the **ModelRepository**.
-- The CRM Collaborator selects a model and provides a drone count.
-5. The UI collects these inputs into a configuration.
-6. The user confirms the configuration.
-7. The Controller:
-- Builds the configuration using the **Configuration** domain object.
-- Assigns it to the **ShowProposal**.
-- Validates the **ShowProposal**.
-- Persists the updated proposal via the **ShowProposalRepository**.
-8. A success message is shown to the CRM Collaborator.
+1. User logs into CRM UI and requests to accept a show proposal.
+2. UI asks Controller for the list of proposals ready to be accepted.
+3. Controller navigates through the RepositoryFactory to reach the ShowProposalRepository.
+4. The repository returns a list of proposals to UI.
+5. UI shows the list to the user; user selects one proposal.
+6. UI sends selection to Controller to accept.
+7. Controller verifies if the proposal can be accepted.
+8. If valid, domain object state is updated.
+9. The updated proposal is saved into persistence via repository.
+10. UI confirms to user that the operation succeeded.
 
 ---
 ## 8. Observations

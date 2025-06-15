@@ -36,6 +36,12 @@
 #define HISTORY_INIT_CAPACITY 100
 #define MAX_DRONES 100
 
+#define PARENT_SHM_NAME "/shm_parent"
+#define DRONES_SHM_NAME "/shm_drones"
+
+//#define DRONE_SEMAPHORE_PREFIX "/sem_drone_"
+//#define PARENT_SEMAPHORE_PREFIX "/sem_parent_"
+
 #define RESET "\033[0m"
 #define BOLD "\033[1m"
 #define RED "\033[31m"
@@ -213,7 +219,7 @@ sem_t* open_semaphore(const char *name);
 void post_semaphore(sem_t *sem);
 void wait_semaphore(sem_t *sem);
 void clear_semaphore(const char *name, sem_t *sem);
-int get_semaphore_value(sem_t *sem);
+//int get_semaphore_value(sem_t *sem);
 
 // Thread Functions
 void create_threads(pthread_t *threads, int n, void *(*start_routine)(void *), void **args);

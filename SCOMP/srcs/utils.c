@@ -306,14 +306,14 @@ void wait_semaphore(sem_t *sem) {
     sem_wait(sem);
 }
 
-int get_semaphore_value(sem_t *sem) {
+/*int get_semaphore_value(sem_t *sem) {
     int value;
     if (sem_getvalue(sem, &value) == -1) {
         perror("Error getting semaphore value");
         return -1;
     }
     return value;
-}
+}*/
 
 // ---------------- Thread Functions ----------------
 

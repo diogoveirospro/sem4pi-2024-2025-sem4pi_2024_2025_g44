@@ -8,11 +8,11 @@ programming and simulation.
 
 ### 1.1 List of Issues
 
-Analysis :        Doing
+Analysis :        Done
 
-Design:           Doing
+Design:           Done
 
-Implement:        To do
+Implement:        Done
 
 Test:             ⚪ Not Applicable (UI-driven)
 

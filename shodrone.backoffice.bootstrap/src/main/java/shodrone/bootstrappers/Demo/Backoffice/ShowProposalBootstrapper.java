@@ -61,9 +61,6 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
         cleanShowDSLFiles();
 
         List<ShowRequest> showRequests = (List<ShowRequest>) showRequestRepository.findAllCreatedShowRequests();
-        for (ShowRequest showRequest : showRequests) {
-            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "Show Request: " + showRequest.identity().showRequestID() + UtilsUI.RESET);
-        }
         List<CRMCollaborator> crmCollaborators = (List<CRMCollaborator>) crmCollaboratorRepository.findAll();
         List<Model> models = (List<Model>) modelRepository.findAll();
         List<Drone> drones = (List<Drone>) droneRepository.findAll();

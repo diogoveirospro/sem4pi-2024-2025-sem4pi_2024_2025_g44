@@ -5,13 +5,11 @@ import Shodrone.console.Category.actions.ChangeCategoryStatusUI;
 import Shodrone.console.Category.actions.EditCategoryUI;
 import Shodrone.console.Category.printer.ListExistingCategoriesUI;
 import Shodrone.console.Customer.ui.*;
-import Shodrone.console.Drone.ui.AddDroneUI;
-import Shodrone.console.Drone.ui.RegisterUsageTimeUI;
+import Shodrone.console.Drone.actions.ValidateDroneProgramAction;
+import Shodrone.console.Drone.ui.*;
 import Shodrone.console.Maintenance.ui.AddMaintenanceRecordDroneUI;
 import Shodrone.console.Maintenance.ui.ListDroneMaintenanceHistoryUI;
 import Shodrone.console.Model.ui.CreateModelUI;
-import Shodrone.console.Drone.ui.ListDroneUI;
-import Shodrone.console.Drone.ui.RemoveDroneUI;
 import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
@@ -122,7 +120,6 @@ public class MainMenu extends AbstractFancyUI {
 
     // MAIN MENU
     private static final int MY_USER_MENU = 1;
-    private static final int HELP_MENU = 8;
 
     // ADMIN MENUS
     private static final int ADMIN_USERS_MENU = 2;
@@ -144,7 +141,6 @@ public class MainMenu extends AbstractFancyUI {
     // DRONE TECH MENUS
     private static final int DRONE_MENU = 2;
     private static final int DRONE_TECH_SHOW_PROPOSALS_MENU = 3;
-    private static final int SIMULATOR_MENU = 4;
 
     // POWER USER MENUS
     private static final int POWER_USER_USERS_MENU = 2;
@@ -154,7 +150,6 @@ public class MainMenu extends AbstractFancyUI {
     private static final int POWER_USER_SHOW_PROPOSAL_MENU = 6;
     private static final int POWER_USER_FIGURE_CATEGORY_MENU = 7;
     private static final int POWER_USER_DRONE_MENU = 8;
-    private static final int POWER_USER_SIMULATOR_MENU = 9;
 
     // CUSTOMER MENU
     private static final int REGISTER_CUSTOMER_OPTION = 1;
@@ -208,6 +203,7 @@ public class MainMenu extends AbstractFancyUI {
     private static final int DRONE_TECH_REGISTER_USAGE_TIME_OPTION = 5;
     private static final int DRONE_TECH_LIST_MAINTENANCE_HISTORY_OPTION = 6;
     private static final int DRONE_TECH_ADD_MAINTENANCE_RECORD_OPTION = 7;
+    private static final int DRONE_VALIDATION = 8;
 
     // PROPOSAL COLLABORATOR MENU
     private static final int COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION = 1;
@@ -222,10 +218,6 @@ public class MainMenu extends AbstractFancyUI {
 
     // PROPOSAL DRONE TECH MENU
     private static final int DRONE_TECH_GENERATE_SHOW_DSL_OPTION = 1;
-
-    // SIMULATOR MENU
-    private static final int SIMULATE_SHOW_OPTION = 1;
-    private static final int CHANGE_CONFIG_FILE_OPTION = 2;
 
 
     private static final String SEPARATOR_LABEL = "----------------------------";
@@ -461,6 +453,8 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(DRONE_TECH_REGISTER_USAGE_TIME_OPTION, "Register Usage Time for Drone", new RegisterUsageTimeUI()::show);
         menu.addItem(DRONE_TECH_LIST_MAINTENANCE_HISTORY_OPTION, "List Maintenance History of Drone", new ListDroneMaintenanceHistoryUI()::show);
         menu.addItem(DRONE_TECH_ADD_MAINTENANCE_RECORD_OPTION, "Add Maintenance Record to a Drone", new AddMaintenanceRecordDroneUI()::show);
+        menu.addItem(DRONE_VALIDATION, "Validate Drone Template", new ValidateDroneProgramAction());
+
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 
         return menu;

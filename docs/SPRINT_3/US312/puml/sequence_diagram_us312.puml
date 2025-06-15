@@ -1,0 +1,67 @@
+@startuml
+actor "CRM Collaborator" as CRM
+participant "AddFiguresToProposalUI" as UI
+participant "AddFiguresToProposalController" as Controller
+participant "ShowProposalRepository" as ProposalRepo
+participant "FigureRepository" as FigureRepo
+participant "ShowProposal" as Proposal
+participant "ShowConfiguration" as Configuration
+participant "Figure" as Figure
+
+CRM -> UI : Selects "Add Figures to Proposal"
+activate UI
+
+UI -> Controller : getShowProposalList()
+activate Controller
+Controller -> ProposalRepo : findAllTestingProposals()
+activate ProposalRepo
+ProposalRepo --> Controller : List<ShowProposal>
+deactivate ProposalRepo
+Controller --> UI : List<ShowProposal>
+deactivate Controller
+
+UI -> CRM : Displays list of proposals
+CRM -> UI : Selects a proposal
+
+UI -> Controller : getFigureList(customer)
+activate Controller
+Controller -> FigureRepo : getPublicCatalogue()
+activate FigureRepo
+FigureRepo --> Controller : List<PublicFigures>
+deactivate FigureRepo
+Controller -> FigureRepo : findExclusiveFiguresToCustomer(customer)
+activate FigureRepo
+FigureRepo --> Controller : List<ExclusiveFigures>
+deactivate FigureRepo
+Controller --> UI : List<Figures>
+deactivate Controller
+
+UI -> CRM : Displays list of figures
+CRM -> UI : Selects a figure
+
+UI -> Controller : addFiguresToProposal(proposal, selectedFigures)
+activate Controller
+Controller -> Proposal : configuration()
+activate Proposal
+Proposal --> Controller : ShowConfiguration
+deactivate Proposal
+
+Controller -> Configuration : addFigures(selectedFigures)
+activate Configuration
+Configuration -> Figure : Validate each figure (e.g., active, not consecutive)
+activate Figure
+Figure --> Configuration : Validation Result
+deactivate Figure
+Configuration --> Controller : Figures added
+deactivate Configuration
+
+Controller -> ProposalRepo : save(proposal)
+activate ProposalRepo
+ProposalRepo --> Controller : Save success
+deactivate ProposalRepo
+Controller --> UI : Success message
+deactivate Controller
+
+UI -> CRM : Displays success message
+deactivate UI
+@enduml

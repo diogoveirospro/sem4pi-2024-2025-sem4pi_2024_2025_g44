@@ -8,7 +8,8 @@ DRONE_EXEC=drone
 REPORT_FOLDER=./ReportFolder
 
 CC=gcc
-FLAGS=-pthread -lrt
+#FLAGS=-pthread -lrt -lm
+FLAGS=
 
 RM=rm -f
 
@@ -18,10 +19,10 @@ run: $(PARENT_EXEC) $(DRONE_EXEC)
 	@./$<
 
 $(PARENT_EXEC): $(PARENT_FILE) $(UTILS_FILE)
-	@$(CC) $(FLAGS) $^ -o $@ -lm
+	@$(CC) $(FLAGS) $^ -o $@
 
 $(DRONE_EXEC): $(DRONE_FILE) $(UTILS_FILE)
-	@$(CC) $(FLAGS) $^ -o $@ -lm
+	@$(CC) $(FLAGS) $^ -o $@
 
 clean:
 	@$(RM) $(PARENT_EXEC) $(DRONE_EXEC)

@@ -62,7 +62,6 @@ public class CreateShowProposalUI extends AbstractFancyUI {
             UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
-            System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
@@ -118,7 +117,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "The current duration is: " + currDuration.toMinutes() +
                 " minutes. Do you want to change it? (Y/N): " + UtilsUI.RESET);
         if (!confirm) {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current duration: " + currDuration.toMinutes() + " minutes." + UtilsUI.RESET);
+            System.out.print(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current duration: " + currDuration.toMinutes() + " minutes." + UtilsUI.RESET);
             return currDuration;
         }
         return null;
@@ -127,7 +126,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
     private String enterValidAmount() {
         do {
             try {
-                String amountStr = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the insurance amount (or type 'cancel' to go back): " + UtilsUI.RESET);
+                String amountStr = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the insurance amount (or type 'cancel' to go back): " + UtilsUI.RESET);
                 if ("cancel".equalsIgnoreCase(amountStr)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
@@ -153,7 +152,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         }
 
         ListWidget<String> currencyListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                "\nChoose a Currency: \n" + UtilsUI.RESET, currencies, currencyPrinter );
+                "\n\nChoose a Currency: \n" + UtilsUI.RESET, currencies, currencyPrinter );
         currencyListWidget.show();
 
         int option;
@@ -186,7 +185,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         int option;
         do {
             ListWidget<ShowRequest> showRequestListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                    "Choose a Show Request\n" + UtilsUI.RESET, showRequestList, showRequestPrinter);
+                    "\n\nChoose a Show Request\n" + UtilsUI.RESET, showRequestList, showRequestPrinter);
             showRequestListWidget.show();
             option = UtilsUI.selectsIndex(showRequestList);
             if (option == -2) {
@@ -218,7 +217,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         if (currTime1 != null) return currTime1;
         do {
             try {
-                time = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the show's time (hh:mm) (or type 'cancel' to go back): " + UtilsUI.RESET);
+                time = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the show's time (hh:mm) (or type 'cancel' to go back): " + UtilsUI.RESET);
                 assert time != null;
                 if ("cancel".equalsIgnoreCase(time)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -236,7 +235,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "The current time is: " + currTime.format(DateTimeFormatter.ofPattern("HH:mm")) +
                 ". Do you want to change the time of the show? (Y/N): " + UtilsUI.RESET);
         if (!confirm) {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current time: " + currTime.format(DateTimeFormatter.ofPattern("HH:mm")) + UtilsUI.RESET);
+            System.out.print(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current time: " + currTime.format(DateTimeFormatter.ofPattern("HH:mm")) + UtilsUI.RESET);
             return currTime;
         }
         return null;
@@ -250,7 +249,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         LocalDate lDate;
         do {
             try {
-                date = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "Enter the show's date (dd-MM-yyyy) (or type 'cancel' to go back): " + UtilsUI.RESET);
+                date = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter the show's date (dd-MM-yyyy) (or type 'cancel' to go back): " + UtilsUI.RESET);
                 assert date != null;
                 if ("cancel".equalsIgnoreCase(date)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -274,7 +273,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "The current date is: " + currDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) +
                 ". Do you want to change the date of the show? (Y/N): " + UtilsUI.RESET);
         if (!confirm) {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current date: " + currDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + UtilsUI.RESET);
+            System.out.print(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current date: " + currDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + UtilsUI.RESET);
             return currDate;
         }
         return null;
@@ -303,7 +302,7 @@ public class CreateShowProposalUI extends AbstractFancyUI {
         boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "The current quantity of drones is: " + currQuantityOfDrones +
                 ". Do you want to change it? (Y/N): " + UtilsUI.RESET);
         if (!confirm) {
-            System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current quantity of drones: " + currQuantityOfDrones + UtilsUI.RESET);
+            System.out.print(UtilsUI.GREEN + UtilsUI.BOLD + "\nUsing the current quantity of drones: " + currQuantityOfDrones + UtilsUI.RESET);
             return currQuantityOfDrones;
         }
         return null;

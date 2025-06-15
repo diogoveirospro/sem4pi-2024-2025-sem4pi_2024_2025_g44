@@ -46,7 +46,7 @@ public class AddVideoToProposalUI extends AbstractFancyUI {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
                 }
                 controller.addVideoToProposal(showProposal, video);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nVideo added successfully!" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nVideo added successfully!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
                 return true;
             }
@@ -56,7 +56,6 @@ public class AddVideoToProposalUI extends AbstractFancyUI {
             UtilsUI.goBackAndWait();
             return false;
         } catch (UserCancelledException e) {
-            System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
             return false;
         } catch (Exception e) {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
@@ -82,7 +81,7 @@ public class AddVideoToProposalUI extends AbstractFancyUI {
         int option;
         do {
             ListWidget<ShowProposal> showProposalListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                    "Choose a Show Proposal\n" + UtilsUI.RESET, showProposalList, printer);
+                    "\n\nChoose a Show Proposal\n" + UtilsUI.RESET, showProposalList, printer);
             showProposalListWidget.show();
             option = UtilsUI.selectsIndex(showProposalList);
             if (option == -2) {
@@ -107,7 +106,7 @@ public class AddVideoToProposalUI extends AbstractFancyUI {
         int option;
         do {
             ListWidget<ShowRequest> showRequestListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                    "Choose a Show Request\n" + UtilsUI.RESET, showRequestList, showRequestPrinter);
+                    "\nChoose a Show Request\n" + UtilsUI.RESET, showRequestList, showRequestPrinter);
             showRequestListWidget.show();
             option = UtilsUI.selectsIndex(showRequestList);
             if (option == -2) {
@@ -130,7 +129,7 @@ public class AddVideoToProposalUI extends AbstractFancyUI {
         int option;
         do {
             ListWidget<Video> videoListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                    "Choose a Video\n" + UtilsUI.RESET, videoList, videoPrinter);
+                    "\n\nChoose a Video\n" + UtilsUI.RESET, videoList, videoPrinter);
             videoListWidget.show();
             option = UtilsUI.selectsIndex(videoList);
             if (option == -2) {
