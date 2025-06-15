@@ -1,10 +1,8 @@
 package core.ModelOfDrone.domain.Entities;
 
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
-import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
-import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
+import core.ModelOfDrone.domain.ValueObjects.*;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +16,6 @@ public class ModelTestHelper {
         configMap.put(windSpeed, tolerance);
 
         Configuration config = new Configuration(configMap, SafetyStatus.SAFE);
-        return new Model(name, config);
+        return new Model(name, config, new TimeLimit(Duration.ofHours(2)));
     }
 }

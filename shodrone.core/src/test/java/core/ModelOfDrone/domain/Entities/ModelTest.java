@@ -4,6 +4,7 @@ import core.ModelOfDrone.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +26,7 @@ class ModelTest {
                 SafetyStatus.SAFE
         );
 
-        model = new Model(modelName, configuration);
+        model = new Model(modelName, configuration, new TimeLimit(Duration.ofHours(2)));
     }
 
     @Test
@@ -37,8 +38,8 @@ class ModelTest {
 
     @Test
     void testConstructorThrowsOnNullArgs() {
-        assertThrows(IllegalArgumentException.class, () -> new Model(null, configuration));
-        assertThrows(IllegalArgumentException.class, () -> new Model(modelName, null));
+        assertThrows(IllegalArgumentException.class, () -> new Model(null, configuration, new TimeLimit(Duration.ofHours(2))));
+        assertThrows(IllegalArgumentException.class, () -> new Model(modelName, null, new TimeLimit(Duration.ofHours(2))));
     }
 
     @Test
@@ -56,8 +57,8 @@ class ModelTest {
 
     @Test
     void testSameAs() {
-        Model sameModel = new Model(modelName, configuration);
-        Model differentModel = new Model(new ModelName("OtherModel"), configuration);
+        Model sameModel = new Model(modelName, configuration, new TimeLimit(Duration.ofHours(2)));
+        Model differentModel = new Model(new ModelName("OtherModel"), configuration, new TimeLimit(Duration.ofHours(2)));
 
         assertTrue(model.sameAs(sameModel));
         assertFalse(model.sameAs(differentModel));
@@ -67,8 +68,8 @@ class ModelTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Model sameModel = new Model(modelName, configuration);
-        Model differentModel = new Model(new ModelName("OtherModel"), configuration);
+        Model sameModel = new Model(modelName, configuration, new TimeLimit(Duration.ofHours(2)));
+        Model differentModel = new Model(new ModelName("OtherModel"), configuration, new TimeLimit(Duration.ofHours(2)));
 
         assertEquals(model, sameModel);
         assertEquals(model.hashCode(), sameModel.hashCode());

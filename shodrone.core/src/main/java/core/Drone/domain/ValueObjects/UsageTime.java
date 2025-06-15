@@ -42,7 +42,7 @@ public class UsageTime implements Serializable {
     public String toString() {
         long hours = usageTime.toHours();
         long minutes = usageTime.minusHours(hours).toMinutes();
-        return String.format("%02d:%02d", hours, minutes);
+        return String.format("%02dH:%02dM", hours, minutes);
     }
 
     public void addTime(LocalTime time) {

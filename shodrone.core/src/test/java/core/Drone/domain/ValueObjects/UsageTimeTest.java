@@ -13,7 +13,7 @@ class UsageTimeTest {
     @Test
     void shouldCreateValidUsageTime() {
         UsageTime ut = new UsageTime(Duration.ofHours(2).plusMinutes(30));
-        assertEquals("02:30", ut.toString());
+        assertEquals("02H:30M", ut.toString());
     }
 
     @Test
@@ -25,14 +25,14 @@ class UsageTimeTest {
     void shouldAddTimeCorrectly() {
         UsageTime ut = new UsageTime(Duration.ofHours(1).plusMinutes(45));
         ut.addTime(LocalTime.of(2, 15)); // total = 4:00
-        assertEquals("04:00", ut.toString());
+        assertEquals("04H:00M", ut.toString());
     }
 
     @Test
     void shouldAddTimeWithRollover() {
         UsageTime ut = new UsageTime(Duration.ofHours(23));
         ut.addTime(LocalTime.of(2, 30)); // 23:00 + 2:30 = 01:30 (next day)
-        assertEquals("25:30", ut.toString());
+        assertEquals("25H:30M", ut.toString());
     }
 
     @Test
@@ -59,6 +59,6 @@ class UsageTimeTest {
     void shouldInitializeFromNullAndThenAddTime() {
         UsageTime ut = new UsageTime();
         ut.addTime(LocalTime.of(2, 0));
-        assertEquals("02:00", ut.toString());
+        assertEquals("02H:00M", ut.toString());
     }
 }

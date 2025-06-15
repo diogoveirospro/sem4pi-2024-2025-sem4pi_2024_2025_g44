@@ -19,10 +19,7 @@ import core.Figure.domain.ValueObjects.Keyword;
 import core.Figure.domain.ValueObjects.Version;
 import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
-import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
-import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
+import core.ModelOfDrone.domain.ValueObjects.*;
 import core.Shared.domain.ValueObjects.*;
 import core.ShowDesigner.domain.Entities.ShowDesigner;
 import core.ShowProposal.application.Service.GenerateProposalNumber;
@@ -105,7 +102,7 @@ public class ShowProposalTest {
                 SafetyStatus.SAFE
         );
 
-        return new Model(modelName, configuration);
+        return new Model(modelName, configuration, new TimeLimit(Duration.ofHours(2)));
     }
 
     private Figure setUpPublicFigure() {

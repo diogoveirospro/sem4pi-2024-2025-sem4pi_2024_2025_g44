@@ -11,6 +11,8 @@ import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -59,6 +61,7 @@ public class CreateModelUI extends AbstractFancyUI {
                 PositionTolerance positionTolerance = new PositionTolerance(-1);
                 config.put(windSpeed, positionTolerance);
 
+                TimeLimit timeLimit = inputTimeLimit();
                 // Print summary of the configuration for confirmation
                 summaryOfConfiguration(modelName, config);
 
@@ -72,7 +75,7 @@ public class CreateModelUI extends AbstractFancyUI {
 
                 // Attempt to create the model
                 Configuration configuration = new Configuration(config, SafetyStatus.SAFE);
-                boolean success = controller.createModel(modelName, configuration);
+                boolean success = controller.createModel(modelName, configuration, timeLimit);
 
                 System.out.println(success ? UtilsUI.GREEN + UtilsUI.BOLD + "\nModel created!" + UtilsUI.RESET :
                         UtilsUI.BOLD + UtilsUI.RED + "\nFailed to create model." + UtilsUI.RESET);
@@ -211,6 +214,44 @@ public class CreateModelUI extends AbstractFancyUI {
             }
         } while (true);
 
+    }
+
+    private TimeLimit inputTimeLimit() {
+        String input;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm"); // permite mais de 24 horas ao tratar manualmente
+        do {
+            try {
+                input = UtilsUI.readLineFromConsole(UtilsUI.BOLD + UtilsUI.BLUE +
+                        "\nEnter time limit in HH:mm format (can exceed 24h, e.g. 30:15) or type 'cancel' to exit: " + UtilsUI.RESET);
+
+                if ("cancel".equalsIgnoreCase(input)) {
+                    throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
+
+                String[] parts = input.split(":");
+                if (parts.length != 2) {
+                    throw new IllegalArgumentException("Invalid format. Expected HH:mm.");
+                }
+
+                int hours = Integer.parseInt(parts[0]);
+                int minutes = Integer.parseInt(parts[1]);
+
+                if (hours < 0 || minutes < 0 || minutes >= 60) {
+                    throw new IllegalArgumentException("Hours must be >= 0 and minutes between 0 and 59.");
+                }
+
+                Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
+
+                if (duration.isZero() || duration.isNegative()) {
+                    throw new IllegalArgumentException("Time limit must be greater than 0.");
+                }
+
+                return new TimeLimit(duration);
+
+            } catch (IllegalArgumentException e) {
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid time format. Please try again." + UtilsUI.RESET);
+            }
+        } while (true);
     }
     /**
      * Returns the title/headline of the UI screen.

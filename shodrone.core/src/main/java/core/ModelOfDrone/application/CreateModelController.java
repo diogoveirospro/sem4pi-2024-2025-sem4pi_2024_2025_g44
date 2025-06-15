@@ -22,11 +22,11 @@ public class CreateModelController {
     public CreateModelController() {
     }
 
-    public boolean createModel(ModelName modelName, Configuration config){
+    public boolean createModel(ModelName modelName, Configuration config, TimeLimit timeLimit) {
         if (!validateModel(modelName)) {
             return false;
         }
-        Model model = new Model(modelName, config);
+        Model model = new Model(modelName, config, timeLimit);
         modelRepository.save(model);
         return true;
     }

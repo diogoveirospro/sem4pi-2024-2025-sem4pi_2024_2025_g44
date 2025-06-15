@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import org.springframework.boot.Banner;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.util.Objects;
 
 @Entity
@@ -25,16 +26,20 @@ public class Model implements Serializable, AggregateRoot<Designation> {
     @JoinColumn(name = "configuration")
     private Configuration configuration;
 
+    @Embedded
+    private TimeLimit timeLimit;
+
     protected Model() {
         // for ORM
     }
 
-    public Model(ModelName modelName, Configuration configuration) {
+    public Model(ModelName modelName, Configuration configuration, TimeLimit timeLimit) {
         if (modelName == null || configuration == null) {
             throw new IllegalArgumentException("Model name and wind tolerance must not be null");
         }
         this.modelName = modelName;
         this.configuration = configuration;
+        this.timeLimit = timeLimit;
     }
     public Configuration getConfiguration() {
         return configuration;

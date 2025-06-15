@@ -6,13 +6,11 @@ import core.Drone.domain.ValueObjects.RemovalReason;
 import core.Drone.domain.ValueObjects.SerialNumber;
 import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
-import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
-import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
+import core.ModelOfDrone.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -54,7 +52,7 @@ class ShowConfigurationEntryTest {
                 SafetyStatus.SAFE
         );
 
-        return new Model(modelName, configuration);
+        return new Model(modelName, configuration, new TimeLimit(Duration.ofHours(2)));
     }
 
     private Drone setUpDrone2() {
@@ -77,7 +75,7 @@ class ShowConfigurationEntryTest {
                 SafetyStatus.SAFE
         );
 
-        return new Model(modelName, configuration);
+        return new Model(modelName, configuration, new TimeLimit(Duration.ofHours(2)));
     }
 
     @Test

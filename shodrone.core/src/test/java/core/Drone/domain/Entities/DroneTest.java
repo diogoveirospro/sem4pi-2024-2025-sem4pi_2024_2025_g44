@@ -6,10 +6,7 @@ import core.Drone.domain.ValueObjects.SerialNumber;
 import core.Drone.domain.ValueObjects.UsageTime;
 import core.ModelOfDrone.domain.Entities.Configuration;
 import core.ModelOfDrone.domain.Entities.Model;
-import core.ModelOfDrone.domain.ValueObjects.ModelName;
-import core.ModelOfDrone.domain.ValueObjects.PositionTolerance;
-import core.ModelOfDrone.domain.ValueObjects.SafetyStatus;
-import core.ModelOfDrone.domain.ValueObjects.WindSpeed;
+import core.ModelOfDrone.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -117,6 +114,6 @@ class DroneTest {
         configMap.put(new WindSpeed(0, 10), new PositionTolerance(0.5));
         configMap.put(new WindSpeed(10, 999), new PositionTolerance(-1));
         Configuration configuration = new Configuration(configMap, SafetyStatus.SAFE);
-        return new Model(new ModelName("TestModel"), configuration);
+        return new Model(new ModelName("TestModel"), configuration, new TimeLimit(Duration.ofHours(2)));
     }
 }
