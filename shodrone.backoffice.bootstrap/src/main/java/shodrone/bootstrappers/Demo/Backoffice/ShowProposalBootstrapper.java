@@ -639,7 +639,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     }
 
     private void cleanProposalFiles() {
-        File pasta = new File("files/LPROG/");
+        File pasta = new File("files/LPROG");
         if (pasta.exists() && pasta.isDirectory()) {
             for (File file : pasta.listFiles()) {
                 if (file.isFile() && file.getName().startsWith("proposal")) {

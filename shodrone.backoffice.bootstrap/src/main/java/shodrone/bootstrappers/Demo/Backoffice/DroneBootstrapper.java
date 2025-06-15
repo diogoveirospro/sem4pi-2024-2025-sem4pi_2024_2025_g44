@@ -15,10 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import shodrone.presentation.UtilsUI;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 
 public class DroneBootstrapper implements Action {
     private static final Logger LOGGER = LogManager.getLogger(DroneBootstrapper.class);
@@ -28,6 +26,8 @@ public class DroneBootstrapper implements Action {
 
     @Override
     public boolean execute() {
+        cleanReportFiles();
+
         List<Model> modelList = new ArrayList<>();
         listDroneController.listModels().forEach(modelList::add);
 
@@ -36,7 +36,6 @@ public class DroneBootstrapper implements Action {
             return false;
         }
 
-        // Registo de Drones com modelos aleatórios da lista existente
         registerDrone(1000, randomModel(modelList));
         registerDrone(1001, randomModel(modelList));
         registerDrone(1002, randomModel(modelList));
@@ -87,5 +86,16 @@ public class DroneBootstrapper implements Action {
             LOGGER.error(UtilsUI.BOLD + UtilsUI.RED + "Failed to register drone '{}': {}" + UtilsUI.RESET,
                     serialNumberInt, e.getMessage());
         }
+    }
+
+    private void cleanReportFiles() {
+        File folder = new File("shodrone.app.testing/src/main/resources/Reports");
+        if (folder.exists() && folder.isDirectory()) {
+            for (File file : Objects.requireNonNull(folder.listFiles())) {
+                file.delete();
+            }
+        }
+
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully cleaned Report files" + UtilsUI.RESET);
     }
 }

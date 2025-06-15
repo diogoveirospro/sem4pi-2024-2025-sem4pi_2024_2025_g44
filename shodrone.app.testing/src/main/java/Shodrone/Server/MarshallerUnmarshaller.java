@@ -2,11 +2,14 @@ package Shodrone.Server;
 
 import Shodrone.exceptions.FailedRequestException;
 import core.Persistence.Application;
+import shodrone.presentation.UtilsUI;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,12 +77,14 @@ public class MarshallerUnmarshaller {
             }
         }
 
-        String reportPath = REPORT_FOLDER + "/simulation_report.txt";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy_MM_dd_HH_mm_ss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        String reportPath = REPORT_FOLDER + "/simulation_report_" + timestamp + ".txt";
         try {
             Files.deleteIfExists(Paths.get(reportPath));
 
             Files.write(Paths.get(reportPath), adjustedResponse, StandardCharsets.UTF_8);
-            System.out.println("Report generated successfully at: " + reportPath);
+            System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nReport generated successfully at: " + reportPath + UtilsUI.RESET);
         } catch (IOException e) {
             throw new FailedRequestException("Failed to generate report: " + e.getMessage());
         }
