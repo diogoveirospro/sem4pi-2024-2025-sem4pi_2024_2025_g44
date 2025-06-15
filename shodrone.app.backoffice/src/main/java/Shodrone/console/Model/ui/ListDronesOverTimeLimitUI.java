@@ -35,6 +35,8 @@ public class ListDronesOverTimeLimitUI extends AbstractFancyUI {
                         "List Drones\n" + UtilsUI.RESET, droneList, dronePrinter);
                 droneListWidget.show();
 
+                UtilsUI.goBackAndWait();
+
                 return true;
             }
             return false;

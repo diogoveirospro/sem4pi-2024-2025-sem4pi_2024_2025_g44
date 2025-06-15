@@ -6,56 +6,69 @@ import core.Maintenance.domain.Entities.MaintenanceType;
 import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
-import eapli.framework.presentation.console.ListWidget;
-import shodrone.presentation.AbstractFancyUI;
+import eapli.framework.visitor.Visitor;
+import shodrone.presentation.AbstractFancyListUI;
 import shodrone.presentation.UtilsUI;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * UI para listar todos os tipos de manutenção.
+ */
+public class ListAllMaintenanceTypeUI extends AbstractFancyListUI<MaintenanceType> {
 
-public class ListAllMaintenanceTypeUI extends AbstractFancyUI {
-
-    private final ListAllMaintenanceTypeController controller = new ListAllMaintenanceTypeController();
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
-    private final MaintenanceTypePrinter maintenanceTypePrinter = new MaintenanceTypePrinter();
+    private final ListAllMaintenanceTypeController controller = new ListAllMaintenanceTypeController();
 
     @Override
-    protected boolean doShow() {
-        try {
-            if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.DRONETECH)) {
-
-                Iterable<MaintenanceType> maintenanceType = controller.findAllMaintenanceTypes();
-                if (maintenanceType == null || !maintenanceType.iterator().hasNext()) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo Maintenance Type available." + UtilsUI.RESET);
-                    return false;
-                }
-
-                List<MaintenanceType> maintenanceTypeArrayList = new ArrayList<>();
-                maintenanceType.forEach(maintenanceTypeArrayList::add);
-
-                ListWidget<MaintenanceType> droneListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                        "\n" + UtilsUI.RESET, maintenanceTypeArrayList, maintenanceTypePrinter);
-                droneListWidget.show();
+    public boolean doShow() {
+        if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.DRONETECH)) {
+            final Iterable<MaintenanceType> types = elements();
+            if (!types.iterator().hasNext()) {
+                System.out.println(emptyMessage());
                 UtilsUI.goBackAndWait();
+                return true;
             }
-            return false;
-        } catch (IllegalArgumentException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError: " + e.getMessage() + UtilsUI.RESET);
+
+            System.out.println(listHeader());
+            for (MaintenanceType type : types) {
+                elementPrinter().visit(type);
+            }
+
             UtilsUI.goBackAndWait();
-            return false;
-        } catch (Exception e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
-            UtilsUI.goBackAndWait();
-            return false;
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    protected Iterable<MaintenanceType> elements() {
+        return controller.findAllMaintenanceTypes();
+    }
+
+    @Override
+    protected Visitor<MaintenanceType> elementPrinter() {
+        return new MaintenanceTypePrinter();
+    }
+
+    @Override
+    protected String elementName() {
+        return "";
+    }
+
+    @Override
+    protected String listHeader() {
+        return UtilsUI.BOLD
+                + String.format("%-20s | %-20s |", "Maintenance Type", "Reset Usage Time") + "\n"
+                + String.format("%-20s-+-%-20s-+", "-".repeat(20), "-".repeat(20))
+                + UtilsUI.RESET;
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return UtilsUI.RED + UtilsUI.BOLD + "No Maintenance Type available." + UtilsUI.RESET;
     }
 
     @Override
     public String headline() {
-        return UtilsUI.BOLD + String.format("%-20s | %-10s |",
-                "Maintenance Type", "Reset Usage Time") + "\n"
-                + String.format("%-20s-+-%-10s-+", "-".repeat(20), "-".repeat(10))
-                + UtilsUI.RESET;
+        return "List All Maintenance Types";
     }
-
 }

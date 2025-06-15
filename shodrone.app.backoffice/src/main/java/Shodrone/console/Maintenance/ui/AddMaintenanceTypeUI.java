@@ -25,7 +25,7 @@ public class AddMaintenanceTypeUI extends AbstractFancyUI {
 
                 controller.addMaintenanceType(maintenanceDescription, resetUsageTime);
 
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nAdd Maintenance Type successed!" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nAdd Maintenance Type successes!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
             }
             return false;
@@ -47,7 +47,7 @@ public class AddMaintenanceTypeUI extends AbstractFancyUI {
 
         do {
             try {
-                resetUsageTime = UtilsUI.readLineFromConsole(UtilsUI.BOLD + UtilsUI.BLUE + "\nReset Usage Time? (yes/no) (or type 'cancel' to exit): " + UtilsUI.RESET);
+                resetUsageTime = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nReset Usage Time? (yes/no) (or type 'cancel' to exit): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(resetUsageTime)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -72,7 +72,7 @@ public class AddMaintenanceTypeUI extends AbstractFancyUI {
 
         do {
             try {
-                description = UtilsUI.readLineFromConsole(UtilsUI.BOLD + UtilsUI.BLUE + "\nEnter Maintenance Type Description (or type 'cancel' to exit): " + UtilsUI.RESET);
+                description = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter Maintenance Type Description (or type 'cancel' to exit): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(description)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);

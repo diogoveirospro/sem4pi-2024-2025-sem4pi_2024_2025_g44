@@ -93,7 +93,7 @@ public class RegisterUsageTimeUI extends AbstractFancyUI {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         do {
             try {
-                imputTime = UtilsUI.readLineFromConsole(UtilsUI.BOLD + UtilsUI.BLUE + "\nEnter usage time in HH:mm format (or type 'cancel' to exit): " + UtilsUI.RESET);
+                imputTime = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter usage time in HH:mm format (or type 'cancel' to exit): " + UtilsUI.RESET);
 
                 if ("cancel".equalsIgnoreCase(imputTime)) {
                     throw new UserCancelledException(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);

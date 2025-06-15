@@ -46,7 +46,7 @@ public class AddMaintenanceRecordDroneUI extends AbstractFancyUI {
                 controller.addMaintenance(drone, maintenanceType,
                         LocalDate.now(),maintenanceDescription);
 
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nAdd Maintenance to a drone successed!" + UtilsUI.RESET);
+                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nAdd Maintenance to a drone successes!" + UtilsUI.RESET);
                 UtilsUI.goBackAndWait();
             }
             return false;
@@ -106,7 +106,7 @@ public class AddMaintenanceRecordDroneUI extends AbstractFancyUI {
         int option;
         do {
             ListWidget<MaintenanceType> maintenanceTypeListWidget = new ListWidget<>(UtilsUI.BOLD + UtilsUI.BLUE +
-                    "Choose a Maintenance Type:\n" + UtilsUI.RESET, maintenanceTypeList, maintenanceTypePrinter);
+                    "\n\nChoose a Maintenance Type:\n" + UtilsUI.RESET, maintenanceTypeList, maintenanceTypePrinter);
             maintenanceTypeListWidget.show();
             option = UtilsUI.selectsIndex(maintenanceTypeList);
             if (option == -2) {

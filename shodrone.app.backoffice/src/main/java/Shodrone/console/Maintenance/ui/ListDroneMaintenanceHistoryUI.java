@@ -40,8 +40,8 @@ public class ListDroneMaintenanceHistoryUI extends AbstractFancyUI {
 
             while (true) {
                 try {
-                    String startDate = UtilsUI.readLineFromConsole("Enter start date (YYYY-MM-DD): ");
-                    String endDate = UtilsUI.readLineFromConsole("Enter end date (YYYY-MM-DD): ");
+                    String startDate = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter start date (YYYY-MM-DD): " + UtilsUI.RESET);
+                    String endDate = UtilsUI.readLineFromConsole(UtilsUI.BOLD + "\nEnter end date (YYYY-MM-DD): " + UtilsUI.RESET);
                     start = LocalDate.parse(startDate, formatter);
                     end = LocalDate.parse(endDate, formatter);
 
@@ -65,7 +65,7 @@ public class ListDroneMaintenanceHistoryUI extends AbstractFancyUI {
             List<Maintenance> history = controller.historyForDroneBetween(drone, start, end);
 
             if (history.isEmpty()) {
-                System.out.println(UtilsUI.YELLOW + "\nNo maintenance records found in this period." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nNo maintenance records found in this period." + UtilsUI.RESET);
             } else {
                 System.out.println(UtilsUI.BLUE + UtilsUI.BOLD + "\nMaintenance History:\n" + UtilsUI.RESET);
                 for (Maintenance m : history) {

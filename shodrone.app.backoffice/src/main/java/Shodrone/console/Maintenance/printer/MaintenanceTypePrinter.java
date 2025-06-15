@@ -8,10 +8,8 @@ public class MaintenanceTypePrinter implements Visitor<MaintenanceType> {
     @Override
     public void visit(MaintenanceType maintenanceType) {
 
-        System.out.printf(
-                "%-20s |  %-10s |\n",
-                maintenanceType.name().toString(),
-                maintenanceType.resetUsageTime() ? "Yes" : "No"
-        );
+        System.out.printf("%-20s | %-20s |\n",
+                maintenanceType.identity().toString(),
+                maintenanceType.resetUsageTime());
     }
 }
