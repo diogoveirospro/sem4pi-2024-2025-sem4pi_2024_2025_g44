@@ -103,7 +103,7 @@ public class SimulateShowUI extends AbstractFancyUI {
 
                 UtilsUI.openInNotepad(latestFile);
             } else {
-                System.out.println(UtilsUI.RED + "No files found in the reports folder." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + "\nNo files found in the reports folder." + UtilsUI.RESET);
             }
         }
     }
@@ -146,7 +146,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         do {
             option = UtilsUI.selectsIndex(displayFolders);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
             }
 
             if (option < 0 || option >= folders.size()) {
@@ -170,13 +170,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (max_collisions < 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nMax collisions must be a non-negative integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nMax collisions must be a non-negative integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return max_collisions;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -194,13 +194,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (num_drones <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNumber of drones must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nNumber of drones must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return num_drones;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -218,13 +218,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (drone_radius <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nDrone radius must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nDrone radius must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return drone_radius;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -242,13 +242,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (x_max <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nX max must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nX max must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return x_max;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -266,13 +266,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (y_max <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nY max must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nY max must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return y_max;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -290,13 +290,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (z_max <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nZ max must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nZ max must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return z_max;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -314,13 +314,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (time_step <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nTime step must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nTime step must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return time_step;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
