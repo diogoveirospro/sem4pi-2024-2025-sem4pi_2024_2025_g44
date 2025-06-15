@@ -28,7 +28,6 @@ public class DatabaseProcessor extends Thread {
                 request.responseQueue.put(response); // return result
             } catch (Exception e) {
                 System.err.println("Error processing request: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
