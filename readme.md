@@ -26,6 +26,16 @@ To build the project, run the following script:
 - **Linux/Unix/MacOS:** ./build-all.sh or ./quickbuild.sh
 - **Windows:** .\build-all.bat or .\quickbuild.bat
 
+It is also recommended to have the following tool installed to run the program:
+
+- OpenVPN (If you want to log into the Shodrone network)
+
+1. Install via this link: [OpenVPN Installation](https://openvpn.net/client/)
+2. Download the configuration file from the Shodrone website. Link: [Shodrone Configuration](https://rede.dei.isep.ipp.pt/usermanual/openvpn/openvpn-dei-config.zip)
+3. Open the general config and change the udp to tcp.
+4. Place it in the `config` folder or click the configuration file twice with the VPN opened.
+5. Use you isep credentials to start the vpn.
+
 ## 4. How to Execute Tests
 
 To run and compile the project, you need to have the programs said in the previous section *How to Build* and then run the following script:
@@ -54,6 +64,9 @@ But first, you need to run the bootstrap script to create the folders and files 
 - Linux/Unix/MacOS: ./shodroneUser.sh
 - Windows: .\shodroneUser.bat
 
+**ShodroneTesting:**
+- Linux/Unix/MacOS: ./shodroneTesting.sh
+- Windows: .\shodroneTesting.bat
 
 ## 6. How to Install/Deploy into Another Machine (or Virtual Machine)
 
