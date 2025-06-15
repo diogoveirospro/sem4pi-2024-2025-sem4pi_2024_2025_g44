@@ -1,51 +1,142 @@
-# US 101
+# US 328
 
-*This is an example template*
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
-
+This task aims to fulfill the requirements of US328 from Sprint 3, which consists of listing all drones that require preventive maintenance, based on their usage time exceeding the predefined maintenance threshold of their model. The goal is to finalize the analysis, design, implementation, and testing of this functionality.
 ### 1.1 List of issues
 
-Analysis:
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: Done
+- **Testing**: Done
 
-Design:
-
-Implement:
-
-Test:
-
+---
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As** a Drone Tech,  
+**I want** to list all drones requiring preventive maintenance based on time usage limits,  
+**So that** I can proactively maintain drones before they degrade or fail.
 
-*Example*
+### Acceptance Criteria:
 
-**US G101** As {Ator} I Want...
+- **AC01**: Only drones that are still active (in inventory) must be considered.
+- **AC02**: A drone is considered to require preventive maintenance if its usage exceeds the threshold defined by its model.
+- **AC03**: The maintenance threshold is defined per model and is expressed in usage time (HH:mm or hours).
+- **AC04**: The UI must display relevant data for each drone: Serial Number, Model, Usage Limit, and Current Usage.
+- **AC05**: If no drones require maintenance, an appropriate message must be displayed.
 
-**Acceptance Criteria:**
+### Dependencies
 
-- US101.1 The system should...Blá Blá Blá ...
+- Depends on US241 for drone registration.
+- Depends on drone usage time (US327).
+- Depends on model registration and maintenance time limit (US240).
+- Threshold comparison logic relies on attributes defined in the drone model.
 
-- US101.2. Blá Blá Blá ...
+---
 
-**Dependencies/References:**
 
-*Regarding this requirement we understand that it relates to...*
+### Client Clarifications:
 
+> - The limit is defined per drone **model** and is available in the domain model and documentation.
+> - The logic for preventive maintenance is based on **usage time**, typically expressed in **HH:mm**.
+> - Only **active drones** (in inventory) should be considered — removed drones are excluded by logic.
+> - Although alerts/notifications could be useful, they are **not** part of the scope for this sprint.
+> - For each drone in the list, display: **Serial Number**, **Model**, **Limit from Model**, and **Current Usage**.
+
+---
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+### Drone Aggregate
+
+The drone aggregate supports:
+- `SerialNumber`
+- `Model` – contains the time limit.
+- `UsageTime` – total usage accumulated.
+- `DroneStatus` – used to determine if drone is active.
+
+### Model Aggregate
+
+The drone model contains:
+- `TimeLimit` – usage threshold for preventive maintenance, likely represented with `Duration`.
+
+---
+
+![Domain model](images/domain_model_us325.svg "Domain Model")
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+The system follows a layered MVC-style architecture: UI → Controller → Repository → Domain.
 
+---
+
+### 👤 Actor
+
+#### Drone Tech
+- Requests a list of drones needing maintenance.
+- Reviews information (Serial Number, Model, Threshold, Usage).
+
+---
+
+### 💻 UI Layer
+
+#### `ListDronesOverTimeLimitUI`
+- **Methods**:
+    - `controller.listDronesOverTimeLimit()` – retrieves list.
+    - Displays message if list is empty.
+    - Shows drone list via `ListWidget<Drone>` with custom printer.
+
+---
+
+### 🎮 Application Layer
+
+#### `ListDronesOverTimeLimitController`
+- **Methods**:
+
+listDronesOverTimeLimit();
+
+### 🗃 Persistence Layer
+
+#### :Persistence
+- **Role:** Provides access to repositories and persistence infrastructure.
+- **Main Method:**
+    - `getRepositoryFactory() : RepositoryFactory`
+
+---
+
+### 🏗 Repository Layer
+
+#### :RepositoryFactory
+- **Role:** Abstract factory for repositories.
+- **Main Methods:**
+    - `findAllDronesInventory();`
+
+#### droneRepository: DroneRepository
+- **Main Method:**
+    - `findDronesOverTimeLimit();`
+
+
+### 🧠 Domain Layer
+
+The domain layer includes entities and value objects with their business rules.
+
+---
+
+### 🔁 Process Flow Summary
+
+1. **Drone Tech** accesses “List Drones Over Time Limit”.
+2. UI requests list of drones via `controller.listDronesOverTimeLimit()`.
+3. Controller calls `droneRepository.findDronesOverTimeLimit()`.
+4. Repository queries drones whose `usageTime` exceeds `model.timeLimit` and are active.
+5. Controller returns list to UI.
+6. UI prints drone info or shows message if list is empty.
+
+
+---
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US328 Sequence Diagram](images/sequence_diagram_328.svg "US328 Sequence Diagram")
 
 ### 4.3. Applied Patterns
 

@@ -42,5 +42,23 @@ public class InMemoryDroneRepository extends InMemoryDomainRepository<Drone, Des
         return drnModelList;
     }
 
+    @Override
+    public List<Drone> findDronesOverTimeLimit() {
+        List<Drone> result = new ArrayList<>();
+
+        for (Drone drone : findAll()) {
+
+            if (drone.usageTime() != null &&
+                    drone.model() != null &&
+                    drone.model().timeLimit() != null &&
+                    drone.model().timeLimit().isExceededBy(drone.usageTime().value())) {
+
+                result.add(drone);
+            }
+        }
+
+        return result;
+    }
+
 }
 

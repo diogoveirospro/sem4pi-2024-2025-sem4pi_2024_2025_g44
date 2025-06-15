@@ -72,4 +72,14 @@ public class JpaDroneRepository extends JpaAutoTxRepository<Drone, Designation, 
                 .setParameter("status", DroneStatus.ACTIVE)
                 .getResultList();
     }
+
+
+    @Override
+    public List<Drone> findDronesOverTimeLimit() {
+        return entityManager()
+                .createQuery("SELECT d FROM Drone d " +
+                        "JOIN d.model m " +
+                        "WHERE d.usageTime.usageTime >= m.timeLimit.timeLimit", Drone.class)
+                .getResultList();
+    }
 }

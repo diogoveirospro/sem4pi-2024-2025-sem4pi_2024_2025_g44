@@ -8,8 +8,8 @@ This task has the objective of concluding the requirements of US325 of sprint 3,
 
 - **Analysis**: Done
 - **Design**: Done
-- **Implementation**: To Do
-- **Testing**: To Do
+- **Implementation**: Done
+- **Testing**: Done
 
 
 ## 2. Requirements
@@ -71,7 +71,7 @@ The Maintenance aggregate represents a maintenance event with:
 
 The user story requires filtering maintenances by an inclusive date range and showing a message when no records exist.
 
-![Domain model](images/domain_model_us325.svg "Domain Model")
+![Domain model](../US328/images/domain_model_us325.svg "Domain Model")
 ## 4. Design
 
 The architecture follows a layered approach with UI, controller, repository, persistence, and domain layers.
@@ -87,25 +87,26 @@ The architecture follows a layered approach with UI, controller, repository, per
 
 ### 💻 UI Layer
 
-#### :ListMaintenanceHistoryUI
-- **Role:** Collects user input and displays maintenance history.
-- **Main Methods:**
-  - `getDroneList()`
-  - `selectDrone(droneId)`
-  - `enterDateRange(startDate, endDate)` (optional)
-  - `showMaintenanceHistory(List<Maintenance>)`
-  - `showNoRecordsMessage()`
+#### `ListDroneMaintenanceHistoryUI`
+- **Methods**:
+  - `selectDrone()` – shows drones to select.
+  - `controller.findAllDronesInventory()` – retrieves drones.
+  - `controller.historyForDroneBetween(drone, start, end)` – fetches history.
+  - Output formatting for each record with:
+    - `m.date()`
+    - `m.type().name()`
+    - `m.description()`
+    - `m.drone().usageTime()`
+    - `m.drone().droneStatus()`
 
 ---
 
 ### 🎮 Application Layer
 
-#### :ListMaintenanceHistoryController
-- **Role:** Coordinates fetching drone and maintenance data.
-- **Main Methods:**
-  - `getDroneList() : List<Drone>`
-  - `getMaintenanceHistory(droneId, startDate, endDate) : List<Maintenance>`
-  - Uses `DroneRepository` and `MaintenanceRepository`
+#### `ListDroneMaintenanceHistoryController`
+- **Methods**:
+  - `findAllDronesInventory();`
+  - `historyForDroneBetween(Drone drone, LocalDate from, LocalDate to);`
 ---
 
 ### 🗃 Persistence Layer
@@ -122,17 +123,16 @@ The architecture follows a layered approach with UI, controller, repository, per
 #### :RepositoryFactory
 - **Role:** Abstract factory for repositories.
 - **Main Methods:**
-    - `getDroneRepository() : DroneRepository`
-    - `getMaintenanceRepository() : MaintenanceRepository`
+    - `findAllDronesInventory();`
+    - `findByDroneAndDateBetween(Drone drone, LocalDate startDate, LocalDate endDate);`
 
 #### droneRepository: DroneRepository
 - **Main Method:**
-  - `findAllActiveDrones() : List<Drone>`
-  - `findBySerialNumber(serialNumber) : Optional<Drone>`
+  - `findAllDronesInventory();`
 
 #### maintenanceRepository: MaintenanceRepository
 - **Main Method:**
-    - `findByDroneOrderedByDate(drone, startDate, endDate) : List<Maintenance>`
+    - `findByDroneAndDateBetween(Drone drone, LocalDate startDate, LocalDate endDate);`
 
 ---
 
@@ -147,7 +147,7 @@ The domain layer includes entities and value objects with their business rules.
 1. **Drone Tech** requests the list of active drones.
 2. UI displays drone list for selection.
 3. **Drone Tech** selects a drone and inputs an inclusive date range.
-4. UI calls the controller method `getMaintenanceHistory`.
+4. UI calls the controller method `historyForDroneBetween(...)`.
 5. Controller fetches drone using `DroneRepository`.
 6. Controller fetches maintenance history with date filtering from `MaintenanceRepository`.
 7. Controller returns list to UI.
@@ -156,7 +156,7 @@ The domain layer includes entities and value objects with their business rules.
 ---
 ### 4.1. Realization
 
-![US325 Sequence Diagram](images/sequence_diagram_us325.svg "US325 Sequence Diagram")
+![US325 Sequence Diagram](images/sequence_diagram_325.svg "US325 Sequence Diagram")
 
 ### 4.3. Applied Patterns
 

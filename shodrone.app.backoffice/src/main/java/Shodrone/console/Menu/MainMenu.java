@@ -14,6 +14,7 @@ import Shodrone.console.Figure.actions.AddFigureToCatalogueUI;
 import Shodrone.console.Figure.actions.DecommissionFigureUI;
 import Shodrone.console.Figure.actions.SearchCatalogueUI;
 import Shodrone.console.Figure.actions.ListPublicCatalogueUI;
+import Shodrone.console.Model.ui.ListDronesOverTimeLimitUI;
 import Shodrone.console.ProposalDeliveryInfo.ui.SendProposalUI;
 import Shodrone.console.ShowProposal.ui.*;
 import Shodrone.console.ShowRequest.ui.EditShowRequestUI;
@@ -204,6 +205,7 @@ public class MainMenu extends AbstractFancyUI {
     private static final int DRONE_TECH_LIST_MAINTENANCE_HISTORY_OPTION = 6;
     private static final int DRONE_TECH_ADD_MAINTENANCE_RECORD_OPTION = 7;
     private static final int DRONE_VALIDATION = 8;
+    private static final int DRONE_TECH_LIST_DRONES_OVER_TIME_LIMIT_OPTION = 9;
 
     // PROPOSAL COLLABORATOR MENU
     private static final int COLLABORATOR_CREATE_SHOW_PROPOSAL_OPTION = 1;
@@ -454,6 +456,8 @@ public class MainMenu extends AbstractFancyUI {
         menu.addItem(DRONE_TECH_LIST_MAINTENANCE_HISTORY_OPTION, "List Maintenance History of Drone", new ListDroneMaintenanceHistoryUI()::show);
         menu.addItem(DRONE_TECH_ADD_MAINTENANCE_RECORD_OPTION, "Add Maintenance Record to a Drone", new AddMaintenanceRecordDroneUI()::show);
         menu.addItem(DRONE_VALIDATION, "Validate Drone Template", new ValidateDroneProgramAction());
+        menu.addItem(DRONE_TECH_LIST_DRONES_OVER_TIME_LIMIT_OPTION, "List Drones Over Time Limit", new ListDronesOverTimeLimitUI()::show);
+
 
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
 

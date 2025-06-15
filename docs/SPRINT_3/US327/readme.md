@@ -1,75 +1,174 @@
-# US 101
+# US 327
 
-*This is an example template*
 
 ## 1. Context
 
-*Explain the context for this task. It is the first time the task is assigned to be developed or this tasks was incomplete in a previous sprint and is to be completed in this sprint? Are we fixing some bug?*
+This task aims to fulfill the requirements of US327 from Sprint 3, which consist of allowing a Drone Tech to register usage time for a given drone. The goal is to finalize the analysis, design, implementation, and testing of this functionality.
 
 ### 1.1 List of issues
 
-Analysis:
+- **Analysis**: Done
+- **Design**: Done
+- **Implementation**: Done
+- **Testing**: Done
 
-Design:
-
-Implement:
-
-Test:
-
+---
 
 ## 2. Requirements
 
-*In this section you should present the functionality that is being developed, how do you understand it, as well as possible correlations to other requirements (i.e., dependencies). You should also add acceptance criteria.*
+**As** a Drone Tech,  
+**I want** to record the flying/usage time of a given drone,  
+**So that** I can track its total operational time for maintenance and performance analysis.
 
-*Example*
+### Acceptance Criteria:
 
-**US G101** As {Ator} I Want...
+- **AC01**: The usage time must be recorded in HH:mm format.
+- **AC02**: Only drones in the inventory (active or usable) can be selected.
+- **AC03**: Usage time must be persisted and added to the drone’s total.
+- **AC04**: The UI must validate time format and prevent invalid input.
+- **AC05**: Drone Tech must be able to cancel the operation at any point.
+- 
+### Dependencies
 
-**Acceptance Criteria:**
+- Depends on US241 for drone registration.
+- Depends on drone aggregate having usage time tracking.
+- Supports future maintenance logic (e.g., preventive thresholds – US328).
 
-- US101.1 The system should...Blá Blá Blá ...
+---
 
-- US101.2. Blá Blá Blá ...
+### Client Clarifications:
 
-**Dependencies/References:**
+> - Usage time must be recorded in `HH:mm` format.
+> - The usage time is expected to be realistic, and should not exceed physical or operational constraints (e.g., drone battery limits).
+> - Although the client did not confirm if manual corrections are allowed, the tone implies that unrealistic entries (like excessive daily usage) are discouraged or invalid.
+> - Avoid redundant or obvious questions; clarify only what is not specified in the documentation.
 
-*Regarding this requirement we understand that it relates to...*
 
 ## 3. Analysis
 
-*In this section, the team should report the study/analysis/comparison that was done in order to take the best design decisions for the requirement. This section should also include supporting diagrams/artifacts (such as domain model; use case diagrams, etc.),*
+### Drone Aggregate
+
+The drone aggregate supports:
+- `SerialNumber`
+- `DroneStatus`
+- `UsageTime` field (likely `Duration`)
+- Method: `addUsageTime(LocalTime time)`
+- Method: `resetUsageTime()` (used in US326)
+
+---
+
+![Domain model](images/domain_model_us325.svg "Domain Model")
 
 ## 4. Design
 
-*In these sections, the team should present the solution design that was adopted to solve the requirement. This should include, at least, a diagram of the realization of the functionality (e.g., sequence diagram), a class diagram (presenting the classes that support the functionality), the identification and rational behind the applied design patterns and the specification of the main tests used to validade the functionality.*
+The system uses a layered MVC-style architecture: UI → Controller → Repository → Domain.
+
+---
+
+### 👤 Actor
+
+#### Drone Tech
+- Selects a drone from inventory.
+- Enters usage time in HH:mm format.
+- Confirms registration and receives feedback.
+
+---
+
+### 💻 UI Layer
+
+#### `RegisterUsageTimeUI`
+- **Methods**:
+    - `selectDrone()` – list and select drones from inventory.
+    - `inputUsageTime()` – read and validate time (HH:mm).
+    - `controller.registerUsageTime(drone, time)` – sends data to controller.
+    - Feedback messages (success, errors, cancellation).
+
+---
+
+### 🎮 Application Layer
+
+#### `RegisterUsageTimeController`
+- **Methods**:
+
+- `registerUsageTime(Drone drone, LocalTime usageTime);`
+- `findAllDronesInventory();`
+
+### 🗃 Persistence Layer
+
+#### :Persistence
+- **Role:** Provides access to repositories and persistence infrastructure.
+- **Main Method:**
+    - `getRepositoryFactory() : RepositoryFactory`
+
+---
+
+### 🏗 Repository Layer
+
+#### :RepositoryFactory
+- **Role:** Abstract factory for repositories.
+- **Main Methods:**
+    - `findAllDronesInventory();`
+    - `void save(Drone drone);`
+
+#### droneRepository: DroneRepository
+- **Main Method:**
+    - `findAllDronesInventory();`
+
+
+### 🧠 Domain Layer
+
+The domain layer includes entities and value objects with their business rules.
+
+---
+
+### 🔁 Process Flow Summary
+
+1. **Drone Tech** accesses “Register Usage Time”..
+2. UI shows a list of available drones..
+3. **Drone Tech** selects a drone.
+4. UI prompts the user to input usage time in `HH:mm` format via `inputUsageTime()`.
+5. UI calls the controller method `registerUsageTime(drone, usageTime)`.
+6. Controller validates the input and updates the drone’s usage time using `addUsageTime(...)`.
+7. Controller persists the updated drone through `droneRepository.save(...)`.
+8. UI displays a success confirmation or error message to the user.
+
+---
+## 4. Design
+
 
 ### 4.1. Realization
 
-![a class diagram](images/class-diagram-01.svg "A Class Diagram")
+![US327 Sequence Diagram](images/sequence_diagram_327.svg "US327 Sequence Diagram")
 
 ### 4.3. Applied Patterns
 
+Domain-driven design with aggregates and value objects
+
 ### 4.4. Acceptance Tests
 
-Include here the main tests used to validate the functionality. Focus on how they relate to the acceptance criteria. May be automated or manual tests.
+**Test 1:** *Add valid usage time to a drone*
 
-**Test 1:** *Verifies that it is not possible to ...*
-
-**Refers to Acceptance Criteria:** US101.1
+**Refers to Acceptance Criteria:** AC01, AC03
 
 
 ```
-@Test(expected = IllegalArgumentException.class)
-public void ensureXxxxYyyy() {
-	...
+@Test
+void ensureUsageTimeAddedSuccessfully() {
+    // setup: valid drone, LocalTime 01:30
+    // action: controller.registerUsageTime(drone, time)
+    // assert: usage time updated and persisted
 }
 ````
 
 ## 5. Implementation
 
-*In this section the team should present, if necessary, some evidencies that the implementation is according to the design. It should also describe and explain other important artifacts necessary to fully understand the implementation like, for instance, configuration files.*
+Implemented in `RegisterUsageTimeUI` and `RegisterUsageTimeController`.
 
-*It is also a best practice to include a listing (with a brief summary) of the major commits regarding this requirement.*
+Validates and parses input as `LocalTime` in `HH:mm`.
+
+Time is added via `drone.addUsageTime(...)`.
+
+Persistence through `droneRepository.save(...)`.
 
 ## 6. Integration/Demonstration
 

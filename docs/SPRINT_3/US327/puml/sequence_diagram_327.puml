@@ -7,22 +7,22 @@ skinparam shadowing false
 autonumber
 
 actor "Drone Tech" as DT
-participant ":UsageTimeUI" as UI
-participant ":UsageTimeController" as CTRL
-participant ":Persistence" as PERS
-participant ":RepositoryFactory" as REPOS
-participant ":DroneRepository" as DRONE_REPO
+participant "RegisterUsageTimeUI" as UI
+participant "RegisterUsageTimeController" as CTRL
+participant "PersistenceContext" as PERS
+participant "RepositoryFactory" as REPOS
+participant "DroneRepository" as DRONE_REPO
 
 activate DT
 
-DT -> UI : request to list active drones
+DT -> UI : request to list drones from inventory
 activate UI
-    UI -> CTRL : getActiveDrones()
+    UI -> CTRL : findAllDronesInventory()
     activate CTRL
 
-    CTRL --> PERS : getRepositoryFactory()
+    CTRL --> PERS : repositories().drone()
     activate PERS
-    PERS --> CTRL : repositoryFactory
+    PERS --> CTRL : DroneRepository
     deactivate PERS
 
     CTRL -> REPOS : getInstance()
@@ -30,47 +30,32 @@ activate UI
     REPOS --> CTRL : repositories
     deactivate REPOS
 
-    CTRL -> REPOS : getDroneRepository()
+    CTRL -> REPOS : drone()
     activate REPOS
-    REPOS --> CTRL : droneRepository
+    REPOS --> CTRL : DroneRepository
     deactivate REPOS
 
-    CTRL -> DRONE_REPO : findActiveDrones()
+    CTRL -> DRONE_REPO : findAllDronesInventory()
     activate DRONE_REPO
     DRONE_REPO --> CTRL : activeDronesList
     deactivate DRONE_REPO
 
-    CTRL --> UI : display active drones list
+    CTRL --> UI : display drone list
     deactivate CTRL
-UI --> DT : show active drones list
+UI --> DT : show drone list
 deactivate UI
 
 DT -> UI : selects drone and input usage time
 activate UI
-    UI -> CTRL : collect usage time (droneId, usageTime)
+    UI -> CTRL : registerUsageTime(drone, usageTime)
     activate CTRL
 
-    CTRL -> DRONE_REPO : findBySerialNumber(droneId)
+    CTRL -> DRONE_REPO : save(drone)
     activate DRONE_REPO
-    DRONE_REPO --> CTRL : drone (exists, active status)
+    DRONE_REPO --> CTRL : drone saved
     deactivate DRONE_REPO
 
-    alt if drone is active
-        CTRL -> DRONE_REPO : registerUsageTime(droneId, usageTime)
-        activate DRONE_REPO
-        DRONE_REPO --> CTRL : time registered
-        deactivate DRONE_REPO
-
-        CTRL -> DRONE_REPO : save(usageTime)
-        activate DRONE_REPO
-        DRONE_REPO --> CTRL : success
-        deactivate DRONE_REPO
-
-        CTRL --> UI : show success message
-    else if drone is inactive
-        CTRL --> UI : show error message ("Drone is not active")
-    end
-
+    CTRL --> UI : show success message
     deactivate CTRL
 UI --> DT : display result (success or error)
 deactivate UI

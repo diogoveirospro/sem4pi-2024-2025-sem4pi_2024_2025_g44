@@ -20,13 +20,14 @@ package "Drone " <<aggregate>> {
     class DroneLanguageValidate <<Service>>{
     }
 
-    'Drone -> x
+    class UsageTime <<Value Object>>{
+    }
+
     Drone --> "1" DroneStatus: status
     Drone --> "1" SerialNumber: serialNumber
-    Drone --> "0..1" RemovalReason: removalReason
+    Drone --> "0..*" RemovalReason: removalReason
     Drone --> "1" DroneLanguage: language
-
-    'DroneLanguageValidate -> x
+    Drone --> "1" UsageTime: usageTime
     DroneLanguageValidate ..> "1" DroneLanguage: validates
 }
 
@@ -48,17 +49,13 @@ package "ModelOfDrone " <<aggregate>> {
     enum SafetyStatus <<Value Object>>{
     }
 
-    'Model -> x
     Model --> "1" Configuration: configuration
     Configuration --> "1..*" WindSpeed: windSpeed
     Configuration --> "1..*" PositionTolerance: positionTolerance
     Model --> "1" ModelName: modelName
     Configuration --> SafetyStatus: safetyStatus
 
-
-    'Drone -> x
     Drone --> "1" Model: uses
-
 }
 
 package "Maintenance " <<aggregate>> {
@@ -66,14 +63,13 @@ package "Maintenance " <<aggregate>> {
     class Maintenance <<Entity>> <<root>>{
     }
 
-    enum MaintenanceType <<Value Object>>{
-    }
-
-    'Maintenance -> x
-    Maintenance --> "1" MaintenanceType: type
-
-    'Drone -> x
     Drone --> "1..*" Maintenance: undergoes
+}
+
+package "MaintenanceType " <<aggregate>> {
+
+    class MaintenanceType <<Entity>> <<root>>{
+    }
 }
 
 package Shared {
@@ -87,12 +83,12 @@ package Shared {
     class Name <<Value Object>>{
     }
 
-    'Maintenance -> x
     Maintenance ----> "1" Date: date
     Maintenance ----> "1" Description: description
+    Maintenance ----> "1" MaintenanceType: type
 
-    'Model -> x
     Model ----> "1" Name: modelName
+    MaintenanceType ----> "1" Name: name
 }
 
 @enduml

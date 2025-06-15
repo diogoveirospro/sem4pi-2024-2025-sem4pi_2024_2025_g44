@@ -7,8 +7,8 @@ This task aims to complete the requirements of US326 of sprint 3, where the syst
 
 - **Analysis**: Done
 - **Design**: Done
-- **Implementation**: Doing
-- **Testing**: Doing
+- **Implementation**: Done
+- **Testing**: Done
 
 ## 2. Requirements
 
@@ -52,9 +52,9 @@ Only drones with **active** status are allowed to be updated.
 Represents the performed maintenance:
 - **Date**
 - **MaintenanceType**
-- **Description** (optional)
-- **Technician** (optional)
+- **Description** 
 
+![Domain model](images/domain_model_us325.svg "Domain Model")
 
 ## 4. Design
 
@@ -70,23 +70,25 @@ Architecture follows a layered structure: UI, Controller, Repositories, Domain.
 
 ### 💻 UI Layer
 
-#### :MaintenanceUI
-- **Methods**:
-    - `enterDroneSerialNumber()`
-    - `selectMaintenanceType()`
-    - `enterDateAndDescription()`
-    - `confirm()`
-    - `showSuccessMessage()` / `showErrorMessage()`
 
+#### `AddMaintenanceRecordDroneUI`
+- **Methods**:
+  - `selectDrone()` – shows all inventory drones.
+  - `selectMaintenanceType()` – shows list of existing maintenance types.
+  - `maintenanceDescription()` – collects optional description.
+  - `controller.addMaintenance(drone, type, date, description)` – submits the data.
+  - `UtilsUI.goBackAndWait()` – waits for return.
+
+---
 
 
 ### 🎮 Application Layer
 
-#### :MaintenanceController
+#### `AddMaintenanceRecordDroneController`
 - **Methods**:
-    - `addMaintenance(droneId, type, date, description, technician)`
-
-
+- `addMaintenance(Drone drone, MaintenanceType type, LocalDate date, String description);`
+- `findAllDronesInventory();`
+- `findAllMaintenanceType();`
 
 ### 🗃 Persistence Layer
 
@@ -101,10 +103,10 @@ Architecture follows a layered structure: UI, Controller, Repositories, Domain.
 - `getMaintenanceRepository()`
 
 #### :DroneRepository
-- `findBySerialNumber(droneId)`
+- `findAllDronesInventory();`
 
 #### :MaintenanceRepository
-- `save(maintenanceRecord)`
+- `save(Maintenance maintenance);`
 
 
 ### 🧠 Domain Layer
@@ -125,7 +127,7 @@ Architecture follows a layered structure: UI, Controller, Repositories, Domain.
 
 ### 4.1. Realization
 
-![US326 Sequence Diagram](images/sequence_diagram_us326.svg "US326 Sequence Diagram")
+![US326 Sequence Diagram](images/sequence_diagram_326.svg "US326 Sequence Diagram")
 
 ### 4.3. Applied Patterns
 

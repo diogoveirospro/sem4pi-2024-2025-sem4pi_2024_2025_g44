@@ -53,6 +53,10 @@ public class Model implements Serializable, AggregateRoot<Designation> {
         this.modelName = modelName;
     }
 
+    public TimeLimit timeLimit() {
+        return timeLimit;
+    }
+
     @Override
     public boolean sameAs(Object other) {
         if (this == other) return true;

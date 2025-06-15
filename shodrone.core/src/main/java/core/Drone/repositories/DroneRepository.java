@@ -18,4 +18,6 @@ public interface DroneRepository extends DomainRepository<Designation, Drone> {
 
     Iterable<Drone> findAllDronesInventory();
 
+    List<Drone> findDronesOverTimeLimit();
+
 }
