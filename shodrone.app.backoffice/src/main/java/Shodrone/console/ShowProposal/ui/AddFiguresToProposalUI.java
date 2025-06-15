@@ -1,6 +1,6 @@
 package Shodrone.console.ShowProposal.ui;
 
-import Shodrone.console.ShowProposal.printer.FiguresPrinter;
+import Shodrone.console.Figure.printer.FiguresPrinter;
 import Shodrone.console.ShowProposal.printer.ShowProposalPrinter;
 import Shodrone.exceptions.UserCancelledException;
 import core.Customer.domain.Entities.Customer;
@@ -13,7 +13,6 @@ import core.User.domain.ShodroneRoles;
 import eapli.framework.infrastructure.authz.application.AuthorizationService;
 import eapli.framework.infrastructure.authz.application.AuthzRegistry;
 import eapli.framework.presentation.console.ListWidget;
-import org.aspectj.weaver.Utils;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
@@ -32,7 +31,14 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
             if (authz.isAuthenticatedUserAuthorizedTo(ShodroneRoles.POWER_USER, ShodroneRoles.COLLABORATOR)) {
                 ShowProposal proposal = selectProposal();
                 if (proposal == null) {
-                    System.out.println(UtilsUI.YELLOW + "\nNo proposal selected. Operation cancelled." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.YELLOW + "No proposal selected. Operation cancelled." + UtilsUI.RESET);
+                    return false;
+                }
+
+                ShowConfiguration configuration = proposal.configuration();
+                if (configuration == null || configuration.droneModels() == null || configuration.droneModels().isEmpty()) {
+                    System.out.println(UtilsUI.RED + "Error: The proposal does not have a valid configuration or drone models." + UtilsUI.RESET);
+                    UtilsUI.goBackAndWait();
                     return false;
                 }
 
@@ -41,9 +47,20 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
                 boolean configuring = true;
 
                 while (configuring) {
+                    System.out.println(UtilsUI.CYAN + "\nAdd a new figure to the proposal:" + UtilsUI.RESET);
 
                     Figure figure = selectFigure(customer);
                     if (figure == null) continue;
+
+                    // Print models in the proposal
+                    System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nModels in the Proposal:" + UtilsUI.RESET);
+                    configuration.droneModels().forEach(model ->
+                            System.out.println(UtilsUI.GREEN + "- " + model.identity().value() + UtilsUI.RESET)
+                    );
+
+                    // Print droneType of the figure
+                    System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nDroneType of the Figure:" + UtilsUI.RESET);
+                    System.out.println(UtilsUI.GREEN + figure.DSLDescription().requiredDroneTypes() + UtilsUI.RESET);
 
                     associateDroneTypesWithModels(figure, proposal);
                     selectedFigures.add(figure);
@@ -89,6 +106,38 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
             System.out.println(UtilsUI.BOLD + UtilsUI.RED + "\nError: " + e.getMessage() + UtilsUI.RESET);
             UtilsUI.goBackAndWait();
             return false;
+        } catch (Exception e) {
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nAn unexpected error occurred: " + e.getMessage() + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
+            return false;
+        }
+    }
+
+    private void associateDroneTypesWithModels(Figure figure, ShowProposal proposal) {
+        try {
+            ShowConfiguration configuration = proposal.configuration();
+            if (configuration == null || configuration.droneModels() == null || configuration.droneModels().isEmpty()) {
+                throw new UserCancelledException("No drones available in the configuration.");
+            }
+
+            Set<String> droneTypes = figure.DSLDescription().requiredDroneTypes();
+
+            if (droneTypes.isEmpty()) {
+                System.out.println(UtilsUI.YELLOW + "No drone types to associate for this figure." + UtilsUI.RESET);
+                return;
+            }
+
+            List<Model> availableModels = new ArrayList<>(configuration.droneModels());
+
+            System.out.println(UtilsUI.CYAN + "\nAssociating all drone types with all models in the proposal..." + UtilsUI.RESET);
+            for (String droneType : droneTypes) {
+                for (Model model : availableModels) {
+                    System.out.println(UtilsUI.GREEN + "Associated " + droneType + " with " + model.identity().value() + UtilsUI.RESET);
+                }
+            }
+        } catch (NullPointerException e) {
+            System.out.println(UtilsUI.RED + "Warning: An error occurred while accessing the show configuration. Returning to the main menu." + UtilsUI.RESET);
+            UtilsUI.goBackAndWait();
         }
     }
 
@@ -150,52 +199,6 @@ public class AddFiguresToProposalUI extends AbstractFancyUI {
                 return figureList.get(option);
             }
         } while (true);
-    }
-
-    private void associateDroneTypesWithModels(Figure figure, ShowProposal proposal) {
-        try {
-            ShowConfiguration configuration = proposal.configuration();
-            if (configuration == null || configuration.droneModels() == null || configuration.droneModels().isEmpty()) {
-                throw new IllegalArgumentException("No drones available in the configuration.");
-            }
-
-            Set<String> droneTypes = figure.DSLDescription().requiredDroneTypes();
-
-            if (droneTypes.isEmpty()) {
-                System.out.println(UtilsUI.YELLOW + "\nNo drone types to associate for this figure." + UtilsUI.RESET);
-                return;
-            }
-
-            List<Model> availableModels = new ArrayList<>(configuration.droneModels());
-
-            for (String droneType : droneTypes) {
-                System.out.println(UtilsUI.BOLD + "\n\nSelect a drone model for the drone type: " + droneType + UtilsUI.RESET);
-
-                for (int i = 0; i < availableModels.size(); i++) {
-                    Model model = availableModels.get(i);
-                    System.out.println((i + 1) + ". " + model.identity().value());
-                }
-
-                int option;
-                do {
-                    option = UtilsUI.selectsIndex(availableModels);
-
-                    if (option == -2) {
-                        throw new UserCancelledException(UtilsUI.YELLOW + "\nAction cancelled by user." + UtilsUI.RESET);
-                    }
-                    if (option == -1) {
-                        System.out.println(UtilsUI.RED + "\nInvalid option. Please try again." + UtilsUI.RESET);
-                    } else {
-                        Model selectedModel = availableModels.get(option);
-                        System.out.println(UtilsUI.GREEN + "\nAssociated " + droneType + " with " + selectedModel.identity().value() + UtilsUI.RESET);
-                        break;
-                    }
-                } while (true);
-            }
-        } catch (NullPointerException e) {
-            System.out.println(UtilsUI.RED + "\nWarning: An error occurred while accessing the show configuration. Returning to the main menu." + UtilsUI.RESET);
-            UtilsUI.goBackAndWait();
-        }
     }
 
     @Override
