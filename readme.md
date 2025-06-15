@@ -7,6 +7,7 @@ The application has a console line interface. \
 It allows the client to request and schedule a show. \
 The show consists of a sequence of figures represented by drones. \
 This project also includes a simulator to test the different figures and the shows.
+This project has multiple applications, one for the User app, one for the Simulation and one for the workers of Shodrone.
 
 
 ## 2. Planning and Technical Documentation
