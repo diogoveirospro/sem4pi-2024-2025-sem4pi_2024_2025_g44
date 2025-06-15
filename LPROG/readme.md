@@ -4,13 +4,17 @@ Too see the images in the documentation go to the docs package folder in the pro
 
 # US 340
 
-This task as the objective of concluding the requirements of the us340 of sprint3, where it is asked to develop a new functionality to the system. The team will now focus on completing the implementation and testing of this functionality as well as integrating it with the rest of the system.
+This task as the objective of concluding the requirements of the us340 of sprint3, where it is asked to develop a new
+functionality to the system. The team will now focus on completing the implementation and testing of this functionality
+as well as integrating it with the rest of the system.
 
 ## 1. Context
 
-The purpose of this task is to deploy and configure a plugin so it can be used by the system to analyze the figure high-level description.
+The purpose of this task is to deploy and configure a plugin so it can be used by the system to analyze the figure
+high-level description.
 This task is included in Sprint 3 and is being implemented for the first time.
-This plugin is supposed to use the antlr code developed in US341 - Validate Figure Description, And connect it to the system so that it can be used to validate the figure description.
+This plugin is supposed to use the antlr code developed in US341 - Validate Figure Description, And connect it to the
+system so that it can be used to validate the figure description.
 
 ### 1.1 List of issues
 
@@ -21,7 +25,6 @@ Design: Done
 Implement: Done
 
 Test: Done
-
 
 ## 2. Requirements
 
@@ -37,30 +40,40 @@ Test: Done
 
 **Dependencies/References:**
 
-- **US341 – Validate Figure Description**: The plugin will use the code developed in this user story to validate the figure description.
+- **US341 – Validate Figure Description**: The plugin will use the code developed in this user story to validate the
+  figure description.
 
 ## 3. Analysis
 
-The grammar used for this user story was designed in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#3-analysis) to describe drone shows and figures in a modular and
+The grammar used for this user story was designed
+in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#3-analysis) to describe drone
+shows and figures in a modular and
 extensible way. And is implemented in the plugin developed in [US341 - Validate Figure Description](../US341/readme.md).
 
-To implement this plugin it was necessary to create a `PluginInitializer` that has the function of calling the plugin and registering it on the `DSLValidatorPluginFactory` that would simply serve as a way to register the plugin in the system,
-and then the `DSLValidatorPlugin` interface was implemented on the `ANTLRDSLValidatorPlugin` the plugin that uses the ANTLR parser to validate the DSL syntax, to fully connect the plugin to the system. As afterwards the class
-`DSLValidate` would be called as it would contain the logic to call the ANTLR plugin that validates the DSL syntax using the ANTLR parser. Then the validation would go through.
-
+To implement this plugin it was necessary to create a `PluginInitializer` that has the function of calling the plugin
+and registering it on the `DSLValidatorPluginFactory` that would simply serve as a way to register the plugin in the
+system,
+and then the `DSLValidatorPlugin` interface was implemented on the `ANTLRDSLValidatorPlugin` the plugin that uses the
+ANTLR parser to validate the DSL syntax, to fully connect the plugin to the system. As afterwards the class
+`DSLValidate` would be called as it would contain the logic to call the ANTLR plugin that validates the DSL syntax using
+the ANTLR parser. Then the validation would go through.
 
 ## 4. Design
 
 View the design of the plugin in [US341 - Validate Figure Description](../US341/readme.md#4-design).
 
-For these to work it was necessary to `PluginInitializer.initialize()` as it would then register the instance on the `DSLValidatorPluginFactory` and then the method `getInstance()` that returns the instance of the format
-that would be `DSLValidatorPlugin` that would be implemented by the `ANTLRDSLValidatorPlugin` class, which would then be used to validate the DSL syntax, that is possible as the interface as the method `DSLValidationResult validateDSL(String code);`
-that would be implemented in the antlr plugin. But the acess would be only possible via the `DSLValidate` class that would get the factory instance and then call the `validateDSL` method on the plugin instance.
+For these to work it was necessary to `PluginInitializer.initialize()` as it would then register the instance on
+the `DSLValidatorPluginFactory` and then the method `getInstance()` that returns the instance of the format
+that would be `DSLValidatorPlugin` that would be implemented by the `ANTLRDSLValidatorPlugin` class, which would then be
+used to validate the DSL syntax, that is possible as the interface as the
+method `DSLValidationResult validateDSL(String code);`
+that would be implemented in the antlr plugin. But the acess would be only possible via the `DSLValidate` class that
+would get the factory instance and then call the `validateDSL` method on the plugin instance.
 
 ### 4.1. Acceptance Tests
 
-See the [US341 - Validate Figure Description](../US341/readme.md) for more information on the acceptance tests for the plugin.
-
+See the [US341 - Validate Figure Description](../US341/readme.md) for more information on the acceptance tests for the
+plugin.
 
 ## 5. Implementation
 
@@ -73,11 +86,14 @@ Relevant commit messages:
 
 ## 6. Integration/Demonstration
 
-The running of the plugin is the same as the one in [US341 - Validate Figure Description](../US341/readme.md#6-integrationdemonstration), as it is the same plugin that is being used to validate the DSL syntax.
+The running of the plugin is the same as the one
+in [US341 - Validate Figure Description](../US341/readme.md#6-integrationdemonstration), as it is the same plugin that
+is being used to validate the DSL syntax.
 
 ## 7. Observations
 
-Go to user story [US341 - Validate Figure Description](../US341/readme.md) for more information on the plugin and how it works.
+Go to user story [US341 - Validate Figure Description](../US341/readme.md) for more information on the plugin and how it
+works.
 
 # US 341
 
@@ -89,7 +105,8 @@ is being implemented for the first time. The grammar used for validation was pre
 of US251 – Specification of the language for figure and show description.
 
 The validation logic will be implemented using the ANTLR parser generator. The actual integration of the parser into
-the system as a reusable plugin is defined in US340. In this user story, the focus is on implementing the syntax validation
+the system as a reusable plugin is defined in US340. In this user story, the focus is on implementing the syntax
+validation
 logic and exposing it through the DSL validation service in the domain layer (`DSLValidate`), which is invoked when a
 Figure is being registered.
 
@@ -128,7 +145,9 @@ Testing: ⚪ Not Applicable
 
 ## 3. Analysis
 
-The grammar used for this user story was designed in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#3-analysis) to describe drone shows and figures in a modular and
+The grammar used for this user story was designed
+in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#3-analysis) to describe drone
+shows and figures in a modular and
 extensible way.
 
 In the scope of US341, this grammar is now applied to validate DSL input files before figures are registered in the
@@ -150,14 +169,17 @@ validation:
 ## 4. Design
 
 This section outlines the design adopted for implementing **US341 – Validate Figure Description**. The system allows a
-Show Designer to enter a figure's DSL description, which must be validated before the figure can be added to the catalogue.
+Show Designer to enter a figure's DSL description, which must be validated before the figure can be added to the
+catalogue.
 
 ### 4.1 Realisation
 
-The sequence diagram below presents the full validation flow, highlighting the separation of responsibilities between the
+The sequence diagram below presents the full validation flow, highlighting the separation of responsibilities between
+the
 user interface, domain service, plugin infrastructure, and ANTLR-generated components.
 
-The validation process is initiated by the Show Designer through the `AddFigureToCatalogueUI`, where the DSL code and other
+The validation process is initiated by the Show Designer through the `AddFigureToCatalogueUI`, where the DSL code and
+other
 figure-related metadata are entered. The UI component delegates validation to the domain service `DSLValidate`, which
 interacts with the plugin registered via **US340**.
 
@@ -171,7 +193,8 @@ The plugin exposes a `validateDSL(code)` method and internally leverages ANTLR-g
 Upon successful validation, the UI proceeds to call the controller to persist the figure. Otherwise, it displays the
 validation errors to the user and halts the process.
 
-This design ensures that **only syntactically valid DSL descriptions are accepted**, promoting data integrity and consistency
+This design ensures that **only syntactically valid DSL descriptions are accepted**, promoting data integrity and
+consistency
 across the system.
 
 [Full Grammar](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md#full-grammar)
@@ -242,7 +265,8 @@ To demonstrate the functionality, follow these steps:
 ## 7. Observations
 
 * The validation process was implemented using **ANTLR 4**, a powerful parser generator for building DSLs.
-* The grammar used is defined and documented in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md).
+* The grammar used is defined and documented
+  in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md).
 * No unit tests were implemented for this user story, as validation is triggered exclusively from the user interface
   and is indirectly verified through the figure registration flow.
 * The `DSLValidate` service and the plugin were designed for reuse, ensuring that future use cases can rely on
@@ -303,7 +327,8 @@ Both versions share much of the core syntax but diverge in instruction sets and 
 
 ## 4. Design
 
-The plugin is implemented using **ANTLR4**. A shared Antlr (`DroneLexer.g4 and DroneParser.g4`) was created to support both versions by
+The plugin is implemented using **ANTLR4**. A shared Antlr (`DroneLexer.g4 and DroneParser.g4`) was created to support
+both versions by
 generalizing keywords and types.
 
 ### 4.1 Architecture Overview
@@ -315,12 +340,14 @@ generalizing keywords and types.
 The plugin exposes a method:
 
 ```java
-public DroneValidationResult validateTemplate(String code){}
+public DroneValidationResult validateTemplate(String code) {
+}
 ```
 
 Which returns a success status or a list of syntax errors with line/column info.
 
 ### 4.2 Sequence Diagram
+
 ![Sequence Diagram](images/sequence_diagram_us345.svg "Sequence Diagram")
 
 ### 4.3 Acceptance Tests
@@ -330,7 +357,8 @@ model or a dedicated application service — no unit tests are provided for this
 
 The `DroneValidationPlugin` is designed to be used externally by the UI to check whether the input DSL code is
 syntactically valid. Since the responsibility of triggering validation and handling the result lies entirely within the
-user interface flow, this validation will be verified manually or as part of the drone program registration process during
+user interface flow, this validation will be verified manually or as part of the drone program registration process
+during
 full-system testing.
 
 ## 5. Implementation
@@ -345,6 +373,7 @@ Validation is triggered directly from the user interface (`ValidateDroneProgramU
 ## 6. Integration/Demonstration
 
 To demonstrate the functionality, follow these steps:
+
 1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md)).
 2. **Log in as a Drone Tech**.
 3. Navigate to the **Drone Programs** section.
@@ -355,13 +384,121 @@ To demonstrate the functionality, follow these steps:
 ## 7. Observations
 
 * The validation process was implemented using **ANTLR 4**, a powerful parser generator for building DSLs.
-* The grammar used is defined and documented in [US253](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US253/US253.md).
+* The grammar used is defined and documented
+  in [US253](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US253/US253.md).
 * No unit tests were implemented for this user story, as validation is triggered exclusively from the user interface
   and is indirectly verified through the drone registration flow.
 * The `DroneValidate` service and the plugin were designed for reuse, ensuring that future use cases can rely on
   centralized validation logic.
 * The `eCafeteria` project and **EAPLI Framework** served as references for structural and architectural alignment.
 
+# US 347
+
+## 1. Context
+
+The objective of this task is to implement and deploy a plugin responsible for validating and generating proposal
+documents for show proposals. This functionality is part of Sprint 3, aligned with the domain of CRM and customer
+proposal management.
+
+### 1.1 List of Issues
+
+Analysis :        Doing
+
+Design:           Doing
+
+Implement:        Done
+
+Test:             ⚪ Not Applicable (UI-driven)
+
+---
+
+## 2. Requirements
+
+**As a** CRM Collaborator,  
+**I want** the system to validate the proposal template and to generate the proposal document for the show proposal,
+**So that** we can prepare the proposal for the customer.
+
+### Acceptance Criteria:
+
+- **US347.1:** There must be a plugin to validate the proposal template.
+- **US347.2:** The system must generate the proposal document based on the selected template and show proposal data.
+
+### Dependencies/References:
+
+- **US255 - Show Proposal Template Configuration:** This user story is a direct dependency. It is required to have
+  the show proposal template defined in the system so it can be used by the plugin.
+
+---
+
+## 3. Analysis
+
+The proposal document generation process involves validating the selected template and generating a document based on
+the show proposal data. The validation ensures that the template follows the defined grammar rules, while the generation
+process combines the template with the proposal data to produce a complete document.
+
+The plugin uses ANTLR 4 to validate the template syntax. The grammar for the proposal template is defined
+in `ProposalLexer.g4` and `ProposalParser.g4`.
+The validation process ensures that the template is syntactically correct before generating the document.
+
+The `ConfigureProposalDocumentController` orchestrates the process, interacting with the plugin and the repository to
+validate
+the template and persist the generated document.
+
+## 4. Design
+
+The plugin is implemented using **ANTLR4**. A shared Antlr (`ProposalLexer.g4 and ProposalParser.g4`) was created to
+support all versions by generalizing keywords and types.
+
+### 4.1 Architecture Overview
+
+* `ProposalLexer.g4`: Defines the tokens for the proposal template grammar.
+* `ProposalParser.g4`: Defines the syntactic structure of the proposal template grammar.
+* `ANTLRDocumentGenerationPlugin`: Validates the template and generates the document.
+* `ConfigureProposalDocumentController`: Coordinates the validation and generation process.
+* `ConfigureProposalDocumentUI`: Provides the user interface for selecting templates and generating documents.
+
+## 5. Implementation
+
+The implementation of **US347** focused on enabling the validation and generation of proposal documents. The following
+components were developed:
+
+* `ProposalLexer.g4`: Defines tokens for keywords, symbols, and basic structures in the proposal template.
+* `ProposalParser.g4`: Defines the rules for parsing the proposal template syntax.
+
+* `ANTLRDocumentGenerationPlugin`: Implements the `DocumentGeneratorPlugin` interface. It validates the template syntax
+  using the ANTLR-generated lexer and parser and generates the document content.
+
+* `ConfigureProposalDocumentController`: Coordinates the validation and generation process. It interacts with the plugin
+  and repository to validate the template and persist the generated document.
+
+* `ConfigureProposalDocumentUI`: Provides the user interface for selecting templates and generating documents. It
+  interacts with the controller to execute the process.
+
+## 6. Integration/Demonstration
+
+The functionality developed in **US 347** was successfully integrated into the CRM Collaborator’s workflow via the
+`ConfigureProposalDocumentUI`.
+
+To demonstrate the functionality, follow these steps:
+
+1. **Launch the application** (via the main class or script, as defined in the [readme.md](../../../readme.md)).
+2. **Log in as a CRM Collaborator**.
+3. Navigate to the **Show Proposals** section.
+4. Select a proposal and choose the **Configure Proposal Document** option.
+5. Choose a proposal template from the list.
+6. If the template is valid, the system generates the proposal document and displays a success message; otherwise,
+   validation errors are shown to the user for correction.
+
+## 7. Observations
+
+* The validation process was implemented using **ANTLR 4**, a powerful parser generator for building DSLs.
+* The grammar used is defined and documented
+  in [US255](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US255/US255.md).
+* No unit tests were implemented for this user story, as validation is triggered exclusively from the user interface
+  and is indirectly verified through the drone registration flow.
+* The `DocumentGeneratorPlugin` interface and `ANTLRDocumentGenerationPlugin` were designed for reuse, allowing future
+  extensions for other document types.
+* The `eCafeteria` project and **EAPLI Framework** served as references for structural and architectural alignment.
 
 
 # US 348
@@ -404,7 +541,7 @@ Testing: ✅ Done
 ### Dependencies/References:
 
 * **US310 – Create Show Proposal**: The proposal must already exist and contain a valid configuration.
-* **US312 –  Add figures to a proposal**: The figures must be defined and selected in the proposal.
+* **US312 – Add figures to a proposal**: The figures must be defined and selected in the proposal.
 
 ## 3. Analysis
 
@@ -432,7 +569,8 @@ This section presents the design adopted for implementing **US348 – Generate S
 ### 4.1 Realisation
 
 The process begins when the Drone Tech initiates a request to generate the DSL description for a specific show proposal
-via the user interface. The UI delegates the request to the `GenerateShowDSLController`, which coordinates the operation.
+via the user interface. The UI delegates the request to the `GenerateShowDSLController`, which coordinates the
+operation.
 
 The controller creates a new `PersistenceContext` and obtains access to the `ShowProposalRepository` through the
 `RepositoryFactory`. It then retrieves the selected `ShowProposal` using its identifier and accesses the associated
@@ -504,7 +642,8 @@ To demonstrate the functionality, follow these steps:
 ## 7. Observations
 
 * The validation process was implemented using **ANTLR 4**, a powerful parser generator for building DSLs.
-* The grammar used is defined and documented in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md).
+* The grammar used is defined and documented
+  in [US251](../../LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/US251.md).
 * No unit tests were implemented for this user story, as validation is triggered exclusively from the user interface
   and is indirectly verified through the figure registration flow.
 * The `DSLValidate` service and the plugin were designed for reuse, ensuring that future use cases can rely on
