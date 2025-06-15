@@ -18,8 +18,8 @@ public class ShowPrinter implements Visitor<ShowDTO> {
                         UtilsUI.BOLD + "Duration: " + UtilsUI.RESET + "%s\n" +
                         UtilsUI.BOLD + "Quantity of Drones: " + UtilsUI.RESET + "%s\n" +
                         UtilsUI.BOLD + "Insurance: " + UtilsUI.RESET + "%s\n" +
-                        UtilsUI.BOLD + "Video: \n" + UtilsUI.RESET + "%s\n" +
-                        UtilsUI.BOLD + "Figures Configuration: \n" + UtilsUI.RESET + "%s\n" +
+                        UtilsUI.BOLD + "Video: " + UtilsUI.RESET + "%s\n" +
+                        UtilsUI.BOLD + "\nFigures Configuration: \n" + UtilsUI.RESET + "%s\n" +
                         UtilsUI.BOLD + "Drone Configuration: " + UtilsUI.RESET + "\n" +
                         "%s\n",
                 visitee.showDescription,

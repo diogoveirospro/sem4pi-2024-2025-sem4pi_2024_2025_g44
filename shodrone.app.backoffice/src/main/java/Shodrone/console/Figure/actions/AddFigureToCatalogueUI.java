@@ -505,15 +505,10 @@ public class AddFigureToCatalogueUI extends AbstractFancyUI {
     }
 
     private Path findDSLFolder() {
-        Path[] possiblePaths = {
-                Paths.get("src/main/resources/sample_DSL_figures"),
-                Paths.get("docs/LPROG_LOG_2DI_1230462_1230917_1230948_1220780_1230875/US251/files/sample_DSL_figures")
-        };
+        Path path = Paths.get("files/LPROG/sample_DSL_figures");
 
-        for (Path path : possiblePaths) {
-            if (Files.exists(path)) {
-                return path;
-            }
+        if (Files.exists(path)) {
+            return path;
         }
 
         return null;
