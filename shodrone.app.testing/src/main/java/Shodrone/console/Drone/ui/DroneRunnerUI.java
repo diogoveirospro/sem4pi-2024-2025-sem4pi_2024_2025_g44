@@ -28,15 +28,15 @@ public class DroneRunnerUI extends AbstractFancyUI {
 
         while (keepRunning) {
             String inputDirectory = chooseInputDirectory();
-            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nYou chose the directory: " + inputDirectory + UtilsUI.RESET);
+            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nYou chose the directory: " + inputDirectory + UtilsUI.RESET);
             if (inputDirectory == null) {
                 continue;
             }
 
-            boolean editExistingFile = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to edit an existing file? (y/n): " + UtilsUI.RESET);
+            boolean editExistingFile = UtilsUI.confirm(UtilsUI.BOLD + "Do you want to edit an existing file? (Y/N): " + UtilsUI.RESET);
 
             if (editExistingFile) {
-                System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nFile structure:\n" + UtilsUI.RESET);
+                System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nFile structure:\n" + UtilsUI.RESET);
                 System.out.println("X,Y,Z\nVX1,VY1,VZ1\nVX2,VY2,VZ2\n...\nVXN,VYN,VZN\n");
                 System.out.println(UtilsUI.YELLOW + "X, Y, Z is the initial position.\nVXN, VYN, VZN are the vectors." + UtilsUI.RESET);
                 chooseFileInDirectory(inputDirectory);
@@ -47,7 +47,7 @@ public class DroneRunnerUI extends AbstractFancyUI {
                 createNewFile(inputDirectory);
             }
 
-            boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to return to the main menu? (y/n): " + UtilsUI.RESET);
+            boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "\nDo you want to return to the main menu? (Y/N): " + UtilsUI.RESET);
             if (confirm) {
                 keepRunning = false;
                 System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
@@ -98,7 +98,7 @@ public class DroneRunnerUI extends AbstractFancyUI {
             } else {
                 String filePath = directoryPath + "/" + files.get(option);
 
-                boolean eliminateDrone = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to eliminate this drone? (y/n): " + UtilsUI.RESET);
+                boolean eliminateDrone = UtilsUI.confirm(UtilsUI.BOLD + "\nDo you want to eliminate this drone? (Y/N): " + UtilsUI.RESET);
                 if (eliminateDrone) {
                     try {
                         Files.delete(Paths.get(filePath));
@@ -211,8 +211,8 @@ public class DroneRunnerUI extends AbstractFancyUI {
             while (!confirm) {
                 try {
                     UtilsUI.openFileForEditing(filePath);
-                    System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nWaiting for the customer to close the file...\n" + UtilsUI.RESET);
-                    confirm = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to continue (y/n): " + UtilsUI.RESET);
+                    System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nWaiting for the user to close the file..." + UtilsUI.RESET);
+                    confirm = UtilsUI.confirm(UtilsUI.BOLD + "Do you want to continue (Y/N): " + UtilsUI.RESET);
                     Thread.sleep(1000);
                     if (!isFileFormatValid(filePath)) {
                         confirm = false;
@@ -262,11 +262,11 @@ public class DroneRunnerUI extends AbstractFancyUI {
                 }
             }
 
-            System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\nFile format is valid: " + filePath + UtilsUI.RESET);
+            System.out.println(UtilsUI.BOLD + UtilsUI.GREEN + "\n\nFile format is valid: " + filePath + UtilsUI.RESET);
             return true;
 
         } catch (IOException e) {
-            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError Reading File: " + e.getMessage() + UtilsUI.RESET);
+            System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nError Reading File: " + e.getMessage() + UtilsUI.RESET);
             return false;
         }
     }

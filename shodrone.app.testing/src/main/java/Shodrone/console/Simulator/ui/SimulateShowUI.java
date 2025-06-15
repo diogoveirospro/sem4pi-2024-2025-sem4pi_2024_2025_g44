@@ -1,19 +1,20 @@
 package Shodrone.console.Simulator.ui;
 
 import Shodrone.console.Simulator.controller.SimulatorController;
-import Shodrone.exceptions.FailedRequestException;
 import Shodrone.exceptions.UserCancelledException;
+import core.Persistence.Application;
 import eapli.framework.presentation.console.ListWidget;
 import shodrone.presentation.AbstractFancyUI;
 import shodrone.presentation.UtilsUI;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static shodrone.presentation.UtilsUI.readIntegerFromConsole;
@@ -23,65 +24,88 @@ public class SimulateShowUI extends AbstractFancyUI {
     private static final String PATH = "../sem4pi-2024-2025-sem4pi_2024_2025_g44/SCOMP/srcs";
     private static final String DEFAULT_INPUT_DIRECTORY = "DroneTests";
     private static final String DEFAULT_ABSOLUTE_INPUT_DIRECTORY = PATH + "/" + DEFAULT_INPUT_DIRECTORY;
+    private static final String DEFAULT_ABSOLUTE_OUTPUT_DIRECTORY = Application.settings().getReportPath();
     private static final String CONFIG_FILE_NAME = PATH + "/config.txt";
     private final SimulatorController controller = new SimulatorController();
 
     @Override
     protected boolean doShow() {
-        boolean keepRunning = true;
+        try {
+            boolean keepRunning = true;
 
-        while (keepRunning) {
-            String input_directory = chooseInputDirectory();
-            int max_collisions = enterValidMaxCollisions();
-            int num_drones = enterValidNumDrones();
-            int drone_radius = enterValidDroneRadius();
-            int x_max = enterValidXMax();
-            int y_max = enterValidYMax();
-            int z_max = enterValidZMax();
-            int time_step = enterValidTimeStep();
+            while (keepRunning) {
+                String input_directory = chooseInputDirectory();
+                int max_collisions = enterValidMaxCollisions();
+                int num_drones = enterValidNumDrones();
+                int drone_radius = enterValidDroneRadius();
+                int x_max = enterValidXMax();
+                int y_max = enterValidYMax();
+                int z_max = enterValidZMax();
+                int time_step = enterValidTimeStep();
 
-            try {
-                controller.editConfigFile(CONFIG_FILE_NAME, input_directory, max_collisions, num_drones,
-                        drone_radius, x_max, y_max, z_max, time_step);
-                System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\nConfiguration file successfully updated!" + UtilsUI.RESET);
-            } catch (Exception e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError writing to config file: " + e.getMessage() + UtilsUI.RESET);
-                return false;
+                try {
+                    controller.editConfigFile(CONFIG_FILE_NAME, input_directory, max_collisions, num_drones,
+                            drone_radius, x_max, y_max, z_max, time_step);
+                    System.out.println(UtilsUI.GREEN + UtilsUI.BOLD + "\n\nConfiguration file successfully updated!" + UtilsUI.RESET);
+                } catch (Exception e) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nError writing to config file: " + e.getMessage() + UtilsUI.RESET);
+                    return false;
+                }
+
+                System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nThese were the selected configurations:" + UtilsUI.RESET);
+                System.out.println(UtilsUI.BOLD + "INPUT_DIR = " + UtilsUI.RESET + input_directory);
+                System.out.println(UtilsUI.BOLD + "MAX_COLLISIONS = " + UtilsUI.RESET + max_collisions);
+                System.out.println(UtilsUI.BOLD + "NUM_DRONES = " + UtilsUI.RESET + num_drones);
+                System.out.println(UtilsUI.BOLD + "DRONE_RADIUS = " + UtilsUI.RESET + drone_radius);
+                System.out.println(UtilsUI.BOLD + "X_MAX = " + UtilsUI.RESET + x_max);
+                System.out.println(UtilsUI.BOLD + "Y_MAX = " + UtilsUI.RESET + y_max);
+                System.out.println(UtilsUI.BOLD + "Z_MAX = " + UtilsUI.RESET + z_max);
+                System.out.println(UtilsUI.BOLD + "TIME_STEP = " + UtilsUI.RESET + time_step);
+
+                try {
+                    controller.simulateAndGenerateReport(PATH);
+
+                    openFile();
+
+                } catch (Exception e) {
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError during simulation: " + e.getMessage() + UtilsUI.RESET);
+                    return false;
+                }
+
+                boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + "\nDo you want to return to the main menu? (Y/N): " + UtilsUI.RESET);
+
+                if (confirm) {
+                    keepRunning = false;
+                    System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
+                }
             }
 
-            System.out.println(UtilsUI.BOLD + UtilsUI.YELLOW + "\nThese were the selected configurations:" + UtilsUI.RESET);
-            System.out.println(UtilsUI.BOLD + "INPUT_DIR = " + UtilsUI.RESET + input_directory);
-            System.out.println(UtilsUI.BOLD + "MAX_COLLISIONS = " + UtilsUI.RESET + max_collisions);
-            System.out.println(UtilsUI.BOLD + "NUM_DRONES = " + UtilsUI.RESET + num_drones);
-            System.out.println(UtilsUI.BOLD + "DRONE_RADIUS = " + UtilsUI.RESET + drone_radius);
-            System.out.println(UtilsUI.BOLD + "X_MAX = " + UtilsUI.RESET + x_max);
-            System.out.println(UtilsUI.BOLD + "Y_MAX = " + UtilsUI.RESET + y_max);
-            System.out.println(UtilsUI.BOLD + "Z_MAX = " + UtilsUI.RESET + z_max);
-            System.out.println(UtilsUI.BOLD + "TIME_STEP = " + UtilsUI.RESET + time_step);
-
-            System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n-> You will be redirected to the simulator in 3 seconds..." + UtilsUI.RESET);
-
-            try {
-                controller.simulateAndGenerateReport(PATH);
-            } catch (Exception e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nError during simulation: " + e.getMessage() + UtilsUI.RESET);
-                return false;
-            }
-
-            boolean confirm = UtilsUI.confirm(UtilsUI.BOLD + UtilsUI.YELLOW + "\nDo you want to return to the main menu? (y/n): " + UtilsUI.RESET);
-
-            if (confirm) {
-                keepRunning = false;
-                System.out.println(UtilsUI.YELLOW + UtilsUI.BOLD + "\nAction cancelled by user." + UtilsUI.RESET);
-            }
+            return true;
+        } catch (UserCancelledException e) {
+            return false;
         }
-
-        return true;
     }
 
     @Override
     public String headline() {
         return "Simulate a Show";
+    }
+
+    private void openFile() {
+        if (UtilsUI.confirm(UtilsUI.BOLD + "Do you want to open the report? (Y/N): " + UtilsUI.RESET)) {
+            File reportFolder = new File(DEFAULT_ABSOLUTE_OUTPUT_DIRECTORY);
+            File[] files = reportFolder.listFiles(File::isFile);
+
+            if (files != null && files.length > 0) {
+                File latestFile = Arrays.stream(files)
+                        .max(Comparator.comparingLong(File::lastModified))
+                        .orElse(null);
+
+                UtilsUI.openInNotepad(latestFile);
+            } else {
+                System.out.println(UtilsUI.RED + "\nNo files found in the reports folder." + UtilsUI.RESET);
+            }
+        }
     }
 
     private String chooseInputDirectory() {
@@ -122,7 +146,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         do {
             option = UtilsUI.selectsIndex(displayFolders);
             if (option == -2) {
-                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "Selection cancelled." + UtilsUI.RESET);
+                throw new UserCancelledException(UtilsUI.RED + UtilsUI.BOLD + "\nSelection cancelled." + UtilsUI.RESET);
             }
 
             if (option < 0 || option >= folders.size()) {
@@ -138,7 +162,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int max_collisions;
         do {
             try {
-                max_collisions = readIntegerFromConsole(UtilsUI.BOLD + "Enter a max collisions " +
+                max_collisions = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter a max collisions " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (max_collisions == -1) {
@@ -146,13 +170,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (max_collisions < 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nMax collisions must be a non-negative integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nMax collisions must be a non-negative integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return max_collisions;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -162,7 +186,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int num_drones;
         do {
             try {
-                num_drones = readIntegerFromConsole(UtilsUI.BOLD + "Enter the number of drones " +
+                num_drones = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter the number of drones " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (num_drones == -1) {
@@ -170,13 +194,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (num_drones <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNumber of drones must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nNumber of drones must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return num_drones;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -186,7 +210,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int drone_radius;
         do {
             try {
-                drone_radius = readIntegerFromConsole(UtilsUI.BOLD + "Enter the drone radius " +
+                drone_radius = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter the drone radius " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (drone_radius == -1) {
@@ -194,13 +218,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (drone_radius <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nDrone radius must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nDrone radius must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return drone_radius;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -210,7 +234,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int x_max;
         do {
             try {
-                x_max = readIntegerFromConsole(UtilsUI.BOLD + "Enter the maximum X coordinate " +
+                x_max = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter the maximum X coordinate " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (x_max == -1) {
@@ -218,13 +242,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (x_max <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nX max must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nX max must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return x_max;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -234,7 +258,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int y_max;
         do {
             try {
-                y_max = readIntegerFromConsole(UtilsUI.BOLD + "Enter the maximum Y coordinate " +
+                y_max = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter the maximum Y coordinate " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (y_max == -1) {
@@ -242,13 +266,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (y_max <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nY max must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nY max must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return y_max;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -258,7 +282,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int z_max;
         do {
             try {
-                z_max = readIntegerFromConsole(UtilsUI.BOLD + "Enter the maximum Z coordinate " +
+                z_max = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter the maximum Z coordinate " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (z_max == -1) {
@@ -266,13 +290,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (z_max <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nZ max must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nZ max must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return z_max;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);
@@ -282,7 +306,7 @@ public class SimulateShowUI extends AbstractFancyUI {
         int time_step;
         do {
             try {
-                time_step = readIntegerFromConsole(UtilsUI.BOLD + "Enter the time step in milliseconds " +
+                time_step = readIntegerFromConsole(UtilsUI.BOLD + "\nEnter the time step in milliseconds " +
                         "(or type -1 to go back): " + UtilsUI.RESET);
 
                 if (time_step == -1) {
@@ -290,13 +314,13 @@ public class SimulateShowUI extends AbstractFancyUI {
                 }
 
                 if (time_step <= 0) {
-                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nTime step must be a positive integer." + UtilsUI.RESET);
+                    System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nTime step must be a positive integer." + UtilsUI.RESET);
                     continue;
                 }
 
                 return time_step;
             } catch (IllegalArgumentException e) {
-                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nInvalid input. Please try again." + UtilsUI.RESET);
+                System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\n\nInvalid input. Please try again." + UtilsUI.RESET);
                 continue;
             }
         } while (true);

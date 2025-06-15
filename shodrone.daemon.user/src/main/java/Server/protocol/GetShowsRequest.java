@@ -54,7 +54,7 @@ public class GetShowsRequest extends UserAppRequest {
                     .append("\"").append(show.showTime.toString()).append("\", ")
                     .append(show.quantityOfDrones.getQuantityOfDrones()).append(", ")
                     .append("\"").append(show.insurance.toString()).append("\", ")
-                    .append("\"").append(show.showDuration.toString()).append("\"\n");
+                    .append("\"").append(show.showDuration.toMinutes()).append(" minutes").append("\"\n");
         }
 
         return sb.toString();

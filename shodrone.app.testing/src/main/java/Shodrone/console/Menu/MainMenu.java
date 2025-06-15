@@ -26,22 +26,22 @@ public class MainMenu extends AbstractFancyUI {
 
     // BIG TITLES SUBMENUS
 
-    private static final String SHOW_PROPOSALS_MENU_TITLE = "  _____   __    __     ____     ___       ___      _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
-            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
-            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
-            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
-            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
-            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
-            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
+    private static final String SIMULATOR_MENU_TITLE = "  _____    _____     __    __     __    __   _____         ____     ________     ____     ______\n" +
+            " / ____\\  (_   _)    \\ \\  / /     ) )  ( (  (_   _)       (    )   (___  ___)   / __ \\   (   __ \\\n" +
+            "( (___      | |      () \\/ ()    ( (    ) )   | |         / /\\ \\       ) )     / /  \\ \\   ) (__) )\n" +
+            " \\___ \\     | |      / _  _ \\     ) )  ( (    | |        ( (__) )     ( (     ( ()  () ) (    __/\n" +
+            "     ) )    | |     / / \\/ \\ \\   ( (    ) )   | |   __    )    (       ) )    ( ()  () )  ) \\ \\  _\n" +
+            " ___/ /    _| |__  /_/      \\_\\   ) \\__/ (  __| |___) )  /  /\\  \\     ( (      \\ \\__/ /  ( ( \\ \\_))\n" +
+            "/____/    /_____( (/          \\)  \\______/  \\________/  /__(  )__\\    /__\\      \\____/    )_) \\__/\n" +
             "\n";
 
-    private static final String SHOW_MENU_TITLE = "  _____   __    __     ____     ___       ___      _____    ______       ____     _____      ____      _____     ____     _____        _____\n" +
-            " / ____\\ (  \\  /  )   / __ \\   (  (       )  )    (  __ \\  (   __ \\     / __ \\   (  __ \\    / __ \\    / ____\\   (    )   (_   _)      / ____\\\n" +
-            "( (___    \\ (__) /   / /  \\ \\   \\  \\  _  /  /      ) )_) )  ) (__) )   / /  \\ \\   ) )_) )  / /  \\ \\  ( (___     / /\\ \\     | |       ( (___\n" +
-            " \\___ \\    ) __ (   ( ()  () )   \\  \\/ \\/  /      (  ___/  (    __/   ( ()  () ) (  ___/  ( ()  () )  \\___ \\   ( (__) )    | |        \\___ \\\n" +
-            "     ) )  ( (  ) )  ( ()  () )    )   _   (        ) )      ) \\ \\  _  ( ()  () )  ) )     ( ()  () )      ) )   )    (     | |   __       ) )\n" +
-            " ___/ /    ) )( (    \\ \\__/ /     \\  ( )  /       ( (      ( ( \\ \\_))  \\ \\__/ /  ( (       \\ \\__/ /   ___/ /   /  /\\  \\  __| |___) )  ___/ /\n" +
-            "/____/    /_/  \\_\\    \\____/       \\_/ \\_/        /__\\      )_) \\__/    \\____/   /__\\       \\____/   /____/   /__(  )__\\ \\________/  /____/\n" +
+    private static final String DRONE_RUNNER_TITLE = " ______     ______       ____        __      _    _____      ______     __    __      __      _      __      _    _____   ______\n" +
+            "(_  __ \\   (   __ \\     / __ \\      /  \\    / )  / ___/     (   __ \\    ) )  ( (     /  \\    / )    /  \\    / )  / ___/  (   __ \\\n" +
+            "  ) ) \\ \\   ) (__) )   / /  \\ \\    / /\\ \\  / /  ( (__        ) (__) )  ( (    ) )   / /\\ \\  / /    / /\\ \\  / /  ( (__     ) (__) )\n" +
+            " ( (   ) ) (    __/   ( ()  () )   ) ) ) ) ) )   ) __)      (    __/    ) )  ( (    ) ) ) ) ) )    ) ) ) ) ) )   ) __)   (    __/\n" +
+            "  ) )  ) )  ) \\ \\  _  ( ()  () )  ( ( ( ( ( (   ( (          ) \\ \\  _  ( (    ) )  ( ( ( ( ( (    ( ( ( ( ( (   ( (       ) \\ \\  _\n" +
+            " / /__/ /  ( ( \\ \\_))  \\ \\__/ /   / /  \\ \\/ /    \\ \\___     ( ( \\ \\_))  ) \\__/ (   / /  \\ \\/ /    / /  \\ \\/ /    \\ \\___  ( ( \\ \\_))\n" +
+            "(______/    )_) \\__/    \\____/   (_/    \\__/      \\____\\     )_) \\__/   \\______/  (_/    \\__/    (_/    \\__/      \\____\\  )_) \\__/\n" +
             "\n";
 
 
@@ -51,6 +51,7 @@ public class MainMenu extends AbstractFancyUI {
     private static final int TESTING_MENU = 3;
 
     private static final int SIMULATOR = 1;
+    private static final int RUNNER = 1;
 
     private static final String SEPARATOR_LABEL = "----------------------------";
     private final AuthorizationService authz = AuthzRegistry.authorizationService();
@@ -116,18 +117,18 @@ public class MainMenu extends AbstractFancyUI {
 
     private SubMenu buildDroneRunnerMenu() {
 
-        final SubMenu menu = new SubMenu("Drone Runner", SHOW_MENU_TITLE);
+        final SubMenu menu = new SubMenu("Drone Runner", DRONE_RUNNER_TITLE);
 
-        menu.addItem( SIMULATOR, "Configure Drone Runner", new DroneRunnerAction());
+        menu.addItem(RUNNER, "Configure Drone Runner", new DroneRunnerAction());
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }
 
 
     private SubMenu buildSimulatorManu() {
-        final SubMenu menu = new SubMenu("Simulator", SHOW_MENU_TITLE);
+        final SubMenu menu = new SubMenu("Simulator", SIMULATOR_MENU_TITLE);
 
-        menu.addItem( SIMULATOR, "Simulate a Show", new TestingAction());
+        menu.addItem(SIMULATOR, "Simulate a Show", new TestingAction());
         menu.addItem(EXIT_OPTION, RETURN_LABEL, Actions.SUCCESS);
         return menu;
     }

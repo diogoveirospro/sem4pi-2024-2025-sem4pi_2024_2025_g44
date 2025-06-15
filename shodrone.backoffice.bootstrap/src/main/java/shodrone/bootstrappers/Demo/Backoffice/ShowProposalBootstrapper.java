@@ -59,6 +59,7 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
     public boolean execute() {
 
         cleanShowDSLFiles();
+        cleanProposalFiles();
 
         List<ShowRequest> showRequests = (List<ShowRequest>) showRequestRepository.findAllCreatedShowRequests();
         List<CRMCollaborator> crmCollaborators = (List<CRMCollaborator>) crmCollaboratorRepository.findAll();
@@ -635,5 +636,18 @@ public class ShowProposalBootstrapper extends UsersBootstrapperBase implements A
         }
 
         LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully cleaned Show DSL files" + UtilsUI.RESET);
+    }
+
+    private void cleanProposalFiles() {
+        File pasta = new File("files/LPROG");
+        if (pasta.exists() && pasta.isDirectory()) {
+            for (File file : pasta.listFiles()) {
+                if (file.isFile() && file.getName().startsWith("proposal")) {
+                    file.delete();
+                }
+            }
+        }
+
+        LOGGER.info(UtilsUI.BOLD + UtilsUI.GREEN + "Successfully cleaned Proposal files" + UtilsUI.RESET);
     }
 }

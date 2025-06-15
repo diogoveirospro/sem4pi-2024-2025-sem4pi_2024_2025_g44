@@ -255,18 +255,6 @@ public class MarshallerUnmarshaller {
         return true;
     }
 
-    public ProposalDeliveryInfoCode parseResponseMessageProposalDeliveryInfoCode(List<String> response) throws FailedRequestException {
-        checkForErrorMessage(response);
-
-        if (response.size() < 2) {
-            throw new IllegalArgumentException("Invalid response format. Expected at least 2 lines.");
-        }
-
-        String filePath = response.get(1); // a segunda linha é o path do ficheiro
-
-        return new ProposalDeliveryInfoCode(filePath);
-    }
-
     public ShowProposalDTO parseResponseMessageProposalByCode(List<String> response) throws FailedRequestException {
         checkForErrorMessage(response);
         if (response == null || response.size() < 2) {

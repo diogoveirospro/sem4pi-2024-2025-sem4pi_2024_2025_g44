@@ -93,7 +93,7 @@ public class ShowInfoUI extends AbstractFancyUI {
             System.out.println(UtilsUI.RED + UtilsUI.BOLD + "\nNo show selected to display." + UtilsUI.RESET);
             return;
         }
-        System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\nSelected Show Details:\n" + UtilsUI.RESET);
+        System.out.println(UtilsUI.BOLD + UtilsUI.BLUE + "\n\nSelected Show Details:\n" + UtilsUI.RESET);
         showPrinter.visit(show);
     }
 
