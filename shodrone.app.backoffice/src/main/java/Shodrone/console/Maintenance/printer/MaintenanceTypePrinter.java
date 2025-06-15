@@ -9,8 +9,9 @@ public class MaintenanceTypePrinter implements Visitor<MaintenanceType> {
     public void visit(MaintenanceType maintenanceType) {
 
         System.out.printf(
-                "%-20s \n",
-                maintenanceType.name().toString()
+                "%-20s |  %-10s |\n",
+                maintenanceType.name().toString(),
+                maintenanceType.resetUsageTime() ? "Yes" : "No"
         );
     }
 }

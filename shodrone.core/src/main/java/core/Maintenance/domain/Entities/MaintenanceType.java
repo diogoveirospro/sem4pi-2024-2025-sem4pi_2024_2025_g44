@@ -12,7 +12,7 @@ import java.util.Objects;
 public class MaintenanceType implements Serializable, AggregateRoot<Designation> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     @Column(name = "type_name", unique = true, nullable = false)
